@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMP Center | Project D</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+      darkMode: 'class',
+      theme: {
+      extend: {
+      colors: {
+      pd: {
+      teal: '#00F2EA',
+      orange: '#FF5F00',
+      dark: '#0b0f19',
+      glass: 'rgba(255, 255, 255, 0.03)',
+      glassBorder: 'rgba(255, 255, 255, 0.08)'
+      }
+      },
+      animation: {
+      'blob': 'blob 7s infinite',
+      'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+      blob: {
+      '0%': { transform: 'translate(0px, 0px) scale(1)' },
+      '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+      '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+      '100%': { transform: 'translate(0px, 0px) scale(1)' },
+      }
+      }
+      }
+      }
+      };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script crossorigin="" src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin="" src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #f9fafb;
+      color: #111827;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+      }
+      .dark body { background-color: #0b0f19; color: #f3f4f6; }
+      .amp-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 20px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .dark .amp-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); }
+      .amp-card:hover {
+      transform: translateY(-4px);
+      border-color: #00F2EA;
+      box-shadow: 0 10px 30px -10px rgba(0, 242, 234, 0.15);
+      }
+      .amp-button {
+      background: rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #111;
+      }
+      .dark .amp-button { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; }
+      .amp-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 95, 0, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+      }
+      .amp-button:hover::before { transform: translateX(100%); }
+      .amp-button:hover { border-color: #FF5F00; box-shadow: 0 0 20px rgba(255, 95, 0, 0.3); transform: scale(1.02); color: #FF5F00; }
+      .dark .amp-button:hover { color: white; }
+      .amp-button.primary { background: rgba(255, 95, 0, 0.15); border-color: rgba(255, 95, 0, 0.5); color: #FF5F00; }
+      .dark .amp-button.primary { color: white; }
+      .amp-button.primary:hover { background: rgba(255, 95, 0, 0.3); }
+      .glass-reveal {
+      animation: glassReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      }
+      @keyframes glassReveal { to { opacity: 1; transform: translateY(0) scale(1); } }
+      .stagger-1 { animation-delay: 0.1s; }
+      .stagger-2 { animation-delay: 0.2s; }
+      .stagger-3 { animation-delay: 0.3s; }
+      .stagger-4 { animation-delay: 0.4s; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+      .dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
+      .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+      .toggle-checkbox:checked + .toggle-label { background-color: #FF5F00; border-color: #FF5F00; }
+      .toggle-checkbox:checked + .toggle-label .toggle-thumb { transform: translateX(100%); border-color: #FF5F00; }
+      .toggle-label { background-color: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); }
+      .dark .toggle-label { background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+      .tree-line-v { width: 1px; background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); }
+      .dark .tree-line-v { background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); }
+      .tree-line-h { height: 1px; background: rgba(0,0,0,0.2); }
+      .dark .tree-line-h { background: rgba(255,255,255,0.2); }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body>
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-gray-50 dark:bg-[#0b0f19]" id="bg-container"></div>
+    <div id="root" class="relative z-10 w-full min-h-screen flex text-gray-800 dark:text-gray-200"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      const ThemeToggle = () => {
+        const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+        const toggle = () => {
+          const next = !isDark;
+          setIsDark(next);
+          if (next) document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+        };
+        return (
+          <div className="flex items-center gap-2 z-50">
+            <a href="index.html" className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
+              <iconify-icon icon="solar:home-2-linear" width="20"></iconify-icon>
+            </a>
+            <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
+              <iconify-icon icon={isDark ? "solar:sun-linear" : "solar:moon-linear"} width="20"></iconify-icon>
+            </button>
+          </div>
+        );
+      };
+
+      const Background = ({ typingSpeed }) => {
+        const duration = Math.max(1.5, 7 - typingSpeed * 0.5);
+        const isDark = document.documentElement.classList.contains('dark');
+        return (
+          <div className="fixed inset-0 w-full h-full pointer-events-none opacity-50 z-0">
+            <div className="absolute top-[10%] -left-[10%] w-[40vw] h-[40vw] bg-pd-orange rounded-full mix-blend-screen filter blur-[120px] opacity-20" style={{ animation: `blob ${duration}s infinite` }} />
+            <div className="absolute top-[5%] -right-[5%] w-[35vw] h-[35vw] bg-pd-teal rounded-full mix-blend-screen filter blur-[100px] opacity-20" style={{ animation: `blob ${duration}s infinite`, animationDelay: '2s' }} />
+            <div className="absolute -bottom-[20%] -left-[10%] w-[50vw] h-[50vw] bg-pd-teal rounded-full mix-blend-screen filter blur-[150px] opacity-20" style={{ animation: `blob ${duration}s infinite`, animationDelay: '4s' }} />
+            <div className="absolute -bottom-[10%] right-[10%] w-[35vw] h-[35vw] bg-pd-orange rounded-full mix-blend-screen filter blur-[100px] opacity-20" style={{ animation: `blob ${duration}s infinite`, animationDelay: '2s' }} />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-gradient-to-r from-pd-orange/10 to-pd-teal/10 rounded-full filter blur-[120px] opacity-30 animate-pulse"></div>
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+          </div>
+        );
+      };
+
+      const Genesis = ({ onComplete, typingSpeed, setTypingSpeed }) => {
+        const [input, setInput] = useState('');
+        const [stage, setStage] = useState(0);
+        const [ceoText, setCeoText] = useState('');
+        const fullCeoText = "Initialization complete. I am your Custom CEO Agent. I have analyzed your kingdom parameters and am assembling your autonomous workforce...";
+
+        const handleType = (e) => {
+          setInput(e.target.value);
+          setTypingSpeed(prev => Math.min(prev + 1, 10));
+          clearTimeout(window.typingTimer);
+          window.typingTimer = setTimeout(() => setTypingSpeed(0), 1000);
+        };
+
+        const handleSubmit = (e) => {
+          if (e && e.preventDefault) e.preventDefault();
+          if (!input.trim()) return;
+          setStage(1);
+          setTypingSpeed(0);
+        };
+
+        useEffect(() => {
+          if (stage === 1) {
+            let i = 0;
+            const interval = setInterval(() => {
+              setCeoText(fullCeoText.substring(0, i));
+              i++;
+              if (i > fullCeoText.length) {
+                clearInterval(interval);
+                setTimeout(() => setStage(2), 500);
+              }
+            }, 30);
+            return () => clearInterval(interval);
+          }
+        }, [stage]);
+
+        return (
+          <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
+            <div className="absolute top-6 right-6"><ThemeToggle /></div>
+            {stage === 0 && (
+              <div className="w-full max-w-2xl mx-auto glass-reveal flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full border border-gray-200 dark:border-pd-glassBorder bg-white/40 dark:bg-pd-glass flex items-center justify-center mb-8 shadow-sm">
+                   <iconify-icon icon="solar:command-linear" width="24" className="text-gray-500 dark:text-gray-400"></iconify-icon>
+                </div>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight mb-4 text-center drop-shadow-lg text-gray-900 dark:text-white">
+                  Describe your <span className="text-transparent bg-clip-text bg-gradient-to-r from-pd-orange to-pd-teal">digital kingdom...</span>
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 md:mb-12 text-center">(Tell the Agent what kind of business you have)</p>
+                <div className="w-full relative">
+                  <input
+                    autoFocus type="text" value={input} onChange={handleType} onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(e); }}
+                    className="w-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl px-4 md:px-6 pr-14 md:pr-16 py-4 md:py-5 text-base md:text-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pd-teal/50 focus:ring-1 focus:ring-pd-teal/50 transition-all backdrop-blur-xl shadow-xl"
+                    placeholder="e.g. A digital marketing agency focusing on Web3..."
+                  />
+                  <button type="button" onClick={handleSubmit} className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-10 md:w-12 h-10 md:h-12 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-pd-orange/20 border border-black/10 dark:border-white/10 hover:border-pd-orange/50 flex items-center justify-center transition-all text-gray-900 dark:text-white hover:text-pd-orange">
+                    <iconify-icon icon="solar:arrow-right-linear" width="20"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+            )}
+            {stage >= 1 && (
+              <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-start pt-10">
+                <div className="glass-reveal mb-12 w-full max-w-2xl bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 backdrop-blur-xl flex gap-4 items-start shadow-lg">
+                  <div className="w-10 h-10 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center flex-shrink-0">
+                    <iconify-icon icon="solar:user-bold" width="20" className="text-pd-teal"></iconify-icon>
+                  </div>
+                  <div>
+                    <div className="text-xs font-mono text-pd-teal mb-1 uppercase tracking-widest">CEO Agent</div>
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed min-h-[3rem]">{ceoText}</p>
+                  </div>
+                </div>
+                {stage === 2 && (
+                  <div className="flex flex-col items-center w-full relative">
+                    <div className="amp-card p-4 flex items-center gap-4 w-64 justify-center glass-reveal z-10">
+                       <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center">
+                          <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange"></iconify-icon>
+                       </div>
+                       <div>
+                         <div className="text-sm font-semibold text-gray-900 dark:text-white">CEO</div>
+                         <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Active
+                         </div>
+                       </div>
+                    </div>
+                    <div className="tree-line-v h-8 glass-reveal stagger-1 hidden md:block"></div>
+                    <div className="tree-line-h w-full max-w-2xl relative glass-reveal stagger-1 hidden md:block">
+                      <div className="absolute top-0 left-0 w-[1px] h-6 tree-line-v"></div>
+                      <div className="absolute top-0 right-0 w-[1px] h-6 tree-line-v"></div>
+                      <div className="absolute top-0 left-1/2 w-[1px] h-6 tree-line-v"></div>
+                    </div>
+                    <div className="h-6 hidden md:block"></div>
+                    <div className="flex flex-col md:flex-row w-full max-w-3xl justify-between gap-4 relative z-10 px-4 mt-6 md:mt-0">
+                      <div className="amp-card p-4 flex flex-col items-center gap-2 w-full md:w-48 text-center glass-reveal stagger-2 border-pd-teal/30">
+                         <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-teal">
+                            <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
+                         </div>
+                         <div>
+                           <div className="text-sm font-semibold text-gray-900 dark:text-white">CMO Agent</div>
+                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Lead Gen & Marketing</div>
+                         </div>
+                      </div>
+                      <div className="amp-card p-4 flex flex-col items-center gap-2 w-full md:w-48 text-center glass-reveal stagger-3">
+                         <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-gray-500">
+                            <iconify-icon icon="solar:settings-linear" width="16"></iconify-icon>
+                         </div>
+                         <div>
+                           <div className="text-sm font-semibold text-gray-900 dark:text-white">CTO Agent</div>
+                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Systems & Code</div>
+                         </div>
+                      </div>
+                      <div className="amp-card p-4 flex flex-col items-center gap-2 w-full md:w-48 text-center glass-reveal stagger-4 border-pd-orange/30">
+                         <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange">
+                            <iconify-icon icon="solar:palette-linear" width="16"></iconify-icon>
+                         </div>
+                         <div>
+                           <div className="text-sm font-semibold text-gray-900 dark:text-white">Creative Agent</div>
+                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Content & Assets</div>
+                         </div>
+                      </div>
+                    </div>
+                    <div className="mt-16 glass-reveal stagger-4 flex justify-center w-full">
+                      <button onClick={onComplete} className="amp-button primary px-8 py-3 text-sm font-medium tracking-wide shadow-[0_0_30px_rgba(255,95,0,0.2)]">
+                        Enter Command Center <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      const CommandCenter = () => {
+        const [activeModule, setActiveModule] = useState('neural-chat');
+        const [isStatsOpen, setIsStatsOpen] = useState(false);
+        const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
+
+        const navItems = [
+          { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
+          { id: 'lead-pipeline', icon: 'solar:filter-linear', label: 'Lead Pipeline', mobileLabel: 'Leads' },
+          { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: 'Client Ledger', mobileLabel: 'Clients' },
+          { id: 'marketing-pipeline', icon: 'solar:chart-square-linear', label: 'Marketing Pipeline', mobileLabel: 'Marketing' },
+          { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
+          { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
+        ];
+
+        return (
+          <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden p-2 sm:p-4 gap-2 sm:gap-4 z-10 relative glass-reveal">
+            
+            {/* Mobile Header */}
+            <div className="lg:hidden flex justify-between items-center bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl p-3 shadow-sm z-40 flex-shrink-0">
+               <div className="flex items-center gap-3">
+                   <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" className="w-8 h-8 rounded object-cover shadow-[0_0_15px_rgba(0,242,234,0.3)]" alt="Project D Logo" />
+                   <span className="font-bold tracking-tight text-gray-900 dark:text-white">AMP Center</span>
+               </div>
+               <div className="flex items-center gap-2">
+                 <ThemeToggle />
+                 <button onClick={() => setIsStatsOpen(true)} className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder text-gray-600 dark:text-gray-400 relative hover:text-pd-teal hover:border-pd-teal/50 transition-all">
+                   <iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon>
+                   <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA] animate-pulse"></span>
+                 </button>
+               </div>
+            </div>
+
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:flex w-64 flex-col bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-3xl overflow-hidden shadow-xl flex-shrink-0">
+              <div className="p-6 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/50 dark:bg-transparent">
+                <div className="flex items-center gap-3">
+                   <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" className="w-8 h-8 rounded object-cover shadow-[0_0_15px_rgba(0,242,234,0.3)]" alt="Project D Logo" />
+                   <span className="font-bold tracking-tight text-gray-900 dark:text-white">AMP Center</span>
+                </div>
+                <ThemeToggle />
+              </div>
+              <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
+                {navItems.map(item => (
+                  <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${ activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200' }`}>
+                    <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : ''}></iconify-icon>
+                    {item.label}
+                  </button>
+                ))}
+              </nav>
+              <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder">
+                <div className="amp-card p-3 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></div>
+                  System Online: 4 Agents
+                </div>
+              </div>
+            </aside>
+
+            {/* Mobile Bottom Navigation */}
+            <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-white/95 dark:bg-[#0b0f19]/95 border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl flex p-2 gap-1 overflow-x-auto z-40 shadow-2xl hide-scrollbar snap-x snap-mandatory">
+               {navItems.map(item => (
+                  <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2 rounded-xl transition-all text-[10px] font-medium snap-center flex-shrink-0 ${ activeModule === item.id ? 'bg-pd-teal/10 text-pd-teal shadow-inner' : 'text-gray-500 hover:bg-black/5 dark:hover:bg-white/5' }`}>
+                    <iconify-icon icon={item.icon} width="22" className="mb-1"></iconify-icon>
+                    <span className="truncate w-full text-center">{item.mobileLabel}</span>
+                  </button>
+               ))}
+            </nav>
+
+            <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
+              {activeModule === 'neural-chat' && <NeuralChat />}
+              {activeModule === 'lead-pipeline' && <LeadPipeline />}
+              {activeModule === 'client-ledger' && <ClientLedger />}
+              {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
+              {activeModule === 'tactical-calendar' && <TacticalCalendar />}
+              {activeModule === 'content-factory' && <ContentFactory />}
+            </main>
+
+            {/* Desktop Expand Tab */}
+            {isRightSidebarCollapsed && (
+               <button onClick={() => setIsRightSidebarCollapsed(false)} className="hidden lg:flex absolute top-[10%] right-0 w-10 h-16 bg-white/60 dark:bg-white/10 border border-r-0 border-gray-200 dark:border-pd-glassBorder rounded-l-2xl items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.1)] backdrop-blur-2xl text-gray-600 dark:text-gray-400 hover:text-pd-teal hover:bg-white/80 dark:hover:bg-white/20 transition-all z-40 group cursor-pointer">
+                  <iconify-icon icon="solar:alt-arrow-left-linear" width="20" className="group-hover:-translate-x-1 transition-transform"></iconify-icon>
+               </button>
+            )}
+
+            {/* Overlay for mobile stats sidebar */}
+            {isStatsOpen && (
+              <div className="lg:hidden fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-50" onClick={() => setIsStatsOpen(false)}></div>
+            )}
+            
+            <aside className={`fixed lg:static top-0 right-0 h-full lg:h-auto bg-white/95 dark:bg-[#0b0f19]/95 lg:bg-white/40 lg:dark:bg-pd-glass border-l lg:border border-gray-200 dark:border-pd-glassBorder backdrop-blur-3xl lg:rounded-3xl overflow-y-auto overflow-x-hidden shadow-2xl lg:shadow-xl flex-shrink-0 z-50 transition-all duration-300 origin-right ${isStatsOpen ? 'translate-x-0 w-80' : 'translate-x-full w-80 lg:translate-x-0'} ${isRightSidebarCollapsed ? 'lg:w-0 lg:border-0 lg:opacity-0 pointer-events-none' : 'lg:w-80 lg:opacity-100 pointer-events-auto'}`}>
+              <div className="w-80 p-6 flex flex-col gap-6 h-full">
+                <div className="flex justify-between items-center lg:hidden mb-2 border-b border-gray-200 dark:border-pd-glassBorder pb-4">
+                  <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:chart-square-linear" className="text-pd-teal"></iconify-icon> System Stats</h3>
+                  <button onClick={() => setIsStatsOpen(false)} className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-600 dark:text-gray-400 transition-colors"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2"><iconify-icon icon="solar:history-linear"></iconify-icon>Active Tasks</h3>
+                  <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <TaskCard agent="Lead Gen Agent" task="Scraping LinkedIn for 'SaaS Founders'" status="running" color="pd-teal" />
+                  <TaskCard agent="Creative Agent" task="Vibe coding 3D Assets for Alpha" status="running" color="pd-orange" />
+                  <TaskCard agent="CMO Agent" task="Drafting copy for Q3 funnel" status="done" color="pd-teal" />
+                </div>
+                <div className="mt-auto pt-6 border-t border-gray-200 dark:border-pd-glassBorder">
+                  <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Cost Tracking</h3>
+                  <div className="space-y-3">
+                     <BudgetBar agent="CEO" used={42} total={60} />
+                     <BudgetBar agent="CMO" used={12} total={40} />
+                     <BudgetBar agent="Creative" used={30} total={50} />
+                     <BudgetBar agent="CTO" used={25} total={50} />
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        );
+      };
+
+      const TaskCard = ({ agent, task, status, color }) => (
+        <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-xl p-3 relative overflow-hidden group hover:border-gray-300 dark:hover:border-white/20 transition-all shadow-sm">
+          <div className={`absolute top-0 left-0 w-1 h-full bg-${color}`}></div>
+          <div className="flex justify-between items-start mb-1">
+            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{agent}</span>
+            {status === 'running' ? (
+              <span className="text-[10px] text-pd-teal flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-pd-teal animate-pulse"></span> Running</span>
+            ) : ( <span className="text-[10px] text-gray-500">Done</span> )}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{task}</p>
+        </div>
+      );
+
+      const BudgetBar = ({ agent, used, total }) => {
+        const pct = (used / total) * 100;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between text-[10px]">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{agent}</span>
+              <span className="text-gray-500">${used} / ${total}</span>
+            </div>
+            <div className="h-1.5 w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full bg-pd-orange/80 rounded-full" style={{ width: `${pct}%` }}></div>
+            </div>
+          </div>
+        );
+      };
+
+      const NeuralChat = () => {
+        const [messages, setMessages] = useState([
+          { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
+        ]);
+        const [input, setInput] = useState('');
+        const [isTyping, setIsTyping] = useState(false);
+        const endRef = useRef(null);
+
+        useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
+
+        const handleSend = (e) => {
+          if (e && e.preventDefault) e.preventDefault();
+          if (!input.trim()) return;
+          const msg = input.trim();
+          setMessages(prev => [...prev, { sender: 'user', text: msg, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+          setInput('');
+          setIsTyping(true);
+
+          setTimeout(() => {
+            let reply = "Understood. I've initiated the relevant workflows. The team has been pinged.";
+            let lmsg = msg.toLowerCase();
+            if (lmsg.includes('marketing') || lmsg.includes('campaign')) reply = "I've delegated the campaign strategy to the CMO Agent and moved the structural tasks into the Marketing Pipeline.";
+            else if (lmsg.includes('lead') || lmsg.includes('prospect')) reply = "Initiating outbound sequences. I'll have the CMO Agent report back in the Lead Pipeline shortly.";
+            else if (lmsg.includes('content') || lmsg.includes('graphic') || lmsg.includes('logo')) reply = "Sending prompt parameters to the Content Factory. The Creative Agent will begin 'vibe coding' the assets.";
+            else if (lmsg.includes('client')) reply = "Pulling the latest metrics into the Client Ledger. The Support Agent is on standby if intervention is needed.";
+
+            setMessages(prev => [...prev, { sender: 'ceo', text: reply, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+            setIsTyping(false);
+          }, 1500);
+        };
+
+        return (
+          <div className="flex flex-col h-full w-full">
+            <div className="p-4 md:p-6 border-b border-gray-200 dark:border-pd-glassBorder flex items-center gap-4 bg-white/50 dark:bg-white/5">
+              <div className="w-10 h-10 rounded-xl bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange shadow-sm">
+                <iconify-icon icon="solar:crown-minimalistic-bold" width="20"></iconify-icon>
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900 dark:text-white tracking-tight">CEO Agent</h2>
+                <p className="text-xs text-gray-500">Orchestrating 3 sub-agents.</p>
+              </div>
+            </div>
+            <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6">
+              {messages.map((m, i) => (
+                m.sender === 'user' ? (
+                  <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm">
+                    {m.text}
+                    <div className="text-[9px] text-gray-500 dark:text-gray-400 text-right mt-2">{m.time}</div>
+                  </div>
+                ) : (
+                  <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative">
+                     <div className="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange">
+                        <iconify-icon icon="solar:crown-minimalistic-bold" width="12"></iconify-icon>
+                     </div>
+                     <p>{m.text}</p>
+                     <div className="text-[9px] text-gray-500 dark:text-gray-400 mt-2">{m.time}</div>
+                  </div>
+                )
+              ))}
+              {isTyping && (
+                 <div className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl rounded-tl-sm p-4 flex gap-2 items-center">
+                    <span className="w-2 h-2 rounded-full bg-pd-orange animate-bounce"></span>
+                    <span className="w-2 h-2 rounded-full bg-pd-orange animate-bounce" style={{animationDelay: '0.1s'}}></span>
+                    <span className="w-2 h-2 rounded-full bg-pd-orange animate-bounce" style={{animationDelay: '0.2s'}}></span>
+                 </div>
+              )}
+              <div ref={endRef} />
+            </div>
+            <div className="p-4 bg-white/50 dark:bg-white/5 border-t border-gray-200 dark:border-pd-glassBorder">
+              <div className="relative flex items-center">
+                <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={(e)=>{if(e.key==='Enter') handleSend(e)}} placeholder="Instruct the CEO..." className="w-full bg-white dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
+                <button onClick={handleSend} className="absolute right-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all"><iconify-icon icon="solar:plain-bold" width="18"></iconify-icon></button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const LeadPipeline = () => {
+        const leads = [
+          { id: 1, name: "Acme Corp", contact: "john@acme.com", stage: "Inbound", value: "$5,000", prob: "30%", next: "Send info deck", amp: false },
+          { id: 2, name: "Nexus Web3", contact: "ceo@nexus.io", stage: "Qualifying", value: "$12,000", prob: "60%", next: "Discovery Call scheduled", amp: true },
+          { id: 3, name: "Stark Industries", contact: "tony@stark.com", stage: "Negotiation", value: "$45,000", prob: "90%", next: "Contract out for signature", amp: true },
+        ];
+
+        return (
+          <div className="p-4 md:p-8 h-full flex flex-col">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+              <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Lead Pipeline</h2><p className="text-xs text-gray-500">Manage prospects and activate AI sequences.</p></div>
+              <button className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto"><iconify-icon icon="solar:add-circle-linear"></iconify-icon> Add Lead</button>
+            </div>
+            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
+              {['Inbound', 'Qualifying', 'Negotiation'].map(col => (
+                <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-pd-teal border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
+                  {leads.filter(l => l.stage === col).map(lead => (
+                    <div key={lead.id} className="amp-card p-5 relative overflow-hidden group">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-200">{lead.name}</h4>
+                          <span className="text-[10px] text-gray-500">{lead.contact}</span>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-[8px] font-mono text-gray-400 uppercase">AMP Mode</span>
+                          <label className="flex items-center cursor-pointer relative">
+                            <input type="checkbox" className="sr-only toggle-checkbox" defaultChecked={lead.amp} />
+                            <div className="toggle-label w-10 h-5 rounded-full transition-colors relative flex items-center">
+                              <div className="toggle-thumb w-4 h-4 bg-white rounded-full absolute left-0.5 transition-transform group-hover:shadow-sm"></div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
+                        <div className="flex justify-between"><span className="text-gray-500">Value</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob}</span></div>
+                      </div>
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const ClientLedger = () => {
+        const clients = [
+          { id: 1, name: "OmniCorp", retainer: "$3k/mo", agent: "Support & CMO", ltv: "$36,000", nextTask: "Monthly SEO Report generation" },
+          { id: 2, name: "Globex", retainer: "$1k/mo", agent: "Support", ltv: "$8,500", nextTask: "Routine check-in email" },
+          { id: 3, name: "Initech", retainer: "$5k/mo", agent: "Creative & CTO", ltv: "$115,000", nextTask: "App v2.0 UI overhaul vibe coding" },
+        ];
+        return (
+          <div className="p-4 md:p-8 h-full flex flex-col">
+            <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
+            <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
+              <table className="w-full text-left text-sm min-w-[600px]">
+                <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
+                  <tr><th className="p-4">Client</th><th className="p-4">Retainer</th><th className="p-4">LTV</th><th className="p-4">Assigned Agents</th><th className="p-4">Next Automated Task</th></tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
+                  {clients.map(c => (
+                    <tr key={c.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
+                      <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]"><div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>{c.name}</td>
+                      <td className="p-4 text-gray-600 dark:text-gray-300">{c.retainer}</td>
+                      <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv}</td>
+                      <td className="p-4"><span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{c.agent}</span></td>
+                      <td className="p-4 text-gray-500 text-xs">{c.nextTask}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      };
+
+      const MarketingPipeline = () => {
+        return (
+          <div className="p-4 md:p-8 h-full flex flex-col">
+            <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Marketing Pipeline</h2><p className="text-xs text-gray-500">Campaign execution and team resource sharing.</p></div>
+            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
+              {['Ideation', 'Production', 'Review', 'Deployed'].map(col => (
+                <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-pd-orange border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
+                  {col === 'Production' && (
+                    <div className="amp-card p-4">
+                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Q3 Web3 Funnel</h4>
+                       <p className="text-xs text-gray-500 mb-3">Creating landing page assets and ad copy.</p>
+                       <div className="flex gap-2">
+                         <span className="px-2 py-1 bg-pd-teal/20 text-pd-teal rounded text-[10px]">CMO</span>
+                         <span className="px-2 py-1 bg-pd-orange/20 text-pd-orange rounded text-[10px]">Creative</span>
+                       </div>
+                    </div>
+                  )}
+                  {col === 'Ideation' && (
+                    <div className="amp-card p-4 opacity-70 border-dashed">
+                       <div className="flex items-center justify-center h-16 text-xs text-gray-500"><iconify-icon icon="solar:add-circle-linear" className="mr-1"></iconify-icon> Add Campaign</div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const ContentFactory = () => {
+        return (
+          <div className="p-4 md:p-6 h-full flex flex-col relative overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-2">
+              <div>
+                <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1 flex items-center gap-2">Content Factory <span className="text-[10px] font-mono bg-pd-teal/20 text-pd-teal px-2 py-0.5 rounded">CANVAS</span></h2>
+                <p className="text-xs text-gray-500">Vibe code graphics, logos, and materials with the Creative Agent.</p>
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col-reverse md:flex-row gap-4 md:gap-6 relative z-10 h-full pb-4">
+              <div className="w-full md:w-16 bg-white/60 dark:bg-black/20 border border-gray-200 dark:border-pd-glassBorder rounded-2xl flex flex-row md:flex-col items-center justify-around md:justify-start py-2 md:py-4 px-4 md:px-0 gap-2 md:gap-4 backdrop-blur-xl shadow-sm z-20">
+                 <button className="w-10 h-10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center text-gray-600 dark:text-gray-400"><iconify-icon icon="solar:pen-linear" width="20"></iconify-icon></button>
+                 <button className="w-10 h-10 rounded-xl bg-pd-orange/20 text-pd-orange flex items-center justify-center shadow-inner"><iconify-icon icon="solar:magic-stick-3-linear" width="20"></iconify-icon></button>
+                 <button className="w-10 h-10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center text-gray-600 dark:text-gray-400"><iconify-icon icon="solar:layers-linear" width="20"></iconify-icon></button>
+                 <div className="md:mt-auto md:pt-4 border-l md:border-l-0 md:border-t border-gray-200 dark:border-pd-glassBorder w-px md:w-full h-8 md:h-auto flex justify-center items-center">
+                   <button className="w-10 h-10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center text-pd-teal md:mt-2"><iconify-icon icon="solar:export-linear" width="20"></iconify-icon></button>
+                 </div>
+              </div>
+              <div className="flex-1 border-2 border-dashed border-gray-300 dark:border-pd-glassBorder rounded-2xl md:rounded-3xl flex flex-col items-center justify-center relative bg-white/40 dark:bg-black/20 backdrop-blur-md shadow-inner overflow-hidden min-h-[300px]">
+                 <div className="absolute top-2 md:top-4 left-2 md:left-4 flex flex-wrap gap-2 z-10">
+                   <div className="px-2 md:px-3 py-1 bg-white/80 dark:bg-black/40 border border-gray-200 dark:border-pd-glassBorder rounded-full text-[10px] text-gray-600 dark:text-gray-400 backdrop-blur">1080x1080</div>
+                   <div className="px-2 md:px-3 py-1 bg-white/80 dark:bg-black/40 border border-pd-orange/30 rounded-full text-[10px] text-pd-orange flex items-center gap-1 backdrop-blur"><span className="w-1.5 h-1.5 rounded-full bg-pd-orange animate-pulse"></span> Creative Agent Ready</div>
+                 </div>
+
+                 <div className="w-48 h-48 md:w-72 md:h-72 border border-gray-200 dark:border-pd-glassBorder rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10 flex items-center justify-center group relative shadow-2xl overflow-hidden mt-8 md:mt-0">
+                   <div className="absolute inset-0 bg-pd-teal/5 mix-blend-overlay animate-pulse"></div>
+                   <div className="text-center">
+                      <iconify-icon icon="solar:gallery-wide-linear" width="48" className="text-gray-400 dark:text-gray-500 opacity-50 mb-2"></iconify-icon>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">Empty Canvas</div>
+                   </div>
+                 </div>
+
+                 <div className="absolute bottom-4 md:bottom-6 w-full max-w-xl px-2 md:px-4 z-10">
+                   <div className="relative">
+                     <input type="text" placeholder="Prompt (e.g. '3D neon logo')..." className="w-full bg-white/90 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-4 md:pl-6 pr-12 md:pr-14 py-3 md:py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-2xl backdrop-blur-xl" />
+                     <button className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-orange/20 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all"><iconify-icon icon="solar:plain-bold"></iconify-icon></button>
+                   </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const TacticalCalendar = () => {
+        return (
+          <div className="p-4 md:p-8 h-full flex flex-col">
+            <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Tactical Calendar</h2><p className="text-xs text-gray-500">Gantt-style timeline of agent deployments and heartbeats.</p></div>
+            <div className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-4 md:p-6 relative overflow-x-auto shadow-sm">
+              <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '60px 40px' }}></div>
+              <div className="min-w-[600px] relative z-10 space-y-8 mt-4">
+                <div className="flex text-[10px] text-gray-400 font-mono mb-4 pl-32 uppercase tracking-widest border-b border-gray-200 dark:border-pd-glassBorder pb-2">
+                  <div className="w-[120px]">Mon</div><div className="w-[120px]">Tue</div><div className="w-[120px]">Wed</div><div className="w-[120px]">Thu</div><div className="w-[120px]">Fri</div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:global-linear" className="text-pd-teal"></iconify-icon> CMO</div>
+                  <div className="flex-1 h-10 relative pl-4">
+                    <div className="absolute top-1/2 left-[10px] w-[100px] h-6 -translate-y-1/2 rounded bg-pd-teal/20 border border-pd-teal/50 flex items-center px-2 text-[10px] text-pd-teal whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-teal/30">Write Ad Copy</div>
+                    <div className="absolute top-1/2 left-[250px] w-[200px] h-6 -translate-y-1/2 rounded bg-pd-teal/20 border border-pd-teal/50 flex items-center px-2 text-[10px] text-pd-teal whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-teal/30">A/B Testing Campaign</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:palette-linear" className="text-pd-orange"></iconify-icon> Creative</div>
+                  <div className="flex-1 h-10 relative pl-4">
+                    <div className="absolute top-1/2 left-[130px] w-[110px] h-6 -translate-y-1/2 rounded bg-pd-orange/20 border border-pd-orange/50 flex items-center px-2 text-[10px] text-pd-orange whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-orange/30">Vibe Code Assets</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:settings-linear" className="text-gray-500"></iconify-icon> CTO</div>
+                  <div className="flex-1 h-10 relative pl-4">
+                    <div className="absolute top-1/2 left-[380px] w-[150px] h-6 -translate-y-1/2 rounded bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 flex items-center px-2 text-[10px] text-gray-700 dark:text-gray-300 whitespace-nowrap shadow-sm cursor-pointer hover:bg-gray-300 dark:hover:bg-white/20">Deploy Landing Page</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [currentScreen, setCurrentScreen] = useState('genesis');
+        const [typingSpeed, setTypingSpeed] = useState(0);
+        return (
+          <>
+            <Background typingSpeed={typingSpeed} />
+            {currentScreen === 'genesis' && <Genesis onComplete={() => setCurrentScreen('dashboard')} typingSpeed={typingSpeed} setTypingSpeed={setTypingSpeed} />}
+            {currentScreen === 'dashboard' && <CommandCenter />}
+          </>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+
+  
+</body></html>
