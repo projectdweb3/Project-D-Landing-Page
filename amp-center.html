@@ -508,7 +508,7 @@
       );
     };
 
-    const CommandCenter = () => {
+    const CommandCenter = ({ session }) => {
       const [activeModule, setActiveModule] = useState('neural-chat');
       const [isStatsOpen, setIsStatsOpen] = useState(false);
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
@@ -593,7 +593,7 @@
           </nav>
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
-            {activeModule === 'neural-chat' && <NeuralChat />}
+            {activeModule === 'neural-chat' && <NeuralChat session={session} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline />}
             {activeModule === 'client-ledger' && <ClientLedger />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
@@ -674,7 +674,7 @@
       );
     };
 
-    const NeuralChat = () => {
+    const NeuralChat = ({ session }) => {
       const [messages, setMessages] = useState([
         { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
       ]);
@@ -696,7 +696,7 @@
 
         fetch('/.netlify/functions/agent', {
           method: 'POST',
-          body: JSON.stringify({ message: msg })
+          body: JSON.stringify({ message: msg, userId: session?.user?.id })
         })
           .then(res => res.json())
           .then(data => {
@@ -1054,7 +1054,7 @@
           ) : (
             <>
               {currentScreen === 'genesis' && <Genesis onComplete={() => setCurrentScreen('dashboard')} typingSpeed={typingSpeed} setTypingSpeed={setTypingSpeed} />}
-              {currentScreen === 'dashboard' && <CommandCenter />}
+              {currentScreen === 'dashboard' && <CommandCenter session={session} />}
             </>
           )}
         </>
