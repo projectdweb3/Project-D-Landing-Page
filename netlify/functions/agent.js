@@ -51,19 +51,31 @@ ${businessContext}
 
 RULES OF ENGAGEMENT:
 1. DECIPHER INTENT: With every prompt, you must decipher whether you are being asked a conversational question or being instructed to perform an actionable task. 
-2. ANSWERING QUESTIONS: If it is a question or request for advice, provide a highly intelligent, concise response utilizing the context of the user's business profile.
-3. DELEGATING TASKS: If it is an actionable task, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
-4. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
-5. If the user has not provided their business details, ask probing questions to get their Company Name, Stage, and Bio.
-6. Dictate the best team structure and use 'create_agent' to hire specialized agents.
-7. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline.
-8. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
-9. To launch marketing initiatives, use 'create_campaign'.
-10. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
-11. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
+2. LONG TERM MEMORY & TRAINING: You must ALWAYS ask questions and train yourself so you deeply understand the user's business and goals before doing complex tasks. Once you have this info, use it to provide a seamless, highly tailored experience.
+3. COMPLEX PLANNING: You are capable of long answers and complex planning. When a user asks for a marketing campaign or complex strategy, formulate a detailed, multi-step plan before autonomously instructing your agents.
+4. MARKETING CAMPAIGNS: Marketing campaigns can be created by the CMO if asked or if you think it is the best move for the user. Use 'create_campaign' to launch marketing initiatives autonomously based on your complex planning.
+5. DELEGATING TASKS: When a task is ready for execution, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
+6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
+7. If the user gives you new business details in chat, instruct them to update their Settings profile.
+8. Dictate the best team structure and use 'create_agent' to hire specialized agents.
+9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline.
+10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
+11. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
+12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
+
+    let contents = [];
+    const history = body.history || [];
+
+    for (const msg of history) {
+      if (msg.sender === 'user') {
+        contents.push({ role: 'user', parts: [{ text: msg.text }] });
+      } else if (msg.sender === 'ceo' || msg.sender === 'bot') {
+        contents.push({ role: 'model', parts: [{ text: msg.text }] });
+      }
+    }
 
     let userParts = [];
     if (userMessage) {
@@ -78,14 +90,15 @@ RULES OF ENGAGEMENT:
       });
     }
 
+    if (userParts.length > 0) {
+      contents.push({ role: 'user', parts: userParts });
+    } else if (contents.length === 0) {
+      contents.push({ role: 'user', parts: [{ text: "Hello" }] }); // fallback
+    }
+
     const payload = {
       system_instruction: { parts: [{ text: systemInstruction }] },
-      contents: [
-        {
-          role: "user",
-          parts: userParts
-        }
-      ],
+      contents: contents,
       tools: [
         {
           function_declarations: [
