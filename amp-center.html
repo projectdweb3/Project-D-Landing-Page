@@ -23,6 +23,8 @@
           animation: {
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'flow-beam': 'flowBeam 2s linear infinite',
+            'sweep-beam': 'sweepBeam 2s ease-in-out infinite'
           },
           keyframes: {
             blob: {
@@ -30,6 +32,14 @@
               '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
               '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
               '100%': { transform: 'translate(0px, 0px) scale(1)' },
+            },
+            flowBeam: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(200%)' }
+            },
+            sweepBeam: {
+              '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
+              '100%': { transform: 'translateX(200%) skewX(-15deg)' }
             }
           }
         }
@@ -543,6 +553,10 @@
         }
       };
 
+      const cmoTask = activeTasks?.find(t => t.agent === 'CMO' && t.status !== 'done');
+      const creativeTask = activeTasks?.find(t => t.agent === 'Creative' && t.status !== 'done');
+      const ctoTask = activeTasks?.find(t => t.agent === 'CTO' && t.status !== 'done');
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col overflow-y-auto">
           <div className="mb-6 md:mb-8 flex justify-between items-start">
@@ -560,57 +574,95 @@
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Name</label>
-                  <input type="text" value={profile.company_name} onChange={e => setProfile({...profile, company_name: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
+                  <input type="text" value={profile.company_name} onChange={e => setProfile({...profile, company_name: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Stage</label>
-                  <select value={profile.stage} onChange={e => setProfile({...profile, stage: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal">
+                  <select value={profile.stage} onChange={e => setProfile({...profile, stage: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors">
                     {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Bio</label>
-                  <textarea value={profile.bio} onChange={e => setProfile({...profile, bio: e.target.value})} rows="4" className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal"></textarea>
+                  <textarea value={profile.bio} onChange={e => setProfile({...profile, bio: e.target.value})} rows="4" className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors"></textarea>
                 </div>
-                <button onClick={handleSave} disabled={loading} className="w-full py-2 bg-pd-teal hover:bg-teal-500 text-[#0b0f19] rounded-xl text-sm font-bold transition-colors">
+                <button onClick={handleSave} disabled={loading} className="w-full py-2.5 bg-pd-teal hover:bg-[#00d6cf] text-[#0b0f19] rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:shadow-[0_0_25px_rgba(0,242,234,0.5)] transition-all">
                   {loading ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </div>
 
             {/* Agent Workforce Tree */}
-            <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 flex flex-col">
-              <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:network-linear" className="text-pd-teal"></iconify-icon> Agent Workforce</h3>
-              <div className="flex-1 flex flex-col items-center justify-center relative mt-8">
+            <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto">
+              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:network-linear" className="text-pd-teal"></iconify-icon> Active Workforce</h3>
+              <div className="flex-1 flex flex-col items-center justify-center relative min-w-[600px] pb-4">
                 
                 {/* CEO */}
-                <div className="relative z-10 bg-[#0b0f19] border border-pd-orange shadow-[0_0_15px_rgba(255,95,0,0.3)] rounded-xl p-3 flex flex-col items-center w-32 mb-8">
-                   <iconify-icon icon="solar:crown-minimalistic-bold" className="text-pd-orange text-2xl mb-1"></iconify-icon>
-                   <span className="text-xs font-bold text-white">CEO Agent</span>
-                   <span className="text-[9px] text-gray-400 text-center mt-1">Orchestrating</span>
-                </div>
-
-                {/* Connecting Lines */}
-                <div className="absolute top-[3.5rem] w-full max-w-[200px] h-8 border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-white/10 rounded-t-xl z-0"></div>
-                <div className="absolute top-[3.5rem] h-8 border-l-2 border-gray-300 dark:border-white/10 z-0"></div>
-
-                {/* Sub Agents */}
-                <div className="flex justify-between w-full max-w-[280px] z-10 relative">
-                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm">
-                    <iconify-icon icon="solar:global-linear" className="text-pd-teal text-xl mb-1"></iconify-icon>
-                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">CMO</span>
-                    <span className="text-[8px] text-gray-500 text-center mt-1">Marketing</span>
+                <div className="flex flex-col items-center w-full relative">
+                  <div className="amp-card p-4 flex items-center gap-4 w-64 justify-center z-10 border-pd-orange/20 shadow-[0_0_15px_rgba(255,95,0,0.1)] bg-white/80 dark:bg-[#0b0f19]">
+                    <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center">
+                      <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange"></iconify-icon>
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">CEO</div>
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                        {(cmoTask || creativeTask || ctoTask) ? <><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Orchestrating</> : 'Idle'}
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <iconify-icon icon="solar:palette-linear" className="text-pd-orange text-xl mb-1"></iconify-icon>
-                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">Creative</span>
-                    <span className="text-[8px] text-gray-500 text-center mt-1">Generating...</span>
+                  
+                  {/* Tree Lines */}
+                  <div className="tree-line-v h-8 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+                  <div className="tree-line-h w-full max-w-[480px] relative">
+                    <div className="absolute top-0 left-0 w-[1px] h-6 bg-gray-200 dark:bg-white/10"></div>
+                    <div className="absolute top-0 right-0 w-[1px] h-6 bg-gray-200 dark:bg-white/10"></div>
+                    <div className="absolute top-0 left-1/2 w-[1px] h-6 bg-gray-200 dark:bg-white/10 -ml-[0.5px]"></div>
+                    <div className="h-[1px] w-full bg-gray-200 dark:bg-white/10"></div>
                   </div>
-                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm">
-                    <iconify-icon icon="solar:settings-linear" className="text-gray-400 text-xl mb-1"></iconify-icon>
-                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">CTO</span>
-                    <span className="text-[8px] text-gray-500 text-center mt-1">Idle</span>
+                  <div className="h-6"></div>
+
+                  {/* Sub Agents */}
+                  <div className="flex flex-row w-full max-w-[540px] justify-between gap-4 relative z-10">
+                    
+                    {/* CMO */}
+                    <div className={`amp-card p-4 flex flex-col items-center gap-2 w-40 text-center ${cmoTask ? 'border-pd-teal/50 shadow-[0_0_15px_rgba(0,242,234,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
+                      <div className={`w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center ${cmoTask ? 'text-pd-teal' : 'text-gray-400'}`}>
+                        <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">CMO Agent</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                          {cmoTask ? <><span className="w-1.5 h-1.5 rounded-full bg-pd-teal animate-pulse"></span> Working</> : 'Idle'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTO */}
+                    <div className={`amp-card p-4 flex flex-col items-center gap-2 w-40 text-center ${ctoTask ? 'border-gray-400/50 shadow-[0_0_15px_rgba(156,163,175,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
+                      <div className={`w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center ${ctoTask ? 'text-gray-500 dark:text-gray-300' : 'text-gray-400'}`}>
+                        <iconify-icon icon="solar:settings-linear" width="16"></iconify-icon>
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">CTO Agent</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                          {ctoTask ? <><span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"></span> Coding</> : 'Idle'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Creative */}
+                    <div className={`amp-card p-4 flex flex-col items-center gap-2 w-40 text-center ${creativeTask ? 'border-pd-orange/50 shadow-[0_0_15px_rgba(255,95,0,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
+                      <div className={`w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center ${creativeTask ? 'text-pd-orange' : 'text-gray-400'}`}>
+                        <iconify-icon icon="solar:palette-linear" width="16"></iconify-icon>
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">Creative Agent</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                          {creativeTask ? <><span className="w-1.5 h-1.5 rounded-full bg-pd-orange animate-pulse"></span> Designing</> : 'Idle'}
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
                 
@@ -627,14 +679,18 @@
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
       const [activeTasks, setActiveTasks] = useState([]);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
+      const [showSettingsBeam, setShowSettingsBeam] = useState(false);
 
       const checkProfile = async () => {
         if (!supabaseClient || !session?.user?.id) return;
         const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
         if (!data || !data.company_name || !data.stage) {
           setNeedsProfileSetup(true);
+          setShowSettingsBeam(true);
+          setTimeout(() => setShowSettingsBeam(false), 8000);
         } else {
           setNeedsProfileSetup(false);
+          setShowSettingsBeam(false);
         }
       };
 
@@ -695,10 +751,15 @@
             <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
               {navItems.map(item => (
                 <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
-                  {item.id === 'settings' && needsProfileSetup && (
-                    <span className="absolute inset-0 border-2 border-pd-orange rounded-xl opacity-75 animate-pulse shadow-[0_0_15px_rgba(255,95,0,0.5)]"></span>
+                  {item.id === 'settings' && showSettingsBeam && (
+                    <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none ring-2 ring-pd-orange/50 shadow-[0_0_20px_rgba(255,95,0,0.3)] transition-all">
+                      <div className="absolute inset-0 bg-pd-orange/20 w-[150%] h-[150%] skew-x-12 animate-flow-beam blur-[8px]"></div>
+                    </div>
                   )}
-                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : (item.id === 'settings' && needsProfileSetup ? 'text-pd-orange' : '')}></iconify-icon>
+                  {item.id === 'settings' && needsProfileSetup && !showSettingsBeam && (
+                    <span className="absolute inset-0 border border-pd-orange rounded-xl opacity-50 animate-pulse"></span>
+                  )}
+                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : (item.id === 'settings' && needsProfileSetup ? 'text-pd-orange relative z-10' : 'relative z-10')}></iconify-icon>
                   <span className="relative z-10">{item.label}</span>
                 </button>
               ))}
@@ -728,7 +789,7 @@
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} />}
           </main>
 
           {/* Desktop Expand Tab */}
