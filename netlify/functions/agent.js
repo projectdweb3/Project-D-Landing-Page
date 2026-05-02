@@ -42,7 +42,7 @@ RULES OF ENGAGEMENT:
 7. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
 8. Be authoritative, strategic, and highly efficient. Do not hallucinate actions—if you say you are performing an action, you MUST trigger the corresponding tool.`;
 
-    const modelId = "gemini-1.5-flash";
+    const modelId = "gemini-3.0-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
 
     const payload = {
@@ -167,6 +167,16 @@ RULES OF ENGAGEMENT:
 
     if (!apiRes.ok) {
       const errorText = await apiRes.text();
+      if (apiRes.status === 404) {
+        try {
+          const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+          const modelsData = await modelsRes.json();
+          const availableModels = modelsData.models ? modelsData.models.map(m => m.name).join(', ') : 'None found';
+          throw new Error(`Gemini API Error: 404 Not Found. Model ${modelId} is invalid. Available models on your API key: ${availableModels}`);
+        } catch (listErr) {
+          throw new Error(`Gemini API Error: 404 Not Found. Also failed to list models: ${listErr.message}`);
+        }
+      }
       throw new Error(`Gemini API Error: ${apiRes.status} ${errorText}`);
     }
 
