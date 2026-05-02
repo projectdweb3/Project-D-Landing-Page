@@ -520,6 +520,27 @@
 
     const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile }) => {
       const [loading, setLoading] = useState(false);
+      const [showResetModal, setShowResetModal] = useState(false);
+      const [confirmText, setConfirmText] = useState('');
+
+      const handleReset = async () => {
+        if (confirmText.toLowerCase() !== 'confirm') return;
+        setLoading(true);
+        try {
+          const keys = ['amp_business_profile', 'amp_chat_history', 'amp_finances'];
+          keys.forEach(k => localStorage.removeItem(k));
+          
+          if (supabaseClient && session?.user?.id) {
+            const tables = ['business_profile', 'tasks', 'leads', 'clients', 'inventory', 'campaigns', 'calendar_events', 'finances'];
+            for (const table of tables) {
+              await supabaseClient.from(table).delete().eq('user_id', session.user.id);
+            }
+          }
+        } catch (e) {
+          console.error("Reset failed", e);
+        }
+        window.location.reload();
+      };
 
       const handleSave = async () => {
         setLoading(true);
@@ -682,7 +703,40 @@
                 
               </div>
             </div>
+
+            {/* Danger Zone */}
+            <div className="mt-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
+              <h3 className="text-sm font-semibold text-red-500 mb-2">Danger Zone</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
+              <button onClick={() => setShowResetModal(true)} className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-semibold shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all">Reboot Experience</button>
+            </div>
+
           </div>
+
+          {showResetModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 mb-4 mx-auto">
+                  <iconify-icon icon="solar:danger-triangle-bold" width="24"></iconify-icon>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white text-center mb-2">Wipe All Data?</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This will permanently delete your settings, AI chat logs, clients, and inventory. To proceed, type <strong>Confirm</strong> below.</p>
+                <input 
+                  type="text" 
+                  value={confirmText}
+                  onChange={e => setConfirmText(e.target.value)}
+                  placeholder="Type Confirm"
+                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-center mb-6 focus:border-red-500 outline-none text-gray-900 dark:text-white"
+                />
+                <div className="flex gap-3">
+                  <button onClick={() => { setShowResetModal(false); setConfirmText(''); }} className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                  <button onClick={handleReset} disabled={confirmText.toLowerCase() !== 'confirm'} className="flex-1 px-4 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    {loading ? 'Rebooting...' : 'Reset Now'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -716,7 +770,7 @@
       const triggerFinancePrompt = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'user', text: "Log an expense of $...", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          setTriggerPrompt({ sender: 'user', text: "Log an expense of $... for...", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         }, 300);
       };
 
@@ -959,6 +1013,7 @@
             {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
+            {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
@@ -1621,7 +1676,7 @@
           setClients(data);
           let total = 0;
           data.forEach(c => {
-            const valStr = isEcomm ? (c.ltv || '0') : (c.retainer || '0');
+            const valStr = String(isEcomm ? (c.ltv || '0') : (c.retainer || '0'));
             const val = parseFloat(valStr.replace(/[^0-9.]/g, '')) || 0;
             total += val;
           });
@@ -1643,7 +1698,10 @@
         }
         try {
           const local = localStorage.getItem('amp_finances');
-          if (local) setTransactions(JSON.parse(local));
+          if (local) {
+            const parsed = JSON.parse(local);
+            if (Array.isArray(parsed)) setTransactions(parsed);
+          }
         } catch (e) {}
       };
 

@@ -68,7 +68,8 @@ RULES OF ENGAGEMENT:
 9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to move or update a lead, use 'update_lead' to change their stage.
 10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
 11. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
-12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
+12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.
+13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
