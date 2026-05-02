@@ -1031,14 +1031,30 @@
     };
 
     const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setIsProcessing }) => {
-      const [messages, setMessages] = useState([
-        { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
-      ]);
+      const [messages, setMessages] = useState(() => {
+        try {
+          const saved = localStorage.getItem('amp_chat_history');
+          if (saved) return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to load chat history", e);
+        }
+        return [
+          { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
+        ];
+      });
       const [input, setInput] = useState('');
       const [isTyping, setIsTyping] = useState(false);
       const [attachment, setAttachment] = useState(null);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem('amp_chat_history', JSON.stringify(messages));
+        } catch (e) {
+          console.error("Failed to save chat history", e);
+        }
+      }, [messages]);
 
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
@@ -1048,9 +1064,69 @@
         }
       }, [needsProfileSetup]);
 
+      const sendMessage = (msgText, msgAttachment) => {
+        if (!msgText && !msgAttachment) return;
+        
+        if (needsProfileSetup) {
+          setMessages(prev => [...prev, 
+            { sender: 'user', text: msgText, attachment: msgAttachment ? msgAttachment.preview : null, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+            { sender: 'ceo', text: "I cannot execute tasks until your Business Profile is configured. Please complete your settings first.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+          ]);
+          return;
+        }
+        
+        setMessages(prev => [...prev, { 
+          sender: 'user', 
+          text: msgText, 
+          attachment: msgAttachment ? msgAttachment.preview : null,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        }]);
+        
+        setIsTyping(true);
+        if (setIsProcessing) setIsProcessing(true);
+
+        fetch('/.netlify/functions/agent', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            message: msgText, 
+            userId: session?.user?.id,
+            userProfile: userProfile,
+            attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null,
+            history: messages.map(m => ({ sender: m.sender, text: m.text }))
+          })
+        })
+          .then(res => res.json().then(data => ({ status: res.status, data })))
+          .then(({ status, data }) => {
+            if (depleteBudget) depleteBudget('CEO', 0.5);
+            if (status >= 400 || data.error) {
+              setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            } else {
+              setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            }
+            setIsTyping(false);
+            if (setIsProcessing) setIsProcessing(false);
+          })
+          .catch(err => {
+            console.error(err);
+            setMessages(prev => [...prev, { sender: 'ceo', text: "[ERROR] Backend disconnected or API Key missing. Simulation mode active.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            setIsTyping(false);
+            if (setIsProcessing) setIsProcessing(false);
+          });
+      };
+
+      const handleSend = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        if (!input.trim() && !attachment) return;
+        const textToSend = input.trim();
+        const attachmentToSend = attachment;
+        setInput('');
+        setAttachment(null);
+        sendMessage(textToSend, attachmentToSend);
+      };
+
       useEffect(() => {
         if (triggerPrompt) {
-          setMessages(prev => [...prev, triggerPrompt]);
+          sendMessage(triggerPrompt.text, null);
           setTriggerPrompt(null);
         }
       }, [triggerPrompt]);
@@ -1072,64 +1148,6 @@
         }
       };
 
-      const handleSend = (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        if (!input.trim() && !attachment) return;
-        
-        const msg = input.trim();
-        const currentAttachment = attachment;
-
-        if (needsProfileSetup) {
-          setMessages(prev => [...prev, 
-            { sender: 'user', text: msg, attachment: currentAttachment ? currentAttachment.preview : null, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
-            { sender: 'ceo', text: "I cannot execute tasks until your Business Profile is configured. Please complete your settings first.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
-          ]);
-          setInput('');
-          setAttachment(null);
-          return;
-        }
-        
-        setMessages(prev => [...prev, { 
-          sender: 'user', 
-          text: msg, 
-          attachment: currentAttachment ? currentAttachment.preview : null,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-        }]);
-        
-        setInput('');
-        setAttachment(null);
-        setIsTyping(true);
-        if (setIsProcessing) setIsProcessing(true);
-
-        fetch('/.netlify/functions/agent', {
-          method: 'POST',
-          body: JSON.stringify({ 
-            message: msg, 
-            userId: session?.user?.id,
-            userProfile: userProfile,
-            attachment: currentAttachment ? { data: currentAttachment.data, mimeType: currentAttachment.mimeType } : null,
-            history: messages.map(m => ({ sender: m.sender, text: m.text }))
-          })
-        })
-          .then(res => res.json().then(data => ({ status: res.status, data })))
-          .then(({ status, data }) => {
-            if (depleteBudget) depleteBudget('CEO', 0.5); // Deplete 0.5% per chat turn
-            if (status >= 400 || data.error) {
-              setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-            } else {
-              setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-            }
-            setIsTyping(false);
-            if (setIsProcessing) setIsProcessing(false);
-          })
-          .catch(err => {
-            console.error(err);
-            setMessages(prev => [...prev, { sender: 'ceo', text: "[ERROR] Backend disconnected or API Key missing. Simulation mode active.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-            setIsTyping(false);
-            if (setIsProcessing) setIsProcessing(false);
-          });
-      };
-
       return (
         <div className="flex flex-col h-full w-full">
           <div className="p-4 md:p-6 border-b border-gray-200 dark:border-pd-glassBorder flex items-center gap-4 bg-white/50 dark:bg-white/5">
@@ -1144,7 +1162,7 @@
           <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6">
             {messages.map((m, i) => (
               m.sender === 'user' ? (
-                <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm">
+                <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm break-all">
                   {m.attachment && (
                     <img src={m.attachment} alt="Attachment preview" className="max-w-full rounded-lg mb-2 border border-pd-teal/30" />
                   )}
@@ -1152,7 +1170,7 @@
                   <div className="text-[9px] text-gray-500 dark:text-gray-400 text-right mt-2">{m.time}</div>
                 </div>
               ) : (
-                <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative">
+                <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative break-all">
                   <div className="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange">
                     <iconify-icon icon="solar:crown-minimalistic-bold" width="12"></iconify-icon>
                   </div>
