@@ -461,17 +461,22 @@
           setInput('');
           setIsTyping(true);
 
-          setTimeout(() => {
-            let reply = "Understood. I've initiated the relevant workflows. The team has been pinged.";
-            let lmsg = msg.toLowerCase();
-            if (lmsg.includes('marketing') || lmsg.includes('campaign')) reply = "I've delegated the campaign strategy to the CMO Agent and moved the structural tasks into the Marketing Pipeline.";
-            else if (lmsg.includes('lead') || lmsg.includes('prospect')) reply = "Initiating outbound sequences. I'll have the CMO Agent report back in the Lead Pipeline shortly.";
-            else if (lmsg.includes('content') || lmsg.includes('graphic') || lmsg.includes('logo')) reply = "Sending prompt parameters to the Content Factory. The Creative Agent will begin 'vibe coding' the assets.";
-            else if (lmsg.includes('client')) reply = "Pulling the latest metrics into the Client Ledger. The Support Agent is on standby if intervention is needed.";
-
-            setMessages(prev => [...prev, { sender: 'ceo', text: reply, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+          const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          
+          fetch('/.netlify/functions/agent', {
+            method: 'POST',
+            body: JSON.stringify({ message: msg })
+          })
+          .then(res => res.json())
+          .then(data => {
+            setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
             setIsTyping(false);
-          }, 1500);
+          })
+          .catch(err => {
+            console.error(err);
+            setMessages(prev => [...prev, { sender: 'ceo', text: "[ERROR] Backend disconnected or API Key missing. Simulation mode active.", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+            setIsTyping(false);
+          });
         };
 
         return (
