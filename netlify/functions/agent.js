@@ -220,7 +220,7 @@ RULES OF ENGAGEMENT:
     console.error("Function Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Backend initialization error. Ensure API keys are set." }),
+      body: JSON.stringify({ error: `Backend Error: ${error.message}` }),
     };
   }
 };
