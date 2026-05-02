@@ -508,11 +508,135 @@
       );
     };
 
+    const SettingsMenu = ({ session, onSaveComplete }) => {
+      const [profile, setProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
+      const [loading, setLoading] = useState(false);
+
+      useEffect(() => {
+        if (supabaseClient && session?.user?.id) {
+          supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single()
+            .then(({ data }) => {
+              if (data) setProfile({ company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' });
+            });
+        }
+      }, [session]);
+
+      const handleSave = async () => {
+        setLoading(true);
+        if (supabaseClient && session?.user?.id) {
+          await supabaseClient.from('business_profile').upsert({
+            user_id: session.user.id,
+            company_name: profile.company_name,
+            bio: profile.bio,
+            stage: profile.stage,
+            updated_at: new Date()
+          });
+          if (onSaveComplete) onSaveComplete();
+        }
+        setLoading(false);
+      };
+
+      const handleLogout = async () => {
+        if (supabaseClient) {
+          await supabaseClient.auth.signOut();
+          window.location.reload();
+        }
+      };
+
+      return (
+        <div className="p-4 md:p-8 h-full flex flex-col overflow-y-auto">
+          <div className="mb-6 md:mb-8 flex justify-between items-start">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">System Settings</h2>
+              <p className="text-xs text-gray-500">Configure your business profile and manage your AI workforce.</p>
+            </div>
+            <button onClick={handleLogout} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-xl text-xs font-semibold transition-all">Log Out</button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Profile Settings */}
+            <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6">
+              <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Business Profile</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Business Name</label>
+                  <input type="text" value={profile.company_name} onChange={e => setProfile({...profile, company_name: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Business Stage</label>
+                  <select value={profile.stage} onChange={e => setProfile({...profile, stage: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal">
+                    {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food'].map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Business Bio</label>
+                  <textarea value={profile.bio} onChange={e => setProfile({...profile, bio: e.target.value})} rows="4" className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal"></textarea>
+                </div>
+                <button onClick={handleSave} disabled={loading} className="w-full py-2 bg-pd-teal hover:bg-teal-500 text-[#0b0f19] rounded-xl text-sm font-bold transition-colors">
+                  {loading ? 'Saving...' : 'Save Profile'}
+                </button>
+              </div>
+            </div>
+
+            {/* Agent Workforce Tree */}
+            <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 flex flex-col">
+              <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:network-linear" className="text-pd-teal"></iconify-icon> Agent Workforce</h3>
+              <div className="flex-1 flex flex-col items-center justify-center relative mt-8">
+                
+                {/* CEO */}
+                <div className="relative z-10 bg-[#0b0f19] border border-pd-orange shadow-[0_0_15px_rgba(255,95,0,0.3)] rounded-xl p-3 flex flex-col items-center w-32 mb-8">
+                   <iconify-icon icon="solar:crown-minimalistic-bold" className="text-pd-orange text-2xl mb-1"></iconify-icon>
+                   <span className="text-xs font-bold text-white">CEO Agent</span>
+                   <span className="text-[9px] text-gray-400 text-center mt-1">Orchestrating</span>
+                </div>
+
+                {/* Connecting Lines */}
+                <div className="absolute top-[3.5rem] w-full max-w-[200px] h-8 border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-white/10 rounded-t-xl z-0"></div>
+                <div className="absolute top-[3.5rem] h-8 border-l-2 border-gray-300 dark:border-white/10 z-0"></div>
+
+                {/* Sub Agents */}
+                <div className="flex justify-between w-full max-w-[280px] z-10 relative">
+                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm">
+                    <iconify-icon icon="solar:global-linear" className="text-pd-teal text-xl mb-1"></iconify-icon>
+                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">CMO</span>
+                    <span className="text-[8px] text-gray-500 text-center mt-1">Marketing</span>
+                  </div>
+                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <iconify-icon icon="solar:palette-linear" className="text-pd-orange text-xl mb-1"></iconify-icon>
+                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">Creative</span>
+                    <span className="text-[8px] text-gray-500 text-center mt-1">Generating...</span>
+                  </div>
+                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center w-24 shadow-sm">
+                    <iconify-icon icon="solar:settings-linear" className="text-gray-400 text-xl mb-1"></iconify-icon>
+                    <span className="text-[10px] font-bold text-gray-900 dark:text-white">CTO</span>
+                    <span className="text-[8px] text-gray-500 text-center mt-1">Idle</span>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     const CommandCenter = ({ session }) => {
       const [activeModule, setActiveModule] = useState('neural-chat');
       const [isStatsOpen, setIsStatsOpen] = useState(false);
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
       const [activeTasks, setActiveTasks] = useState([]);
+      const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
+
+      const checkProfile = async () => {
+        if (!supabaseClient || !session?.user?.id) return;
+        const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
+        if (!data || !data.company_name || !data.stage) {
+          setNeedsProfileSetup(true);
+        } else {
+          setNeedsProfileSetup(false);
+        }
+      };
 
       const fetchTasks = async () => {
         if (!supabaseClient) return;
@@ -522,13 +646,14 @@
 
       useEffect(() => {
         fetchTasks();
+        checkProfile();
         if (supabaseClient) {
           const channel = supabaseClient.channel('realtime:tasks')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, fetchTasks)
             .subscribe();
           return () => { supabaseClient.removeChannel(channel); };
         }
-      }, []);
+      }, [session]);
 
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
@@ -537,6 +662,7 @@
         { id: 'marketing-pipeline', icon: 'solar:chart-square-linear', label: 'Marketing Pipeline', mobileLabel: 'Marketing' },
         { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
         { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
+        { id: 'settings', icon: 'solar:settings-linear', label: 'Settings', mobileLabel: 'Settings' }
       ];
 
       return (
@@ -568,9 +694,12 @@
             </div>
             <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
               {navItems.map(item => (
-                <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
-                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : ''}></iconify-icon>
-                  {item.label}
+                <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
+                  {item.id === 'settings' && needsProfileSetup && (
+                    <span className="absolute inset-0 border-2 border-pd-orange rounded-xl opacity-75 animate-pulse shadow-[0_0_15px_rgba(255,95,0,0.5)]"></span>
+                  )}
+                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : (item.id === 'settings' && needsProfileSetup ? 'text-pd-orange' : '')}></iconify-icon>
+                  <span className="relative z-10">{item.label}</span>
                 </button>
               ))}
             </nav>
@@ -593,12 +722,13 @@
           </nav>
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
-            {activeModule === 'neural-chat' && <NeuralChat session={session} />}
+            {activeModule === 'neural-chat' && <NeuralChat session={session} needsProfileSetup={needsProfileSetup} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline />}
             {activeModule === 'client-ledger' && <ClientLedger />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -674,7 +804,7 @@
       );
     };
 
-    const NeuralChat = ({ session }) => {
+    const NeuralChat = ({ session, needsProfileSetup }) => {
       const [messages, setMessages] = useState([
         { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
       ]);
@@ -683,6 +813,14 @@
       const [attachment, setAttachment] = useState(null);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
+
+      useEffect(() => {
+        if (needsProfileSetup && messages.length === 1) {
+          setMessages([
+            { sender: 'ceo', text: "Systems online. However, before I can assemble your workforce, I need to understand your kingdom. Please click the glowing Settings button on the left to complete your Business Profile.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+          ]);
+        }
+      }, [needsProfileSetup]);
 
       useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
@@ -1163,9 +1301,11 @@
         if (supabaseClient) {
           supabaseClient.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
+            if (session) setCurrentScreen('dashboard');
           });
           supabaseClient.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+            if (session) setCurrentScreen('dashboard');
           });
         }
       }, []);
