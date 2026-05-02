@@ -713,6 +713,13 @@
         }, 300);
       };
 
+      const triggerFinancePrompt = () => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          setTriggerPrompt({ sender: 'user', text: "Log an expense of $...", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+        }, 300);
+      };
+
       const triggerCampaignPrompt = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
@@ -885,6 +892,7 @@
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: isEcomm ? 'Sales Pipeline' : 'Lead Pipeline', mobileLabel: isEcomm ? 'Sales' : 'Leads' },
         { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: isEcomm ? 'Customer Ledger' : 'Client Ledger', mobileLabel: isEcomm ? 'Customers' : 'Clients' },
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
+        { id: 'financial-tracker', icon: 'solar:wallet-money-linear', label: 'Financial Tracker', mobileLabel: 'Finances' },
         { id: 'marketing-pipeline', icon: 'solar:chart-square-linear', label: 'Marketing Pipeline', mobileLabel: 'Marketing' },
         { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
         { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
@@ -1593,6 +1601,169 @@
               </div>
             </div>
           )}
+        </div>
+      );
+    };
+
+    const FinanceTracker = ({ session, userProfile, onLogExpense }) => {
+      const [clients, setClients] = useState([]);
+      const [transactions, setTransactions] = useState([]);
+      const [autoIncome, setAutoIncome] = useState(0);
+      const [showManualAdd, setShowManualAdd] = useState(false);
+      const [newTx, setNewTx] = useState({ type: 'Expense', amount: '', description: '' });
+
+      const isEcomm = userProfile?.stage === 'Ecomm';
+
+      const fetchClients = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('clients').select('*');
+        if (data) {
+          setClients(data);
+          let total = 0;
+          data.forEach(c => {
+            const valStr = isEcomm ? (c.ltv || '0') : (c.retainer || '0');
+            const val = parseFloat(valStr.replace(/[^0-9.]/g, '')) || 0;
+            total += val;
+          });
+          setAutoIncome(total);
+        }
+      };
+
+      const fetchFinances = async () => {
+        if (supabaseClient && session?.user?.id) {
+          try {
+            const { data, error } = await supabaseClient.from('finances').select('*').order('created_at', { ascending: false });
+            if (!error && data) {
+              setTransactions(data);
+              return;
+            }
+          } catch (e) {
+             console.warn("Finances table likely missing.");
+          }
+        }
+        try {
+          const local = localStorage.getItem('amp_finances');
+          if (local) setTransactions(JSON.parse(local));
+        } catch (e) {}
+      };
+
+      useEffect(() => {
+        fetchClients();
+        fetchFinances();
+      }, [userProfile]);
+
+      const handleAddTx = async () => {
+        if (!newTx.amount || !newTx.description) return;
+        const amountNum = parseFloat(newTx.amount.replace(/[^0-9.]/g, ''));
+        const payload = {
+          user_id: session?.user?.id || 'local',
+          type: newTx.type,
+          amount: amountNum,
+          description: newTx.description,
+          created_at: new Date().toISOString()
+        };
+
+        if (supabaseClient && session?.user?.id) {
+          try {
+            await supabaseClient.from('finances').insert([payload]);
+          } catch(e) {}
+        }
+        
+        const newTxs = [payload, ...transactions];
+        setTransactions(newTxs);
+        localStorage.setItem('amp_finances', JSON.stringify(newTxs));
+        
+        setNewTx({ type: 'Expense', amount: '', description: '' });
+        setShowManualAdd(false);
+      };
+
+      const manualIncome = transactions.filter(t => t.type === 'Income').reduce((acc, t) => acc + t.amount, 0);
+      const manualExpenses = transactions.filter(t => t.type === 'Expense').reduce((acc, t) => acc + t.amount, 0);
+      
+      const totalIncome = autoIncome + manualIncome;
+      const netProfit = totalIncome - manualExpenses;
+
+      return (
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="p-4 md:p-8 flex-shrink-0 flex justify-between items-start border-b border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-white/5">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Financial Tracker</h2>
+              <p className="text-xs text-gray-500">Autonomous revenue tracking & expense logging.</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={onLogExpense} className="amp-button px-4 py-2 text-xs font-semibold shadow-[0_0_15px_rgba(255,95,0,0.1)]">
+                <iconify-icon icon="solar:command-linear"></iconify-icon> Ask CEO to Log
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm">
+                <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Revenue <iconify-icon icon="solar:wallet-money-bold" className="text-green-500"></iconify-icon></div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">${totalIncome.toLocaleString()}</div>
+                <div className="text-[10px] text-gray-400 mt-2">Autonomous: ${autoIncome.toLocaleString()} {isEcomm ? '(LTV)' : '(Retainers)'}</div>
+              </div>
+              <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm">
+                <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Expenses <iconify-icon icon="solar:card-send-bold" className="text-red-500"></iconify-icon></div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">${manualExpenses.toLocaleString()}</div>
+                <div className="text-[10px] text-gray-400 mt-2">Logged manually or by CEO</div>
+              </div>
+              <div className={`border rounded-2xl p-5 shadow-sm ${netProfit >= 0 ? 'bg-pd-teal/10 border-pd-teal/30' : 'bg-red-500/10 border-red-500/30'}`}>
+                <div className="text-gray-500 dark:text-gray-400 text-xs mb-1 flex justify-between">Net Profit <iconify-icon icon="solar:chart-square-bold" className={netProfit >= 0 ? "text-pd-teal" : "text-red-500"}></iconify-icon></div>
+                <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-pd-teal' : 'text-red-500'}`}>${netProfit.toLocaleString()}</div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">All-time tracked</div>
+              </div>
+            </div>
+
+            <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Transaction Ledger</h3>
+                <button onClick={() => setShowManualAdd(!showManualAdd)} className="text-xs bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors text-gray-700 dark:text-gray-300">
+                  {showManualAdd ? 'Cancel' : '+ Manual Entry'}
+                </button>
+              </div>
+
+              {showManualAdd && (
+                <div className="flex flex-col md:flex-row gap-3 mb-6 p-4 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-pd-glassBorder">
+                  <select value={newTx.type} onChange={e => setNewTx({...newTx, type: e.target.value})} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none appearance-none">
+                    <option value="Expense">Expense</option>
+                    <option value="Income">Income</option>
+                  </select>
+                  <input type="text" placeholder="Amount (e.g. 50.00)" value={newTx.amount} onChange={e => setNewTx({...newTx, amount: e.target.value})} className="flex-1 bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
+                  <input type="text" placeholder="Description (e.g. Software Sub)" value={newTx.description} onChange={e => setNewTx({...newTx, description: e.target.value})} className="flex-[2] bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
+                  <button onClick={handleAddTx} className="bg-pd-teal hover:bg-pd-teal/80 text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-[0_0_15px_rgba(0,242,234,0.3)]">Save</button>
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[500px]">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-pd-glassBorder text-xs text-gray-500 uppercase tracking-wider">
+                      <th className="pb-3 font-medium">Date</th>
+                      <th className="pb-3 font-medium">Description</th>
+                      <th className="pb-3 font-medium">Type</th>
+                      <th className="pb-3 font-medium text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.length === 0 ? (
+                      <tr><td colSpan="4" className="py-8 text-center text-xs text-gray-500 italic">No manual transactions logged yet.</td></tr>
+                    ) : transactions.map((t, i) => (
+                      <tr key={i} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <td className="py-3 text-sm text-gray-500">{new Date(t.created_at).toLocaleDateString()}</td>
+                        <td className="py-3 text-sm text-gray-900 dark:text-white">{t.description}</td>
+                        <td className="py-3 text-sm"><span className={`px-2 py-0.5 rounded text-[10px] ${t.type === 'Income' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{t.type}</span></td>
+                        <td className={`py-3 text-sm text-right font-medium ${t.type === 'Income' ? 'text-green-500' : 'text-gray-900 dark:text-white'}`}>
+                          {t.type === 'Income' ? '+' : '-'}${t.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       );
     };
