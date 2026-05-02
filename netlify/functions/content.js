@@ -6,57 +6,26 @@ exports.handler = async function (event, context) {
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY environment variable is missing.");
-    }
-
     const body = JSON.parse(event.body);
-    const { prompt, aspectRatio, referenceImages, userId } = body;
+    const { prompt, aspectRatio } = body;
     
-    // Default aspect ratio if not provided
-    const selectedRatio = aspectRatio || "1:1";
-
-    const modelId = "imagen-3.0-generate-001";
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
-
-    const payload = {
-      instances: [
-        {
-          prompt: prompt
-        }
-      ],
-      parameters: {
-        sampleCount: 1,
-        aspectRatio: selectedRatio
-      }
-    };
-
-    const apiRes = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!apiRes.ok) {
-      const errorText = await apiRes.text();
-      throw new Error(`Gemini Image API Error: ${apiRes.status} ${errorText}`);
-    }
-
-    const data = await apiRes.json();
+    let width = 1024;
+    let height = 1024;
     
-    if (!data.predictions || data.predictions.length === 0) {
-      throw new Error("No image generated from Gemini API");
-    }
-
-    const base64Image = data.predictions[0].bytesBase64Encoded;
-    const mimeType = data.predictions[0].mimeType;
-    const dataUrl = `data:${mimeType};base64,${base64Image}`;
+    if (aspectRatio === '16:9') { width = 1024; height = 576; }
+    else if (aspectRatio === '9:16') { width = 576; height = 1024; }
+    else if (aspectRatio === '4:3') { width = 1024; height = 768; }
+    else if (aspectRatio === '3:4') { width = 768; height = 1024; }
+    
+    // Add random seed to bypass cache and force a new generation every time
+    const seed = Math.floor(Math.random() * 10000000);
+    const safePrompt = encodeURIComponent(prompt || "abstract brand concept");
+    const imageUrl = `https://image.pollinations.ai/prompt/${safePrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        content: dataUrl
+        content: imageUrl
       }),
     };
 

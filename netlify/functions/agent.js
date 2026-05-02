@@ -35,6 +35,9 @@ exports.handler = async function (event, context) {
     
     if (userProfile && userProfile.company_name) {
       businessContext = `Company Name: ${userProfile.company_name || 'Unknown'} | Stage: ${userProfile.stage || 'Unknown'} | Bio: ${userProfile.bio || 'None'}.`;
+      if (userProfile.stage === 'Ecomm' && userProfile.store_link) {
+        businessContext += `\nStore Link: ${userProfile.store_link}. You have access to view their store and can sync inventory or read their products.`;
+      }
     } else if (supabase) {
       try {
         const { data: profile } = await supabase.from('business_profile').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
@@ -227,6 +230,20 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["prompt"]
               }
+            },
+            {
+              name: "add_inventory_item",
+              description: "Adds an item to the Inventory Tracker (Ecomm only). You can use this to sync items from their store_link.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  product_name: { type: "STRING" },
+                  sku_link: { type: "STRING" },
+                  stock: { type: "STRING" },
+                  price: { type: "STRING" }
+                },
+                required: ["product_name", "stock", "price"]
+              }
             }
           ]
         }
@@ -338,6 +355,10 @@ RULES OF ENGAGEMENT:
           else if (call.name === "add_calendar_event") {
             await supabase.from('calendar_events').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Event '${call.args.task_name}' scheduled for ${call.args.day_of_week}.`);
+          }
+          else if (call.name === "add_inventory_item") {
+            await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
+            toolResults.push(`Inventory item '${call.args.product_name}' synced.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);

@@ -529,7 +529,8 @@
           localStorage.setItem('amp_business_profile', JSON.stringify({
             company_name: userProfile.company_name,
             bio: userProfile.bio,
-            stage: userProfile.stage
+            stage: userProfile.stage,
+            store_link: userProfile.store_link
           }));
         } catch (e) {
           console.error("Failed to save to localStorage", e);
@@ -542,6 +543,7 @@
               company_name: userProfile.company_name,
               bio: userProfile.bio,
               stage: userProfile.stage,
+              store_link: userProfile.store_link,
               updated_at: new Date()
             });
               if (error) throw error;
@@ -591,6 +593,12 @@
                     {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
+                {userProfile?.stage === 'Ecomm' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Store URL (Shopify/Etsy)</label>
+                    <input type="text" value={userProfile?.store_link || ''} onChange={e => setUserProfile({...userProfile, store_link: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm" placeholder="https://yourstore.myshopify.com" />
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Bio</label>
                   <textarea value={userProfile?.bio || ''} onChange={e => setUserProfile({...userProfile, bio: e.target.value})} rows="4" className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-3xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm resize-none" placeholder="What does your business do?"></textarea>
@@ -687,12 +695,23 @@
       const [isAgentProcessing, setIsAgentProcessing] = useState(false);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
       const [contentReferences, setContentReferences] = useState([]);
-      const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
+      const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
       const [triggerPrompt, setTriggerPrompt] = useState(null);
 
       const displayTasks = isAgentProcessing 
         ? [{ id: 'temp-ceo', agent: 'CEO', title: 'Processing Neural Command...', status: 'running' }, ...activeTasks] 
         : activeTasks;
+
+      const triggerInventoryPrompt = () => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          if (needsProfileSetup) {
+            setTriggerPrompt({ sender: 'user', text: "Sync my inventory.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          } else {
+            setTriggerPrompt({ sender: 'user', text: `Sync my inventory from my store link: ${userProfile.store_link || 'my store'}.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          }
+        }, 300);
+      };
 
       const triggerCampaignPrompt = () => {
         setActiveModule('neural-chat');
@@ -806,7 +825,7 @@
           try {
             const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
             if (data && data.company_name) {
-              loadedProfile = { company_name: data.company_name, bio: data.bio || '', stage: data.stage || 'Solo' };
+              loadedProfile = { ...loadedProfile, company_name: data.company_name, bio: data.bio || loadedProfile.bio, stage: data.stage || loadedProfile.stage, store_link: data.store_link !== undefined ? data.store_link : loadedProfile.store_link };
               setupNeeded = !data.company_name || !data.stage;
             }
           } catch(e) {
@@ -860,10 +879,12 @@
         }
       }, [session]);
 
+      const isEcomm = userProfile?.stage === 'Ecomm';
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
-        { id: 'lead-pipeline', icon: 'solar:filter-linear', label: 'Lead Pipeline', mobileLabel: 'Leads' },
-        { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: 'Client Ledger', mobileLabel: 'Clients' },
+        { id: 'lead-pipeline', icon: 'solar:filter-linear', label: isEcomm ? 'Sales Pipeline' : 'Lead Pipeline', mobileLabel: isEcomm ? 'Sales' : 'Leads' },
+        { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: isEcomm ? 'Customer Ledger' : 'Client Ledger', mobileLabel: isEcomm ? 'Customers' : 'Clients' },
+        ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
         { id: 'marketing-pipeline', icon: 'solar:chart-square-linear', label: 'Marketing Pipeline', mobileLabel: 'Marketing' },
         { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
         { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
@@ -927,8 +948,9 @@
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setIsProcessing={setIsAgentProcessing} />
             </div>
-            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
-            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
+            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
+            {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
@@ -1171,10 +1193,13 @@
       );
     };
 
-    const LeadPipeline = ({ session, activeTasks, onAddLead, onImportCsv }) => {
+    const LeadPipeline = ({ session, activeTasks, userProfile, onAddLead, onImportCsv }) => {
+      const isEcomm = userProfile?.stage === 'Ecomm';
+      const stages = isEcomm ? ['Favorites', 'Inquiries', 'Abandoned Cart'] : ['Inbound', 'Qualifying', 'Negotiation'];
+      
       const [leads, setLeads] = useState([]);
       const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: '$0', stage: 'Inbound' });
+      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: '$0', stage: stages[0] });
 
       const fetchLeads = async () => {
         if (!supabaseClient) return;
@@ -1212,13 +1237,13 @@
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Lead Pipeline</h2><p className="text-xs text-gray-500">Manage prospects and activate AI sequences.</p></div>
+            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{isEcomm ? 'Sales Pipeline' : 'Lead Pipeline'}</h2><p className="text-xs text-gray-500">{isEcomm ? 'Track customer interest and abandoned carts.' : 'Manage prospects and activate AI sequences.'}</p></div>
             <div className="flex gap-2 w-full md:w-auto">
               <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', contact: '', value: '$0', stage: 'Inbound' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', contact: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
               <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
@@ -1227,7 +1252,7 @@
             </div>
           </div>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
-            {['Inbound', 'Qualifying', 'Negotiation'].map(col => (
+            {stages.map(col => (
               <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-pd-teal border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
                 {leads.filter(l => l.stage === col).map(lead => (
@@ -1248,9 +1273,7 @@
                           onChange={(e) => updateLeadStage(lead.id, e.target.value)}
                           className="text-[10px] bg-black/5 dark:bg-white/10 border-none rounded py-1 px-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-pd-teal"
                         >
-                          <option value="Inbound">Inbound</option>
-                          <option value="Qualifying">Qualifying</option>
-                          <option value="Negotiation">Negotiation</option>
+                          {stages.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                     </div>
@@ -1290,9 +1313,7 @@
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">Stage</label>
                       <select value={formData.stage} onChange={e => setFormData({...formData, stage: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
-                        <option value="Inbound">Inbound</option>
-                        <option value="Qualifying">Qualifying</option>
-                        <option value="Negotiation">Negotiation</option>
+                        {stages.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
                   </div>
@@ -1305,7 +1326,8 @@
       );
     };
 
-    const ClientLedger = ({ session, activeTasks, onAddClient, onImportCsv }) => {
+    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv }) => {
+      const isEcomm = userProfile?.stage === 'Ecomm';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
       const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '' });
@@ -1357,7 +1379,7 @@
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
+            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{isEcomm ? 'Customer Ledger' : 'Client Ledger'}</h2><p className="text-xs text-gray-500">{isEcomm ? 'Active customers and purchase history.' : 'Active accounts and automated deliverable tracking.'}</p></div>
             <div className="flex gap-2 w-full md:w-auto">
               <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
@@ -1374,7 +1396,7 @@
           <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
             <table className="w-full text-left text-sm min-w-[600px]">
               <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
-                <tr><th className="p-4">Client</th><th className="p-4">Retainer</th><th className="p-4">LTV</th><th className="p-4">Assigned Agents</th><th className="p-4 text-right">Actions</th></tr>
+                <tr><th className="p-4">{isEcomm ? 'Customer' : 'Client'}</th><th className="p-4">{isEcomm ? 'Products Bought' : 'Retainer'}</th><th className="p-4">{isEcomm ? 'Total Spent' : 'LTV'}</th><th className="p-4">Assigned Agents</th><th className="p-4 text-right">Actions</th></tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
                 {clients.map(c => (
@@ -1399,25 +1421,156 @@
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">{formData.id ? 'Edit Client' : 'Manual Client Entry'}</h3>
+                  <h3 className="font-semibold">{formData.id ? (isEcomm ? 'Edit Customer' : 'Edit Client') : (isEcomm ? 'Manual Customer Entry' : 'Manual Client Entry')}</h3>
                   <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Client Name</label>
+                    <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Customer Name' : 'Client Name'}</label>
                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">Retainer (Monthly)</label>
+                      <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Products Bought' : 'Retainer (Monthly)'}</label>
                       <input type="text" value={formData.retainer} onChange={e => setFormData({...formData, retainer: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">Total LTV</label>
+                      <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Total Spent' : 'Total LTV'}</label>
                       <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Client</button>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">{isEcomm ? 'Save Customer' : 'Save Client'}</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const InventoryTracker = ({ session, activeTasks, userProfile, onSync, onImportCsv }) => {
+      const [inventory, setInventory] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [formData, setFormData] = useState({ id: null, product_name: '', sku_link: '', stock: '', price: '' });
+
+      const fetchInventory = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('inventory').select('*').order('created_at', { ascending: false });
+        if (data) setInventory(data);
+      };
+
+      const handleSave = async () => {
+        if (!supabaseClient || !session?.user?.id) return;
+        const payload = { ...formData, user_id: session.user.id };
+        if (formData.id) {
+          await supabaseClient.from('inventory').update(payload).eq('id', formData.id);
+        } else {
+          delete payload.id;
+          await supabaseClient.from('inventory').insert([payload]);
+        }
+        setShowModal(false);
+      };
+
+      useEffect(() => {
+        fetchInventory();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:inventory')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory' }, fetchInventory)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
+
+      const getAssignedAgent = (productName) => {
+        if (!activeTasks || !productName) return null;
+        const task = activeTasks.find(t => 
+          t.title?.toLowerCase().includes(productName.toLowerCase()) || 
+          t.description?.toLowerCase().includes(productName.toLowerCase())
+        );
+        if (task) {
+          return <span className={`px-2 py-1 border rounded text-[10px] flex items-center gap-1 font-medium bg-pd-teal/20 text-pd-teal border-pd-teal/50`}><span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>Syncing</span>;
+        }
+        return null;
+      };
+
+      return (
+        <div className="p-4 md:p-8 h-full flex flex-col relative">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Inventory Tracking</h2>
+              <p className="text-xs text-gray-500">Manage your product catalog and sync with your store.</p>
+            </div>
+            <div className="flex gap-2 w-full md:w-auto">
+              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
+                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              </label>
+              <button onClick={() => { setFormData({ id: null, product_name: '', sku_link: '', stock: '', price: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </button>
+              <button onClick={onSync} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:refresh-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Sync
+              </button>
+            </div>
+          </div>
+          
+          {userProfile?.store_link && (
+             <div className="mb-4 text-xs flex items-center gap-2 text-gray-500 bg-white/40 dark:bg-black/20 p-3 rounded-xl border border-gray-200 dark:border-white/10 w-fit">
+               <iconify-icon icon="solar:link-circle-linear" className="text-pd-teal"></iconify-icon> Linked Store: <a href={userProfile.store_link} target="_blank" className="text-pd-teal hover:underline">{userProfile.store_link}</a>
+             </div>
+          )}
+
+          <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
+            <table className="w-full text-left text-sm min-w-[600px]">
+              <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
+                <tr><th className="p-4">Product Name</th><th className="p-4">SKU / Link</th><th className="p-4">Stock</th><th className="p-4">Price</th><th className="p-4">Status</th><th className="p-4 text-right">Actions</th></tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
+                {inventory.map(item => (
+                  <tr key={item.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
+                    <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]"><div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>{item.product_name}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">{item.sku_link || '-'}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">{item.stock || '0'}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">{item.price || '$0.00'}</td>
+                    <td className="p-4">{getAssignedAgent(item.product_name) || <span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-green-600 dark:text-green-400">Synced</span>}</td>
+                    <td className="p-4 text-right">
+                      <button onClick={() => { setFormData(item); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors">
+                        <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {showModal && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">{formData.id ? 'Edit Product' : 'Manual Product Entry'}</h3>
+                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Product Name</label>
+                    <input type="text" value={formData.product_name} onChange={e => setFormData({...formData, product_name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">SKU or Link</label>
+                    <input type="text" value={formData.sku_link} onChange={e => setFormData({...formData, sku_link: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Stock Quantity</label>
+                      <input type="text" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Price</label>
+                      <input type="text" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                  </div>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Product</button>
                 </div>
               </div>
             </div>
@@ -1561,7 +1714,16 @@
                 </div>
               )}
 
-              <div className="w-[80%] h-[60%] md:w-96 md:h-96 border border-gray-200 dark:border-pd-glassBorder rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10 flex items-center justify-center group relative shadow-2xl overflow-hidden mt-8 md:mt-0 p-4">
+              <div 
+                className="border border-gray-200 dark:border-pd-glassBorder rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10 flex items-center justify-center group relative shadow-2xl overflow-hidden mt-8 md:mt-0 p-4 transition-all duration-500 ease-in-out"
+                style={
+                  aspectRatio === '16:9' ? { width: '550px', height: '310px', maxWidth: '100%' } :
+                  aspectRatio === '9:16' ? { width: '310px', height: '550px', maxWidth: '100%' } :
+                  aspectRatio === '4:3' ? { width: '450px', height: '337px', maxWidth: '100%' } :
+                  aspectRatio === '3:4' ? { width: '337px', height: '450px', maxWidth: '100%' } :
+                  { width: '400px', height: '400px', maxWidth: '100%' }
+                }
+              >
                 {isGenerating ? (
                    <div className="flex flex-col items-center gap-4">
                      <div className="w-10 h-10 border-4 border-pd-teal border-t-transparent rounded-full animate-spin"></div>
