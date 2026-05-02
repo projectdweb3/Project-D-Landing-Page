@@ -148,12 +148,23 @@ RULES OF ENGAGEMENT:
     ];
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: { parts: [{ text: systemInstruction }] },
+      model: "gemini-pro",
       tools: tools,
     });
 
-    const chatSession = model.startChat();
+    const chatSession = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: systemInstruction }]
+        },
+        {
+          role: "model",
+          parts: [{ text: "Understood. I am the CEO Agent and I will follow these rules." }]
+        }
+      ]
+    });
+    
     const result = await chatSession.sendMessage(userMessage);
     const response = result.response;
 
