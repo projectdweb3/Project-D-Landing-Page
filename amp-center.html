@@ -680,6 +680,7 @@
       const [activeTasks, setActiveTasks] = useState([]);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
       const [showSettingsBeam, setShowSettingsBeam] = useState(false);
+      const [contentReferences, setContentReferences] = useState([]);
 
       const checkProfile = async () => {
         if (!supabaseClient || !session?.user?.id) return;
@@ -800,7 +801,7 @@
             {activeModule === 'client-ledger' && <ClientLedger />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
-            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} />}
+            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} />}
             {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} />}
           </main>
 
@@ -1238,18 +1239,6 @@
           </div>
           
           <div className="flex-1 flex flex-col-reverse md:flex-row gap-4 md:gap-6 relative z-10 h-full pb-4">
-            <div className="w-full md:w-20 bg-white/60 dark:bg-black/20 border border-gray-200 dark:border-pd-glassBorder rounded-2xl flex flex-row md:flex-col items-center justify-around md:justify-start py-2 md:py-4 px-4 md:px-0 gap-2 md:gap-4 backdrop-blur-xl shadow-sm z-20">
-              <input type="file" ref={fileRef} onChange={handleFile} accept="image/*" className="hidden" />
-              <button onClick={() => fileRef.current?.click()} title="Upload Reference" className="w-10 h-10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center text-gray-600 dark:text-gray-400 group relative">
-                <iconify-icon icon="solar:camera-add-linear" width="20"></iconify-icon>
-                <span className="absolute left-full ml-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Add Brand Ref</span>
-              </button>
-              
-              <div className="md:mt-auto md:pt-4 border-l md:border-l-0 md:border-t border-gray-200 dark:border-pd-glassBorder w-px md:w-full h-8 md:h-auto flex justify-center items-center">
-                <button className="w-10 h-10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center text-pd-teal md:mt-2"><iconify-icon icon="solar:export-linear" width="20"></iconify-icon></button>
-              </div>
-            </div>
-            
             <div className="flex-1 border-2 border-dashed border-gray-300 dark:border-pd-glassBorder rounded-2xl md:rounded-3xl flex flex-col items-center justify-center relative bg-white/40 dark:bg-black/20 backdrop-blur-md shadow-inner overflow-hidden min-h-[300px]">
               
               <div className="absolute top-2 md:top-4 left-2 md:left-4 flex flex-wrap gap-2 z-10">
@@ -1287,8 +1276,18 @@
 
               <div className="absolute bottom-4 md:bottom-6 w-full max-w-xl px-2 md:px-4 z-10">
                 <div className="relative">
-                  <input type="text" value={prompt} onChange={e => setPrompt(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleGenerate()} placeholder={references.length === 0 ? "Upload brand materials first, then type prompt..." : "Prompt (e.g. 'Generate a new logo')..."} className="w-full bg-white/90 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-4 md:pl-6 pr-12 md:pr-14 py-3 md:py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-2xl backdrop-blur-xl" />
-                  <button onClick={handleGenerate} disabled={isGenerating} className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-orange/20 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all disabled:opacity-50"><iconify-icon icon="solar:plain-bold"></iconify-icon></button>
+                  <input type="file" ref={fileRef} onChange={handleFile} accept="image/*" className="hidden" />
+                  <input type="text" value={prompt} onChange={e => setPrompt(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleGenerate()} placeholder={references.length === 0 ? "Upload brand materials first, then type prompt..." : "Prompt (e.g. 'Generate a new logo')..."} className="w-full bg-white/90 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-4 md:pl-6 pr-24 md:pr-28 py-3 md:py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-2xl backdrop-blur-xl" />
+                  
+                  <div className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 md:gap-2">
+                    <button onClick={() => fileRef.current?.click()} className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-teal/20 text-pd-teal flex items-center justify-center hover:bg-pd-teal hover:text-white transition-all group relative">
+                      <iconify-icon icon="solar:paperclip-linear" width="18"></iconify-icon>
+                      <span className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Attach Reference</span>
+                    </button>
+                    <button onClick={handleGenerate} disabled={isGenerating} className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-orange/20 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all disabled:opacity-50">
+                      <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
