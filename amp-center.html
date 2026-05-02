@@ -523,16 +523,33 @@
 
       const handleSave = async () => {
         setLoading(true);
-        if (supabaseClient && session?.user?.id) {
-          await supabaseClient.from('business_profile').upsert({
-            user_id: session.user.id,
+        
+        // Save to localStorage as a fallback to guarantee persistence across sessions even if DB fails
+        try {
+          localStorage.setItem('amp_business_profile', JSON.stringify({
             company_name: userProfile.company_name,
             bio: userProfile.bio,
-            stage: userProfile.stage,
-            updated_at: new Date()
-          });
-          if (onSaveComplete) onSaveComplete();
+            stage: userProfile.stage
+          }));
+        } catch (e) {
+          console.error("Failed to save to localStorage", e);
         }
+
+        if (supabaseClient && session?.user?.id) {
+          try {
+            await supabaseClient.from('business_profile').upsert({
+              user_id: session.user.id,
+              company_name: userProfile.company_name,
+              bio: userProfile.bio,
+              stage: userProfile.stage,
+              updated_at: new Date()
+            });
+          } catch(e) {
+            console.warn("Supabase upsert failed, relying on localStorage.");
+          }
+        }
+        
+        if (onSaveComplete) onSaveComplete();
         setLoading(false);
       };
 
@@ -674,38 +691,70 @@
       const triggerCampaignPrompt = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({
-            sender: 'ceo',
-            text: "I see you want to launch a new Marketing Campaign. To help me build the best campaign possible, please tell me: 1) What is the main goal of this campaign? 2) Who is the target audience? 3) Do you have any specific offers or budgets in mind? Once you provide this, I'll begin complex planning and delegate the tasks to the CMO.",
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          });
+          if (needsProfileSetup) {
+            setTriggerPrompt({
+              sender: 'ceo',
+              text: "I cannot launch a Marketing Campaign until your Business Profile is complete. Please navigate to the Settings tab and save your profile first so I understand your target audience and goals.",
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          } else {
+            setTriggerPrompt({
+              sender: 'ceo',
+              text: "I see you want to launch a new Marketing Campaign. To help me build the best campaign possible, please tell me: 1) What is the main goal of this campaign? 2) Who is the target audience? 3) Do you have any specific offers or budgets in mind? Once you provide this, I'll begin complex planning and delegate the tasks to the CMO.",
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          }
         }, 150);
       };
 
       const triggerLeadPrompt = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({
-            sender: 'ceo',
-            text: "You'd like to add a new Lead to the pipeline. Let's gather their information. Please provide their Name, Company, and any notes about what they are looking for so I can instruct the CMO to track them.",
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          });
+          if (needsProfileSetup) {
+            setTriggerPrompt({
+              sender: 'ceo',
+              text: "I cannot manage leads until your Business Profile is complete. Please navigate to the Settings tab and save your profile first.",
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          } else {
+            setTriggerPrompt({
+              sender: 'ceo',
+              text: "You'd like to add a new Lead to the pipeline. Let's gather their information. Please provide their Name, Company, and any notes about what they are looking for so I can instruct the CMO to track them.",
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          }
         }, 150);
       };
 
       const checkProfile = async () => {
-        if (!supabaseClient || !session?.user?.id) return;
-        const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
-        if (data) {
-          setUserProfile({ company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' });
-          if (!data.company_name || !data.stage) {
-            setNeedsProfileSetup(true);
-          } else {
-            setNeedsProfileSetup(false);
+        let loadedProfile = { company_name: '', bio: '', stage: 'Solo' };
+        let setupNeeded = true;
+        
+        try {
+          const localData = localStorage.getItem('amp_business_profile');
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            loadedProfile = { ...loadedProfile, ...parsed };
+            setupNeeded = !parsed.company_name || !parsed.stage;
           }
-        } else {
-          setNeedsProfileSetup(userProfile.company_name === '');
+        } catch (e) {
+          console.error("Local storage error:", e);
         }
+
+        if (supabaseClient && session?.user?.id) {
+          try {
+            const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
+            if (data) {
+              loadedProfile = { company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' };
+              setupNeeded = !data.company_name || !data.stage;
+            }
+          } catch(e) {
+            console.warn("Supabase profile fetch failed, relying on localStorage.");
+          }
+        }
+        
+        setUserProfile(loadedProfile);
+        setNeedsProfileSetup(setupNeeded);
       };
 
       const fetchTasks = async () => {
