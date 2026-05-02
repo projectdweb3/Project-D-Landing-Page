@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI, FunctionDeclaration, SchemaType } = require("@google/generative-ai");
+
 const { createClient } = require("@supabase/supabase-js");
 
 exports.handler = async function (event, context) {
@@ -42,138 +42,152 @@ RULES OF ENGAGEMENT:
 7. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
 8. Be authoritative, strategic, and highly efficient. Do not hallucinate actions—if you say you are performing an action, you MUST trigger the corresponding tool.`;
 
-    const tools = [
-      {
-        functionDeclarations: [
-          {
-            name: "create_task",
-            description: "Creates a new task and adds it to the Kanban board.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                title: { type: "STRING" },
-                column_id: { type: "STRING", description: "'todo', 'in_progress', 'review', 'done'" },
-                assigned_agent: { type: "STRING" }
-              },
-              required: ["title", "column_id"],
-            },
-          },
-          {
-            name: "update_business_profile",
-            description: "Saves or updates core business details.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                company_name: { type: "STRING" },
-                industry: { type: "STRING" },
-                goals: { type: "STRING" },
-                branding_notes: { type: "STRING" }
-              },
-              required: ["industry", "goals"],
-            },
-          },
-          {
-            name: "create_agent",
-            description: "Hires a new specialized AI agent into the workforce.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                role_name: { type: "STRING" },
-                persona_description: { type: "STRING" }
-              },
-              required: ["role_name", "persona_description"],
-            },
-          },
-          {
-            name: "add_lead",
-            description: "Adds a new lead to the CRM Pipeline.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                name: { type: "STRING" },
-                contact: { type: "STRING" },
-                stage: { type: "STRING", description: "'Inbound', 'Qualifying', 'Negotiation'" },
-                value: { type: "STRING" },
-                prob: { type: "STRING" },
-                next_step: { type: "STRING" },
-                is_amp_enabled: { type: "BOOLEAN" }
-              },
-              required: ["name", "stage"],
-            },
-          },
-          {
-            name: "create_client",
-            description: "Adds a closed-won client to the Client Ledger.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                name: { type: "STRING" },
-                retainer: { type: "STRING" },
-                ltv: { type: "STRING" },
-                assigned_agents: { type: "STRING" },
-                next_task: { type: "STRING" }
-              },
-              required: ["name"],
-            },
-          },
-          {
-            name: "create_campaign",
-            description: "Adds a new marketing campaign.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                name: { type: "STRING" },
-                description: { type: "STRING" },
-                stage: { type: "STRING", description: "'Planning', 'Active', 'Completed'" },
-                agents_assigned: { type: "STRING" }
-              },
-              required: ["name", "stage"],
-            },
-          },
-          {
-            name: "add_calendar_event",
-            description: "Schedules an event or agent deployment on the Tactical Calendar.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                day_of_week: { type: "STRING", description: "'Mon', 'Tue', 'Wed', 'Thu', 'Fri'" },
-                agent_role: { type: "STRING" },
-                task_name: { type: "STRING" }
-              },
-              required: ["day_of_week", "agent_role", "task_name"],
-            },
-          }
-        ]
-      }
-    ];
+    const modelId = "gemini-1.5-flash";
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
-      tools: tools,
-    });
-
-    const chatSession = model.startChat({
-      history: [
+    const payload = {
+      system_instruction: { parts: [{ text: systemInstruction }] },
+      contents: [
         {
           role: "user",
-          parts: [{ text: systemInstruction }]
-        },
+          parts: [{ text: userMessage }]
+        }
+      ],
+      tools: [
         {
-          role: "model",
-          parts: [{ text: "Understood. I am the CEO Agent and I will follow these rules." }]
+          function_declarations: [
+            {
+              name: "create_task",
+              description: "Creates a new task and adds it to the Kanban board.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  title: { type: "STRING" },
+                  column_id: { type: "STRING", description: "'todo', 'in_progress', 'review', 'done'" },
+                  assigned_agent: { type: "STRING" }
+                },
+                required: ["title", "column_id"],
+              },
+            },
+            {
+              name: "update_business_profile",
+              description: "Saves or updates core business details.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  company_name: { type: "STRING" },
+                  industry: { type: "STRING" },
+                  goals: { type: "STRING" },
+                  branding_notes: { type: "STRING" }
+                },
+                required: ["industry", "goals"],
+              },
+            },
+            {
+              name: "create_agent",
+              description: "Hires a new specialized AI agent into the workforce.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  role_name: { type: "STRING" },
+                  persona_description: { type: "STRING" }
+                },
+                required: ["role_name", "persona_description"],
+              },
+            },
+            {
+              name: "add_lead",
+              description: "Adds a new lead to the CRM Pipeline.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING" },
+                  contact: { type: "STRING" },
+                  stage: { type: "STRING", description: "'Inbound', 'Qualifying', 'Negotiation'" },
+                  value: { type: "STRING" },
+                  prob: { type: "STRING" },
+                  next_step: { type: "STRING" },
+                  is_amp_enabled: { type: "BOOLEAN" }
+                },
+                required: ["name", "stage"],
+              },
+            },
+            {
+              name: "create_client",
+              description: "Adds a closed-won client to the Client Ledger.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING" },
+                  retainer: { type: "STRING" },
+                  ltv: { type: "STRING" },
+                  assigned_agents: { type: "STRING" },
+                  next_task: { type: "STRING" }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "create_campaign",
+              description: "Adds a new marketing campaign.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING" },
+                  description: { type: "STRING" },
+                  stage: { type: "STRING", description: "'Planning', 'Active', 'Completed'" },
+                  agents_assigned: { type: "STRING" }
+                },
+                required: ["name", "stage"],
+              },
+            },
+            {
+              name: "add_calendar_event",
+              description: "Schedules an event or agent deployment on the Tactical Calendar.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  day_of_week: { type: "STRING", description: "'Mon', 'Tue', 'Wed', 'Thu', 'Fri'" },
+                  agent_role: { type: "STRING" },
+                  task_name: { type: "STRING" }
+                },
+                required: ["day_of_week", "agent_role", "task_name"],
+              },
+            }
+          ]
         }
       ]
+    };
+
+    const apiRes = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
+
+    if (!apiRes.ok) {
+      const errorText = await apiRes.text();
+      throw new Error(`Gemini API Error: ${apiRes.status} ${errorText}`);
+    }
+
+    const data = await apiRes.json();
     
-    const result = await chatSession.sendMessage(userMessage);
-    const response = result.response;
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error("No candidates returned from Gemini API");
+    }
 
+    const responseParts = data.candidates[0].content.parts;
+    
     let toolResults = [];
-    let finalText = response.text() || "I am processing your request.";
+    let finalText = "";
 
-    const functionCalls = response.functionCalls();
-    if (functionCalls && functionCalls.length > 0) {
-      for (const call of functionCalls) {
+    for (const part of responseParts) {
+      if (part.text) {
+        finalText += part.text;
+      }
+      if (part.functionCall) {
+        const call = part.functionCall;
+        
         if (!supabase) {
           toolResults.push(`[SIMULATION MODE] Tool '${call.name}' called with args: ${JSON.stringify(call.args)}. (Supabase not connected)`);
           continue;
@@ -212,6 +226,10 @@ RULES OF ENGAGEMENT:
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);
         }
       }
+    }
+
+    if (!finalText) {
+      finalText = "I am processing your request.";
     }
 
     // Append tool execution summary if tools were used
