@@ -3994,6 +3994,155 @@
       });
     }
   </script>
+
+  <!-- Dreambot AI Assistant -->
+  <div id="dreambot-wrapper" class="fixed bottom-6 right-6 z-[9999] font-sans">
+    <!-- Chat Window -->
+    <div id="dreambot-window" class="hidden flex-col w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-2xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,242,234,0.15)] overflow-hidden mb-4 transition-all duration-300 origin-bottom-right scale-95 opacity-0">
+      <div class="p-4 bg-gradient-to-r from-[#0b0f19] to-gray-900 border-b border-white/10 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-pd-teal/20 flex items-center justify-center text-pd-teal border border-pd-teal/30">
+            <iconify-icon icon="solar:smart-home-bold" width="18"></iconify-icon>
+          </div>
+          <div>
+            <h3 class="text-white font-medium text-sm">Dreambot</h3>
+            <p class="text-[10px] text-pd-teal flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-pd-teal animate-pulse"></span> Online</p>
+          </div>
+        </div>
+        <button id="dreambot-close" class="text-gray-400 hover:text-white transition-colors">
+          <iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon>
+        </button>
+      </div>
+      
+      <div id="dreambot-messages" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col bg-gray-50/50 dark:bg-transparent">
+        <!-- Initial Message -->
+        <div class="self-start max-w-[85%] bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm p-3 shadow-sm">
+          <p class="text-sm text-gray-800 dark:text-gray-200">Hi! I'm Dreambot. How can I help you discover what Project D can do for your business today?</p>
+        </div>
+      </div>
+
+      <div class="p-3 bg-white dark:bg-[#0b0f19] border-t border-gray-200 dark:border-white/10">
+        <form id="dreambot-form" class="relative flex items-center">
+          <input type="text" id="dreambot-input" placeholder="Ask anything..." class="w-full bg-gray-100 dark:bg-white/5 border border-transparent focus:border-pd-teal/50 rounded-full pl-4 pr-12 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none transition-all" autocomplete="off" />
+          <button type="submit" id="dreambot-submit" class="absolute right-1 w-8 h-8 rounded-full bg-pd-teal text-[#0b0f19] flex items-center justify-center hover:scale-105 transition-transform disabled:opacity-50">
+            <iconify-icon icon="solar:plain-bold" width="16"></iconify-icon>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button id="dreambot-fab" class="w-14 h-14 bg-gradient-to-tr from-pd-teal to-pd-orange rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,242,234,0.3)] hover:scale-110 hover:shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all duration-300 ml-auto relative group">
+      <iconify-icon icon="solar:chat-round-dots-bold" width="28" class="text-white"></iconify-icon>
+      <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0b0f19] flex items-center justify-center text-[8px] text-white font-bold animate-pulse">1</div>
+    </button>
+  </div>
+
+  <script>
+    // Dreambot Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const fab = document.getElementById('dreambot-fab');
+      const windowEl = document.getElementById('dreambot-window');
+      const closeBtn = document.getElementById('dreambot-close');
+      const form = document.getElementById('dreambot-form');
+      const input = document.getElementById('dreambot-input');
+      const messagesContainer = document.getElementById('dreambot-messages');
+      const submitBtn = document.getElementById('dreambot-submit');
+      
+      let isOpen = false;
+      let history = [];
+      let isTyping = false;
+
+      const toggleChat = () => {
+        isOpen = !isOpen;
+        if (isOpen) {
+          windowEl.classList.remove('hidden');
+          // small delay for transition
+          setTimeout(() => {
+            windowEl.classList.remove('scale-95', 'opacity-0');
+            windowEl.classList.add('scale-100', 'opacity-100');
+          }, 10);
+          fab.querySelector('.bg-red-500')?.remove(); // remove notification badge
+          input.focus();
+        } else {
+          windowEl.classList.remove('scale-100', 'opacity-100');
+          windowEl.classList.add('scale-95', 'opacity-0');
+          setTimeout(() => {
+            windowEl.classList.add('hidden');
+          }, 300);
+        }
+      };
+
+      fab.addEventListener('click', toggleChat);
+      closeBtn.addEventListener('click', toggleChat);
+
+      const addMessage = (text, sender) => {
+        const div = document.createElement('div');
+        div.className = \`max-w-[85%] rounded-2xl p-3 shadow-sm text-sm \${
+          sender === 'user' 
+            ? 'self-end bg-pd-teal/20 border border-pd-teal/30 text-gray-900 dark:text-white rounded-br-sm' 
+            : 'self-start bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-tl-sm'
+        }\`;
+        div.textContent = text;
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return div;
+      };
+
+      const addTypingIndicator = () => {
+        const div = document.createElement('div');
+        div.id = 'dreambot-typing';
+        div.className = 'self-start bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm p-4 shadow-sm flex gap-1.5 items-center';
+        div.innerHTML = \`
+          <span class="w-1.5 h-1.5 rounded-full bg-pd-teal animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-pd-teal animate-bounce" style="animation-delay: 0.1s"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-pd-teal animate-bounce" style="animation-delay: 0.2s"></span>
+        \`;
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return div;
+      };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text || isTyping) return;
+
+        input.value = '';
+        addMessage(text, 'user');
+        
+        const typingIndicator = addTypingIndicator();
+        isTyping = true;
+        submitBtn.disabled = true;
+
+        try {
+          const res = await fetch('/.netlify/functions/dreambot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ history, message: text })
+          });
+          
+          const data = await res.json();
+          typingIndicator.remove();
+          
+          if (data.error) {
+            addMessage("I'm sorry, I'm experiencing some technical difficulties right now.", 'bot');
+          } else {
+            addMessage(data.content, 'bot');
+            history.push({ sender: 'user', text });
+            history.push({ sender: 'bot', text: data.content });
+          }
+        } catch (error) {
+          typingIndicator.remove();
+          addMessage("Network error. Please try again.", 'bot');
+        } finally {
+          isTyping = false;
+          submitBtn.disabled = false;
+          input.focus();
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
