@@ -402,6 +402,7 @@
       const handleSubmit = (e) => {
         if (e && e.preventDefault) e.preventDefault();
         if (!input.trim()) return;
+        localStorage.setItem('amp_genesis_input', input.trim());
         setStage(1);
         setTypingSpeed(0);
       };
@@ -1277,8 +1278,12 @@
 
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
+          const genesisInput = typeof localStorage !== 'undefined' ? localStorage.getItem('amp_genesis_input') : null;
+          const greetingText = genesisInput 
+            ? `Systems online. I've initialized parameters for a "${genesisInput}". To help me assemble the best workforce for your specific needs, please click the Settings button on the left to confirm your Business Profile. Once configured, I'll guide you through using the Neural Chat and our pipelines.`
+            : `Systems online. To help me assemble the best workforce for your specific needs, please click the Settings button on the left to complete your Business Profile. Once configured, I'll guide you through using the platform.`;
           setMessages([
-            { sender: 'ceo', text: "Systems online. However, before I can assemble your workforce, I need to understand your kingdom. Please click the Settings button on the left to complete your Business Profile.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+            { sender: 'ceo', text: greetingText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
           ]);
         }
       }, [needsProfileSetup]);
