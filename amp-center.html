@@ -696,8 +696,22 @@
 
       const fetchTasks = async () => {
         if (!supabaseClient) return;
-        const { data } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false }).limit(5);
+        const { data } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false }).limit(50);
         if (data) setActiveTasks(data);
+      };
+
+      const [usagePct, setUsagePct] = useState(() => {
+        const saved = localStorage.getItem('amp_usage_pct');
+        return saved ? JSON.parse(saved) : { CEO: 100, CMO: 100, Creative: 100, CTO: 100 };
+      });
+
+      const depleteBudget = (agent, amount) => {
+        setUsagePct(prev => {
+          const newPct = Math.max(0, (prev[agent] || 100) - amount);
+          const updated = { ...prev, [agent]: newPct };
+          localStorage.setItem('amp_usage_pct', JSON.stringify(updated));
+          return updated;
+        });
       };
 
       useEffect(() => {
@@ -783,12 +797,12 @@
           </nav>
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
-            {activeModule === 'neural-chat' && <NeuralChat session={session} needsProfileSetup={needsProfileSetup} />}
+            {activeModule === 'neural-chat' && <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline />}
             {activeModule === 'client-ledger' && <ClientLedger />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
-            {activeModule === 'content-factory' && <ContentFactory session={session} />}
+            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} />}
             {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} />}
           </main>
 
@@ -816,19 +830,19 @@
                 <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
               </div>
               <div className="space-y-4">
-                {activeTasks.length > 0 ? activeTasks.map(task => (
+                {activeTasks.length > 0 ? activeTasks.filter(t => t.status !== 'done').slice(0, 5).map(task => (
                   <TaskCard key={task.id} agent={task.agent || 'CEO'} task={task.title} status={task.status === 'done' ? 'done' : 'running'} color={task.agent === 'Creative' ? 'pd-orange' : 'pd-teal'} />
                 )) : (
                   <div className="text-xs text-gray-500 italic">No active tasks. Chat with the CEO to assign work.</div>
                 )}
               </div>
               <div className="mt-auto pt-6 border-t border-gray-200 dark:border-pd-glassBorder">
-                <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Cost Tracking ($20 Limit)</h3>
+                <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Neural Capacity</h3>
                 <div className="space-y-3">
-                  <BudgetBar agent="CEO" used={2.40} limit={5.00} />
-                  <BudgetBar agent="CMO" used={1.10} limit={5.00} />
-                  <BudgetBar agent="Creative" used={4.80} limit={5.00} />
-                  <BudgetBar agent="CTO" used={0.50} limit={5.00} />
+                  <BudgetBar agent="CEO" percentage={usagePct.CEO} />
+                  <BudgetBar agent="CMO" percentage={usagePct.CMO} />
+                  <BudgetBar agent="Creative" percentage={usagePct.Creative} />
+                  <BudgetBar agent="CTO" percentage={usagePct.CTO} />
                 </div>
               </div>
             </div>
@@ -850,22 +864,22 @@
       </div>
     );
 
-    const BudgetBar = ({ agent, used, limit }) => {
-      const remainingPct = Math.max(0, Math.round(((limit - used) / limit) * 100));
+    const BudgetBar = ({ agent, percentage }) => {
+      const displayPct = Math.max(0, Math.round(percentage));
       return (
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-[10px]">
             <span className="text-gray-700 dark:text-gray-300 font-medium">{agent}</span>
-            <span className="text-gray-500">{remainingPct}% Remaining</span>
+            <span className="text-gray-500">{displayPct}% Remaining</span>
           </div>
-          <div className="h-1.5 w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
-            <div className={`h-full ${remainingPct < 20 ? 'bg-red-500' : 'bg-pd-teal'} rounded-full`} style={{ width: `${remainingPct}%` }}></div>
+          <div className="h-1.5 w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden shadow-inner">
+            <div className={`h-full ${displayPct < 20 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'bg-pd-teal shadow-[0_0_10px_rgba(0,242,234,0.5)]'} rounded-full transition-all duration-1000`} style={{ width: `${displayPct}%` }}></div>
           </div>
         </div>
       );
     };
 
-    const NeuralChat = ({ session, needsProfileSetup }) => {
+    const NeuralChat = ({ session, needsProfileSetup, depleteBudget }) => {
       const [messages, setMessages] = useState([
         { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
       ]);
@@ -928,6 +942,7 @@
         })
           .then(res => res.json().then(data => ({ status: res.status, data })))
           .then(({ status, data }) => {
+            if (depleteBudget) depleteBudget('CEO', 0.5); // Deplete 0.5% per chat turn
             if (status >= 400 || data.error) {
               setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
             } else {
@@ -1160,12 +1175,15 @@
       );
     };
 
-    const ContentFactory = ({ session }) => {
+    const ContentFactory = ({ session, activeTasks, depleteBudget }) => {
       const [prompt, setPrompt] = useState('');
       const [references, setReferences] = useState([]);
       const [isGenerating, setIsGenerating] = useState(false);
       const [result, setResult] = useState(null);
       const fileRef = useRef(null);
+
+      // Filter tasks to get creative agent generated assets
+      const archiveItems = activeTasks ? activeTasks.filter(t => t.agent === 'Creative' && t.status === 'done' && t.notes) : [];
 
       const handleFile = (e) => {
         const file = e.target.files[0];
@@ -1184,6 +1202,7 @@
         setResult(null);
 
         try {
+          if (depleteBudget) depleteBudget('Creative', 5); // Deplete 5% per generation
           const res = await fetch('/.netlify/functions/content', {
             method: 'POST',
             body: JSON.stringify({
@@ -1275,6 +1294,33 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-6 border-t border-gray-200 dark:border-pd-glassBorder pt-6 w-full z-10 relative">
+             <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+               <iconify-icon icon="solar:history-linear" className="text-pd-orange"></iconify-icon> Asset Archive
+             </h3>
+             {archiveItems.length > 0 ? (
+               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto max-h-48 hide-scrollbar">
+                 {archiveItems.map((item, idx) => (
+                   <div key={idx} className="bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center justify-between shadow-sm cursor-pointer hover:shadow-md hover:border-pd-orange/50 transition-all group">
+                     <div className="w-full h-20 mb-2 bg-black/5 dark:bg-white/5 rounded-lg flex items-center justify-center overflow-hidden">
+                       {(item.notes && item.notes.startsWith('data:image')) ? (
+                         <img src={item.notes} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                       ) : (
+                         <iconify-icon icon="solar:document-text-linear" width="24" className="text-gray-400"></iconify-icon>
+                       )}
+                     </div>
+                     <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate w-full text-center" title={item.title}>{item.title}</p>
+                   </div>
+                 ))}
+               </div>
+             ) : (
+               <div className="w-full h-24 bg-black/5 dark:bg-white/5 rounded-2xl flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-white/10">
+                 <iconify-icon icon="solar:box-linear" width="24" className="text-gray-400 mb-2"></iconify-icon>
+                 <p className="text-xs text-gray-500">Archive is empty. Generate content to populate.</p>
+               </div>
+             )}
           </div>
         </div>
       );

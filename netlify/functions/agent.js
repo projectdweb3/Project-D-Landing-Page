@@ -53,13 +53,14 @@ RULES OF ENGAGEMENT:
 1. DECIPHER INTENT: With every prompt, you must decipher whether you are being asked a conversational question or being instructed to perform an actionable task. 
 2. ANSWERING QUESTIONS: If it is a question or request for advice, provide a highly intelligent, concise response utilizing the context of the user's business profile.
 3. DELEGATING TASKS: If it is an actionable task, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
-4. If the user has not provided their business details, ask probing questions to get their Company Name, Stage, and Bio.
-5. Dictate the best team structure and use 'create_agent' to hire specialized agents.
-6. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline.
-7. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
-8. To launch marketing initiatives, use 'create_campaign'.
-9. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
-10. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
+4. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
+5. If the user has not provided their business details, ask probing questions to get their Company Name, Stage, and Bio.
+6. Dictate the best team structure and use 'create_agent' to hire specialized agents.
+7. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline.
+8. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
+9. To launch marketing initiatives, use 'create_campaign'.
+10. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
+11. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -185,6 +186,17 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["day_of_week", "agent_role", "task_name"],
               },
+            },
+            {
+              name: "trigger_creative_agent",
+              description: "Delegates visual asset generation to the Creative Agent. Provide a highly detailed prompt of what needs to be created. The Creative Agent will generate it autonomously.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  prompt: { type: "STRING" }
+                },
+                required: ["prompt"]
+              }
             }
           ]
         }
@@ -240,6 +252,27 @@ RULES OF ENGAGEMENT:
             await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', user_id: userId }]);
             toolResults.push(`Task '${call.args.title}' added to Kanban.`);
           } 
+          else if (call.name === "trigger_creative_agent") {
+            const creativeEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${apiKey}`;
+            const creativePayload = {
+              contents: [{ role: "user", parts: [{ text: `You are the Creative Agent. Context: ${businessContext}. User Request: ${call.args.prompt}` }] }]
+            };
+            try {
+              const creativeRes = await fetch(creativeEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(creativePayload) });
+              const creativeData = await creativeRes.json();
+              if (creativeData.candidates && creativeData.candidates.length > 0 && creativeData.candidates[0].content.parts.length > 0) {
+                const part = creativeData.candidates[0].content.parts[0];
+                const contentText = part.text || "Asset generated.";
+                // Save to tasks board as done so it appears in the archive
+                await supabase.from('tasks').insert([{ title: call.args.prompt, status: 'done', agent: 'Creative', notes: contentText, user_id: userId }]);
+                toolResults.push(`Creative Agent successfully generated the asset and saved it to the Content Factory archive.`);
+              } else {
+                toolResults.push(`Creative Agent failed to generate content.`);
+              }
+            } catch (err) {
+              toolResults.push(`Creative Agent generation error: ${err.message}`);
+            }
+          }
           else if (call.name === "update_business_profile") {
             await supabase.from('business_profile').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Business Profile updated successfully.`);
