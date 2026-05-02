@@ -4,6 +4,6 @@
   "description": "Backend for Project D AMP Center",
   "dependencies": {
     "@supabase/supabase-js": "^2.43.0",
-    "@google/generative-ai": "^0.11.1"
+    "@google/generative-ai": "^0.21.0"
   }
 }
