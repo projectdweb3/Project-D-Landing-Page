@@ -23,6 +23,7 @@ exports.handler = async function (event, context) {
     const body = JSON.parse(event.body);
     const userMessage = body.message;
     const userId = body.userId;
+    const userProfile = body.userProfile;
     const attachment = body.attachment; // { data: base64, mimeType: string }
 
     if (!userId) {
@@ -31,9 +32,12 @@ exports.handler = async function (event, context) {
 
     // Dynamic Context Injection
     let businessContext = "The user has not provided their business profile yet. Ask them to go to settings and fill in their business name, stage, and bio.";
-    if (supabase) {
+    
+    if (userProfile && userProfile.company_name) {
+      businessContext = `Company Name: ${userProfile.company_name || 'Unknown'} | Stage: ${userProfile.stage || 'Unknown'} | Bio: ${userProfile.bio || 'None'}.`;
+    } else if (supabase) {
       try {
-        const { data: profile } = await supabase.from('business_profile').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
+        const { data: profile } = await supabase.from('business_profile').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
         if (profile && profile.company_name) {
           businessContext = `Company Name: ${profile.company_name || 'Unknown'} | Stage: ${profile.stage || 'Unknown'} | Bio: ${profile.bio || 'None'}.`;
         }

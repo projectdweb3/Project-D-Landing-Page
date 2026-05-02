@@ -972,6 +972,7 @@
           body: JSON.stringify({ 
             message: msg, 
             userId: session?.user?.id,
+            userProfile: userProfile,
             attachment: currentAttachment ? { data: currentAttachment.data, mimeType: currentAttachment.mimeType } : null,
             history: messages.map(m => ({ sender: m.sender, text: m.text }))
           })
