@@ -684,10 +684,15 @@
       const [isStatsOpen, setIsStatsOpen] = useState(false);
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
       const [activeTasks, setActiveTasks] = useState([]);
+      const [isAgentProcessing, setIsAgentProcessing] = useState(false);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
       const [contentReferences, setContentReferences] = useState([]);
       const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
       const [triggerPrompt, setTriggerPrompt] = useState(null);
+
+      const displayTasks = isAgentProcessing 
+        ? [{ id: 'temp-ceo', agent: 'CEO', title: 'Processing Neural Command...', status: 'running' }, ...activeTasks] 
+        : activeTasks;
 
       const triggerCampaignPrompt = () => {
         setActiveModule('neural-chat');
@@ -920,14 +925,14 @@
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
-              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} />
+              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setIsProcessing={setIsAgentProcessing} />
             </div>
-            {activeModule === 'lead-pipeline' && <LeadPipeline onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
-            {activeModule === 'client-ledger' && <ClientLedger onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
+            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
-            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={activeTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
+            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -954,8 +959,8 @@
                 <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
               </div>
               <div className="space-y-4">
-                {activeTasks.length > 0 ? activeTasks.filter(t => t.status !== 'done').slice(0, 5).map(task => (
-                  <TaskCard key={task.id} agent={task.agent || 'CEO'} task={task.title} status={task.status === 'done' ? 'done' : 'running'} color={task.agent === 'Creative' ? 'pd-orange' : 'pd-teal'} />
+                {displayTasks.length > 0 ? displayTasks.filter(t => t.status !== 'done').slice(0, 5).map((task, idx) => (
+                  <TaskCard key={task.id || idx} agent={task.agent || 'CEO'} task={task.title} status={task.status === 'done' ? 'done' : 'running'} color={task.agent === 'Creative' ? 'pd-orange' : 'pd-teal'} />
                 )) : (
                   <div className="text-xs text-gray-500 italic">No active tasks. Chat with the CEO to assign work.</div>
                 )}
@@ -1003,7 +1008,7 @@
       );
     };
 
-    const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt }) => {
+    const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setIsProcessing }) => {
       const [messages, setMessages] = useState([
         { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
       ]);
@@ -1072,6 +1077,7 @@
         setInput('');
         setAttachment(null);
         setIsTyping(true);
+        if (setIsProcessing) setIsProcessing(true);
 
         fetch('/.netlify/functions/agent', {
           method: 'POST',
@@ -1092,11 +1098,13 @@
               setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
             }
             setIsTyping(false);
+            if (setIsProcessing) setIsProcessing(false);
           })
           .catch(err => {
             console.error(err);
             setMessages(prev => [...prev, { sender: 'ceo', text: "[ERROR] Backend disconnected or API Key missing. Simulation mode active.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
             setIsTyping(false);
+            if (setIsProcessing) setIsProcessing(false);
           });
       };
 
@@ -1163,8 +1171,10 @@
       );
     };
 
-    const LeadPipeline = ({ onAddLead, onImportCsv }) => {
+    const LeadPipeline = ({ session, activeTasks, onAddLead, onImportCsv }) => {
       const [leads, setLeads] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: '$0', stage: 'Inbound' });
 
       const fetchLeads = async () => {
         if (!supabaseClient) return;
@@ -1175,6 +1185,18 @@
       const updateLeadStage = async (id, newStage) => {
         if (!supabaseClient) return;
         await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id);
+      };
+
+      const handleSave = async () => {
+        if (!supabaseClient || !session?.user?.id) return;
+        const payload = { ...formData, user_id: session.user.id };
+        if (formData.id) {
+          await supabaseClient.from('leads').update(payload).eq('id', formData.id);
+        } else {
+          delete payload.id;
+          await supabaseClient.from('leads').insert([payload]);
+        }
+        setShowModal(false);
       };
 
       useEffect(() => {
@@ -1188,7 +1210,7 @@
       }, []);
 
       return (
-        <div className="p-4 md:p-8 h-full flex flex-col">
+        <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Lead Pipeline</h2><p className="text-xs text-gray-500">Manage prospects and activate AI sequences.</p></div>
             <div className="flex gap-2 w-full md:w-auto">
@@ -1196,8 +1218,11 @@
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
+              <button onClick={() => { setFormData({ id: null, name: '', contact: '', value: '$0', stage: 'Inbound' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </button>
               <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Add Lead
+                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
               </button>
             </div>
           </div>
@@ -1209,7 +1234,12 @@
                   <div key={lead.id} className="amp-card p-5 relative overflow-hidden group">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-gray-200">{lead.name}</h4>
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-2">
+                          {lead.name}
+                          <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all">
+                            <iconify-icon icon="solar:pen-linear"></iconify-icon>
+                          </button>
+                        </h4>
                         <span className="text-[10px] text-gray-500">{lead.contact}</span>
                       </div>
                       <div className="flex flex-col items-end gap-1">
@@ -1234,17 +1264,68 @@
               </div>
             ))}
           </div>
+
+          {/* Manual Entry Modal */}
+          {showModal && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">{formData.id ? 'Edit Lead' : 'Manual Lead Entry'}</h3>
+                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Name / Company</label>
+                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Contact Info</label>
+                    <input type="text" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Est. Value</label>
+                      <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Stage</label>
+                      <select value={formData.stage} onChange={e => setFormData({...formData, stage: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
+                        <option value="Inbound">Inbound</option>
+                        <option value="Qualifying">Qualifying</option>
+                        <option value="Negotiation">Negotiation</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Lead</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
 
-    const ClientLedger = ({ onAddClient, onImportCsv }) => {
+    const ClientLedger = ({ session, activeTasks, onAddClient, onImportCsv }) => {
       const [clients, setClients] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '' });
 
       const fetchClients = async () => {
         if (!supabaseClient) return;
         const { data } = await supabaseClient.from('clients').select('*').order('created_at', { ascending: false });
         if (data) setClients(data);
+      };
+
+      const handleSave = async () => {
+        if (!supabaseClient || !session?.user?.id) return;
+        const payload = { ...formData, user_id: session.user.id };
+        if (formData.id) {
+          await supabaseClient.from('clients').update(payload).eq('id', formData.id);
+        } else {
+          delete payload.id;
+          await supabaseClient.from('clients').insert([payload]);
+        }
+        setShowModal(false);
       };
 
       useEffect(() => {
@@ -1257,8 +1338,24 @@
         }
       }, []);
 
+      const getAssignedAgent = (clientName, dbAgent) => {
+        if (!activeTasks || !clientName) return dbAgent || 'Support';
+        const task = activeTasks.find(t => 
+          t.title?.toLowerCase().includes(clientName.toLowerCase()) || 
+          t.description?.toLowerCase().includes(clientName.toLowerCase())
+        );
+        if (task) {
+          const colorClass = task.agent === 'CMO' ? 'bg-pd-teal/20 text-pd-teal border-pd-teal/50' : 
+                             task.agent === 'Creative' ? 'bg-pd-orange/20 text-pd-orange border-pd-orange/50' : 
+                             task.agent === 'CTO' ? 'bg-gray-500/20 text-gray-400 border-gray-500/50' : 
+                             'bg-pd-purple/20 text-pd-purple border-pd-purple/50';
+          return <span className={`px-2 py-1 border rounded text-[10px] flex items-center gap-1 font-medium ${colorClass}`}><span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>{task.agent} Active</span>;
+        }
+        return <span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{dbAgent || 'Support'}</span>;
+      };
+
       return (
-        <div className="p-4 md:p-8 h-full flex flex-col">
+        <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
             <div className="flex gap-2 w-full md:w-auto">
@@ -1266,15 +1363,18 @@
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
+              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </button>
               <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Add Client
+                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
               </button>
             </div>
           </div>
           <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
             <table className="w-full text-left text-sm min-w-[600px]">
               <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
-                <tr><th className="p-4">Client</th><th className="p-4">Retainer</th><th className="p-4">LTV</th><th className="p-4">Assigned Agents</th><th className="p-4">Next Automated Task</th></tr>
+                <tr><th className="p-4">Client</th><th className="p-4">Retainer</th><th className="p-4">LTV</th><th className="p-4">Assigned Agents</th><th className="p-4 text-right">Actions</th></tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
                 {clients.map(c => (
@@ -1282,13 +1382,46 @@
                     <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]"><div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>{c.name}</td>
                     <td className="p-4 text-gray-600 dark:text-gray-300">{c.retainer || '-'}</td>
                     <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv || '-'}</td>
-                    <td className="p-4"><span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{c.assigned_agents || 'Support'}</span></td>
-                    <td className="p-4 text-gray-500 text-xs">{c.next_task || 'N/A'}</td>
+                    <td className="p-4">{getAssignedAgent(c.name, c.assigned_agents)}</td>
+                    <td className="p-4 text-right">
+                      <button onClick={() => { setFormData(c); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors">
+                        <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* Manual Entry Modal */}
+          {showModal && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">{formData.id ? 'Edit Client' : 'Manual Client Entry'}</h3>
+                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Client Name</label>
+                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Retainer (Monthly)</label>
+                      <input type="text" value={formData.retainer} onChange={e => setFormData({...formData, retainer: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Total LTV</label>
+                      <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                  </div>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Client</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -1610,6 +1743,7 @@
 </body>
 
 </html>
+
 
 
 
