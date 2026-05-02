@@ -537,13 +537,14 @@
 
         if (supabaseClient && session?.user?.id) {
           try {
-            await supabaseClient.from('business_profile').upsert({
+            const { error } = await supabaseClient.from('business_profile').upsert({
               user_id: session.user.id,
               company_name: userProfile.company_name,
               bio: userProfile.bio,
               stage: userProfile.stage,
               updated_at: new Date()
             });
+              if (error) throw error;
           } catch(e) {
             console.warn("Supabase upsert failed, relying on localStorage.");
           }
@@ -798,9 +799,9 @@
 
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
-            if (data) {
-              loadedProfile = { company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' };
+            const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
+            if (data && data.company_name) {
+              loadedProfile = { company_name: data.company_name, bio: data.bio || '', stage: data.stage || 'Solo' };
               setupNeeded = !data.company_name || !data.stage;
             }
           } catch(e) {
@@ -1609,3 +1610,7 @@
 </body>
 
 </html>
+
+
+
+
