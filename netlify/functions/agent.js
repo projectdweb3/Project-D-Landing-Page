@@ -69,7 +69,9 @@ RULES OF ENGAGEMENT:
 10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
 11. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
 12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.
-13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.`;
+13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.
+14. STRATEGIC PLANNING: When the user asks you to create a plan (marketing, outreach, lead gen, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent (CMO, CTO, CEO), and pass the detailed plan content. Once stored, ask the user: "I have stored this plan in the Strategic Planning section. Shall I automatically execute it on your behalf?"
+15. EXECUTING PLANS: If the user tells you to execute a stored plan, you MUST read the plan from context (if you remember it) or infer the steps, and then use 'create_task', 'create_campaign', 'add_lead', etc., to actually execute a sequence of instructions for the agents based on that plan.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -118,7 +120,8 @@ RULES OF ENGAGEMENT:
                 properties: {
                   title: { type: "STRING" },
                   column_id: { type: "STRING", description: "'todo', 'in_progress', 'review', 'done'" },
-                  assigned_agent: { type: "STRING" }
+                  assigned_agent: { type: "STRING" },
+                  scheduled_time: { type: "STRING", description: "Optional. ISO 8601 string representing when the task should automatically execute." }
                 },
                 required: ["title", "column_id"],
               },
@@ -245,6 +248,19 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["product_name", "stock", "price"]
               }
+            },
+            {
+              name: "store_plan",
+              description: "Stores a newly generated strategic plan to the Planning section.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  title: { type: "STRING" },
+                  agent: { type: "STRING", description: "'CEO', 'CMO', 'CTO', 'Creative'" },
+                  content: { type: "STRING", description: "The full, detailed text of the strategic plan." }
+                },
+                required: ["title", "agent", "content"],
+              },
             }
           ]
         }
@@ -299,8 +315,11 @@ RULES OF ENGAGEMENT:
 
         try {
           if (call.name === "create_task") {
-            await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', user_id: userId }]);
-            toolResults.push(`Task '${call.args.title}' added to Kanban.`);
+            frontendActions.push({ type: 'create_task', payload: call.args });
+            if (supabase) {
+              await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', scheduled_time: call.args.scheduled_time || null, user_id: userId }]);
+            }
+            toolResults.push(`Task '${call.args.title}' added to Kanban${call.args.scheduled_time ? ` and scheduled for ${call.args.scheduled_time}` : ''}.`);
           } 
           else if (call.name === "trigger_creative_agent") {
             const creativeEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -356,14 +375,27 @@ RULES OF ENGAGEMENT:
             toolResults.push(`Campaign '${call.args.name}' added.`);
           }
           else if (call.name === "add_calendar_event") {
-            await supabase.from('calendar_events').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'add_calendar_event', payload: call.args });
+            if (supabase) {
+              await supabase.from('calendar_events').insert([{ ...call.args, user_id: userId }]);
+            }
             toolResults.push(`Event '${call.args.task_name}' scheduled for ${call.args.day_of_week}.`);
           }
           else if (call.name === "add_inventory_item") {
             frontendActions.push({ type: 'add_inventory_item', payload: call.args });
-            const { error } = await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
-            if (error) console.error("Inventory insert error:", error);
+            if (supabase) {
+              const { error } = await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
+              if (error) console.error("Inventory insert error:", error);
+            }
             toolResults.push(`Inventory item '${call.args.product_name}' synced.`);
+          }
+          else if (call.name === "store_plan") {
+            frontendActions.push({ type: 'store_plan', payload: call.args });
+            if (supabase) {
+              const { error } = await supabase.from('plans').insert([{ ...call.args, user_id: userId }]);
+              if (error) console.error("Plan insert error:", error);
+            }
+            toolResults.push(`Plan '${call.args.title}' stored successfully in the Planning Section.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);
