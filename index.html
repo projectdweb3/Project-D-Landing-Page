@@ -4033,14 +4033,14 @@
 
     <!-- Floating Action Button -->
     <button id="dreambot-fab" class="w-14 h-14 bg-gradient-to-tr from-pd-teal to-pd-orange rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,242,234,0.3)] hover:scale-110 hover:shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all duration-300 ml-auto relative group">
-      <iconify-icon icon="solar:chat-round-dots-bold" width="28" class="text-white"></iconify-icon>
+      <iconify-icon icon="solar:chat-round-line-bold-duotone" width="28" class="text-white"></iconify-icon>
       <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0b0f19] flex items-center justify-center text-[8px] text-white font-bold animate-pulse">1</div>
     </button>
   </div>
 
   <script>
     // Dreambot Logic
-    document.addEventListener('DOMContentLoaded', () => {
+    (() => {
       const fab = document.getElementById('dreambot-fab');
       const windowEl = document.getElementById('dreambot-window');
       const closeBtn = document.getElementById('dreambot-close');
@@ -4141,7 +4141,7 @@
           input.focus();
         }
       });
-    });
+    })();
   </script>
 </body>
 
