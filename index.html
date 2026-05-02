@@ -4130,9 +4130,7 @@
             const data = await res.json();
             typingIndicator.remove();
             
-            if (data.error) {
-              addMessage("I'm sorry, I'm experiencing some technical difficulties right now.", 'bot');
-            } else {
+            if (data.error) { addMessage(data.error, 'bot'); } else {
               addMessage(data.content, 'bot');
               history.push({ sender: 'user', text });
               history.push({ sender: 'bot', text: data.content });
@@ -4152,6 +4150,7 @@
 </body>
 
 </html>
+
 
 
 
