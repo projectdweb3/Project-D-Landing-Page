@@ -270,7 +270,7 @@ RULES OF ENGAGEMENT:
             toolResults.push(`Task '${call.args.title}' added to Kanban.`);
           } 
           else if (call.name === "trigger_creative_agent") {
-            const creativeEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${apiKey}`;
+            const creativeEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const creativePayload = {
               contents: [{ role: "user", parts: [{ text: `You are the Creative Agent. Context: ${businessContext}. User Request: ${call.args.prompt}` }] }]
             };
@@ -345,3 +345,4 @@ RULES OF ENGAGEMENT:
     };
   }
 };
+
