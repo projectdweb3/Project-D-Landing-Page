@@ -281,6 +281,7 @@ RULES OF ENGAGEMENT:
     const responseParts = data.candidates[0].content.parts;
     
     let toolResults = [];
+    let frontendActions = [];
     let finalText = "";
 
     for (const part of responseParts) {
@@ -292,6 +293,7 @@ RULES OF ENGAGEMENT:
         
         if (!supabase) {
           toolResults.push(`[SIMULATION MODE] Tool '${call.name}' called with args: ${JSON.stringify(call.args)}. (Supabase not connected)`);
+          frontendActions.push({ type: call.name, payload: call.args });
           continue;
         }
 
@@ -358,7 +360,9 @@ RULES OF ENGAGEMENT:
             toolResults.push(`Event '${call.args.task_name}' scheduled for ${call.args.day_of_week}.`);
           }
           else if (call.name === "add_inventory_item") {
-            await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'add_inventory_item', payload: call.args });
+            const { error } = await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
+            if (error) console.error("Inventory insert error:", error);
             toolResults.push(`Inventory item '${call.args.product_name}' synced.`);
           }
         } catch (dbError) {
@@ -381,6 +385,7 @@ RULES OF ENGAGEMENT:
       body: JSON.stringify({
         role: "assistant",
         content: finalText,
+        actions: frontendActions,
       }),
     };
 

@@ -256,7 +256,7 @@
 <body>
   <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-gray-50 dark:bg-[#0b0f19]"
     id="bg-container"></div>
-  <div id="root" class="relative z-10 w-full min-h-screen flex text-gray-800 dark:text-gray-200"></div>
+  <div id="root" class="relative z-10 w-full min-h-[100dvh] flex text-gray-800 dark:text-gray-200"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
@@ -304,7 +304,7 @@
       };
 
       return (
-        <div className="w-full min-h-screen flex items-center justify-center relative z-10 px-4">
+        <div className="w-full min-h-[100dvh] flex items-center justify-center relative z-10 px-4">
           <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-xl border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-8 w-full max-w-md shadow-2xl">
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 rounded-2xl shadow-[0_0_20px_rgba(0,242,234,0.3)] overflow-hidden">
@@ -422,7 +422,7 @@
       }, [stage]);
 
       return (
-        <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
+        <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center p-6 relative z-10">
           <div className="absolute top-6 right-6"><ThemeToggle /></div>
           {stage === 0 && (
             <div className="w-full max-w-2xl mx-auto glass-reveal flex flex-col items-center">
@@ -954,7 +954,7 @@
       ];
 
       return (
-        <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden p-2 sm:p-4 gap-2 sm:gap-4 z-10 relative glass-reveal">
+        <div className="flex flex-col lg:flex-row w-full h-[100dvh] overflow-hidden p-2 sm:p-4 gap-2 sm:gap-4 z-10 relative glass-reveal">
 
           {/* Mobile Header */}
           <div className="lg:hidden flex justify-between items-center bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl p-3 shadow-sm z-40 flex-shrink-0">
@@ -1108,8 +1108,37 @@
       const [input, setInput] = useState('');
       const [isTyping, setIsTyping] = useState(false);
       const [attachment, setAttachment] = useState(null);
+      const [threads, setThreads] = useState(() => {
+        try {
+          const saved = localStorage.getItem('amp_chat_threads');
+          if (saved) return JSON.parse(saved);
+        } catch (e) {}
+        return [];
+      });
+      const [showHistory, setShowHistory] = useState(false);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
+
+      const handleNewChat = () => {
+        if (messages.length > 1) {
+          const newThread = { 
+            id: Date.now().toString(), 
+            date: new Date().toLocaleDateString(), 
+            title: messages[1]?.text?.substring(0, 30) || 'New Conversation', 
+            messages 
+          };
+          const updated = [newThread, ...threads];
+          setThreads(updated);
+          localStorage.setItem('amp_chat_threads', JSON.stringify(updated));
+        }
+        setMessages([{ sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+        setShowHistory(false);
+      };
+
+      const loadThread = (t) => {
+        setMessages(t.messages);
+        setShowHistory(false);
+      };
 
       useEffect(() => {
         try {
@@ -1161,6 +1190,20 @@
           .then(res => res.json().then(data => ({ status: res.status, data })))
           .then(({ status, data }) => {
             if (depleteBudget) depleteBudget('CEO', 0.5);
+            
+            // Execute frontend actions to populate localStorage when Supabase is missing/failing
+            if (data.actions && Array.isArray(data.actions)) {
+              data.actions.forEach(action => {
+                try {
+                  if (action.type === 'add_inventory_item') {
+                    const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
+                    local.push({ id: Date.now() + Math.random(), ...action.payload, created_at: new Date().toISOString() });
+                    localStorage.setItem('amp_inventory', JSON.stringify(local));
+                  }
+                } catch (e) { console.error("Parse error", e); }
+              });
+            }
+
             if (status >= 400 || data.error) {
               setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
             } else {
@@ -1212,17 +1255,44 @@
       };
 
       return (
-        <div className="flex flex-col h-full w-full">
-          <div className="p-4 md:p-6 border-b border-gray-200 dark:border-pd-glassBorder flex items-center gap-4 bg-white/50 dark:bg-white/5">
-            <div className="w-10 h-10 rounded-xl bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange shadow-sm">
-              <iconify-icon icon="solar:crown-minimalistic-bold" width="20"></iconify-icon>
+        <div className="flex flex-col h-full w-full relative">
+          <div className="p-4 md:p-6 border-b border-gray-200 dark:border-pd-glassBorder flex items-center justify-between gap-4 bg-white/50 dark:bg-white/5 relative z-20">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange shadow-sm">
+                <iconify-icon icon="solar:crown-minimalistic-bold" width="20"></iconify-icon>
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900 dark:text-white tracking-tight">CEO Agent</h2>
+                <p className="text-xs text-gray-500 hidden sm:block">Orchestrating 3 sub-agents.</p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-semibold text-gray-900 dark:text-white tracking-tight">CEO Agent</h2>
-              <p className="text-xs text-gray-500">Orchestrating 3 sub-agents.</p>
+            
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowHistory(!showHistory)} className={`p-2 transition-all ${showHistory ? 'text-pd-teal' : 'text-gray-500 hover:text-pd-teal'}`}>
+                <iconify-icon icon="solar:history-linear" width="20"></iconify-icon>
+              </button>
+              <button onClick={handleNewChat} className="px-3 py-1.5 text-xs font-semibold bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal border border-pd-teal/30 rounded-lg flex items-center gap-1 transition-all">
+                <iconify-icon icon="solar:pen-new-square-linear"></iconify-icon> <span className="hidden sm:inline">New Chat</span>
+              </button>
             </div>
+            
+            {showHistory && (
+              <div className="absolute top-full right-4 mt-2 w-64 bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl p-2 z-50 max-h-64 overflow-y-auto">
+                <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-2 pt-1">Previous Chats</h3>
+                {threads.length === 0 ? (
+                  <p className="text-xs text-gray-500 px-2 pb-2">No history yet.</p>
+                ) : (
+                  threads.map(t => (
+                    <button key={t.id} onClick={() => loadThread(t)} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg truncate transition-colors">
+                      <span className="block font-semibold mb-0.5 truncate">{t.title}...</span>
+                      <span className="text-[9px] text-gray-500">{t.date}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
-          <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6 relative z-0">
             {messages.map((m, i) => (
               m.sender === 'user' ? (
                 <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm break-all">
@@ -1535,21 +1605,60 @@
       const [formData, setFormData] = useState({ id: null, product_name: '', sku_link: '', stock: '', price: '' });
 
       const fetchInventory = async () => {
-        if (!supabaseClient) return;
-        const { data } = await supabaseClient.from('inventory').select('*').order('created_at', { ascending: false });
-        if (data) setInventory(data);
+        let dbData = null;
+        if (supabaseClient && session?.user?.id) {
+          try {
+            const { data, error } = await supabaseClient.from('inventory').select('*').order('created_at', { ascending: false });
+            if (!error && data) dbData = data;
+          } catch (e) {
+            console.warn("Inventory table missing or fetch failed.", e);
+          }
+        }
+        
+        if (dbData) {
+          setInventory(dbData);
+        } else {
+          try {
+            const local = localStorage.getItem('amp_inventory');
+            if (local) {
+              const parsed = JSON.parse(local);
+              if (Array.isArray(parsed)) setInventory(parsed);
+            }
+          } catch (e) {}
+        }
       };
 
       const handleSave = async () => {
-        if (!supabaseClient || !session?.user?.id) return;
+        if (!session?.user?.id) return;
         const payload = { ...formData, user_id: session.user.id };
-        if (formData.id) {
-          await supabaseClient.from('inventory').update(payload).eq('id', formData.id);
-        } else {
-          delete payload.id;
-          await supabaseClient.from('inventory').insert([payload]);
+        let success = false;
+        if (supabaseClient) {
+          try {
+            if (formData.id) {
+              const { error } = await supabaseClient.from('inventory').update(payload).eq('id', formData.id);
+              if (!error) success = true;
+            } else {
+              delete payload.id;
+              const { error } = await supabaseClient.from('inventory').insert([payload]);
+              if (!error) success = true;
+            }
+          } catch (e) { console.warn("Inventory upsert failed, relying on localStorage."); }
+        }
+
+        if (!success) {
+          try {
+            const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
+            if (formData.id) {
+              const idx = local.findIndex(i => i.id === formData.id);
+              if (idx > -1) local[idx] = { ...local[idx], ...payload };
+            } else {
+              local.push({ id: Date.now() + Math.random(), ...payload, created_at: new Date().toISOString() });
+            }
+            localStorage.setItem('amp_inventory', JSON.stringify(local));
+          } catch (e) {}
         }
         setShowModal(false);
+        fetchInventory();
       };
 
       useEffect(() => {
