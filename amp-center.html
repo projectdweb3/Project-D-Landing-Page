@@ -518,27 +518,17 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks }) => {
-      const [profile, setProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile }) => {
       const [loading, setLoading] = useState(false);
-
-      useEffect(() => {
-        if (supabaseClient && session?.user?.id) {
-          supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single()
-            .then(({ data }) => {
-              if (data) setProfile({ company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' });
-            });
-        }
-      }, [session]);
 
       const handleSave = async () => {
         setLoading(true);
         if (supabaseClient && session?.user?.id) {
           await supabaseClient.from('business_profile').upsert({
             user_id: session.user.id,
-            company_name: profile.company_name,
-            bio: profile.bio,
-            stage: profile.stage,
+            company_name: userProfile.company_name,
+            bio: userProfile.bio,
+            stage: userProfile.stage,
             updated_at: new Date()
           });
           if (onSaveComplete) onSaveComplete();
@@ -574,17 +564,17 @@
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Name</label>
-                  <input type="text" value={profile.company_name} onChange={e => setProfile({...profile, company_name: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors" />
+                  <input type="text" value={userProfile?.company_name || ''} onChange={e => setUserProfile({...userProfile, company_name: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Stage</label>
-                  <select value={profile.stage} onChange={e => setProfile({...profile, stage: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors">
+                  <select value={userProfile?.stage || 'Solo'} onChange={e => setUserProfile({...userProfile, stage: e.target.value})} className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors">
                     {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Business Bio</label>
-                  <textarea value={profile.bio} onChange={e => setProfile({...profile, bio: e.target.value})} rows="4" className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors"></textarea>
+                  <textarea value={userProfile?.bio || ''} onChange={e => setUserProfile({...userProfile, bio: e.target.value})} rows="4" className="w-full bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-colors"></textarea>
                 </div>
                 <button onClick={handleSave} disabled={loading} className="w-full py-2.5 bg-pd-teal hover:bg-[#00d6cf] text-[#0b0f19] rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:shadow-[0_0_25px_rgba(0,242,234,0.5)] transition-all">
                   {loading ? 'Saving...' : 'Save Profile'}
@@ -679,19 +669,21 @@
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
       const [activeTasks, setActiveTasks] = useState([]);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
-      const [showSettingsBeam, setShowSettingsBeam] = useState(false);
       const [contentReferences, setContentReferences] = useState([]);
+      const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
 
       const checkProfile = async () => {
         if (!supabaseClient || !session?.user?.id) return;
         const { data } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
-        if (!data || !data.company_name || !data.stage) {
-          setNeedsProfileSetup(true);
-          setShowSettingsBeam(true);
-          setTimeout(() => setShowSettingsBeam(false), 8000);
+        if (data) {
+          setUserProfile({ company_name: data.company_name || '', bio: data.bio || '', stage: data.stage || 'Solo' });
+          if (!data.company_name || !data.stage) {
+            setNeedsProfileSetup(true);
+          } else {
+            setNeedsProfileSetup(false);
+          }
         } else {
-          setNeedsProfileSetup(false);
-          setShowSettingsBeam(false);
+          setNeedsProfileSetup(true);
         }
       };
 
@@ -766,14 +758,8 @@
             <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
               {navItems.map(item => (
                 <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
-                  {item.id === 'settings' && showSettingsBeam && (
-                  <>
-                    <div className="absolute top-1/2 left-1/2 w-[300%] h-[300%] -translate-x-1/2 -translate-y-1/2 animate-[spin_2s_linear_infinite] z-0 opacity-100" style={{ background: 'conic-gradient(from 0deg, transparent 0%, transparent 60%, #ff5f00 80%, #00f2ea 100%)' }}></div>
-                    <div className="absolute inset-[1.5px] bg-[#fdfdfd] dark:bg-[#0d121f] rounded-[10px] z-0"></div>
-                  </>
-                )}
-                <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
-                <span className="relative z-10">{item.label}</span>
+                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
+                  <span className="relative z-10">{item.label}</span>
                 </button>
               ))}
             </nav>
@@ -796,13 +782,13 @@
           </nav>
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
-            {activeModule === 'neural-chat' && <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} />}
+            {activeModule === 'neural-chat' && <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline />}
             {activeModule === 'client-ledger' && <ClientLedger />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -878,7 +864,7 @@
       );
     };
 
-    const NeuralChat = ({ session, needsProfileSetup, depleteBudget }) => {
+    const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile }) => {
       const [messages, setMessages] = useState([
         { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
       ]);
@@ -887,14 +873,26 @@
       const [attachment, setAttachment] = useState(null);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
+      const prevNeedsProfileSetup = useRef(needsProfileSetup);
 
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
           setMessages([
-            { sender: 'ceo', text: "Systems online. However, before I can assemble your workforce, I need to understand your kingdom. Please click the glowing Settings button on the left to complete your Business Profile.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+            { sender: 'ceo', text: "Systems online. However, before I can assemble your workforce, I need to understand your kingdom. Please click the Settings button on the left to complete your Business Profile.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
           ]);
         }
       }, [needsProfileSetup]);
+
+      useEffect(() => {
+        if (prevNeedsProfileSetup.current && !needsProfileSetup && userProfile?.company_name) {
+          setMessages(prev => [...prev, {
+            sender: 'ceo',
+            text: `Excellent. Now that I understand your goals for ${userProfile.company_name}, we can begin. Would you like me to analyze your target audience, generate some initial brand assets, or formulate a lead strategy?`,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }]);
+        }
+        prevNeedsProfileSetup.current = needsProfileSetup;
+      }, [needsProfileSetup, userProfile?.company_name]);
 
       useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
@@ -919,6 +917,16 @@
         
         const msg = input.trim();
         const currentAttachment = attachment;
+
+        if (needsProfileSetup) {
+          setMessages(prev => [...prev, 
+            { sender: 'user', text: msg, attachment: currentAttachment ? currentAttachment.preview : null, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+            { sender: 'ceo', text: "I cannot execute tasks until your Business Profile is configured. Please complete your settings first.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+          ]);
+          setInput('');
+          setAttachment(null);
+          return;
+        }
         
         setMessages(prev => [...prev, { 
           sender: 'user', 
