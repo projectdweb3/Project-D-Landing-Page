@@ -2,5 +2,8 @@
   command = "echo 'No build command needed'"
   publish = "."
 
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "amp-center.html"
+
 [functions]
   directory = "netlify/functions"
