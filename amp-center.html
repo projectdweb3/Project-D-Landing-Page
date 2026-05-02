@@ -518,7 +518,7 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks }) => {
       const [profile, setProfile] = useState({ company_name: '', bio: '', stage: 'Solo' });
       const [loading, setLoading] = useState(false);
 
@@ -766,15 +766,13 @@
               {navItems.map(item => (
                 <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
                   {item.id === 'settings' && showSettingsBeam && (
-                    <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none ring-2 ring-pd-orange/50 shadow-[0_0_20px_rgba(255,95,0,0.3)] transition-all">
-                      <div className="absolute inset-0 bg-pd-orange/20 w-[150%] h-[150%] skew-x-12 animate-flow-beam blur-[8px]"></div>
-                    </div>
-                  )}
-                  {item.id === 'settings' && needsProfileSetup && !showSettingsBeam && (
-                    <span className="absolute inset-0 border border-pd-orange rounded-xl opacity-50 animate-pulse"></span>
-                  )}
-                  <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal' : (item.id === 'settings' && needsProfileSetup ? 'text-pd-orange relative z-10' : 'relative z-10')}></iconify-icon>
-                  <span className="relative z-10">{item.label}</span>
+                  <>
+                    <div className="absolute top-1/2 left-1/2 w-[300%] h-[300%] -translate-x-1/2 -translate-y-1/2 animate-[spin_2s_linear_infinite] z-0 opacity-100" style={{ background: 'conic-gradient(from 0deg, transparent 0%, transparent 60%, #ff5f00 80%, #00f2ea 100%)' }}></div>
+                    <div className="absolute inset-[1.5px] bg-[#fdfdfd] dark:bg-[#0d121f] rounded-[10px] z-0"></div>
+                  </>
+                )}
+                <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
+                <span className="relative z-10">{item.label}</span>
                 </button>
               ))}
             </nav>
