@@ -254,9 +254,9 @@
     // Initialize Supabase - USER MUST REPLACE THESE WITH ACTUAL KEYS
     const SUPABASE_URL = 'https://alkknerlktomzolqlntt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_3Pip4_Ta8kBDSkUkM5-AGw_SCa4pJc-';
-    let supabase = null;
-    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabaseClient = null;
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
     const AuthScreen = ({ onLogin }) => {
@@ -277,12 +277,12 @@
 
         try {
           if (isSignUp) {
-            const { data, error } = await supabase.auth.signUp({ email, password });
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
             if (error) throw error;
             if (data.session) onLogin(data.session);
             else setError("Check your email for a confirmation link.");
           } else {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw error;
             if (data.session) onLogin(data.session);
           }
@@ -939,11 +939,11 @@
       const [typingSpeed, setTypingSpeed] = useState(0);
 
       useEffect(() => {
-        if (supabase) {
-          supabase.auth.getSession().then(({ data: { session } }) => {
+        if (supabaseClient) {
+          supabaseClient.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
           });
-          supabase.auth.onAuthStateChange((_event, session) => {
+          supabaseClient.auth.onAuthStateChange((_event, session) => {
             setSession(session);
           });
         }
