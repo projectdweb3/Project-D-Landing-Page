@@ -1482,6 +1482,7 @@
 
     const ContentFactory = ({ session, activeTasks, depleteBudget }) => {
       const [prompt, setPrompt] = useState('');
+      const [aspectRatio, setAspectRatio] = useState('1:1');
       const [references, setReferences] = useState([]);
       const [isGenerating, setIsGenerating] = useState(false);
       const [result, setResult] = useState(null);
@@ -1512,6 +1513,7 @@
             method: 'POST',
             body: JSON.stringify({
               prompt,
+              aspectRatio,
               referenceImages: references.map(r => ({ data: r.data, mimeType: r.mimeType })),
               userId: session?.user?.id
             })
@@ -1586,6 +1588,13 @@
                   <input type="text" value={prompt} onChange={e => setPrompt(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleGenerate()} placeholder={references.length === 0 ? "Upload brand materials first, then type prompt..." : "Prompt (e.g. 'Generate a new logo')..."} className="w-full bg-white/90 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-4 md:pl-6 pr-24 md:pr-28 py-3 md:py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-2xl backdrop-blur-xl" />
                   
                   <div className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 md:gap-2">
+                    <select value={aspectRatio} onChange={e => setAspectRatio(e.target.value)} className="bg-transparent text-xs text-gray-500 hover:text-pd-teal focus:outline-none cursor-pointer border-none appearance-none px-2 hidden sm:block">
+                      <option value="1:1">1:1</option>
+                      <option value="16:9">16:9</option>
+                      <option value="9:16">9:16</option>
+                      <option value="4:3">4:3</option>
+                      <option value="3:4">3:4</option>
+                    </select>
                     <button onClick={() => fileRef.current?.click()} className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-teal/20 text-pd-teal flex items-center justify-center hover:bg-pd-teal hover:text-white transition-all group relative">
                       <iconify-icon icon="solar:paperclip-linear" width="18"></iconify-icon>
                       <span className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Attach Reference</span>
