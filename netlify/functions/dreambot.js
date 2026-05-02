@@ -12,7 +12,7 @@ exports.handler = async function (event, context) {
     const body = JSON.parse(event.body);
     const { history, message } = body;
 
-    const modelId = "gemini-1.5-flash";
+    const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
 
     const systemInstruction = `You are Dreambot, the official AI concierge for Project D. 
