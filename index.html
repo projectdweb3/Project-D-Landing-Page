@@ -3999,18 +3999,19 @@
   <div id="dreambot-wrapper" class="fixed bottom-6 right-6 z-[9999] font-sans">
     <!-- Chat Window -->
     <div id="dreambot-window" class="hidden flex-col w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-2xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,242,234,0.15)] overflow-hidden mb-4 transition-all duration-300 origin-bottom-right scale-95 opacity-0">
-      <div class="p-4 bg-gradient-to-r from-[#0b0f19] to-gray-900 border-b border-white/10 flex justify-between items-center">
+      <div class="p-4 bg-[linear-gradient(to_right,#00f2ea,#ff5f00)] border-b border-white/10 flex justify-between items-center rounded-t-2xl">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-pd-teal/20 flex items-center justify-center text-pd-teal border border-pd-teal/30">
-            <iconify-icon icon="solar:smart-home-bold" width="18"></iconify-icon>
+          <img src="images/dreambot-icon.jpg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-10 h-10 rounded-full border-2 border-white/30 object-cover shadow-lg" alt="Dreambot" />
+          <div class="hidden w-10 h-10 rounded-full bg-white/20 items-center justify-center text-white border border-white/30 backdrop-blur-md">
+            <iconify-icon icon="solar:smart-home-bold" width="22"></iconify-icon>
           </div>
           <div>
-            <h3 class="text-white font-medium text-sm">Dreambot</h3>
-            <p class="text-[10px] text-pd-teal flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-pd-teal animate-pulse"></span> Online</p>
+            <h3 class="text-white font-bold text-base drop-shadow-md">Dreambot</h3>
+            <p class="text-[11px] text-white/90 flex items-center gap-1.5 font-medium tracking-wide"><span class="w-2 h-2 rounded-full bg-green-400 border border-white/50 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span> Online</p>
           </div>
         </div>
-        <button id="dreambot-close" class="text-gray-400 hover:text-white transition-colors">
-          <iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon>
+        <button id="dreambot-close" class="text-white/80 hover:text-white transition-colors hover:rotate-90 duration-300">
+          <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
         </button>
       </div>
       
