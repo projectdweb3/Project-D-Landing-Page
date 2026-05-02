@@ -2,13 +2,11 @@ const { GoogleGenerativeAI, FunctionDeclaration, SchemaType } = require("@google
 const { createClient } = require("@supabase/supabase-js");
 
 exports.handler = async function (event, context) {
-  // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    // 1. Initialize Clients using Environment Variables
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY environment variable is missing.");
@@ -17,94 +15,116 @@ exports.handler = async function (event, context) {
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
-    
     let supabase = null;
     if (supabaseUrl && supabaseKey) {
       supabase = createClient(supabaseUrl, supabaseKey);
     }
 
-    // 2. Parse the incoming message from the frontend
     const body = JSON.parse(event.body);
     const userMessage = body.message;
 
-    // 3. Define the CEO Agent's Persona and Tools
+    // The Expanded CEO Brain
     const systemInstruction = `You are the CEO Agent of the AMP Center, an elite AI orchestrator. 
-Your job is to manage the business, oversee the other agents (CMO, CTO, Creative), and ensure everything runs smoothly. 
-You are authoritative, highly efficient, and results-driven. 
-If the user asks you to create a task, manage a project, or add something to the to-do list, you MUST use the 'create_task' tool to physically add it to the Kanban board database. Do not just say you will do it—actually use the tool.`;
+Your core directive is to onboard new users, understand their business deeply, and then build and manage an autonomous AI workforce tailored to their specific needs.
 
-    const createTaskDeclaration = {
-      name: "create_task",
-      description: "Creates a new task and adds it to the Kanban board database.",
-      parameters: {
-        type: SchemaType.OBJECT,
-        properties: {
-          title: {
-            type: SchemaType.STRING,
-            description: "The title or description of the task (e.g., 'Draft new marketing email')",
+RULES OF ENGAGEMENT:
+1. If the user has not provided enough details about their business (Industry, Goals, Target Audience, Branding), you MUST ask them probing questions to gather this data.
+2. Once you have enough data, use the 'update_business_profile' tool to save this information to the database.
+3. After the profile is established, dictate the best possible team structure. Use the 'create_agent' tool to physically "hire" the required agents (e.g., CMO for marketing, CTO for tech, Creative for design). Explain your reasoning to the user.
+4. When executing actions or managing projects, use the 'create_task' tool to assign work to the appropriate agents on the Kanban board.
+5. Be authoritative, strategic, and highly efficient. Do not hallucinate actions—if you say you are creating a task or an agent, you MUST trigger the corresponding tool.`;
+
+    const tools = [
+      {
+        functionDeclarations: [
+          {
+            name: "create_task",
+            description: "Creates a new task and adds it to the Kanban board database.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                title: { type: SchemaType.STRING, description: "The title of the task." },
+                column_id: { type: SchemaType.STRING, description: "Column: 'todo', 'in_progress', 'review', 'done'." },
+                assigned_agent: { type: SchemaType.STRING, description: "The agent role responsible for this task (e.g., 'CMO', 'Creative')." }
+              },
+              required: ["title", "column_id"],
+            },
           },
-          column_id: {
-            type: SchemaType.STRING,
-            description: "The column where the task belongs. Must be one of: 'todo', 'in_progress', 'review', 'done'.",
+          {
+            name: "update_business_profile",
+            description: "Saves or updates the core business details of the user's company.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                company_name: { type: SchemaType.STRING },
+                industry: { type: SchemaType.STRING },
+                goals: { type: SchemaType.STRING },
+                branding_notes: { type: SchemaType.STRING }
+              },
+              required: ["industry", "goals"],
+            },
           },
-        },
-        required: ["title", "column_id"],
-      },
-    };
+          {
+            name: "create_agent",
+            description: "Hires a new specialized AI agent into the workforce.",
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                role_name: { type: SchemaType.STRING, description: "The title of the agent (e.g., 'Chief Marketing Officer', 'Lead Copywriter')." },
+                persona_description: { type: SchemaType.STRING, description: "The detailed system prompt and responsibilities for this agent." }
+              },
+              required: ["role_name", "persona_description"],
+            },
+          }
+        ]
+      }
+    ];
 
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-pro",
       systemInstruction: { parts: [{ text: systemInstruction }] },
-      tools: [{ functionDeclarations: [createTaskDeclaration] }],
+      tools: tools,
     });
 
-    // 4. Send the prompt to Gemini
     const chatSession = model.startChat();
     const result = await chatSession.sendMessage(userMessage);
     const response = result.response;
 
-    // 5. Handle Tool Calls (If the AI decided to use 'create_task')
     let toolResults = [];
-    let finalText = response.text();
+    let finalText = response.text() || "I am processing your request.";
 
     const functionCalls = response.functionCalls();
     if (functionCalls && functionCalls.length > 0) {
       for (const call of functionCalls) {
-        if (call.name === "create_task") {
-          const args = call.args;
-          
-          if (supabase) {
-            // Actually insert the task into the Supabase 'tasks' table
-            const { data, error } = await supabase
-              .from('tasks')
-              .insert([
-                { title: args.title, status: args.column_id, agent: 'CEO' }
-              ]);
-              
-            if (error) {
-              console.error("Supabase Error:", error);
-              toolResults.push(`Failed to create task: ${error.message}`);
-            } else {
-              toolResults.push(`Task '${args.title}' was successfully added to the Kanban board.`);
-            }
-          } else {
-            // Mock response if Supabase isn't connected yet
-            toolResults.push(`[SIMULATION MODE] Task '${args.title}' would have been added to the DB, but Supabase is not connected.`);
+        if (!supabase) {
+          toolResults.push(`[SIMULATION MODE] Tool '${call.name}' called with args: ${JSON.stringify(call.args)}. (Supabase not connected)`);
+          continue;
+        }
+
+        try {
+          if (call.name === "create_task") {
+            await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO' }]);
+            toolResults.push(`Task '${call.args.title}' added to Kanban.`);
+          } 
+          else if (call.name === "update_business_profile") {
+            await supabase.from('business_profile').insert([call.args]);
+            toolResults.push(`Business Profile updated successfully.`);
           }
+          else if (call.name === "create_agent") {
+            await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description }]);
+            toolResults.push(`Agent '${call.args.role_name}' successfully hired and initialized.`);
+          }
+        } catch (dbError) {
+           toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);
         }
       }
-
-      // Return a combined response to the frontend indicating tool usage
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          role: "assistant",
-          content: `I have executed your request.\n\nActions Taken:\n- ${toolResults.join('\n- ')}`,
-        }),
-      };
     }
 
-    // 6. Return the standard text response to the frontend
+    // Append tool execution summary if tools were used
+    if (toolResults.length > 0) {
+      finalText += `\n\n**Actions Executed:**\n- ${toolResults.join('\n- ')}`;
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -117,7 +137,7 @@ If the user asks you to create a task, manage a project, or add something to the
     console.error("Function Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "An error occurred inside the AI Agent backend. Check Netlify function logs for details." }),
+      body: JSON.stringify({ error: "Backend initialization error. Ensure API keys are set." }),
     };
   }
 };
