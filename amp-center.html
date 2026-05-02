@@ -715,6 +715,16 @@
         });
       };
 
+      const handleProfileSaved = async () => {
+        await checkProfile();
+        setTriggerPrompt({
+          sender: 'ceo',
+          text: `Excellent. Now that I understand your goals for your business, we can begin. Would you like me to analyze your target audience, generate some initial brand assets, or formulate a lead strategy?`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        setActiveModule('neural-chat');
+      };
+
       useEffect(() => {
         fetchTasks();
         checkProfile();
@@ -798,7 +808,7 @@
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={checkProfile} activeTasks={activeTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={activeTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -883,7 +893,6 @@
       const [attachment, setAttachment] = useState(null);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
-      const prevNeedsProfileSetup = useRef(needsProfileSetup);
 
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
@@ -894,22 +903,11 @@
       }, [needsProfileSetup]);
 
       useEffect(() => {
-        if (triggerPrompt && !needsProfileSetup) {
+        if (triggerPrompt) {
           setMessages(prev => [...prev, triggerPrompt]);
           setTriggerPrompt(null);
         }
-      }, [triggerPrompt, needsProfileSetup]);
-
-      useEffect(() => {
-        if (prevNeedsProfileSetup.current && !needsProfileSetup && userProfile?.company_name) {
-          setMessages(prev => [...prev, {
-            sender: 'ceo',
-            text: `Excellent. Now that I understand your goals for ${userProfile.company_name}, we can begin. Would you like me to analyze your target audience, generate some initial brand assets, or formulate a lead strategy?`,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }]);
-        }
-        prevNeedsProfileSetup.current = needsProfileSetup;
-      }, [needsProfileSetup, userProfile?.company_name]);
+      }, [triggerPrompt]);
 
       useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
