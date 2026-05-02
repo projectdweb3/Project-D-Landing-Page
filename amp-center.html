@@ -512,6 +512,23 @@
       const [activeModule, setActiveModule] = useState('neural-chat');
       const [isStatsOpen, setIsStatsOpen] = useState(false);
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
+      const [activeTasks, setActiveTasks] = useState([]);
+
+      const fetchTasks = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false }).limit(5);
+        if (data) setActiveTasks(data);
+      };
+
+      useEffect(() => {
+        fetchTasks();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:tasks')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, fetchTasks)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
 
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
@@ -608,9 +625,11 @@
                 <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
               </div>
               <div className="space-y-4">
-                <TaskCard agent="Lead Gen Agent" task="Scraping LinkedIn for 'SaaS Founders'" status="running" color="pd-teal" />
-                <TaskCard agent="Creative Agent" task="Vibe coding 3D Assets for Alpha" status="running" color="pd-orange" />
-                <TaskCard agent="CMO Agent" task="Drafting copy for Q3 funnel" status="done" color="pd-teal" />
+                {activeTasks.length > 0 ? activeTasks.map(task => (
+                  <TaskCard key={task.id} agent={task.agent || 'CEO'} task={task.title} status={task.status === 'done' ? 'done' : 'running'} color={task.agent === 'Creative' ? 'pd-orange' : 'pd-teal'} />
+                )) : (
+                  <div className="text-xs text-gray-500 italic">No active tasks. Chat with the CEO to assign work.</div>
+                )}
               </div>
               <div className="mt-auto pt-6 border-t border-gray-200 dark:border-pd-glassBorder">
                 <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Cost Tracking</h3>
@@ -739,11 +758,23 @@
     };
 
     const LeadPipeline = () => {
-      const leads = [
-        { id: 1, name: "Acme Corp", contact: "john@acme.com", stage: "Inbound", value: "$5,000", prob: "30%", next: "Send info deck", amp: false },
-        { id: 2, name: "Nexus Web3", contact: "ceo@nexus.io", stage: "Qualifying", value: "$12,000", prob: "60%", next: "Discovery Call scheduled", amp: true },
-        { id: 3, name: "Stark Industries", contact: "tony@stark.com", stage: "Negotiation", value: "$45,000", prob: "90%", next: "Contract out for signature", amp: true },
-      ];
+      const [leads, setLeads] = useState([]);
+
+      const fetchLeads = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('leads').select('*').order('created_at', { ascending: false });
+        if (data) setLeads(data);
+      };
+
+      useEffect(() => {
+        fetchLeads();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:leads')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, fetchLeads)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
 
       return (
         <div className="p-4 md:p-8 h-full flex flex-col">
@@ -765,7 +796,7 @@
                       <div className="flex flex-col items-end gap-1">
                         <span className="text-[8px] font-mono text-gray-400 uppercase">AMP Mode</span>
                         <label className="flex items-center cursor-pointer relative">
-                          <input type="checkbox" className="sr-only toggle-checkbox" defaultChecked={lead.amp} />
+                          <input type="checkbox" className="sr-only toggle-checkbox" defaultChecked={lead.is_amp_enabled} />
                           <div className="toggle-label w-10 h-5 rounded-full transition-colors relative flex items-center">
                             <div className="toggle-thumb w-4 h-4 bg-white rounded-full absolute left-0.5 transition-transform group-hover:shadow-sm"></div>
                           </div>
@@ -773,10 +804,10 @@
                       </div>
                     </div>
                     <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
-                      <div className="flex justify-between"><span className="text-gray-500">Value</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Value</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value || '$0'}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob || '0%'}</span></div>
                     </div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next_step || 'N/A'}</div>
                   </div>
                 ))}
               </div>
@@ -787,11 +818,24 @@
     };
 
     const ClientLedger = () => {
-      const clients = [
-        { id: 1, name: "OmniCorp", retainer: "$3k/mo", agent: "Support & CMO", ltv: "$36,000", nextTask: "Monthly SEO Report generation" },
-        { id: 2, name: "Globex", retainer: "$1k/mo", agent: "Support", ltv: "$8,500", nextTask: "Routine check-in email" },
-        { id: 3, name: "Initech", retainer: "$5k/mo", agent: "Creative & CTO", ltv: "$115,000", nextTask: "App v2.0 UI overhaul vibe coding" },
-      ];
+      const [clients, setClients] = useState([]);
+
+      const fetchClients = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('clients').select('*').order('created_at', { ascending: false });
+        if (data) setClients(data);
+      };
+
+      useEffect(() => {
+        fetchClients();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:clients')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, fetchClients)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col">
           <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
@@ -804,10 +848,10 @@
                 {clients.map(c => (
                   <tr key={c.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
                     <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]"><div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>{c.name}</td>
-                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.retainer}</td>
-                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv}</td>
-                    <td className="p-4"><span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{c.agent}</span></td>
-                    <td className="p-4 text-gray-500 text-xs">{c.nextTask}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.retainer || '-'}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv || '-'}</td>
+                    <td className="p-4"><span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{c.assigned_agents || 'Support'}</span></td>
+                    <td className="p-4 text-gray-500 text-xs">{c.next_task || 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -818,24 +862,45 @@
     };
 
     const MarketingPipeline = () => {
+      const [campaigns, setCampaigns] = useState([]);
+
+      const fetchCampaigns = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('campaigns').select('*').order('created_at', { ascending: false });
+        if (data) setCampaigns(data);
+      };
+
+      useEffect(() => {
+        fetchCampaigns();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:campaigns')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'campaigns' }, fetchCampaigns)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col">
           <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Marketing Pipeline</h2><p className="text-xs text-gray-500">Campaign execution and team resource sharing.</p></div>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
-            {['Ideation', 'Production', 'Review', 'Deployed'].map(col => (
+            {['Planning', 'Active', 'Completed'].map(col => (
               <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-pd-orange border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
-                {col === 'Production' && (
-                  <div className="amp-card p-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Q3 Web3 Funnel</h4>
-                    <p className="text-xs text-gray-500 mb-3">Creating landing page assets and ad copy.</p>
-                    <div className="flex gap-2">
-                      <span className="px-2 py-1 bg-pd-teal/20 text-pd-teal rounded text-[10px]">CMO</span>
-                      <span className="px-2 py-1 bg-pd-orange/20 text-pd-orange rounded text-[10px]">Creative</span>
+                
+                {campaigns.filter(c => c.stage === col).map(campaign => (
+                  <div key={campaign.id} className="amp-card p-4">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{campaign.name}</h4>
+                    <p className="text-xs text-gray-500 mb-3">{campaign.description || 'No description'}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {campaign.agents_assigned && campaign.agents_assigned.split(',').map((agent, i) => (
+                        <span key={i} className="px-2 py-1 bg-pd-teal/20 text-pd-teal rounded text-[10px]">{agent.trim()}</span>
+                      ))}
                     </div>
                   </div>
-                )}
-                {col === 'Ideation' && (
+                ))}
+                
+                {col === 'Planning' && campaigns.filter(c => c.stage === col).length === 0 && (
                   <div className="amp-card p-4 opacity-70 border-dashed">
                     <div className="flex items-center justify-center h-16 text-xs text-gray-500"><iconify-icon icon="solar:add-circle-linear" className="mr-1"></iconify-icon> Add Campaign</div>
                   </div>
@@ -893,6 +958,45 @@
     };
 
     const TacticalCalendar = () => {
+      const [events, setEvents] = useState([]);
+
+      const fetchEvents = async () => {
+        if (!supabaseClient) return;
+        const { data } = await supabaseClient.from('calendar_events').select('*').order('created_at', { ascending: true });
+        if (data) setEvents(data);
+      };
+
+      useEffect(() => {
+        fetchEvents();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:calendar_events')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'calendar_events' }, fetchEvents)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        }
+      }, []);
+
+      const dayOffsets = { 'Mon': '10px', 'Tue': '130px', 'Wed': '250px', 'Thu': '370px', 'Fri': '490px' };
+      const agentColors = {
+        'CMO': { icon: 'solar:global-linear', text: 'text-pd-teal', bg: 'bg-pd-teal/20', border: 'border-pd-teal/50' },
+        'Creative': { icon: 'solar:palette-linear', text: 'text-pd-orange', bg: 'bg-pd-orange/20', border: 'border-pd-orange/50' },
+        'CTO': { icon: 'solar:settings-linear', text: 'text-gray-700 dark:text-gray-300', bg: 'bg-gray-200 dark:bg-white/10', border: 'border-gray-300 dark:border-white/20' }
+      };
+
+      const groupedEvents = events.reduce((acc, event) => {
+        const role = event.agent_role || 'General';
+        if (!acc[role]) acc[role] = [];
+        acc[role].push(event);
+        return acc;
+      }, {});
+
+      // Add default agents if empty
+      if (Object.keys(groupedEvents).length === 0) {
+        groupedEvents['CMO'] = [];
+        groupedEvents['Creative'] = [];
+        groupedEvents['CTO'] = [];
+      }
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col">
           <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Tactical Calendar</h2><p className="text-xs text-gray-500">Gantt-style timeline of agent deployments and heartbeats.</p></div>
@@ -903,28 +1007,23 @@
                 <div className="w-[120px]">Mon</div><div className="w-[120px]">Tue</div><div className="w-[120px]">Wed</div><div className="w-[120px]">Thu</div><div className="w-[120px]">Fri</div>
               </div>
 
-              <div className="flex items-center">
-                <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:global-linear" className="text-pd-teal"></iconify-icon> CMO</div>
-                <div className="flex-1 h-10 relative pl-4">
-                  <div className="absolute top-1/2 left-[10px] w-[100px] h-6 -translate-y-1/2 rounded bg-pd-teal/20 border border-pd-teal/50 flex items-center px-2 text-[10px] text-pd-teal whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-teal/30">Write Ad Copy</div>
-                  <div className="absolute top-1/2 left-[250px] w-[200px] h-6 -translate-y-1/2 rounded bg-pd-teal/20 border border-pd-teal/50 flex items-center px-2 text-[10px] text-pd-teal whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-teal/30">A/B Testing Campaign</div>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:palette-linear" className="text-pd-orange"></iconify-icon> Creative</div>
-                <div className="flex-1 h-10 relative pl-4">
-                  <div className="absolute top-1/2 left-[130px] w-[110px] h-6 -translate-y-1/2 rounded bg-pd-orange/20 border border-pd-orange/50 flex items-center px-2 text-[10px] text-pd-orange whitespace-nowrap shadow-sm cursor-pointer hover:bg-pd-orange/30">Vibe Code Assets</div>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"><iconify-icon icon="solar:settings-linear" className="text-gray-500"></iconify-icon> CTO</div>
-                <div className="flex-1 h-10 relative pl-4">
-                  <div className="absolute top-1/2 left-[380px] w-[150px] h-6 -translate-y-1/2 rounded bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 flex items-center px-2 text-[10px] text-gray-700 dark:text-gray-300 whitespace-nowrap shadow-sm cursor-pointer hover:bg-gray-300 dark:hover:bg-white/20">Deploy Landing Page</div>
-                </div>
-              </div>
-
+              {Object.keys(groupedEvents).map(role => {
+                const style = agentColors[role] || agentColors['CTO'];
+                return (
+                  <div key={role} className="flex items-center">
+                    <div className="w-32 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 z-20 py-2 text-xs text-gray-600 dark:text-gray-400 font-mono font-bold flex items-center gap-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                      <iconify-icon icon={style.icon} className={style.text}></iconify-icon> {role}
+                    </div>
+                    <div className="flex-1 h-10 relative pl-4">
+                      {groupedEvents[role].map(ev => (
+                        <div key={ev.id} className={`absolute top-1/2 h-6 -translate-y-1/2 rounded ${style.bg} border ${style.border} flex items-center px-2 text-[10px] ${style.text} whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80`} style={{ left: dayOffsets[ev.day_of_week] || '10px', width: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={ev.task_name}>
+                          {ev.task_name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
