@@ -698,9 +698,13 @@
           method: 'POST',
           body: JSON.stringify({ message: msg, userId: session?.user?.id })
         })
-          .then(res => res.json())
-          .then(data => {
-            setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+          .then(res => res.json().then(data => ({ status: res.status, data })))
+          .then(({ status, data }) => {
+            if (status >= 400 || data.error) {
+              setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            } else {
+              setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            }
             setIsTyping(false);
           })
           .catch(err => {
