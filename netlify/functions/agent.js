@@ -42,7 +42,7 @@ RULES OF ENGAGEMENT:
 7. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
 8. Be authoritative, strategic, and highly efficient. Do not hallucinate actions—if you say you are performing an action, you MUST trigger the corresponding tool.`;
 
-    const modelId = "gemini-3.0-flash";
+    const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
 
     const payload = {
