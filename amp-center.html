@@ -518,7 +518,7 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
       const [confirmText, setConfirmText] = useState('');
@@ -578,25 +578,6 @@
         setLoading(false);
       };
 
-      const handleConnect = (platform) => {
-        setLoading(true);
-        setTimeout(() => {
-          const newIntegrations = { ...(userProfile.integrations || {}), [platform]: true };
-          setUserProfile({ ...userProfile, integrations: newIntegrations });
-          setLoading(false);
-          // Auto-save the new integration state immediately
-          try {
-            localStorage.setItem('amp_business_profile', JSON.stringify({
-              company_name: userProfile.company_name,
-              bio: userProfile.bio,
-              stage: userProfile.stage,
-              store_link: userProfile.store_link,
-              integrations: newIntegrations
-            }));
-          } catch(e) {}
-        }, 1500); // Simulate connection delay
-      };
-
       const handleLogout = async () => {
         if (supabaseClient) {
           await supabaseClient.auth.signOut();
@@ -651,54 +632,48 @@
             </div>
 
             {/* Integrations */}
-            <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
+            {userProfile?.stage === 'Ecomm' && (
+              <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
               <div className="absolute inset-0 bg-gradient-to-tr from-pd-teal/5 to-transparent pointer-events-none"></div>
-              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> Connected Accounts</h3>
+              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> Agentic Integrations</h3>
               <div className="space-y-4 relative z-10 flex-1">
-                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex items-center justify-between shadow-sm">
+                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-[#96bf48]/10 flex items-center justify-center text-[#96bf48] text-xl shadow-inner">
                       <iconify-icon icon="simple-icons:shopify"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Shopify</div>
-                      <div className="text-[10px] text-gray-500">Auto-sync inventory & sales</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">Shopify Vision Sync</div>
+                      <div className="text-[10px] text-gray-500">Auto-extracts inventory from screenshots</div>
                     </div>
                   </div>
-                  {userProfile?.integrations?.shopify ? (
-                    <span className="px-3 py-1.5 bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-wide uppercase rounded-full flex items-center gap-1"><iconify-icon icon="solar:check-circle-bold"></iconify-icon> Connected</span>
-                  ) : (
-                    <button onClick={() => handleConnect('shopify')} disabled={loading} className="px-4 py-1.5 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 hover:border-pd-teal/50 hover:text-pd-teal rounded-full text-xs font-semibold transition-all shadow-sm">Connect</button>
-                  )}
                 </div>
 
-                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex items-center justify-between shadow-sm">
+                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-[#F1641E]/10 flex items-center justify-center text-[#F1641E] text-xl shadow-inner">
                       <iconify-icon icon="simple-icons:etsy"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Etsy</div>
-                      <div className="text-[10px] text-gray-500">Auto-sync products & orders</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">Etsy Vision Sync</div>
+                      <div className="text-[10px] text-gray-500">Auto-extracts products from screenshots</div>
                     </div>
                   </div>
-                  {userProfile?.integrations?.etsy ? (
-                    <span className="px-3 py-1.5 bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-wide uppercase rounded-full flex items-center gap-1"><iconify-icon icon="solar:check-circle-bold"></iconify-icon> Connected</span>
-                  ) : (
-                    <button onClick={() => handleConnect('etsy')} disabled={loading} className="px-4 py-1.5 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 hover:border-pd-teal/50 hover:text-pd-teal rounded-full text-xs font-semibold transition-all shadow-sm">Connect</button>
-                  )}
+                </div>
+                
+                <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-gray-200 dark:border-white/5">
+                  <strong>API connections are disabled.</strong> To sync your store, navigate to the Neural Chat and upload screenshots of your product catalog. The CEO Agent will automatically extract and update your inventory.
                 </div>
               </div>
               
-              {(userProfile?.integrations?.shopify || userProfile?.integrations?.etsy) && (
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 relative z-10">
-                  <button onClick={() => window.simulateSale && window.simulateSale()} className="w-full py-3 bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal border border-pd-teal/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm">
-                    <iconify-icon icon="solar:magic-stick-3-bold"></iconify-icon> Trigger Simulated Sale
-                  </button>
-                  <p className="text-[10px] text-gray-500 text-center mt-2">Deducts inventory, adds revenue, and logs a client.</p>
-                </div>
-              )}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 relative z-10">
+                <button onClick={() => window.simulateSale && window.simulateSale()} className="w-full py-3 bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal border border-pd-teal/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm">
+                  <iconify-icon icon="solar:magic-stick-3-bold"></iconify-icon> Trigger Simulated Sale
+                </button>
+                <p className="text-[10px] text-gray-500 text-center mt-2">Deducts inventory, adds revenue, and logs a client.</p>
+              </div>
             </div>
+            )})}
 
             {/* Agent Workforce Tree */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto shadow-xl relative">
@@ -1012,11 +987,9 @@
 
       useEffect(() => {
         window.simulateSale = () => {
-          const isShopify = userProfile.integrations?.shopify;
-          const isEtsy = userProfile.integrations?.etsy;
-          if (!isShopify && !isEtsy) return;
+          if (userProfile?.stage !== 'Ecomm') return;
           
-          const platform = isShopify ? 'Shopify' : 'Etsy';
+          const platform = 'Store';
           
           // Add to finances
           const finances = JSON.parse(localStorage.getItem('amp_finances') || '[]');
@@ -1070,7 +1043,7 @@
 
         // Automatic periodic sync if integrations exist
         let interval;
-        if (userProfile?.integrations?.shopify || userProfile?.integrations?.etsy) {
+        if (userProfile?.stage === 'Ecomm') {
            interval = setInterval(() => {
              // Randomly simulate a sale every 60s for demo purposes (50% chance)
              if (Math.random() > 0.5 && window.simulateSale) window.simulateSale();
