@@ -726,6 +726,61 @@
         }, 150);
       };
 
+      const triggerContentPrompt = () => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          if (needsProfileSetup) {
+            setTriggerPrompt({ sender: 'ceo', text: "I cannot generate content until your Business Profile is complete. Please navigate to the Settings tab and save your profile first so my Creative Director understands your brand." });
+          } else {
+            setTriggerPrompt({ sender: 'ceo', text: "You want the Creative Director to generate some new content. Please describe what kind of asset you need (e.g. 'A promotional image for my new service' or 'A logo for my brand')." });
+          }
+        }, 150);
+      };
+
+      const triggerClientPrompt = () => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          if (needsProfileSetup) {
+            setTriggerPrompt({ sender: 'ceo', text: "I cannot manage your Client Ledger until your Business Profile is complete. Please navigate to the Settings tab and save your profile first." });
+          } else {
+            setTriggerPrompt({ sender: 'ceo', text: "You'd like to add a new Client to the Ledger. Please provide their Name, Retainer value, and any specific tasks you want the team to handle for them." });
+          }
+        }, 150);
+      };
+
+      const handleCsvImport = async (e, table, mapper) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+          const text = ev.target.result;
+          const lines = text.split('\n').filter(l => l.trim().length > 0);
+          if (lines.length < 2) return;
+          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+          const records = lines.slice(1).map(line => {
+            const values = line.split(',');
+            const obj = {};
+            headers.forEach((h, i) => { obj[h] = values[i]?.trim(); });
+            return obj;
+          });
+          
+          if (supabaseClient && session?.user?.id) {
+             const toInsert = records.map(r => mapper(r, session.user.id));
+             try {
+               await supabaseClient.from(table).insert(toInsert);
+               alert(`Successfully imported ${toInsert.length} records into ${table}!`);
+             } catch (err) {
+               console.error("Import failed:", err);
+               alert("Failed to import. Ensure your CSV matches the required columns.");
+             }
+          } else {
+             alert(`Database not connected. Simulated import of ${records.length} records.`);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = null; // reset input
+      };
+
       const checkProfile = async () => {
         let loadedProfile = { company_name: '', bio: '', stage: 'Solo' };
         let setupNeeded = true;
@@ -866,11 +921,11 @@
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} />
             </div>
-            {activeModule === 'lead-pipeline' && <LeadPipeline onAddLead={triggerLeadPrompt} />}
-            {activeModule === 'client-ledger' && <ClientLedger />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
+            {activeModule === 'client-ledger' && <ClientLedger onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar />}
-            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} />}
+            {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={activeTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={activeTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
           </main>
 
@@ -1107,13 +1162,18 @@
       );
     };
 
-    const LeadPipeline = ({ onAddLead }) => {
+    const LeadPipeline = ({ onAddLead, onImportCsv }) => {
       const [leads, setLeads] = useState([]);
 
       const fetchLeads = async () => {
         if (!supabaseClient) return;
         const { data } = await supabaseClient.from('leads').select('*').order('created_at', { ascending: false });
         if (data) setLeads(data);
+      };
+
+      const updateLeadStage = async (id, newStage) => {
+        if (!supabaseClient) return;
+        await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id);
       };
 
       useEffect(() => {
@@ -1130,7 +1190,15 @@
         <div className="p-4 md:p-8 h-full flex flex-col">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Lead Pipeline</h2><p className="text-xs text-gray-500">Manage prospects and activate AI sequences.</p></div>
-            <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto"><iconify-icon icon="solar:add-circle-linear"></iconify-icon> Add Lead</button>
+            <div className="flex gap-2 w-full md:w-auto">
+              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
+                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              </label>
+              <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Add Lead
+              </button>
+            </div>
           </div>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
             {['Inbound', 'Qualifying', 'Negotiation'].map(col => (
@@ -1144,13 +1212,15 @@
                         <span className="text-[10px] text-gray-500">{lead.contact}</span>
                       </div>
                       <div className="flex flex-col items-end gap-1">
-                        <span className="text-[8px] font-mono text-gray-400 uppercase">AMP Mode</span>
-                        <label className="flex items-center cursor-pointer relative">
-                          <input type="checkbox" className="sr-only toggle-checkbox" defaultChecked={lead.is_amp_enabled} />
-                          <div className="toggle-label w-10 h-5 rounded-full transition-colors relative flex items-center">
-                            <div className="toggle-thumb w-4 h-4 bg-white rounded-full absolute left-0.5 transition-transform group-hover:shadow-sm"></div>
-                          </div>
-                        </label>
+                        <select 
+                          value={lead.stage} 
+                          onChange={(e) => updateLeadStage(lead.id, e.target.value)}
+                          className="text-[10px] bg-black/5 dark:bg-white/10 border-none rounded py-1 px-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-pd-teal"
+                        >
+                          <option value="Inbound">Inbound</option>
+                          <option value="Qualifying">Qualifying</option>
+                          <option value="Negotiation">Negotiation</option>
+                        </select>
                       </div>
                     </div>
                     <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
@@ -1167,7 +1237,7 @@
       );
     };
 
-    const ClientLedger = () => {
+    const ClientLedger = ({ onAddClient, onImportCsv }) => {
       const [clients, setClients] = useState([]);
 
       const fetchClients = async () => {
@@ -1188,7 +1258,18 @@
 
       return (
         <div className="p-4 md:p-8 h-full flex flex-col">
-          <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Client Ledger</h2><p className="text-xs text-gray-500">Active accounts and automated deliverable tracking.</p></div>
+            <div className="flex gap-2 w-full md:w-auto">
+              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
+                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              </label>
+              <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Add Client
+              </button>
+            </div>
+          </div>
           <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
             <table className="w-full text-left text-sm min-w-[600px]">
               <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">

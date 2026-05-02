@@ -62,7 +62,7 @@ RULES OF ENGAGEMENT:
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
 7. If the user gives you new business details in chat, instruct them to update their Settings profile.
 8. Dictate the best team structure and use 'create_agent' to hire specialized agents.
-9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline.
+9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to move or update a lead, use 'update_lead' to change their stage.
 10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
 11. To schedule events or agent deployments on the calendar, use 'add_calendar_event'.
 12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.`;
@@ -158,6 +158,19 @@ RULES OF ENGAGEMENT:
                   prob: { type: "STRING" },
                   next_step: { type: "STRING" },
                   is_amp_enabled: { type: "BOOLEAN" }
+                },
+                required: ["name", "stage"],
+              },
+            },
+            {
+              name: "update_lead",
+              description: "Updates an existing lead's stage or information in the CRM Pipeline.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The name of the lead to update." },
+                  stage: { type: "STRING", description: "The new stage: 'Inbound', 'Qualifying', 'Negotiation'." },
+                  next_step: { type: "STRING", description: "Any new next steps." }
                 },
                 required: ["name", "stage"],
               },
@@ -302,6 +315,18 @@ RULES OF ENGAGEMENT:
             await supabase.from('leads').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Lead '${call.args.name}' added to pipeline.`);
           }
+          else if (call.name === "update_lead") {
+            const updateData = { stage: call.args.stage };
+            if (call.args.next_step) updateData.next_step = call.args.next_step;
+            
+            // Note: In a robust system, we would match by ID. Here we match by name for simplicity via NLP.
+            const { data, error } = await supabase.from('leads').update(updateData).eq('name', call.args.name).eq('user_id', userId).select();
+            if (data && data.length > 0) {
+              toolResults.push(`Lead '${call.args.name}' successfully moved to ${call.args.stage}.`);
+            } else {
+              toolResults.push(`Failed to update. Could not find a lead named '${call.args.name}' in the database.`);
+            }
+          }
           else if (call.name === "create_client") {
             await supabase.from('clients').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Client '${call.args.name}' added to ledger.`);
@@ -345,4 +370,5 @@ RULES OF ENGAGEMENT:
     };
   }
 };
+
 
