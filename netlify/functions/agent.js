@@ -23,14 +23,31 @@ exports.handler = async function (event, context) {
     const body = JSON.parse(event.body);
     const userMessage = body.message;
     const userId = body.userId;
+    const attachment = body.attachment; // { data: base64, mimeType: string }
 
     if (!userId) {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing userId" }) };
     }
 
+    // Dynamic Context Injection
+    let businessContext = "The user has not provided their business profile yet. Ask them about their industry, company name, and goals.";
+    if (supabase) {
+      try {
+        const { data: profile } = await supabase.from('business_profile').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
+        if (profile) {
+          businessContext = `Company: ${profile.company_name || 'Unknown'} | Industry: ${profile.industry || 'Unknown'} | Goals: ${profile.goals || 'Unknown'} | Branding: ${profile.branding_notes || 'None'}.`;
+        }
+      } catch (e) {
+        console.warn("Could not fetch business profile context", e);
+      }
+    }
+
     // The Expanded CEO Brain
     const systemInstruction = `You are the CEO Agent of the AMP Center, an elite AI orchestrator. 
-Your core directive is to onboard new users, understand their business deeply, and then build and manage an autonomous AI workforce tailored to their specific needs.
+Your core directive is to onboard new users, understand their business deeply, and build and manage an autonomous AI workforce tailored to their specific needs.
+
+Current Business Context:
+${businessContext}
 
 RULES OF ENGAGEMENT:
 1. If the user has not provided enough details about their business, ask probing questions. Use 'update_business_profile' to save this data.
@@ -45,12 +62,25 @@ RULES OF ENGAGEMENT:
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
 
+    let userParts = [];
+    if (userMessage) {
+      userParts.push({ text: userMessage });
+    }
+    if (attachment && attachment.data && attachment.mimeType) {
+      userParts.push({
+        inline_data: {
+          mime_type: attachment.mimeType,
+          data: attachment.data
+        }
+      });
+    }
+
     const payload = {
       system_instruction: { parts: [{ text: systemInstruction }] },
       contents: [
         {
           role: "user",
-          parts: [{ text: userMessage }]
+          parts: userParts
         }
       ],
       tools: [
