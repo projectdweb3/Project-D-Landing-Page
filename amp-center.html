@@ -704,7 +704,7 @@
             setNeedsProfileSetup(false);
           }
         } else {
-          setNeedsProfileSetup(true);
+          setNeedsProfileSetup(userProfile.company_name === '');
         }
       };
 
@@ -729,13 +729,14 @@
       };
 
       const handleProfileSaved = async () => {
-        await checkProfile();
+        setNeedsProfileSetup(false);
         setTriggerPrompt({
           sender: 'ceo',
           text: `Excellent. Now that I understand your goals for your business, we can begin. Would you like me to analyze your target audience, generate some initial brand assets, or formulate a lead strategy?`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         setActiveModule('neural-chat');
+        checkProfile();
       };
 
       useEffect(() => {
