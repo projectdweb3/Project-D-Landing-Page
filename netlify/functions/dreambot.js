@@ -4,7 +4,10 @@ exports.handler = async function (event, context) {
   }
 
   try {
-    const apiKey = "AIzaSyAW6HMk_9NsQGkEX98ltA3Z0sr_9wfOsUs"; // Specifically provided by the user for Dreambot
+    const apiKey = process.env.DREAMBOT_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("Missing Dreambot API Key in Netlify Environment Variables.");
+    }
     
     const body = JSON.parse(event.body);
     const { history, message } = body;
