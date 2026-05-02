@@ -49,11 +49,11 @@ RULES OF ENGAGEMENT:
             name: "create_task",
             description: "Creates a new task and adds it to the Kanban board.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                title: { type: SchemaType.STRING },
-                column_id: { type: SchemaType.STRING, description: "'todo', 'in_progress', 'review', 'done'" },
-                assigned_agent: { type: SchemaType.STRING }
+                title: { type: "STRING" },
+                column_id: { type: "STRING", description: "'todo', 'in_progress', 'review', 'done'" },
+                assigned_agent: { type: "STRING" }
               },
               required: ["title", "column_id"],
             },
@@ -62,12 +62,12 @@ RULES OF ENGAGEMENT:
             name: "update_business_profile",
             description: "Saves or updates core business details.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                company_name: { type: SchemaType.STRING },
-                industry: { type: SchemaType.STRING },
-                goals: { type: SchemaType.STRING },
-                branding_notes: { type: SchemaType.STRING }
+                company_name: { type: "STRING" },
+                industry: { type: "STRING" },
+                goals: { type: "STRING" },
+                branding_notes: { type: "STRING" }
               },
               required: ["industry", "goals"],
             },
@@ -76,10 +76,10 @@ RULES OF ENGAGEMENT:
             name: "create_agent",
             description: "Hires a new specialized AI agent into the workforce.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                role_name: { type: SchemaType.STRING },
-                persona_description: { type: SchemaType.STRING }
+                role_name: { type: "STRING" },
+                persona_description: { type: "STRING" }
               },
               required: ["role_name", "persona_description"],
             },
@@ -88,15 +88,15 @@ RULES OF ENGAGEMENT:
             name: "add_lead",
             description: "Adds a new lead to the CRM Pipeline.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                name: { type: SchemaType.STRING },
-                contact: { type: SchemaType.STRING },
-                stage: { type: SchemaType.STRING, description: "'Inbound', 'Qualifying', 'Negotiation'" },
-                value: { type: SchemaType.STRING },
-                prob: { type: SchemaType.STRING },
-                next_step: { type: SchemaType.STRING },
-                is_amp_enabled: { type: SchemaType.BOOLEAN }
+                name: { type: "STRING" },
+                contact: { type: "STRING" },
+                stage: { type: "STRING", description: "'Inbound', 'Qualifying', 'Negotiation'" },
+                value: { type: "STRING" },
+                prob: { type: "STRING" },
+                next_step: { type: "STRING" },
+                is_amp_enabled: { type: "BOOLEAN" }
               },
               required: ["name", "stage"],
             },
@@ -105,13 +105,13 @@ RULES OF ENGAGEMENT:
             name: "create_client",
             description: "Adds a closed-won client to the Client Ledger.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                name: { type: SchemaType.STRING },
-                retainer: { type: SchemaType.STRING },
-                ltv: { type: SchemaType.STRING },
-                assigned_agents: { type: SchemaType.STRING },
-                next_task: { type: SchemaType.STRING }
+                name: { type: "STRING" },
+                retainer: { type: "STRING" },
+                ltv: { type: "STRING" },
+                assigned_agents: { type: "STRING" },
+                next_task: { type: "STRING" }
               },
               required: ["name"],
             },
@@ -120,12 +120,12 @@ RULES OF ENGAGEMENT:
             name: "create_campaign",
             description: "Adds a new marketing campaign.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                name: { type: SchemaType.STRING },
-                description: { type: SchemaType.STRING },
-                stage: { type: SchemaType.STRING, description: "'Planning', 'Active', 'Completed'" },
-                agents_assigned: { type: SchemaType.STRING }
+                name: { type: "STRING" },
+                description: { type: "STRING" },
+                stage: { type: "STRING", description: "'Planning', 'Active', 'Completed'" },
+                agents_assigned: { type: "STRING" }
               },
               required: ["name", "stage"],
             },
@@ -134,11 +134,11 @@ RULES OF ENGAGEMENT:
             name: "add_calendar_event",
             description: "Schedules an event or agent deployment on the Tactical Calendar.",
             parameters: {
-              type: SchemaType.OBJECT,
+              type: "OBJECT",
               properties: {
-                day_of_week: { type: SchemaType.STRING, description: "'Mon', 'Tue', 'Wed', 'Thu', 'Fri'" },
-                agent_role: { type: SchemaType.STRING },
-                task_name: { type: SchemaType.STRING }
+                day_of_week: { type: "STRING", description: "'Mon', 'Tue', 'Wed', 'Thu', 'Fri'" },
+                agent_role: { type: "STRING" },
+                task_name: { type: "STRING" }
               },
               required: ["day_of_week", "agent_role", "task_name"],
             },
