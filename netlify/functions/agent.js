@@ -22,6 +22,11 @@ exports.handler = async function (event, context) {
 
     const body = JSON.parse(event.body);
     const userMessage = body.message;
+    const userId = body.userId;
+
+    if (!userId) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing userId" }) };
+    }
 
     // The Expanded CEO Brain
     const systemInstruction = `You are the CEO Agent of the AMP Center, an elite AI orchestrator. 
@@ -103,15 +108,15 @@ RULES OF ENGAGEMENT:
 
         try {
           if (call.name === "create_task") {
-            await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO' }]);
+            await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', user_id: userId }]);
             toolResults.push(`Task '${call.args.title}' added to Kanban.`);
           } 
           else if (call.name === "update_business_profile") {
-            await supabase.from('business_profile').insert([call.args]);
+            await supabase.from('business_profile').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Business Profile updated successfully.`);
           }
           else if (call.name === "create_agent") {
-            await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description }]);
+            await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description, user_id: userId }]);
             toolResults.push(`Agent '${call.args.role_name}' successfully hired and initialized.`);
           }
         } catch (dbError) {
