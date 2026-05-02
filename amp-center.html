@@ -1128,7 +1128,7 @@
             body: JSON.stringify({
               prompt,
               referenceImages: references.map(r => ({ data: r.data, mimeType: r.mimeType })),
-              businessContext: "User needs new graphical assets." // Or fetch dynamically
+              userId: session?.user?.id
             })
           });
           const data = await res.json();

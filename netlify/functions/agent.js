@@ -30,12 +30,12 @@ exports.handler = async function (event, context) {
     }
 
     // Dynamic Context Injection
-    let businessContext = "The user has not provided their business profile yet. Ask them about their industry, company name, and goals.";
+    let businessContext = "The user has not provided their business profile yet. Ask them to go to settings and fill in their business name, stage, and bio.";
     if (supabase) {
       try {
         const { data: profile } = await supabase.from('business_profile').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
-        if (profile) {
-          businessContext = `Company: ${profile.company_name || 'Unknown'} | Industry: ${profile.industry || 'Unknown'} | Goals: ${profile.goals || 'Unknown'} | Branding: ${profile.branding_notes || 'None'}.`;
+        if (profile && profile.company_name) {
+          businessContext = `Company Name: ${profile.company_name || 'Unknown'} | Stage: ${profile.stage || 'Unknown'} | Bio: ${profile.bio || 'None'}.`;
         }
       } catch (e) {
         console.warn("Could not fetch business profile context", e);
