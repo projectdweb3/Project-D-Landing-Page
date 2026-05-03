@@ -275,6 +275,7 @@
       const [isSignUp, setIsSignUp] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+      const [successMsg, setSuccessMsg] = useState('');
 
       const handleAuth = async (e) => {
         e.preventDefault();
@@ -284,13 +285,18 @@
         }
         setLoading(true);
         setError('');
+        setSuccessMsg('');
 
         try {
           if (isSignUp) {
             const { data, error } = await supabaseClient.auth.signUp({ email, password });
             if (error) throw error;
             if (data.session) onLogin(data.session);
-            else setError("Check your email for a confirmation link.");
+            else {
+              setIsSignUp(false);
+              setPassword('');
+              setSuccessMsg("Account created! Please check your email for a confirmation link, then log in here.");
+            }
           } else {
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw error;
@@ -324,6 +330,12 @@
               </div>
             )}
 
+            {successMsg && (
+              <div className="mb-4 p-3 bg-pd-teal/20 border border-pd-teal/50 rounded-lg text-pd-teal text-sm text-center font-medium">
+                {successMsg}
+              </div>
+            )}
+
             <form onSubmit={handleAuth} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
@@ -342,7 +354,7 @@
               </button>
             </form>
             <div className="mt-6 text-center space-y-4">
-              <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-pd-orange transition-colors outline-none">
+              <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }} className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-pd-orange transition-colors outline-none">
                 {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
               </button>
               
@@ -1035,8 +1047,8 @@
       const handleProfileSaved = async () => {
         setNeedsProfileSetup(false);
         setTriggerPrompt({
-          sender: 'ceo',
-          text: `Excellent. Now that I understand your goals for your business, we can begin. Would you like me to analyze your target audience, generate some initial brand assets, or formulate a lead strategy?`,
+          sender: 'user',
+          text: `I have completed my Business Profile settings. You now have access to my business details.`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         setActiveModule('neural-chat');
@@ -1548,7 +1560,11 @@
 
       useEffect(() => {
         if (triggerPrompt) {
-          sendMessage(triggerPrompt.text, null);
+          if (triggerPrompt.sender === 'ceo') {
+            setMessages(prev => [...prev, { sender: 'ceo', text: triggerPrompt.text, time: triggerPrompt.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+          } else {
+            sendMessage(triggerPrompt.text, null);
+          }
           setTriggerPrompt(null);
         }
       }, [triggerPrompt]);
@@ -1611,7 +1627,7 @@
           <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6 relative z-0">
             {messages.map((m, i) => (
               m.sender === 'user' ? (
-                <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm break-all">
+                <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm break-words whitespace-pre-wrap">
                   {m.attachment && (
                     <img src={m.attachment} alt="Attachment preview" className="max-w-full rounded-lg mb-2 border border-pd-teal/30" />
                   )}
@@ -1619,7 +1635,7 @@
                   <div className="text-[9px] text-gray-500 dark:text-gray-400 text-right mt-2">{m.time}</div>
                 </div>
               ) : (
-                <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative break-all">
+                <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative break-words whitespace-pre-wrap">
                   <div className="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange">
                     <iconify-icon icon="solar:crown-minimalistic-bold" width="12"></iconify-icon>
                   </div>
