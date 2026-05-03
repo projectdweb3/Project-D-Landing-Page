@@ -278,8 +278,8 @@
 
       const handleAuth = async (e) => {
         e.preventDefault();
-        if (!supabase) {
-          setError("Supabase not connected. Please add your API keys to amp-center.html");
+        if (!supabaseClient) {
+          setError("Supabase not connected. Please use Local Mode.");
           return;
         }
         setLoading(true);
@@ -341,10 +341,20 @@
                 {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Login')}
               </button>
             </form>
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-4">
               <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-pd-orange transition-colors outline-none">
                 {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
               </button>
+              
+              {!supabaseClient && (
+                <button onClick={() => {
+                  localStorage.setItem('amp_local_session', 'true');
+                  onLogin({ user: { id: 'local' } });
+                }} type="button" className="w-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-gray-900 dark:text-white rounded-xl py-3 text-sm font-semibold transition-all mt-4 border border-gray-200 dark:border-white/10 shadow-sm">
+                  <iconify-icon icon="solar:cpu-linear" className="mr-2"></iconify-icon>
+                  Enter Local Mode (No Database)
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -528,7 +538,7 @@
         if (confirmText.toLowerCase() !== 'confirm') return;
         setLoading(true);
         try {
-          const keys = ['amp_business_profile', 'amp_chat_history', 'amp_finances', 'amp_genesis_complete', 'amp_genesis_input', 'amp_chat_threads', 'amp_clients', 'amp_inventory', 'amp_usage_pct'];
+          const keys = ['amp_business_profile', 'amp_chat_history', 'amp_finances', 'amp_genesis_complete', 'amp_genesis_input', 'amp_chat_threads', 'amp_clients', 'amp_inventory', 'amp_usage_pct', 'amp_local_session', 'amp_tasks', 'amp_calendar_events', 'amp_plans'];
           keys.forEach(k => localStorage.removeItem(k));
           
           if (supabaseClient && session?.user?.id) {
@@ -636,7 +646,7 @@
             {userProfile?.stage === 'Ecomm' && (
               <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
               <div className="absolute inset-0 bg-gradient-to-tr from-pd-teal/5 to-transparent pointer-events-none"></div>
-              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> Agentic Integrations</h3>
+              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> API Integrations</h3>
               <div className="space-y-4 relative z-10 flex-1">
                 <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm">
                   <div className="flex items-center gap-3">
@@ -644,34 +654,56 @@
                       <iconify-icon icon="simple-icons:shopify"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Shopify Vision Sync</div>
-                      <div className="text-[10px] text-gray-500">Auto-extracts inventory from screenshots</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">Shopify Live Sync</div>
+                      <div className="text-[10px] text-gray-500">Extracts live products via public JSON API</div>
                     </div>
                   </div>
+                  <button onClick={async () => {
+                    const url = userProfile.store_link;
+                    if (!url || (!url.includes('shopify.com') && !url.includes('.'))) {
+                      alert('Please enter a valid store URL in your Business Profile first.'); return;
+                    }
+                    const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                    try {
+                      setLoading(true);
+                      const res = await fetch(`https://${cleanUrl}/products.json?limit=25`);
+                      const data = await res.json();
+                      if (data.products && data.products.length > 0) {
+                        const inventoryItems = data.products.map(p => ({
+                          id: p.id.toString(),
+                          product_name: p.title,
+                          sku_link: `https://${cleanUrl}/products/${p.handle}`,
+                          stock: p.variants?.[0]?.inventory_quantity !== undefined ? p.variants[0].inventory_quantity.toString() : 'In Stock',
+                          price: '$' + (p.variants?.[0]?.price || '0.00'),
+                          created_at: new Date().toISOString()
+                        }));
+                        const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
+                        localStorage.setItem('amp_inventory', JSON.stringify([...local, ...inventoryItems]));
+                        window.dispatchEvent(new Event('amp-inventory-updated'));
+                        alert(`Successfully synced ${inventoryItems.length} products from Shopify! View them in your Inventory Tracking pipeline.`);
+                      } else {
+                        alert('No products found or the store is private.');
+                      }
+                    } catch (e) {
+                      alert('Failed to connect to Shopify. The store might be private or invalid.');
+                    }
+                    setLoading(false);
+                  }} className="w-full py-2 bg-[#96bf48] text-white rounded-xl text-xs font-bold mt-2 shadow-[0_0_15px_rgba(150,191,72,0.3)] hover:scale-[1.02] transition-all">
+                    Sync Products Now
+                  </button>
                 </div>
 
-                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm">
+                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm opacity-60">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-[#F1641E]/10 flex items-center justify-center text-[#F1641E] text-xl shadow-inner">
                       <iconify-icon icon="simple-icons:etsy"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Etsy Vision Sync</div>
-                      <div className="text-[10px] text-gray-500">Auto-extracts products from screenshots</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">Etsy Direct Sync</div>
+                      <div className="text-[10px] text-gray-500">Requires OAuth (Coming Soon)</div>
                     </div>
                   </div>
                 </div>
-                
-                <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-gray-200 dark:border-white/5">
-                  <strong>API connections are disabled.</strong> To sync your store, navigate to the Neural Chat and upload screenshots of your product catalog. The CEO Agent will automatically extract and update your inventory.
-                </div>
-              </div>
-              
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 relative z-10">
-                <button onClick={() => window.simulateSale && window.simulateSale()} className="w-full py-3 bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal border border-pd-teal/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm">
-                  <iconify-icon icon="solar:magic-stick-3-bold"></iconify-icon> Trigger Simulated Sale
-                </button>
-                <p className="text-[10px] text-gray-500 text-center mt-2">Deducts inventory, adds revenue, and logs a client.</p>
               </div>
             </div>
             )}
@@ -793,15 +825,13 @@
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
       const [activeTasks, setActiveTasks] = useState([]);
       const [tasksFilter, setTasksFilter] = useState('active');
-      const [isAgentProcessing, setIsAgentProcessing] = useState(false);
+      const [tempProcessingTasks, setTempProcessingTasks] = useState([]);
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
       const [contentReferences, setContentReferences] = useState([]);
       const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
       const [triggerPrompt, setTriggerPrompt] = useState(null);
 
-      const displayTasks = isAgentProcessing 
-        ? [{ id: 'temp-ceo', agent: 'CEO', title: 'Processing Neural Command...', status: 'running' }, ...activeTasks] 
-        : activeTasks;
+      const displayTasks = [...tempProcessingTasks, ...activeTasks];
 
       const triggerInventoryPrompt = () => {
         setActiveModule('neural-chat');
@@ -856,6 +886,13 @@
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           }
+        }, 150);
+      };
+
+      const triggerLeadUpdatePrompt = (leadName) => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          setTriggerPrompt({ sender: 'user', text: `I want to update the status of lead [${leadName}]. Here is what happened: `, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         }, 150);
       };
 
@@ -1080,18 +1117,10 @@
           }
         };
 
-        // Automatic periodic sync if integrations exist
-        let interval;
-        if (userProfile?.stage === 'Ecomm') {
-           interval = setInterval(() => {
-             // Randomly simulate a sale every 60s for demo purposes (50% chance)
-             if (Math.random() > 0.5 && window.simulateSale) window.simulateSale();
-           }, 60000); 
-        }
+        // Automatic periodic sync removed per user request
 
         return () => {
           delete window.simulateSale;
-          if (interval) clearInterval(interval);
         };
       }, [userProfile, session]);
 
@@ -1164,9 +1193,9 @@
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
-              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setIsProcessing={setIsAgentProcessing} />
+              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} />
             </div>
-            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} />}
@@ -1233,12 +1262,14 @@
     };
 
     const TaskCard = ({ agent, task, status, color }) => (
-      <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-xl p-3 relative overflow-hidden group hover:border-gray-300 dark:hover:border-white/20 transition-all shadow-sm">
+      <div className={`bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-xl p-3 relative overflow-hidden group hover:border-gray-300 dark:hover:border-white/20 transition-all duration-500 shadow-sm ${status === 'completed' ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
         <div className={`absolute top-0 left-0 w-1 h-full bg-${color}`}></div>
         <div className="flex justify-between items-start mb-1">
           <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{agent}</span>
           {status === 'running' ? (
             <span className="text-[10px] text-pd-teal flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-pd-teal animate-pulse"></span> Running</span>
+          ) : status === 'done' ? (
+            <span className="text-[10px] text-green-500 flex items-center gap-1"><iconify-icon icon="solar:check-circle-bold"></iconify-icon> Done</span>
           ) : (<span className="text-[10px] text-gray-500">Done</span>)}
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{task}</p>
@@ -1260,7 +1291,7 @@
       );
     };
 
-    const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setIsProcessing }) => {
+      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks }) => {
       const [messages, setMessages] = useState(() => {
         try {
           const saved = localStorage.getItem('amp_chat_history');
@@ -1357,7 +1388,15 @@
         }]);
         
         setIsTyping(true);
-        if (setIsProcessing) setIsProcessing(true);
+        if (setTempTasks) {
+          const tks = [];
+          const txt = msgText.toLowerCase();
+          if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market')) tks.push({ id: 'temp-cmo', agent: 'CMO', title: 'Executing Marketing Objective...', status: 'running' });
+          if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo')) tks.push({ id: 'temp-creative', agent: 'Creative', title: 'Generating Content...', status: 'running' });
+          if (txt.includes('inventory') || txt.includes('sync') || txt.includes('product') || txt.includes('data')) tks.push({ id: 'temp-cto', agent: 'CTO', title: 'Processing Data Operations...', status: 'running' });
+          if (txt.includes('plan') || txt.includes('strategy') || tks.length === 0) tks.push({ id: 'temp-ceo', agent: 'CEO', title: 'Formulating Neural Architecture...', status: 'running' });
+          setTempTasks(tks);
+        }
 
         fetch('/.netlify/functions/agent', {
           method: 'POST',
@@ -1373,9 +1412,56 @@
           .then(({ status, data }) => {
             if (depleteBudget) depleteBudget('CEO', 0.5);
             
+            if (setTempTasks) {
+              setTempTasks(prev => prev.map(t => ({ ...t, status: 'done' })));
+              setTimeout(() => {
+                setTempTasks([]);
+              }, 2000);
+            }
+
             // Execute frontend actions to populate localStorage when Supabase is missing/failing
             if (data.actions && Array.isArray(data.actions)) {
               data.actions.forEach(action => {
+                let agentForLog = 'CEO';
+                let taskNameLog = 'System Task';
+                let detailsLog = JSON.stringify(action.payload);
+                
+                if (action.type === 'add_multiple_leads') {
+                  agentForLog = 'CMO'; taskNameLog = 'Generated Leads';
+                  detailsLog = `Sourced ${action.payload.leads?.length || 0} leads including ${action.payload.leads?.[0]?.name || 'new contacts'}.`;
+                } else if (action.type === 'add_lead') {
+                  agentForLog = 'CMO'; taskNameLog = 'Added Lead';
+                  detailsLog = `Added lead: ${action.payload.name}`;
+                } else if (action.type === 'store_plan') {
+                  agentForLog = 'CEO'; taskNameLog = 'Created Plan';
+                  detailsLog = `Stored plan: ${action.payload.title}\n\n${action.payload.content}`;
+                } else if (action.type === 'create_task') {
+                  agentForLog = action.payload.assigned_agent || 'CEO'; taskNameLog = 'Delegated Task';
+                  detailsLog = `Created task: ${action.payload.title}`;
+                } else if (action.type === 'add_inventory_item') {
+                  agentForLog = 'CTO'; taskNameLog = 'Synced Inventory';
+                  detailsLog = `Added product: ${action.payload.product_name}`;
+                } else if (action.type === 'update_lead') {
+                  agentForLog = 'CEO'; taskNameLog = 'Updated Lead';
+                  detailsLog = `Updated ${action.payload.name} to stage ${action.payload.stage}`;
+                }
+
+                // Create calendar event for historical record
+                const localCal = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const dayOfWeek = days[new Date().getDay()];
+                localCal.push({ 
+                  id: Date.now().toString() + Math.random(), 
+                  day_of_week: dayOfWeek, 
+                  agent_role: agentForLog, 
+                  task_name: taskNameLog,
+                  details: detailsLog,
+                  is_historical: true,
+                  created_at: new Date().toISOString() 
+                });
+                localStorage.setItem('amp_calendar_events', JSON.stringify(localCal));
+                window.dispatchEvent(new Event('amp-calendar-updated'));
+
                 try {
                   if (action.type === 'add_inventory_item') {
                     const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
@@ -1395,22 +1481,27 @@
                     local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_calendar_events', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-calendar-updated'));
+                  } else if (action.type === 'add_lead') {
+                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
+                    localStorage.setItem('amp_leads', JSON.stringify(local));
+                    window.dispatchEvent(new Event('amp-simulated-lead'));
+                  } else if (action.type === 'add_multiple_leads') {
+                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, created_at: new Date().toISOString() }));
+                    localStorage.setItem('amp_leads', JSON.stringify([...newLeads, ...local]));
+                    window.dispatchEvent(new Event('amp-simulated-lead'));
+                  } else if (action.type === 'update_lead') {
+                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (index >= 0) {
+                      local[index] = { ...local[index], ...action.payload, updated_at: new Date().toISOString() };
+                      localStorage.setItem('amp_leads', JSON.stringify(local));
+                      window.dispatchEvent(new Event('amp-simulated-lead'));
+                    }
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
-            }
-
-            // Simulate adding leads if requested
-            const userTextLower = msgText.toLowerCase();
-            if (userTextLower.includes('lead') && (userTextLower.includes('add') || userTextLower.includes('find') || userTextLower.includes('generate') || userTextLower.includes('insert'))) {
-              const localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
-              localLeads.unshift(
-                { id: Date.now().toString() + '1', name: 'Apex Solutions', contact: 'director@apex.com', value: '$8,500', stage: 'Inbound', created_at: new Date().toISOString() },
-                { id: Date.now().toString() + '2', name: 'Horizon Media', contact: 'vp@horizon.com', value: '$15,000', stage: 'Inbound', created_at: new Date().toISOString() },
-                { id: Date.now().toString() + '3', name: 'Quantum Retail', contact: 'ops@quantum.com', value: '$4,200', stage: 'Inbound', created_at: new Date().toISOString() }
-              );
-              localStorage.setItem('amp_leads', JSON.stringify(localLeads));
-              window.dispatchEvent(new Event('amp-simulated-lead'));
             }
 
             if (status >= 400 || data.error) {
@@ -1690,9 +1781,19 @@
                     </div>
                     <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
                       <div className="flex justify-between"><span className="text-gray-500">Value</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value || '$0'}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob || '0%'}</span></div>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob || '0%'}</span></div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1 overflow-hidden">
+                          <div className="bg-pd-teal h-full" style={{ width: lead.prob || '0%' }}></div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next_step || 'N/A'}</div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-white/10">
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate max-w-[60%]"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next_step || 'N/A'}</div>
+                      <button onClick={() => onUpdateLead && onUpdateLead(lead.name)} className="text-[10px] bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal px-2 py-1.5 rounded transition-colors flex items-center gap-1 font-semibold">
+                        <iconify-icon icon="solar:chat-round-dots-linear"></iconify-icon> Update via CEO
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -2485,6 +2586,8 @@
 
     const StrategicPlanning = ({ session, setActiveModule, setTriggerPrompt }) => {
       const [plans, setPlans] = useState([]);
+      const [isAdding, setIsAdding] = useState(false);
+      const [newPlan, setNewPlan] = useState({ title: '', content: '' });
 
       const fetchPlans = () => {
         try {
@@ -2506,29 +2609,75 @@
         }, 300);
       };
 
+      const handleAskCEO = () => {
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          setTriggerPrompt({ sender: 'ceo', text: "What kind of strategic plan would you like me to construct for you?" });
+        }, 150);
+      };
+
+      const handleSaveManual = () => {
+        if (!newPlan.title || !newPlan.content) return;
+        const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+        local.push({ id: Date.now().toString(), agent: 'CEO', ...newPlan, created_at: new Date().toISOString() });
+        localStorage.setItem('amp_plans', JSON.stringify(local));
+        setIsAdding(false);
+        setNewPlan({ title: '', content: '' });
+        fetchPlans();
+      };
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col overflow-hidden">
-          <div className="mb-6 md:mb-8 flex-shrink-0"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Strategic Planning</h2><p className="text-xs text-gray-500">Stored architectural and marketing plans generated by the CEO.</p></div>
-          <div className="flex-1 overflow-y-auto pr-2 pb-20 space-y-4">
+          <div className="mb-6 md:mb-8 flex-shrink-0 flex justify-between items-start">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Strategic Planning</h2>
+              <p className="text-xs text-gray-500">Stored architectural and marketing plans generated by the CEO.</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setIsAdding(!isAdding)} className="px-4 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-gray-700 dark:text-gray-300">
+                {isAdding ? 'Cancel' : 'Manual Entry'}
+              </button>
+              <button onClick={handleAskCEO} className="px-4 py-2 bg-gradient-to-r from-pd-teal to-pd-orange text-white rounded-xl text-xs font-bold shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:scale-[1.02] transition-all flex items-center gap-2">
+                <iconify-icon icon="solar:magic-stick-3-linear"></iconify-icon> Ask CEO
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto pr-2 pb-20">
+            {isAdding && (
+              <div className="mb-6 bg-white/40 dark:bg-pd-glass backdrop-blur-xl border border-pd-teal/30 rounded-2xl p-6 shadow-xl">
+                <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Add Manual Plan</h3>
+                <input type="text" placeholder="Plan Title" value={newPlan.title} onChange={e => setNewPlan({...newPlan, title: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 mb-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
+                <textarea placeholder="Plan Details..." value={newPlan.content} onChange={e => setNewPlan({...newPlan, content: e.target.value})} rows="4" className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 mb-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal resize-none"></textarea>
+                <button onClick={handleSaveManual} className="px-6 py-2 bg-pd-teal text-pd-dark rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">Save Plan</button>
+              </div>
+            )}
+            
             {plans.length === 0 ? (
                <div className="w-full h-32 bg-black/5 dark:bg-white/5 rounded-2xl flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-white/10">
                  <iconify-icon icon="solar:document-text-linear" width="32" className="text-gray-400 mb-2"></iconify-icon>
                  <p className="text-xs text-gray-500">No stored plans. Ask the CEO Agent to create a plan for you.</p>
                </div>
-            ) : plans.map((plan) => (
-               <div key={plan.id} className="bg-white/40 dark:bg-pd-glass backdrop-blur-xl border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                   <div>
-                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">{plan.title}</h3>
-                     <span className="inline-block mt-1 px-2 py-0.5 bg-pd-teal/10 text-pd-teal text-[10px] uppercase font-bold tracking-widest border border-pd-teal/30 rounded-full">{plan.agent || 'CEO'}</span>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+                {plans.map((plan) => (
+                 <div key={plan.id} className="bg-white/40 dark:bg-pd-glass backdrop-blur-xl border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm flex flex-col h-[300px]">
+                   <div className="flex justify-between items-start mb-4">
+                     <div className="pr-4 overflow-hidden">
+                       <h3 className="text-base font-bold text-gray-900 dark:text-white truncate">{plan.title}</h3>
+                       <span className="inline-block mt-1 px-2 py-0.5 bg-pd-teal/10 text-pd-teal text-[10px] uppercase font-bold tracking-widest border border-pd-teal/30 rounded-full">{plan.agent || 'CEO'}</span>
+                     </div>
+                     <button onClick={() => executePlan(plan)} className="w-8 h-8 bg-pd-teal text-pd-dark rounded-full shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:scale-110 transition-all flex items-center justify-center flex-shrink-0" title="Execute Plan">
+                       <iconify-icon icon="solar:play-circle-bold" width="18"></iconify-icon>
+                     </button>
                    </div>
-                   <button onClick={() => executePlan(plan)} className="px-4 py-2 bg-pd-teal text-pd-dark rounded-xl text-xs font-bold shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:shadow-[0_0_25px_rgba(0,242,234,0.5)] transition-all flex items-center gap-2 flex-shrink-0">
-                     <iconify-icon icon="solar:play-circle-bold"></iconify-icon> Execute Plan
-                   </button>
+                   <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed flex-1 overflow-y-auto scrollbar-hide">
+                     <FormatText text={plan.content} />
+                   </div>
                  </div>
-                 <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed"><FormatText text={plan.content} /></div>
-               </div>
-            ))}
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -2536,6 +2685,7 @@
 
     const TacticalCalendar = ({ activeTasks }) => {
       const [events, setEvents] = useState([]);
+      const [selectedEvent, setSelectedEvent] = useState(null);
 
       const fetchEvents = async () => {
         if (supabaseClient) {
@@ -2594,7 +2744,7 @@
       }
 
       return (
-        <div className="p-4 md:p-8 h-full flex flex-col">
+        <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="mb-6 md:mb-8"><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Tactical Calendar</h2><p className="text-xs text-gray-500">Gantt-style timeline of agent deployments and heartbeats.</p></div>
           <div className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-4 md:p-6 relative overflow-x-auto shadow-sm">
             <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '60px 40px' }}></div>
@@ -2612,7 +2762,7 @@
                     </div>
                     <div className="flex-1 h-10 relative pl-4">
                       {groupedEvents[role].map(ev => (
-                        <div key={ev.id} className={`absolute top-1/2 h-6 -translate-y-1/2 rounded ${style.bg} border ${style.border} flex items-center px-2 text-[10px] ${style.text} whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80`} style={{ left: dayOffsets[ev.day_of_week] || '10px', width: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={ev.task_name}>
+                        <div key={ev.id} onClick={() => ev.is_historical && setSelectedEvent(ev)} className={`absolute top-1/2 h-6 -translate-y-1/2 rounded ${style.bg} border ${style.border} flex items-center px-2 text-[10px] ${style.text} whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80 transition-opacity`} style={{ left: dayOffsets[ev.day_of_week] || '10px', width: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={ev.task_name}>
                           {ev.task_name}
                         </div>
                       ))}
@@ -2622,6 +2772,27 @@
               })}
             </div>
           </div>
+
+          {selectedEvent && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div className="flex justify-between items-start mb-4 border-b border-gray-200 dark:border-pd-glassBorder pb-3">
+                  <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2">
+                      <iconify-icon icon={agentColors[selectedEvent.agent_role]?.icon || 'solar:command-linear'} className={agentColors[selectedEvent.agent_role]?.text || 'text-pd-teal'}></iconify-icon>
+                      {selectedEvent.task_name}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">Completed by {selectedEvent.agent_role}</p>
+                  </div>
+                  <button onClick={() => setSelectedEvent(null)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="text-sm text-gray-700 dark:text-gray-300 bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10 max-h-60 overflow-y-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed">
+                  {selectedEvent.details || 'No additional details available.'}
+                </div>
+                <button onClick={() => setSelectedEvent(null)} className="w-full amp-button primary py-2 mt-4">Close Details</button>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -2639,7 +2810,10 @@
     };
 
     const App = () => {
-      const [session, setSession] = useState(null);
+      const [session, setSession] = useState(() => {
+        try { return localStorage.getItem('amp_local_session') === 'true' ? { user: { id: 'local' } } : null; }
+        catch(e) { return null; }
+      });
       const [currentScreen, setCurrentScreen] = useState(() => {
         try { return localStorage.getItem('amp_genesis_complete') === 'true' ? 'dashboard' : 'genesis'; }
         catch(e) { return 'genesis'; }

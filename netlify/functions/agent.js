@@ -71,7 +71,8 @@ RULES OF ENGAGEMENT:
 12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.
 13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.
 14. STRATEGIC PLANNING: When the user asks you to create a plan (marketing, outreach, lead gen, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent (CMO, CTO, CEO), and pass the detailed plan content. Once stored, ask the user: "I have stored this plan in the Strategic Planning section. Shall I automatically execute it on your behalf?"
-15. EXECUTING PLANS: If the user tells you to execute a stored plan, you MUST read the plan from context (if you remember it) or infer the steps, and then use 'create_task', 'create_campaign', 'add_lead', etc., to actually execute a sequence of instructions for the agents based on that plan.`;
+15. EXECUTING PLANS: If the user tells you to execute a stored plan, you MUST read the plan from context (if you remember it) or infer the steps, and then use 'create_task', 'create_campaign', 'add_lead', etc., to actually execute a sequence of instructions for the agents based on that plan.
+16. LEAD GENERATION: If the user asks you to find, generate, or research leads, use your own internal knowledge to generate at least 10 highly realistic business leads matching their criteria. You MUST use the 'add_multiple_leads' tool to add all of them to the 'Qualifying' stage at once. Set their value to $1200+ and starting prob to '0%'.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -177,9 +178,35 @@ RULES OF ENGAGEMENT:
                 properties: {
                   name: { type: "STRING", description: "The name of the lead to update." },
                   stage: { type: "STRING", description: "The new stage: 'Inbound', 'Qualifying', 'Negotiation'." },
-                  next_step: { type: "STRING", description: "Any new next steps." }
+                  next_step: { type: "STRING", description: "Any new next steps." },
+                  prob: { type: "STRING", description: "The updated win probability, e.g. '20%', '50%', etc." }
                 },
                 required: ["name", "stage"],
+              },
+            },
+            {
+              name: "add_multiple_leads",
+              description: "Adds multiple new leads to the CRM Pipeline at once. Use this when the user asks you to find or generate a list of leads.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  leads: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        name: { type: "STRING" },
+                        contact: { type: "STRING" },
+                        stage: { type: "STRING", description: "'Inbound', 'Qualifying', 'Negotiation'" },
+                        value: { type: "STRING" },
+                        prob: { type: "STRING" },
+                        next_step: { type: "STRING" }
+                      },
+                      required: ["name", "stage"]
+                    }
+                  }
+                },
+                required: ["leads"],
               },
             },
             {
@@ -351,19 +378,35 @@ RULES OF ENGAGEMENT:
             toolResults.push(`Agent '${call.args.role_name}' successfully hired.`);
           }
           else if (call.name === "add_lead") {
-            await supabase.from('leads').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'add_lead', payload: call.args });
+            if (supabase) {
+              await supabase.from('leads').insert([{ ...call.args, user_id: userId }]);
+            }
             toolResults.push(`Lead '${call.args.name}' added to pipeline.`);
           }
+          else if (call.name === "add_multiple_leads") {
+            frontendActions.push({ type: 'add_multiple_leads', payload: call.args });
+            if (supabase) {
+               const insertData = call.args.leads.map(l => ({ ...l, user_id: userId }));
+               await supabase.from('leads').insert(insertData);
+            }
+            toolResults.push(`${call.args.leads.length} leads added to pipeline.`);
+          }
           else if (call.name === "update_lead") {
-            const updateData = { stage: call.args.stage };
-            if (call.args.next_step) updateData.next_step = call.args.next_step;
-            
-            // Note: In a robust system, we would match by ID. Here we match by name for simplicity via NLP.
-            const { data, error } = await supabase.from('leads').update(updateData).eq('name', call.args.name).eq('user_id', userId).select();
-            if (data && data.length > 0) {
-              toolResults.push(`Lead '${call.args.name}' successfully moved to ${call.args.stage}.`);
+            frontendActions.push({ type: 'update_lead', payload: call.args });
+            if (supabase) {
+              const updateData = { stage: call.args.stage };
+              if (call.args.next_step) updateData.next_step = call.args.next_step;
+              if (call.args.prob) updateData.prob = call.args.prob;
+              
+              const { data, error } = await supabase.from('leads').update(updateData).eq('name', call.args.name).eq('user_id', userId).select();
+              if (data && data.length > 0) {
+                toolResults.push(`Lead '${call.args.name}' successfully moved to ${call.args.stage}.`);
+              } else {
+                toolResults.push(`Failed to update. Could not find a lead named '${call.args.name}' in the database.`);
+              }
             } else {
-              toolResults.push(`Failed to update. Could not find a lead named '${call.args.name}' in the database.`);
+              toolResults.push(`Lead '${call.args.name}' successfully updated.`);
             }
           }
           else if (call.name === "create_client") {
