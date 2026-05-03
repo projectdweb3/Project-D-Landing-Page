@@ -1534,16 +1534,7 @@
             let responseText = "[ERROR] Backend disconnected or API Key missing. Simulation mode active.";
             
             if (userTextLower.includes('lead') && (userTextLower.includes('add') || userTextLower.includes('find') || userTextLower.includes('generate') || userTextLower.includes('insert'))) {
-              responseText = "**Task Completed:** I have generated a lead strategy and autonomously found and inserted 3 new high-quality prospects into the 'Inbound' stage of your Lead Pipeline.";
-              
-              const localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
-              localLeads.unshift(
-                { id: Date.now().toString() + '1', name: 'Apex Solutions', contact: 'director@apex.com', value: '$8,500', stage: 'Inbound', created_at: new Date().toISOString() },
-                { id: Date.now().toString() + '2', name: 'Horizon Media', contact: 'vp@horizon.com', value: '$15,000', stage: 'Inbound', created_at: new Date().toISOString() },
-                { id: Date.now().toString() + '3', name: 'Quantum Retail', contact: 'ops@quantum.com', value: '$4,200', stage: 'Inbound', created_at: new Date().toISOString() }
-              );
-              localStorage.setItem('amp_leads', JSON.stringify(localLeads));
-              window.dispatchEvent(new Event('amp-simulated-lead'));
+              responseText = "[ERROR] I cannot generate leads because my backend connection to Gemini is currently offline. Please ensure you are running this platform on a live server with API keys configured.";
             }
 
             setMessages(prev => [...prev, { sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
