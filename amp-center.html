@@ -642,71 +642,59 @@
               </div>
             </div>
 
-            {/* Integrations */}
-            {userProfile?.stage === 'Ecomm' && (
-              <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
+            {/* Integrations Hub */}
+            <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
               <div className="absolute inset-0 bg-gradient-to-tr from-pd-teal/5 to-transparent pointer-events-none"></div>
-              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> API Integrations</h3>
-              <div className="space-y-4 relative z-10 flex-1">
-                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#96bf48]/10 flex items-center justify-center text-[#96bf48] text-xl shadow-inner">
-                      <iconify-icon icon="simple-icons:shopify"></iconify-icon>
+              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> Linktree Integrations Hub</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10 flex-1">
+                {[
+                  { id: 'google', name: 'Google Business', icon: 'simple-icons:google', color: '#4285F4', text: 'text-[#4285F4]', bg: 'bg-[#4285F4]/10' },
+                  { id: 'facebook', name: 'Facebook', icon: 'simple-icons:facebook', color: '#1877F2', text: 'text-[#1877F2]', bg: 'bg-[#1877F2]/10' },
+                  { id: 'instagram', name: 'Instagram', icon: 'simple-icons:instagram', color: '#E4405F', text: 'text-[#E4405F]', bg: 'bg-[#E4405F]/10' },
+                  { id: 'tiktok', name: 'TikTok', icon: 'simple-icons:tiktok', color: '#000000', text: 'text-gray-900 dark:text-white', bg: 'bg-black/10 dark:bg-white/10' },
+                  { id: 'shopify', name: 'Shopify', icon: 'simple-icons:shopify', color: '#96bf48', text: 'text-[#96bf48]', bg: 'bg-[#96bf48]/10' },
+                  { id: 'etsy', name: 'Etsy', icon: 'simple-icons:etsy', color: '#F1641E', text: 'text-[#F1641E]', bg: 'bg-[#F1641E]/10' },
+                ].map(platform => {
+                  const isConnected = userProfile?.integrations?.[platform.id];
+                  return (
+                    <div key={platform.id} className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-3 shadow-sm transition-all hover:shadow-md">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl ${platform.bg} flex items-center justify-center ${platform.text} text-xl shadow-inner`}>
+                          <iconify-icon icon={platform.icon}></iconify-icon>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-bold text-gray-900 dark:text-white">{platform.name}</div>
+                          <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                            {isConnected ? <><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_#22c55e]"></span> Connected</> : <><span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span> Requires Pairing</>}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {isConnected ? (
+                        <div className="flex gap-2 mt-auto">
+                          <a href={typeof isConnected === 'string' ? isConnected : '#'} target="_blank" rel="noreferrer" className="flex-1 py-1.5 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-lg text-xs font-semibold text-center transition-colors text-gray-700 dark:text-gray-300 flex items-center justify-center gap-1"><iconify-icon icon="solar:square-top-down-linear"></iconify-icon> Visit Page</a>
+                          <button onClick={() => {
+                            const newInts = { ...userProfile?.integrations };
+                            delete newInts[platform.id];
+                            setUserProfile({ ...userProfile, integrations: newInts });
+                          }} className="w-8 flex items-center justify-center bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>
+                        </div>
+                      ) : (
+                        <button onClick={() => {
+                          const url = prompt(`[SIMULATED OAUTH]\nEnter your ${platform.name} URL to pair this account.\n(Real OAuth backend requires your developer API keys)`);
+                          if (url) {
+                            setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: url } });
+                          }
+                        }} className="w-full py-1.5 mt-auto bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-xs font-semibold shadow-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-1">
+                          <iconify-icon icon="solar:link-linear"></iconify-icon> Pair Account
+                        </button>
+                      )}
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Shopify Live Sync</div>
-                      <div className="text-[10px] text-gray-500">Extracts live products via public JSON API</div>
-                    </div>
-                  </div>
-                  <button onClick={async () => {
-                    const url = userProfile.store_link;
-                    if (!url || (!url.includes('shopify.com') && !url.includes('.'))) {
-                      alert('Please enter a valid store URL in your Business Profile first.'); return;
-                    }
-                    const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-                    try {
-                      setLoading(true);
-                      const res = await fetch(`https://${cleanUrl}/products.json?limit=25`);
-                      const data = await res.json();
-                      if (data.products && data.products.length > 0) {
-                        const inventoryItems = data.products.map(p => ({
-                          id: p.id.toString(),
-                          product_name: p.title,
-                          sku_link: `https://${cleanUrl}/products/${p.handle}`,
-                          stock: p.variants?.[0]?.inventory_quantity !== undefined ? p.variants[0].inventory_quantity.toString() : 'In Stock',
-                          price: '$' + (p.variants?.[0]?.price || '0.00'),
-                          created_at: new Date().toISOString()
-                        }));
-                        const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
-                        localStorage.setItem('amp_inventory', JSON.stringify([...local, ...inventoryItems]));
-                        window.dispatchEvent(new Event('amp-inventory-updated'));
-                        alert(`Successfully synced ${inventoryItems.length} products from Shopify! View them in your Inventory Tracking pipeline.`);
-                      } else {
-                        alert('No products found or the store is private.');
-                      }
-                    } catch (e) {
-                      alert('Failed to connect to Shopify. The store might be private or invalid.');
-                    }
-                    setLoading(false);
-                  }} className="w-full py-2 bg-[#96bf48] text-white rounded-xl text-xs font-bold mt-2 shadow-[0_0_15px_rgba(150,191,72,0.3)] hover:scale-[1.02] transition-all">
-                    Sync Products Now
-                  </button>
-                </div>
-
-                <div className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-2 shadow-sm opacity-60">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#F1641E]/10 flex items-center justify-center text-[#F1641E] text-xl shadow-inner">
-                      <iconify-icon icon="simple-icons:etsy"></iconify-icon>
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Etsy Direct Sync</div>
-                      <div className="text-[10px] text-gray-500">Requires OAuth (Coming Soon)</div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
-            )}
 
             {/* Agent Workforce Tree */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto shadow-xl relative">
@@ -1204,7 +1192,7 @@
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} />}
-            {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} />}
+            {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
@@ -1515,6 +1503,11 @@
                       localStorage.setItem('amp_leads', JSON.stringify(local));
                       window.dispatchEvent(new Event('amp-simulated-lead'));
                     }
+                  } else if (action.type === 'create_campaign') {
+                    const local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
+                    local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
+                    localStorage.setItem('amp_campaigns', JSON.stringify(local));
+                    window.dispatchEvent(new Event('amp-campaigns-updated'));
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
@@ -1674,6 +1667,11 @@
       const [leads, setLeads] = useState([]);
       const [showModal, setShowModal] = useState(false);
       const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: '$0', stage: stages[0] });
+      const [activeMobileStage, setActiveMobileStage] = useState(stages[0]);
+
+      useEffect(() => {
+        setActiveMobileStage(stages[0]);
+      }, [isEcomm]);
 
       const fetchLeads = async () => {
         let localLeads = [];
@@ -1771,12 +1769,21 @@
               </button>
             </div>
           </div>
-          <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
+          <div className="md:hidden w-full mb-4 flex-shrink-0">
+            <select 
+              value={activeMobileStage} 
+              onChange={e => setActiveMobileStage(e.target.value)}
+              className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal appearance-none font-bold"
+            >
+              {stages.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div className="flex gap-4 md:gap-6 overflow-hidden md:overflow-x-auto pb-4 flex-1">
             {stages.map(col => (
-              <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-pd-teal border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
+              <div key={col} className={`w-full md:w-80 flex-shrink-0 flex-col gap-4 h-full ${activeMobileStage === col ? 'flex' : 'hidden'} md:flex overflow-y-auto pr-2 pb-10 hide-scrollbar`}>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-pd-teal border-b border-gray-200 dark:border-pd-glassBorder pb-2 hidden md:block">{col}</h3>
                 {leads.filter(l => l.stage === col).map(lead => (
-                  <div key={lead.id} className="amp-card p-5 relative overflow-hidden group">
+                  <div key={lead.id} className="amp-card p-5 relative overflow-hidden group flex-shrink-0">
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-2">
@@ -2384,56 +2391,178 @@
       );
     };
 
-    const MarketingPipeline = ({ onAddCampaign }) => {
+    const MarketingPipeline = ({ onAddCampaign, setActiveModule, setTriggerPrompt }) => {
       const [campaigns, setCampaigns] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [formData, setFormData] = useState({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' });
 
       const fetchCampaigns = async () => {
-        if (!supabaseClient) return;
-        const { data } = await supabaseClient.from('campaigns').select('*').order('created_at', { ascending: false });
-        if (data) setCampaigns(data);
+        let local = [];
+        try {
+          local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
+        } catch(e) {}
+        
+        if (supabaseClient) {
+          const { data } = await supabaseClient.from('campaigns').select('*').order('created_at', { ascending: false });
+          if (data && data.length > 0) {
+            setCampaigns(data);
+            return;
+          }
+        }
+        setCampaigns(local);
       };
 
       useEffect(() => {
         fetchCampaigns();
+        const handleSync = () => fetchCampaigns();
+        window.addEventListener('amp-campaigns-updated', handleSync);
+        
         if (supabaseClient) {
           const channel = supabaseClient.channel('realtime:campaigns')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'campaigns' }, fetchCampaigns)
             .subscribe();
-          return () => { supabaseClient.removeChannel(channel); };
+          return () => { 
+            supabaseClient.removeChannel(channel); 
+            window.removeEventListener('amp-campaigns-updated', handleSync);
+          };
         }
+        return () => window.removeEventListener('amp-campaigns-updated', handleSync);
       }, []);
 
+      const handleSave = async () => {
+        const payload = { ...formData };
+        let local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
+        
+        if (formData.id) {
+          local = local.map(c => c.id === formData.id ? payload : c);
+        } else {
+          payload.id = Date.now().toString();
+          payload.created_at = new Date().toISOString();
+          local.unshift(payload);
+        }
+        
+        localStorage.setItem('amp_campaigns', JSON.stringify(local));
+        setCampaigns(local);
+        setShowModal(false);
+
+        if (!supabaseClient) return;
+        if (formData.id) {
+          await supabaseClient.from('campaigns').update(payload).eq('id', formData.id);
+        } else {
+          delete payload.id;
+          await supabaseClient.from('campaigns').insert([payload]);
+        }
+      };
+
+      const handleActivate = async (campaign) => {
+        const updated = { ...campaign, stage: 'Active' };
+        let local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
+        local = local.map(c => c.id === campaign.id ? updated : c);
+        localStorage.setItem('amp_campaigns', JSON.stringify(local));
+        setCampaigns(local);
+        
+        if (supabaseClient) {
+          await supabaseClient.from('campaigns').update({ stage: 'Active' }).eq('id', campaign.id);
+        }
+
+        setActiveModule('neural-chat');
+        setTimeout(() => {
+          setTriggerPrompt({ 
+            sender: 'user', 
+            text: `I have activated the marketing campaign: "${campaign.name}". Strategy: ${campaign.description}. Please deploy the necessary sub-agents (CMO, Creative, CTO) to execute this by creating active tasks for them.`, 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          });
+        }, 300);
+      };
+
       return (
-        <div className="p-4 md:p-8 h-full flex flex-col">
+        <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Marketing Pipeline</h2><p className="text-xs text-gray-500">Campaign execution and team resource sharing.</p></div>
-            <button onClick={onAddCampaign} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto"><iconify-icon icon="solar:add-circle-linear"></iconify-icon> Add Campaign</button>
+            <div className="flex gap-2 w-full md:w-auto">
+              <button onClick={() => { setFormData({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </button>
+              <button onClick={onAddCampaign} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
+              </button>
+            </div>
           </div>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
             {['Planning', 'Active', 'Completed'].map(col => (
-              <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center">
+              <div key={col} className="w-[85vw] sm:w-80 flex-shrink-0 flex flex-col gap-4 snap-center h-full overflow-y-auto pr-2 pb-4 hide-scrollbar">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-pd-orange border-b border-gray-200 dark:border-pd-glassBorder pb-2">{col}</h3>
                 
                 {campaigns.filter(c => c.stage === col).map(campaign => (
-                  <div key={campaign.id} className="amp-card p-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{campaign.name}</h4>
-                    <p className="text-xs text-gray-500 mb-3">{campaign.description || 'No description'}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {campaign.agents_assigned && campaign.agents_assigned.split(',').map((agent, i) => (
-                        <span key={i} className="px-2 py-1 bg-pd-teal/20 text-pd-teal rounded text-[10px]">{agent.trim()}</span>
-                      ))}
+                  <div key={campaign.id} className="amp-card p-5 relative overflow-hidden group flex-shrink-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        {campaign.name}
+                        <button onClick={() => { setFormData(campaign); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
+                          <iconify-icon icon="solar:pen-linear"></iconify-icon>
+                        </button>
+                      </h4>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-4 line-clamp-3" title={campaign.description}>{campaign.description || 'No description'}</p>
+                    <div className="flex justify-between items-center mt-auto border-t border-gray-200 dark:border-white/10 pt-3">
+                      <div className="flex flex-wrap gap-1">
+                        {campaign.agents_assigned && campaign.agents_assigned.split(',').map((agent, i) => (
+                          <span key={i} className="px-1.5 py-0.5 bg-pd-teal/20 text-pd-teal rounded text-[9px] font-bold uppercase">{agent.trim()}</span>
+                        ))}
+                      </div>
+                      {col === 'Planning' && (
+                        <button onClick={() => handleActivate(campaign)} className="flex items-center gap-1 text-[10px] bg-pd-orange/10 hover:bg-pd-orange/20 text-pd-orange px-2 py-1 rounded transition-colors font-semibold shadow-sm">
+                          <iconify-icon icon="solar:play-circle-bold"></iconify-icon> Activate
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
                 
                 {col === 'Planning' && campaigns.filter(c => c.stage === col).length === 0 && (
-                  <div className="amp-card p-4 opacity-70 border-dashed cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" onClick={onAddCampaign}>
+                  <div className="amp-card p-4 opacity-70 border-dashed cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex-shrink-0" onClick={onAddCampaign}>
                     <div className="flex items-center justify-center h-16 text-xs text-gray-500"><iconify-icon icon="solar:add-circle-linear" className="mr-1"></iconify-icon> Add Campaign</div>
                   </div>
                 )}
               </div>
             ))}
           </div>
+
+          {showModal && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">{formData.id ? 'Edit Campaign' : 'Manual Campaign Entry'}</h3>
+                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Campaign Name</label>
+                    <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" placeholder="e.g. Q4 Holiday Push" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Description & Strategy</label>
+                    <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="3" placeholder="Outline the campaign goals..."></textarea>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Stage</label>
+                      <select value={formData.stage} onChange={e => setFormData({...formData, stage: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none appearance-none">
+                        <option>Planning</option>
+                        <option>Active</option>
+                        <option>Completed</option>
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Agents (comma sep)</label>
+                      <input type="text" value={formData.agents_assigned} onChange={e => setFormData({...formData, agents_assigned: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" placeholder="CMO, Creative" />
+                    </div>
+                  </div>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Campaign</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -2476,9 +2605,39 @@
               userId: session?.user?.id
             })
           });
+          
+          if (!res.ok) {
+            throw new Error(`Server returned ${res.status}: Payload too large or backend error.`);
+          }
+          
           const data = await res.json();
           if (data.error) throw new Error(data.error);
-          setResult(data.content);
+          
+          const imageUrl = data.content;
+          setResult(imageUrl);
+
+          // Save to asset archive
+          const taskPayload = {
+            title: prompt.substring(0, 30) + '...',
+            agent: 'Creative',
+            status: 'done',
+            notes: imageUrl,
+            user_id: session?.user?.id || 'local'
+          };
+          
+          const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
+          local.unshift({
+            id: Date.now().toString(),
+            ...taskPayload,
+            created_at: new Date().toISOString()
+          });
+          localStorage.setItem('amp_tasks', JSON.stringify(local));
+          window.dispatchEvent(new Event('amp-tasks-updated'));
+
+          if (typeof supabaseClient !== 'undefined' && supabaseClient && session?.user?.id) {
+            supabaseClient.from('tasks').insert([taskPayload]).then();
+          }
+
         } catch (e) {
           console.error(e);
           setResult("[ERROR] Nano Banana Preview Failed: " + e.message);
