@@ -63,7 +63,7 @@ RULES OF ENGAGEMENT:
 4. MARKETING CAMPAIGNS: Marketing campaigns can be created by the CMO if asked or if you think it is the best move for the user. Use 'create_campaign' to launch marketing initiatives autonomously based on your complex planning.
 5. DELEGATING TASKS: When a task is ready for execution, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
-7. If the user gives you new business details in chat, instruct them to update their Settings profile.
+7. BUSINESS KNOWLEDGE: If the user gives you new business details in chat, you MUST use the 'update_business_profile' tool to save them. Do not ask them to update it manually.
 8. Dictate the best team structure and use 'create_agent' to hire specialized agents.
 9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to move or update a lead, use 'update_lead' to change their stage.
 10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
@@ -72,7 +72,8 @@ RULES OF ENGAGEMENT:
 13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.
 14. STRATEGIC PLANNING: When the user asks you to create a plan (marketing, outreach, lead gen, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent (CMO, CTO, CEO), and pass the detailed plan content. Once stored, ask the user: "I have stored this plan in the Strategic Planning section. Shall I automatically execute it on your behalf?"
 15. EXECUTING PLANS: If the user tells you to execute a stored plan, you MUST read the plan from context (if you remember it) or infer the steps, and then use 'create_task', 'create_campaign', 'add_lead', etc., to actually execute a sequence of instructions for the agents based on that plan.
-16. LEAD GENERATION: If the user asks you to find, generate, or research leads, use your own internal knowledge to generate at least 10 highly realistic business leads matching their criteria. You MUST use the 'add_multiple_leads' tool to add all of them to the 'Qualifying' stage at once. Set their value to $1200+ and starting prob to '0%'.`;
+16. LEAD GENERATION: When EXPLICITLY asked to find or gather leads, generate at least 5 highly realistic, specific business leads matching the user's target audience. You MUST use the 'add_multiple_leads' tool to add ALL of them to the 'Qualifying' stage. Set their value to '$0' and starting prob to '0%'. NEVER claim to have found leads without actually using the 'add_multiple_leads' tool.
+17. ACTION BOUNDARIES: NEVER take action (like generating leads or creating plans) unless the user EXPLICITLY asks you to. If the user is just answering your questions about their business, simply acknowledge the answers, use 'update_business_profile' to save them, and ask what they would like to do next (e.g. "Now that I understand your audience, I can generate a lead strategy or find some leads. What would you like to do?"). DO NOT automatically execute complex tasks without their go-ahead.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -370,7 +371,10 @@ RULES OF ENGAGEMENT:
             }
           }
           else if (call.name === "update_business_profile") {
-            await supabase.from('business_profile').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'update_business_profile', payload: call.args });
+            if (supabase) {
+              await supabase.from('business_profile').upsert({ user_id: userId, ...call.args });
+            }
             toolResults.push(`Business Profile updated successfully.`);
           }
           else if (call.name === "create_agent") {

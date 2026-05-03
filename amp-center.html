@@ -996,8 +996,13 @@
 
       useEffect(() => {
         const handleTasksUpdate = () => fetchTasks();
+        const handleProfileUpdate = () => checkProfile();
         window.addEventListener('amp-tasks-updated', handleTasksUpdate);
-        return () => window.removeEventListener('amp-tasks-updated', handleTasksUpdate);
+        window.addEventListener('amp-profile-updated', handleProfileUpdate);
+        return () => {
+          window.removeEventListener('amp-tasks-updated', handleTasksUpdate);
+          window.removeEventListener('amp-profile-updated', handleProfileUpdate);
+        };
       }, []);
 
       // Background Execution Engine
@@ -1444,6 +1449,9 @@
                 } else if (action.type === 'update_lead') {
                   agentForLog = 'CEO'; taskNameLog = 'Updated Lead';
                   detailsLog = `Updated ${action.payload.name} to stage ${action.payload.stage}`;
+                } else if (action.type === 'update_business_profile') {
+                  agentForLog = 'CEO'; taskNameLog = 'Updated Profile';
+                  detailsLog = `Updated business profile: ${action.payload.company_name || 'Details updated'}`;
                 }
 
                 // Create calendar event for historical record
@@ -1481,6 +1489,14 @@
                     local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_calendar_events', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-calendar-updated'));
+                  } else if (action.type === 'update_business_profile') {
+                    const localData = localStorage.getItem('amp_business_profile');
+                    let parsed = { company_name: '', bio: '', stage: 'Solo' };
+                    if (localData) {
+                      try { parsed = JSON.parse(localData); } catch (e) {}
+                    }
+                    localStorage.setItem('amp_business_profile', JSON.stringify({ ...parsed, ...action.payload }));
+                    window.dispatchEvent(new Event('amp-profile-updated'));
                   } else if (action.type === 'add_lead') {
                     const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
                     local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
