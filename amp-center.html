@@ -1710,6 +1710,17 @@
         await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id);
       };
 
+      const deleteLead = async (id) => {
+        if (!confirm('Are you sure you want to delete this lead?')) return;
+        const localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+        const updated = localLeads.filter(l => l.id !== id);
+        localStorage.setItem('amp_leads', JSON.stringify(updated));
+        setLeads(updated);
+
+        if (!supabaseClient) return;
+        await supabaseClient.from('leads').delete().eq('id', id);
+      };
+
       const handleSave = async () => {
         const payload = { ...formData, user_id: session?.user?.id || 'local' };
         let localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
@@ -1779,8 +1790,11 @@
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-2">
                           {lead.name}
-                          <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all">
+                          <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
                             <iconify-icon icon="solar:pen-linear"></iconify-icon>
+                          </button>
+                          <button onClick={() => deleteLead(lead.id)} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all" title="Delete">
+                            <iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon>
                           </button>
                         </h4>
                         <span className="text-[10px] text-gray-500">{lead.contact}</span>
