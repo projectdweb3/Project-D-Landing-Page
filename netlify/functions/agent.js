@@ -128,9 +128,23 @@ RULES OF ENGAGEMENT:
                   title: { type: "STRING" },
                   column_id: { type: "STRING", description: "'todo', 'in_progress', 'review', 'done'" },
                   assigned_agent: { type: "STRING" },
-                  scheduled_time: { type: "STRING", description: "Optional. ISO 8601 string representing when the task should automatically execute." }
+                  scheduled_time: { type: "STRING", description: "Optional. ISO 8601 string representing when the task should automatically execute." },
+                  priority: { type: "STRING", description: "Optional. 'High', 'Medium', or 'Low'. Dictates the order in Today's Tasks." }
                 },
                 required: ["title", "column_id"],
+              },
+            },
+            {
+              name: "update_task",
+              description: "Updates an existing task's priority or status to adapt to changing daily workflow.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  task_title_or_id: { type: "STRING", description: "The title of the task to update." },
+                  priority: { type: "STRING", description: "Optional. 'High', 'Medium', or 'Low'." },
+                  status: { type: "STRING", description: "Optional. 'todo', 'in_progress', 'review', 'done'." }
+                },
+                required: ["task_title_or_id"],
               },
             },
             {
@@ -246,15 +260,17 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "add_calendar_event",
-              description: "Schedules an event or agent deployment on the Tactical Calendar.",
+              description: "Schedules a meeting, appointment, or agent deployment on the Tactical Calendar.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  day_of_week: { type: "STRING", description: "'Mon', 'Tue', 'Wed', 'Thu', 'Fri'" },
-                  agent_role: { type: "STRING" },
-                  task_name: { type: "STRING" }
+                  date_time: { type: "STRING", description: "ISO 8601 string representing the exact date and time (e.g. 2026-05-04T14:00:00)." },
+                  event_type: { type: "STRING", description: "'meeting', 'agent_deployment', 'manual'" },
+                  agent_role: { type: "STRING", description: "Optional. 'CEO', 'CMO', 'CTO', 'Creative' if this is an agent deployment." },
+                  task_name: { type: "STRING", description: "Title of the meeting or deployment." },
+                  participants: { type: "STRING", description: "Optional. Comma separated list of clients or leads involved." }
                 },
-                required: ["day_of_week", "agent_role", "task_name"],
+                required: ["date_time", "event_type", "task_name"],
               },
             },
             {
