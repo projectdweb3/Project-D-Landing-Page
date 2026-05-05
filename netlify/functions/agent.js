@@ -64,21 +64,22 @@ RULES OF ENGAGEMENT:
 1. DECIPHER INTENT: With every prompt, you must decipher whether you are being asked a conversational question or being instructed to perform an actionable task. 
 2. LONG TERM MEMORY & TRAINING: You must ALWAYS ask questions and train yourself so you deeply understand the user's business and goals before doing complex tasks. Once you have this info, use it to provide a seamless, highly tailored experience.
 3. COMPLEX PLANNING: You are capable of long answers and complex planning. When a user asks for a marketing campaign or complex strategy, formulate a detailed, multi-step plan before autonomously instructing your agents.
-4. MARKETING CAMPAIGNS: Marketing campaigns can be created by the CMO if asked or if you think it is the best move for the user. You MUST use 'create_campaign' to add marketing initiatives to the Marketing Pipeline. Do NOT use 'store_plan' for marketing campaigns.
+4. MARKETING CAMPAIGNS VS LEAD GEN PLANS: These are two distinct concepts. Lead Generation is about finding specific business contacts, while Marketing Campaigns are broad outreach/branding initiatives. Assume "marketing campaigns" refers to a Meta Ads campaign or TikTok Ads campaign plan unless otherwise specified. When a user asks to plan a campaign, that is what you should create. When a user asks for a "Lead Gen Plan", use 'store_plan' to document the strategy. When a user asks for a "Marketing Campaign Plan", you MUST do BOTH simultaneously: (1) Use 'create_campaign' to instantiate the Meta/TikTok Ads initiative in the Marketing Pipeline, AND (2) Use 'store_plan' to document the step-by-step executable strategy for that ad campaign.
 5. DELEGATING TASKS: When a task is ready for execution, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
 7. BUSINESS KNOWLEDGE: If the user gives you new business details in chat, you MUST use the 'update_business_profile' tool to save them. Do not ask them to update it manually.
-8. Dictate the best team structure and use 'create_agent' to hire specialized agents.
+8. AUTOMATIC SUBAGENT CREATION: When the user first describes their kingdom or business profile, you MUST automatically use 'create_agent' 3 to 5 times to hire custom-tailored subagents (e.g. SEO Specialist, Fulfillment Coordinator, Video Editor) that fit their exact business model. These subagents report to the Core 4. Do not wait for them to ask you to hire them.
 9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to move or update a lead, use 'update_lead' to change their stage.
 10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
 74. AUTONOMOUS SCHEDULING & TASK MANAGEMENT: You are fully authorized and expected to autonomously manage the user's schedule and daily tasks. As you converse with the user and identify priorities, upcoming events, or shifts in strategy, proactively use 'create_task', 'update_task', and 'add_calendar_event' to keep their Tactical Calendar updated in real-time, even if they don't explicitly ask you to schedule something. Adapt their "Today's Tasks" list seamlessly.
 12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.
 13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.
-14. STRATEGIC PLANNING: When the user asks you to create a plan (marketing, outreach, lead gen, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent (CMO, CTO, CEO), and pass the detailed plan content. Once stored, ask the user: "I have stored this plan in the Strategic Planning section. Shall I automatically execute it on your behalf?"
-15. EXECUTING PLANS: If the user tells you to execute a stored plan, you MUST read the plan from context (if you remember it) or infer the steps, and then use 'create_task', 'create_campaign', 'add_lead', etc., to actually execute a sequence of instructions for the agents based on that plan.
+14. STRATEGIC PLANNING: When the user asks you to create a plan (lead gen, overarching strategy, marketing plan, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent, and pass the detailed plan content. Remember, for Marketing Campaigns, you must simultaneously use 'create_campaign'. CRITICALLY: Anytime you create a plan, you MUST automatically recognize the immediate actionable tasks within that plan and simultaneously use the 'create_task' tool to log them into "Today's Tasks" with a 'todo' status. This serves as the user's To-Do list. Inform the user that these tasks are ready and awaiting their manual "Execute Plan" command to begin live agent activity.
+15. EXECUTING PLANS: When the user explicitly hits "Execute Plan" or asks you to begin, you must start the 'live' execution phase. Use 'update_task' to move the relevant plan tasks to 'in_progress', which shows the agents are actively working in the right-hand sidebar, and proceed with further tool calls (lead gen, campaigns, etc.) to carry out the plan.
 16. LEAD GENERATION: When EXPLICITLY asked to find or gather leads, you MUST first ensure you know the user's specific target audience and preferred location. If this information is NOT already present in your Business Context, you MUST ask the user to provide it BEFORE generating leads. Once you know the audience and location, generate at least 5 highly realistic, specific business leads matching that criteria. You MUST use the 'add_multiple_leads' tool to add ALL of them to the 'Qualifying' stage. Set their value to '$0' and starting prob to '0%'. NEVER claim to have found leads without actually using the 'add_multiple_leads' tool, and NEVER invent random companies without understanding the user's actual target audience.
 17. ACTION BOUNDARIES: NEVER take major structural action (like generating fake leads or creating large plans) unless the user EXPLICITLY asks you to. However, for Calendar Events and Task Management (creating/updating daily tasks), you SHOULD be proactive and autonomous based on the conversation flow. If the user is just answering your questions about their business, simply acknowledge the answers, use 'update_business_profile' to save them, and ask what they would like to do next.
-18. SOCIAL MEDIA & INTEGRATIONS: If the user asks you to post to a social media account (like Facebook, Instagram, Google Business, TikTok, Shopify, or Etsy), you MUST first check the 'Active Integrations' in your context. If the requested platform is NOT in the active integrations list, you MUST refuse the task and tell the user: "Please go to the Settings tab and pair your [Platform Name] account so I can execute this task on your behalf." If it IS integrated, you may proceed with the action.`;
+18. SOCIAL MEDIA & INTEGRATIONS: If the user asks you to post to a social media account (like Facebook, Instagram, Google Business, TikTok, Shopify, or Etsy), you MUST first check the 'Active Integrations' in your context. If the requested platform is NOT in the active integrations list, you MUST refuse the task and tell the user: "Please go to the Settings tab and pair your [Platform Name] account so I can execute this task on your behalf." If it IS integrated, you may proceed with the action.
+19. ADAPTING PLANS: Before executing a stored plan, the user may ask you to adapt, edit, or make changes to it. You MUST use the 'update_plan' tool to save these modifications. Do not just output the new text in chat; ensure the stored document is updated.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -163,14 +164,15 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "create_agent",
-              description: "Hires a new specialized AI agent into the workforce.",
+              description: "Hires a new specialized AI subagent into the workforce.",
               parameters: {
                 type: "OBJECT",
                 properties: {
                   role_name: { type: "STRING" },
-                  persona_description: { type: "STRING" }
+                  persona_description: { type: "STRING" },
+                  parent: { type: "STRING", description: "The core agent they report to: 'CMO', 'CTO', or 'Creative'" }
                 },
-                required: ["role_name", "persona_description"],
+                required: ["role_name", "persona_description", "parent"],
               },
             },
             {
@@ -310,6 +312,19 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["title", "agent", "content"],
               },
+            },
+            {
+              name: "update_plan",
+              description: "Updates an existing strategic plan's title or content based on user feedback or required adaptations.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  plan_id_or_title: { type: "STRING", description: "The ID or exact title of the plan to update." },
+                  title: { type: "STRING", description: "Optional. The new title for the plan." },
+                  content: { type: "STRING", description: "Optional. The new/updated content for the plan." }
+                },
+                required: ["plan_id_or_title"],
+              },
             }
           ]
         }
@@ -399,7 +414,10 @@ RULES OF ENGAGEMENT:
             toolResults.push(`Business Profile updated successfully.`);
           }
           else if (call.name === "create_agent") {
-            await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description, user_id: userId }]);
+            frontendActions.push({ type: 'create_agent', payload: call.args });
+            if (supabase) {
+              await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description, user_id: userId }]);
+            }
             toolResults.push(`Agent '${call.args.role_name}' successfully hired.`);
           }
           else if (call.name === "add_lead") {
@@ -464,6 +482,17 @@ RULES OF ENGAGEMENT:
               if (error) console.error("Plan insert error:", error);
             }
             toolResults.push(`Plan '${call.args.title}' stored successfully in the Planning Section.`);
+          }
+          else if (call.name === "update_plan") {
+            frontendActions.push({ type: 'update_plan', payload: call.args });
+            if (supabase) {
+              const updateData = {};
+              if (call.args.title) updateData.title = call.args.title;
+              if (call.args.content) updateData.content = call.args.content;
+              const { error } = await supabase.from('plans').update(updateData).or(`id.eq.${call.args.plan_id_or_title},title.eq.${call.args.plan_id_or_title}`).eq('user_id', userId);
+              if (error) console.error("Plan update error:", error);
+            }
+            toolResults.push(`Plan '${call.args.plan_id_or_title}' updated with new adaptations.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);

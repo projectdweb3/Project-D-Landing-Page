@@ -559,17 +559,35 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
       const [customAgents, setCustomAgents] = useState([]);
       const [confirmText, setConfirmText] = useState('');
 
+      const fetchCustomAgents = async () => {
+        if (supabaseClient && session?.user?.id) {
+          const { data } = await supabaseClient.from('agents').select('*').order('created_at', { ascending: true });
+          if (data) setCustomAgents(data.map(d => ({ ...d, name: d.role_name, description: d.persona_description, parent: d.parent || 'CMO' })));
+        } else {
+          try {
+            const agents = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
+            setCustomAgents(agents);
+          } catch(e) {}
+        }
+      };
+
       useEffect(() => {
-        try {
-          const agents = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
-          setCustomAgents(agents);
-        } catch(e) {}
+        fetchCustomAgents();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:agents')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, fetchCustomAgents)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          window.addEventListener('amp-subagents-updated', fetchCustomAgents);
+          return () => window.removeEventListener('amp-subagents-updated', fetchCustomAgents);
+        }
       }, []);
 
       const handleReset = async () => {
@@ -638,14 +656,62 @@
       const creativeTask = activeTasks?.find(t => t.agent === 'Creative' && t.status !== 'done');
       const ctoTask = activeTasks?.find(t => t.agent === 'CTO' && t.status !== 'done');
 
+      const handleAddUser = async () => {
+        const input = document.getElementById('newUserName');
+        if (!input.value.trim()) return;
+        const newUser = { id: Date.now().toString(), name: input.value.trim() };
+        if (supabaseClient && session?.user?.id) {
+           await supabaseClient.from('account_users').insert([{ ...newUser, user_id: session.user.id }]);
+        } else {
+           setAccountUsers([...accountUsers, newUser]);
+        }
+        input.value = '';
+      };
+
+      const handleRemoveUser = async (idToRemove) => {
+        if (supabaseClient && session?.user?.id) {
+           await supabaseClient.from('account_users').delete().eq('id', idToRemove).eq('user_id', session.user.id);
+        } else {
+           setAccountUsers(accountUsers.filter(x => x.id !== idToRemove));
+        }
+      };
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col overflow-y-auto">
           <div className="mb-6 md:mb-8 flex justify-between items-start">
             <div>
-              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">System Settings</h2>
-              <p className="text-xs text-gray-500">Configure your business profile and manage your AI workforce.</p>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:settings-linear" className="text-pd-teal"></iconify-icon> Settings</h2>
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your business profile, agents, and manage users. Currently logged in as: <span className="font-bold text-pd-teal">{activeUserName}</span></p>
             </div>
-            <button onClick={handleLogout} className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-full text-xs font-semibold transition-all">Log Out</button>
+            {needsProfileSetup && <div className="bg-pd-orange/10 text-pd-orange px-3 py-1 rounded-full text-xs font-bold animate-pulse">Required</div>}
+          </div>
+
+          <div className="mb-8 p-6 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">User Management (Max 5)</h3>
+            <div className="flex flex-col gap-4">
+              {accountUsers.map(u => (
+                <div key={u.id} className="flex items-center justify-between p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
+                  <div className="flex items-center gap-3">
+                    <iconify-icon icon="solar:user-circle-linear" width="24" className="text-pd-teal"></iconify-icon>
+                    <span className="font-semibold text-sm text-gray-900 dark:text-white">{u.name} {activeUserId === u.id && <span className="text-xs text-pd-teal ml-2">(Active)</span>}</span>
+                  </div>
+                  <div className="flex gap-2">
+                     {activeUserId !== u.id && (
+                       <button onClick={() => setActiveUserId(u.id)} className="px-3 py-1 text-xs bg-pd-teal/10 text-pd-teal rounded hover:bg-pd-teal/20 transition-colors">Switch To</button>
+                     )}
+                     {accountUsers.length > 1 && (
+                       <button onClick={() => handleRemoveUser(u.id)} className="px-3 py-1 text-xs bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 transition-colors">Remove</button>
+                     )}
+                  </div>
+                </div>
+              ))}
+              {accountUsers.length < 5 && (
+                <div className="flex items-center gap-2 mt-2">
+                  <input type="text" id="newUserName" placeholder="New User Name" className="flex-1 bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
+                  <button onClick={handleAddUser} className="px-4 py-2 bg-pd-teal text-pd-dark font-bold text-xs rounded-xl shadow hover:shadow-lg transition-all">Add User</button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -882,6 +948,49 @@
     };
 
     const CommandCenter = ({ session }) => {
+      const [accountUsers, setAccountUsers] = useState(() => {
+        try {
+          const saved = localStorage.getItem('amp_account_users');
+          return saved ? JSON.parse(saved) : [{id: '1', name: 'Primary User'}];
+        } catch(e) { return [{id: '1', name: 'Primary User'}]; }
+      });
+      const [activeUserId, setActiveUserId] = useState(() => {
+        return localStorage.getItem('amp_active_user_id') || '1';
+      });
+
+      const fetchAccountUsers = async () => {
+        if (supabaseClient && session?.user?.id) {
+          const { data } = await supabaseClient.from('account_users').select('*').eq('user_id', session.user.id).order('created_at', { ascending: true });
+          if (data && data.length > 0) setAccountUsers(data);
+        }
+      };
+
+      useEffect(() => {
+        fetchAccountUsers();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:account_users')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'account_users' }, fetchAccountUsers)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          const handleStorage = (e) => {
+            if (e.key === 'amp_account_users' && e.newValue) setAccountUsers(JSON.parse(e.newValue));
+          };
+          window.addEventListener('storage', handleStorage);
+          return () => window.removeEventListener('storage', handleStorage);
+        }
+      }, []);
+
+      useEffect(() => {
+        localStorage.setItem('amp_account_users', JSON.stringify(accountUsers));
+      }, [accountUsers]);
+
+      useEffect(() => {
+        localStorage.setItem('amp_active_user_id', activeUserId);
+      }, [activeUserId]);
+
+      const activeUserName = accountUsers.find(u => u.id === activeUserId)?.name || 'Primary User';
+
       const [activeModule, setActiveModule] = useState('neural-chat');
       const [isStatsOpen, setIsStatsOpen] = useState(false);
       const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
@@ -892,6 +1001,43 @@
       const [contentReferences, setContentReferences] = useState([]);
       const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
       const [triggerPrompt, setTriggerPrompt] = useState(null);
+      
+      const [unreadCounts, setUnreadCounts] = useState({ 'all': 0 });
+      const [totalUnreadTeam, setTotalUnreadTeam] = useState(0);
+
+      useEffect(() => {
+        let count = 0;
+        Object.keys(unreadCounts).forEach(k => count += unreadCounts[k]);
+        setTotalUnreadTeam(count);
+      }, [unreadCounts]);
+
+      useEffect(() => {
+        const handleNewMessage = (payload) => {
+           if (payload.sender_id === activeUserId) return;
+           if (payload.channel === 'all' || payload.channel === activeUserId) {
+              if (activeModule !== 'team-chat') {
+                 setUnreadCounts(prev => ({ ...prev, [payload.channel === 'all' ? 'all' : payload.sender_id]: (prev[payload.channel === 'all' ? 'all' : payload.sender_id] || 0) + 1 }));
+              }
+           }
+        };
+
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:team_messages_badge')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_messages' }, (p) => handleNewMessage(p.new))
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          const handleStorage = (e) => {
+            if (e.key === 'amp_team_messages' && e.newValue) {
+               const local = JSON.parse(e.newValue);
+               const lastMsg = local[local.length - 1];
+               if (lastMsg) handleNewMessage(lastMsg);
+            }
+          };
+          window.addEventListener('storage', handleStorage);
+          return () => window.removeEventListener('storage', handleStorage);
+        }
+      }, [activeUserId, activeModule]);
 
       const displayTasks = [...tempProcessingTasks, ...activeTasks];
 
@@ -1094,7 +1240,7 @@
 
       const [usagePct, setUsagePct] = useState(() => {
         const saved = localStorage.getItem('amp_usage_pct');
-        return saved ? JSON.parse(saved) : { CEO: 100, CMO: 100, Creative: 100, CTO: 100 };
+        return saved ? JSON.parse(saved) : { CEO: 100, CMO: 100, Creative: 100, CTO: 100, Subagents: 100 };
       });
 
       const depleteBudget = (agent, amount) => {
@@ -1194,6 +1340,7 @@
       const isEcomm = userProfile?.stage === 'Ecomm';
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
+        { id: 'team-chat', icon: 'solar:users-group-rounded-linear', label: 'Team Chat', mobileLabel: 'Team', badge: totalUnreadTeam },
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: isEcomm ? 'Sales Pipeline' : 'Lead Pipeline', mobileLabel: isEcomm ? 'Sales' : 'Leads' },
         { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: isEcomm ? 'Customer Ledger' : 'Client Ledger', mobileLabel: isEcomm ? 'Customers' : 'Clients' },
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
@@ -1237,6 +1384,7 @@
                 <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
                   <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
                   <span className="relative z-10">{item.label}</span>
+                  {item.badge > 0 && <span className="absolute right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 animate-bounce">{item.badge}</span>}
                 </button>
               ))}
             </nav>
@@ -1251,26 +1399,28 @@
           {/* Mobile Bottom Navigation */}
           <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-white/95 dark:bg-[#0b0f19]/95 border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl flex p-2 gap-1 overflow-x-auto z-40 shadow-2xl hide-scrollbar snap-x snap-mandatory">
             {navItems.map(item => (
-              <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2 rounded-xl transition-all text-[10px] font-medium snap-center flex-shrink-0 ${activeModule === item.id ? 'bg-pd-teal/10 text-pd-teal shadow-inner' : 'text-gray-500 hover:bg-black/5 dark:hover:bg-white/5'}`}>
+              <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2 rounded-xl transition-all text-[10px] font-medium snap-center flex-shrink-0 relative ${activeModule === item.id ? 'bg-pd-teal/10 text-pd-teal shadow-inner' : 'text-gray-500 hover:bg-black/5 dark:hover:bg-white/5'}`}>
                 <iconify-icon icon={item.icon} width="22" className="mb-1"></iconify-icon>
                 <span className="truncate w-full text-center">{item.mobileLabel}</span>
+                {item.badge > 0 && <span className="absolute top-1 right-2 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full z-10 animate-bounce">{item.badge}</span>}
               </button>
             ))}
           </nav>
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
-              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} />
+              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} />
             </div>
+            {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
-            {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} />}
+            {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
-            {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
+            {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
-            {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} />}
+            {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -1320,6 +1470,7 @@
                   <BudgetBar agent="CMO" percentage={usagePct.CMO} />
                   <BudgetBar agent="Creative" percentage={usagePct.Creative} />
                   <BudgetBar agent="CTO" percentage={usagePct.CTO} />
+                  <BudgetBar agent="Subagents" percentage={usagePct.Subagents !== undefined ? usagePct.Subagents : 100} />
                 </div>
               </div>
             </div>
@@ -1358,7 +1509,128 @@
       );
     };
 
-      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks }) => {
+    const TeamChat = ({ session, accountUsers, activeUserId, activeUserName, unreadCounts, setUnreadCounts }) => {
+        const [messages, setMessages] = useState([]);
+        const [activeChannel, setActiveChannel] = useState('all'); // 'all' or user.id
+        const [input, setInput] = useState('');
+        const endRef = useRef(null);
+
+        const fetchMessages = async () => {
+          if (supabaseClient && session?.user?.id) {
+             const { data } = await supabaseClient.from('team_messages').select('*').eq('account_id', session.user.id).order('created_at', { ascending: true });
+             if (data) setMessages(data);
+          } else {
+             try {
+               const local = JSON.parse(localStorage.getItem('amp_team_messages') || '[]');
+               setMessages(local);
+             } catch(e) {}
+          }
+        };
+
+        useEffect(() => {
+          fetchMessages();
+          if (supabaseClient) {
+            const channel = supabaseClient.channel('realtime:team_messages')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'team_messages' }, fetchMessages)
+              .subscribe();
+            return () => { supabaseClient.removeChannel(channel); };
+          } else {
+            const handleStorage = (e) => {
+              if (e.key === 'amp_team_messages' && e.newValue) setMessages(JSON.parse(e.newValue));
+            };
+            window.addEventListener('storage', handleStorage);
+            return () => window.removeEventListener('storage', handleStorage);
+          }
+        }, []);
+
+        useEffect(() => {
+          if (unreadCounts[activeChannel] > 0) {
+            setUnreadCounts(prev => ({ ...prev, [activeChannel]: 0 }));
+          }
+        }, [messages, activeChannel, unreadCounts, setUnreadCounts]);
+
+        useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, activeChannel]);
+
+        const handleSend = async (e) => {
+          if (e) e.preventDefault();
+          if (!input.trim()) return;
+          const payload = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+            account_id: session?.user?.id || 'local',
+            sender_id: activeUserId,
+            sender_name: activeUserName,
+            channel: activeChannel,
+            text: input.trim(),
+            created_at: new Date().toISOString()
+          };
+          setInput('');
+
+          if (supabaseClient && session?.user?.id) {
+             await supabaseClient.from('team_messages').insert([payload]);
+          } else {
+             const local = JSON.parse(localStorage.getItem('amp_team_messages') || '[]');
+             local.push(payload);
+             localStorage.setItem('amp_team_messages', JSON.stringify(local));
+             setMessages(local);
+             window.dispatchEvent(new Event('amp-team-messages'));
+          }
+        };
+
+        const filteredMessages = messages.filter(m => 
+          m.channel === 'all' ? activeChannel === 'all' : 
+          (m.channel === activeUserId && m.sender_id === activeChannel) || 
+          (m.channel === activeChannel && m.sender_id === activeUserId) ||
+          (m.channel === activeChannel && activeChannel === 'all')
+        );
+
+        return (
+          <div className="flex h-full overflow-hidden">
+             {/* Channel Sidebar */}
+             <div className="w-1/3 md:w-1/4 border-r border-gray-200 dark:border-pd-glassBorder bg-black/5 dark:bg-white/5 flex flex-col p-4 overflow-y-auto">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Channels</h3>
+                <button onClick={() => setActiveChannel('all')} className={`text-left px-3 py-2 rounded-xl text-sm mb-2 transition-colors flex justify-between items-center ${activeChannel === 'all' ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}>
+                  <span>Whole Team</span>
+                  {unreadCounts['all'] > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{unreadCounts['all']}</span>}
+                </button>
+                <div className="text-xs text-gray-400 font-semibold mb-2 mt-4 uppercase">Direct Messages</div>
+                {accountUsers.filter(u => u.id !== activeUserId).map(u => (
+                  <button key={u.id} onClick={() => setActiveChannel(u.id)} className={`text-left px-3 py-2 rounded-xl text-sm mb-1 transition-colors flex justify-between items-center ${activeChannel === u.id ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}>
+                    <span>{u.name}</span>
+                    {unreadCounts[u.id] > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{unreadCounts[u.id]}</span>}
+                  </button>
+                ))}
+             </div>
+             {/* Chat Area */}
+             <div className="flex-1 flex flex-col relative overflow-hidden bg-white/40 dark:bg-black/20">
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+                  {filteredMessages.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-sm text-gray-500">No messages yet. Say hello!</div>
+                  ) : (
+                    filteredMessages.map(m => (
+                      <div key={m.id} className={`flex flex-col max-w-[80%] ${m.sender_id === activeUserId ? 'ml-auto items-end' : 'mr-auto items-start'}`}>
+                        <div className="text-[10px] text-gray-500 mb-1">{m.sender_name} • {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div className={`px-4 py-2 text-sm shadow-sm ${m.sender_id === activeUserId ? 'bg-pd-teal text-pd-dark rounded-2xl rounded-br-sm' : 'bg-white dark:bg-[#1a2133] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl rounded-bl-sm'}`}>
+                          {m.text}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  <div ref={endRef} />
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-pd-glass backdrop-blur-md">
+                   <form onSubmit={handleSend} className="relative">
+                      <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder={`Message ${activeChannel === 'all' ? 'everyone' : accountUsers.find(u => u.id === activeChannel)?.name}...`} className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-4 pr-12 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
+                      <button type="submit" disabled={!input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-pd-teal flex items-center justify-center text-pd-dark disabled:opacity-50 hover:scale-105 transition-transform">
+                        <iconify-icon icon="solar:rounded-right-bold" width="16"></iconify-icon>
+                      </button>
+                   </form>
+                </div>
+             </div>
+          </div>
+        );
+      };
+
+      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks, activeUserName }) => {
       const [messages, setMessages] = useState(() => {
         try {
           const saved = localStorage.getItem('amp_chat_history');
@@ -1405,6 +1677,15 @@
         setShowHistory(false);
       };
 
+      const fetchMessages = async () => {
+        if (supabaseClient && session?.user?.id) {
+          const { data } = await supabaseClient.from('chat_history').select('*').eq('user_id', session.user.id).order('created_at', { ascending: true });
+          if (data && data.length > 0) {
+            setMessages(data.map(d => ({ sender: d.sender, text: d.text, time: new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), userName: d.user_name, attachment: d.attachment })));
+          }
+        }
+      };
+
       useEffect(() => {
         try {
           localStorage.setItem('amp_chat_history', JSON.stringify(messages));
@@ -1414,14 +1695,19 @@
       }, [messages]);
 
       useEffect(() => {
-        const handleSync = () => {
-          try {
-            const saved = localStorage.getItem('amp_chat_history');
-            if (saved) setMessages(JSON.parse(saved));
-          } catch (e) {}
-        };
-        window.addEventListener('amp-simulated-sale', handleSync);
-        return () => window.removeEventListener('amp-simulated-sale', handleSync);
+        fetchMessages();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:chat_history')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_history' }, fetchMessages)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          const handleStorage = (e) => {
+            if (e.key === 'amp_chat_history' && e.newValue) setMessages(JSON.parse(e.newValue));
+          };
+          window.addEventListener('storage', handleStorage);
+          return () => window.removeEventListener('storage', handleStorage);
+        }
       }, []);
 
       useEffect(() => {
@@ -1436,6 +1722,13 @@
         }
       }, [needsProfileSetup]);
 
+      const appendMessage = (newMsg) => {
+        setMessages(prev => [...prev, newMsg]);
+        if (supabaseClient && session?.user?.id) {
+          supabaseClient.from('chat_history').insert([{ user_id: session.user.id, sender: newMsg.sender, user_name: newMsg.userName || null, text: newMsg.text, attachment: newMsg.attachment || null }]).then();
+        }
+      };
+
       const sendMessage = (msgText, msgAttachment) => {
         if (!msgText && !msgAttachment) return;
         
@@ -1447,12 +1740,14 @@
           return;
         }
         
-        setMessages(prev => [...prev, { 
+        const newUserMsg = { 
           sender: 'user', 
+          userName: activeUserName,
           text: msgText, 
           attachment: msgAttachment ? msgAttachment.preview : null,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-        }]);
+        };
+        appendMessage(newUserMsg);
         
         setIsTyping(true);
         if (setTempTasks) {
@@ -1520,7 +1815,7 @@
                 const localCal = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
                 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                 const dayOfWeek = days[new Date().getDay()];
-                localCal.push({ 
+                const histPayload = { 
                   id: Date.now().toString() + Math.random(), 
                   day_of_week: dayOfWeek, 
                   agent_role: agentForLog, 
@@ -1528,11 +1823,26 @@
                   details: detailsLog,
                   is_historical: true,
                   created_at: new Date().toISOString() 
-                });
+                };
+                localCal.push(histPayload);
                 localStorage.setItem('amp_calendar_events', JSON.stringify(localCal));
                 window.dispatchEvent(new Event('amp-calendar-updated'));
+                if (supabaseClient && session?.user?.id) {
+                   supabaseClient.from('calendar_events').insert([{ ...histPayload, user_id: session.user.id }]).then();
+                }
 
                 try {
+                  const logAction = (name, agent) => {
+                    const localCal2 = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
+                    const payload = { id: Date.now().toString() + Math.random().toString(36).substr(2,5), date_time: new Date().toISOString(), event_type: 'agent_deployment', agent_role: agent || 'CEO', task_name: name, created_at: new Date().toISOString(), created_by: activeUserName || 'System' };
+                    localCal2.push(payload);
+                    localStorage.setItem('amp_calendar_events', JSON.stringify(localCal2));
+                    window.dispatchEvent(new Event('amp-calendar-updated'));
+                    if (supabaseClient && session?.user?.id) {
+                       supabaseClient.from('calendar_events').insert([{ ...payload, user_id: session.user.id }]).then();
+                    }
+                  };
+
                   if (action.type === 'add_inventory_item') {
                     const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
                     local.push({ id: Date.now() + Math.random(), ...action.payload, created_at: new Date().toISOString() });
@@ -1541,11 +1851,13 @@
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
                     local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_plans', JSON.stringify(local));
+                    logAction(`Created Plan: ${action.payload.title}`, action.payload.agent);
                   } else if (action.type === 'create_task') {
                     const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
                     local.unshift({ id: Date.now().toString(), title: action.payload.title, status: action.payload.column_id || 'todo', agent: action.payload.assigned_agent || 'CEO', scheduled_time: action.payload.scheduled_time || null, priority: action.payload.priority || 'Medium', created_at: new Date().toISOString() });
                     localStorage.setItem('amp_tasks', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-tasks-updated'));
+                    logAction(`Delegated Task: ${action.payload.title}`, action.payload.assigned_agent);
                   } else if (action.type === 'update_task') {
                     let local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
                     const targetIdx = local.findIndex(t => t.id === action.payload.task_title_or_id || t.title.toLowerCase() === action.payload.task_title_or_id.toLowerCase());
@@ -1554,6 +1866,7 @@
                       if (action.payload.status) local[targetIdx].status = action.payload.status;
                       localStorage.setItem('amp_tasks', JSON.stringify(local));
                       window.dispatchEvent(new Event('amp-tasks-updated'));
+                      logAction(`Updated Task: ${action.payload.task_title_or_id}`, 'CEO');
                     }
                   } else if (action.type === 'add_calendar_event') {
                     const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
@@ -1568,16 +1881,24 @@
                     }
                     localStorage.setItem('amp_business_profile', JSON.stringify({ ...parsed, ...action.payload }));
                     window.dispatchEvent(new Event('amp-profile-updated'));
+                  } else if (action.type === 'create_agent') {
+                    const local = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
+                    local.push({ id: Date.now().toString(), name: action.payload.role_name, description: action.payload.persona_description, parent: action.payload.parent || 'CMO', created_at: new Date().toISOString() });
+                    localStorage.setItem('amp_custom_agents', JSON.stringify(local));
+                    window.dispatchEvent(new Event('amp-subagents-updated'));
+                    logAction(`Hired Subagent: ${action.payload.role_name}`, 'CEO');
                   } else if (action.type === 'add_lead') {
                     const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
                     local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_leads', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-simulated-lead'));
+                    logAction(`Added Lead: ${action.payload.name}`, 'CEO');
                   } else if (action.type === 'add_multiple_leads') {
                     const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
                     const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, created_at: new Date().toISOString() }));
                     localStorage.setItem('amp_leads', JSON.stringify([...newLeads, ...local]));
                     window.dispatchEvent(new Event('amp-simulated-lead'));
+                    logAction(`Generated ${action.payload.leads.length} Leads`, 'CEO');
                   } else if (action.type === 'update_lead') {
                     const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
@@ -1585,21 +1906,32 @@
                       local[index] = { ...local[index], ...action.payload, updated_at: new Date().toISOString() };
                       localStorage.setItem('amp_leads', JSON.stringify(local));
                       window.dispatchEvent(new Event('amp-simulated-lead'));
+                      logAction(`Updated Lead: ${action.payload.name}`, 'CEO');
                     }
                   } else if (action.type === 'create_campaign') {
                     const local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
                     local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_campaigns', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-campaigns-updated'));
+                    logAction(`Launched Campaign: ${action.payload.name}`, 'CMO');
+                  } else if (action.type === 'update_plan') {
+                    const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+                    const targetIdx = local.findIndex(p => p.id === action.payload.plan_id_or_title || p.title.toLowerCase() === action.payload.plan_id_or_title.toLowerCase());
+                    if (targetIdx !== -1) {
+                      if (action.payload.title) local[targetIdx].title = action.payload.title;
+                      if (action.payload.content) local[targetIdx].content = action.payload.content;
+                      localStorage.setItem('amp_plans', JSON.stringify(local));
+                      logAction(`Adapted Plan: ${action.payload.plan_id_or_title}`, 'CEO');
+                    }
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
             }
 
             if (status >= 400 || data.error) {
-              setMessages(prev => [...prev, { sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+              appendMessage({ sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             } else {
-              setMessages(prev => [...prev, { sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+              appendMessage({ sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             }
             setIsTyping(false);
           })
@@ -1612,7 +1944,7 @@
               responseText = "[ERROR] I cannot generate leads because my backend connection to Gemini is currently offline. Please ensure you are running this platform on a live server with API keys configured.";
             }
 
-            setMessages(prev => [...prev, { sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            appendMessage({ sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             setIsTyping(false);
           });
       };
@@ -1630,7 +1962,7 @@
       useEffect(() => {
         if (triggerPrompt) {
           if (triggerPrompt.sender === 'ceo') {
-            setMessages(prev => [...prev, { sender: 'ceo', text: triggerPrompt.text, time: triggerPrompt.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            appendMessage({ sender: 'ceo', text: triggerPrompt.text, time: triggerPrompt.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
           } else {
             sendMessage(triggerPrompt.text, null);
           }
@@ -1697,6 +2029,7 @@
             {messages.map((m, i) => (
               m.sender === 'user' ? (
                 <div key={i} className="self-end max-w-lg bg-pd-teal/20 border border-pd-teal/40 rounded-2xl rounded-tr-sm p-4 text-sm text-gray-900 dark:text-gray-100 shadow-sm break-words whitespace-pre-wrap">
+                  <div className="text-[10px] text-pd-teal font-bold mb-1">{m.userName || 'You'}</div>
                   {m.attachment && (
                     <img src={m.attachment} alt="Attachment preview" className="max-w-full rounded-lg mb-2 border border-pd-teal/30" />
                   )}
@@ -2854,18 +3187,32 @@
       const [isAdding, setIsAdding] = useState(false);
       const [newPlan, setNewPlan] = useState({ title: '', content: '' });
       const [enlargedPlan, setEnlargedPlan] = useState(null);
+      const [isEditing, setIsEditing] = useState(false);
+      const [editBuffer, setEditBuffer] = useState({ title: '', content: '' });
 
-      const fetchPlans = () => {
-        try {
-          const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
-          setPlans(local);
-        } catch(e) {}
+      const fetchPlans = async () => {
+        if (supabaseClient) {
+          const { data } = await supabaseClient.from('plans').select('*').order('created_at', { ascending: false });
+          if (data) setPlans(data);
+        } else {
+          try {
+            const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+            setPlans(local);
+          } catch(e) {}
+        }
       };
 
       useEffect(() => {
         fetchPlans();
-        const interval = setInterval(fetchPlans, 2000);
-        return () => clearInterval(interval);
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:plans')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, fetchPlans)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          const interval = setInterval(fetchPlans, 2000);
+          return () => clearInterval(interval);
+        }
       }, []);
 
       const executePlan = (plan) => {
@@ -2882,14 +3229,41 @@
         }, 150);
       };
 
-      const handleSaveManual = () => {
+      const handleSaveManual = async () => {
         if (!newPlan.title || !newPlan.content) return;
-        const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
-        local.push({ id: Date.now().toString(), agent: 'CEO', ...newPlan, created_at: new Date().toISOString() });
-        localStorage.setItem('amp_plans', JSON.stringify(local));
+        const payload = { id: Date.now().toString(), agent: 'CEO', ...newPlan, created_at: new Date().toISOString() };
+        if (supabaseClient && session?.user?.id) {
+          await supabaseClient.from('plans').insert([{ ...payload, user_id: session.user.id }]);
+        } else {
+          const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+          local.push(payload);
+          localStorage.setItem('amp_plans', JSON.stringify(local));
+          fetchPlans();
+        }
         setIsAdding(false);
         setNewPlan({ title: '', content: '' });
-        fetchPlans();
+      };
+
+      const handleStartEdit = () => {
+        setEditBuffer({ title: enlargedPlan.title, content: enlargedPlan.content });
+        setIsEditing(true);
+      };
+
+      const handleSaveEdit = async () => {
+        if (supabaseClient && session?.user?.id) {
+          await supabaseClient.from('plans').update(editBuffer).eq('id', enlargedPlan.id).eq('user_id', session.user.id);
+          setEnlargedPlan({ ...enlargedPlan, ...editBuffer });
+        } else {
+          const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+          const idx = local.findIndex(p => p.id === enlargedPlan.id);
+          if (idx !== -1) {
+            local[idx] = { ...local[idx], ...editBuffer };
+            localStorage.setItem('amp_plans', JSON.stringify(local));
+            setEnlargedPlan(local[idx]);
+            fetchPlans();
+          }
+        }
+        setIsEditing(false);
       };
 
       return (
@@ -2949,25 +3323,57 @@
           </div>
           
           {enlargedPlan && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm" onClick={() => setEnlargedPlan(null)}>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm" onClick={() => { setEnlargedPlan(null); setIsEditing(false); }}>
               <div className="bg-white dark:bg-[#0b0f19] w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 dark:border-white/10 animate-fade-in" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-white/5">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{enlargedPlan.title}</h2>
-                    <span className="inline-block mt-1 px-2 py-0.5 bg-pd-teal/10 text-pd-teal text-[10px] uppercase font-bold tracking-widest border border-pd-teal/30 rounded-full">{enlargedPlan.agent || 'CEO'}</span>
+                  <div className="flex-1 mr-4">
+                    {isEditing ? (
+                      <input 
+                        type="text" 
+                        value={editBuffer.title} 
+                        onChange={e => setEditBuffer({...editBuffer, title: e.target.value})}
+                        className="w-full bg-black/5 dark:bg-white/5 border border-pd-teal/30 rounded-lg px-3 py-1 text-xl font-bold text-gray-900 dark:text-white focus:outline-none"
+                      />
+                    ) : (
+                      <>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{enlargedPlan.title}</h2>
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-pd-teal/10 text-pd-teal text-[10px] uppercase font-bold tracking-widest border border-pd-teal/30 rounded-full">{enlargedPlan.agent || 'CEO'}</span>
+                      </>
+                    )}
                   </div>
                   <div className="flex gap-2 items-center">
-                    <button onClick={() => { executePlan(enlargedPlan); setEnlargedPlan(null); }} className="amp-button primary px-4 py-2 text-xs font-medium flex items-center shadow-[0_0_15px_rgba(0,242,234,0.3)]">
+                    {!isEditing && (
+                      <button onClick={handleStartEdit} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors" title="Edit Plan">
+                        <iconify-icon icon="solar:pen-2-linear" width="20"></iconify-icon>
+                      </button>
+                    )}
+                    <button onClick={() => { executePlan(enlargedPlan); setEnlargedPlan(null); setIsEditing(false); }} className="amp-button primary px-4 py-2 text-xs font-medium flex items-center shadow-[0_0_15px_rgba(0,242,234,0.3)]">
                       <iconify-icon icon="solar:play-circle-bold" className="mr-2"></iconify-icon> <span className="hidden sm:inline">Execute Plan</span>
                     </button>
-                    <button onClick={() => setEnlargedPlan(null)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors">
+                    <button onClick={() => { setEnlargedPlan(null); setIsEditing(false); }} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors">
                       <iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon>
                     </button>
                   </div>
                 </div>
-                <div className="p-4 sm:p-6 overflow-y-auto flex-1 text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  <FormatText text={enlargedPlan.content} />
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {isEditing ? (
+                    <textarea 
+                      value={editBuffer.content}
+                      onChange={e => setEditBuffer({...editBuffer, content: e.target.value})}
+                      className="w-full h-full min-h-[300px] bg-black/5 dark:bg-white/5 border border-pd-teal/30 rounded-xl p-4 text-gray-900 dark:text-white focus:outline-none resize-none"
+                    />
+                  ) : (
+                    <div className="whitespace-pre-wrap">
+                      <FormatText text={enlargedPlan.content} />
+                    </div>
+                  )}
                 </div>
+                {isEditing && (
+                  <div className="p-4 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3 bg-gray-50 dark:bg-black/20">
+                    <button onClick={() => setIsEditing(false)} className="px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancel</button>
+                    <button onClick={handleSaveEdit} className="px-6 py-2 bg-pd-teal text-pd-dark rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">Save Adaptations</button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2975,7 +3381,7 @@
       );
     };
 
-    const TacticalCalendar = ({ activeTasks, setActiveModule, setTriggerPrompt }) => {
+    const TacticalCalendar = ({ activeTasks, setActiveModule, setTriggerPrompt, activeUserName }) => {
       const [events, setEvents] = useState([]);
       const [selectedDate, setSelectedDate] = useState(new Date());
       const [selectedEvent, setSelectedEvent] = useState(null);
@@ -3029,7 +3435,7 @@
         }
       }, []);
 
-      const handleAddManualEvent = () => {
+      const handleAddManualEvent = async () => {
         if (!newEvent.title) return;
         const dateStr = selectedDate.toISOString().split('T')[0];
         const eventDateTime = new Date(`${dateStr}T${newEvent.time}:00`).toISOString();
@@ -3038,12 +3444,20 @@
           event_type: newEvent.type,
           date_time: eventDateTime,
           agent_role: 'User',
-          participants: newEvent.participants
+          participants: newEvent.participants,
+          created_by: activeUserName || 'User'
         };
-        const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
-        local.push({ id: Date.now().toString(), ...payload, created_at: new Date().toISOString() });
-        localStorage.setItem('amp_calendar_events', JSON.stringify(local));
-        window.dispatchEvent(new Event('amp-calendar-updated'));
+        const completePayload = { id: Date.now().toString(), ...payload, created_at: new Date().toISOString() };
+        
+        if (supabaseClient && session?.user?.id) {
+           await supabaseClient.from('calendar_events').insert([{ ...completePayload, user_id: session.user.id }]);
+        } else {
+           const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
+           local.push(completePayload);
+           localStorage.setItem('amp_calendar_events', JSON.stringify(local));
+           window.dispatchEvent(new Event('amp-calendar-updated'));
+        }
+        
         setShowAddModal(false);
         setNewEvent({ title: '', time: '09:00', type: 'meeting', participants: '' });
       };
@@ -3161,7 +3575,10 @@
                             <span className={`text-[10px] font-bold ${style.text} uppercase`}>{timeStr}</span>
                             <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-full">{ev.agent_role || 'General'}</span>
                           </div>
-                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{ev.task_name}</h4>
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{ev.task_name}</div>
+                            {ev.created_by && <div className="text-[10px] text-gray-500 mt-0.5">By {ev.created_by}</div>}
+                          </div>
                           {ev.participants && <p className="text-xs text-gray-500 mt-2 flex items-center gap-1"><iconify-icon icon="solar:users-group-rounded-linear"></iconify-icon> {ev.participants}</p>}
                         </div>
                       </div>
