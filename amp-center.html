@@ -559,7 +559,7 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
       const [customAgents, setCustomAgents] = useState([]);
@@ -725,9 +725,9 @@
                   <input type="text" value={userProfile?.company_name || ''} onChange={e => setUserProfile({...userProfile, company_name: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm" placeholder="e.g. Acme Corp" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Stage</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Type</label>
                   <select value={userProfile?.stage || 'Solo'} onChange={e => setUserProfile({...userProfile, stage: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm appearance-none">
-                    {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food'].map(s => <option key={s} value={s}>{s}</option>)}
+                    {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food', 'Organizer'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 {userProfile?.stage === 'Ecomm' && (
@@ -759,6 +759,8 @@
                   { id: 'tiktok', name: 'TikTok', icon: 'simple-icons:tiktok', color: '#000000', text: 'text-gray-900 dark:text-white', bg: 'bg-black/10 dark:bg-white/10' },
                   { id: 'shopify', name: 'Shopify', icon: 'simple-icons:shopify', color: '#96bf48', text: 'text-[#96bf48]', bg: 'bg-[#96bf48]/10' },
                   { id: 'etsy', name: 'Etsy', icon: 'simple-icons:etsy', color: '#F1641E', text: 'text-[#F1641E]', bg: 'bg-[#F1641E]/10' },
+                  { id: 'whatsapp', name: 'WhatsApp', icon: 'simple-icons:whatsapp', color: '#25D366', text: 'text-[#25D366]', bg: 'bg-[#25D366]/10' },
+                  { id: 'telegram', name: 'Telegram', icon: 'simple-icons:telegram', color: '#26A5E4', text: 'text-[#26A5E4]', bg: 'bg-[#26A5E4]/10' },
                 ].map(platform => {
                   const isConnected = userProfile?.integrations?.[platform.id];
                   return (
@@ -1337,14 +1339,29 @@
         };
       }, [userProfile, session]);
 
-      const isEcomm = userProfile?.stage === 'Ecomm';
+      const stage = userProfile?.stage || 'Solo';
+      const isEcomm = stage === 'Ecomm';
+      
+      const getLabels = (s) => {
+        switch(s) {
+          case 'Ecomm': return { lead: 'Sales Pipeline', leadSub: 'Track customer interest and abandoned carts.', leadMob: 'Sales', client: 'Customer Ledger', clientSub: 'Manage customer LTV and retainers.', clientMob: 'Customers', finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances' };
+          case 'Software': return { lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR' };
+          case 'Organizer': return { lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', client: 'Member Ledger', clientSub: 'Manage active members and union dues.', clientMob: 'Members', finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding' };
+          case 'Food': return { lead: 'Order Pipeline', leadSub: 'Track incoming orders and catering prospects.', leadMob: 'Orders', client: 'Customer Ledger', clientSub: 'Manage recurring customers and feedback.', clientMob: 'Customers', finance: 'Sales Tracker', financeSub: 'Track daily sales and operational expenses.', financeMob: 'Sales' };
+          case 'Local Service': return { lead: 'Prospect Pipeline', leadSub: 'Manage inbound quotes and service requests.', leadMob: 'Prospects', client: 'Customer Ledger', clientSub: 'Manage ongoing jobs and clients.', clientMob: 'Customers', finance: 'Revenue Tracker', financeSub: 'Track project revenue and material expenses.', financeMob: 'Revenue' };
+          default: return { lead: 'Lead Pipeline', leadSub: 'Manage prospects and activate AI sequences.', leadMob: 'Leads', client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances' };
+        }
+      };
+      
+      const labels = getLabels(stage);
+
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
         { id: 'team-chat', icon: 'solar:users-group-rounded-linear', label: 'Team Chat', mobileLabel: 'Team', badge: totalUnreadTeam },
-        { id: 'lead-pipeline', icon: 'solar:filter-linear', label: isEcomm ? 'Sales Pipeline' : 'Lead Pipeline', mobileLabel: isEcomm ? 'Sales' : 'Leads' },
-        { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: isEcomm ? 'Customer Ledger' : 'Client Ledger', mobileLabel: isEcomm ? 'Customers' : 'Clients' },
+        { id: 'lead-pipeline', icon: 'solar:filter-linear', label: labels.lead, mobileLabel: labels.leadMob },
+        { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: labels.client, mobileLabel: labels.clientMob },
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
-        { id: 'financial-tracker', icon: 'solar:wallet-money-linear', label: 'Financial Tracker', mobileLabel: 'Finances' },
+        { id: 'financial-tracker', icon: 'solar:wallet-money-linear', label: labels.finance, mobileLabel: labels.financeMob },
         { id: 'marketing-pipeline', icon: 'solar:chart-square-linear', label: 'Marketing Pipeline', mobileLabel: 'Marketing' },
         { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
         { id: 'strategic-planning', icon: 'solar:document-text-linear', label: 'Strategic Planning', mobileLabel: 'Planning' },
@@ -1412,15 +1429,15 @@
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} />
             </div>
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
-            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} />}
-            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} />}
+            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
-            {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} />}
+            {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
             {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -1619,9 +1636,9 @@
                 </div>
                 <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-pd-glass backdrop-blur-md">
                    <form onSubmit={handleSend} className="relative">
-                      <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder={`Message ${activeChannel === 'all' ? 'everyone' : accountUsers.find(u => u.id === activeChannel)?.name}...`} className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-4 pr-12 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
-                      <button type="submit" disabled={!input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-pd-teal flex items-center justify-center text-pd-dark disabled:opacity-50 hover:scale-105 transition-transform">
-                        <iconify-icon icon="solar:rounded-right-bold" width="16"></iconify-icon>
+                      <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder={`Message ${activeChannel === 'all' ? 'everyone' : accountUsers.find(u => u.id === activeChannel)?.name}...`} className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
+                      <button type="submit" className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all">
+                        <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
                       </button>
                    </form>
                 </div>
@@ -2078,7 +2095,7 @@
       );
     };
 
-    const LeadPipeline = ({ session, activeTasks, userProfile, onAddLead, onImportCsv }) => {
+    const LeadPipeline = ({ session, activeTasks, userProfile, onAddLead, onImportCsv, title, subtitle }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
       const stages = isEcomm ? ['Favorites', 'Inquiries', 'Abandoned Cart'] : ['Inbound', 'Qualifying', 'Negotiation'];
       
@@ -2173,7 +2190,7 @@
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{isEcomm ? 'Sales Pipeline' : 'Lead Pipeline'}</h2><p className="text-xs text-gray-500">{isEcomm ? 'Track customer interest and abandoned carts.' : 'Manage prospects and activate AI sequences.'}</p></div>
+            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || (isEcomm ? 'Sales Pipeline' : 'Lead Pipeline')}</h2><p className="text-xs text-gray-500">{subtitle || (isEcomm ? 'Track customer interest and abandoned carts.' : 'Manage prospects and activate AI sequences.')}</p></div>
             <div className="flex gap-2 w-full md:w-auto">
               <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
@@ -2284,7 +2301,7 @@
       );
     };
 
-    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv }) => {
+    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
@@ -2358,7 +2375,7 @@
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{isEcomm ? 'Customer Ledger' : 'Client Ledger'}</h2><p className="text-xs text-gray-500">{isEcomm ? 'Active customers and purchase history.' : 'Active accounts and automated deliverable tracking.'}</p></div>
+            <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || (isEcomm ? 'Customer Ledger' : 'Client Ledger')}</h2><p className="text-xs text-gray-500">{subtitle || (isEcomm ? 'Active customers and purchase history.' : 'Active accounts and automated deliverable tracking.')}</p></div>
             <div className="flex gap-2 w-full md:w-auto">
               <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
@@ -2606,7 +2623,7 @@
       );
     };
 
-    const FinanceTracker = ({ session, userProfile, onLogExpense }) => {
+    const FinanceTracker = ({ session, userProfile, onLogExpense, title, subtitle }) => {
       const [clients, setClients] = useState([]);
       const [transactions, setTransactions] = useState([]);
       const [autoIncome, setAutoIncome] = useState(0);
@@ -2723,8 +2740,8 @@
         <div className="flex flex-col h-full overflow-hidden">
           <div className="p-4 md:p-8 flex-shrink-0 flex flex-col md:flex-row justify-between items-start border-b border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-white/5 gap-4">
             <div>
-              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Financial Tracker</h2>
-              <p className="text-xs text-gray-500">Autonomous revenue tracking & expense logging.</p>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || 'Financial Tracker'}</h2>
+              <p className="text-xs text-gray-500">{subtitle || 'Autonomous revenue tracking & expense logging.'}</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto items-center">
               {monthlyReport && (
@@ -3143,7 +3160,7 @@
                       <iconify-icon icon="solar:paperclip-linear" width="18"></iconify-icon>
                       <span className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Attach Reference</span>
                     </button>
-                    <button onClick={handleGenerate} disabled={isGenerating} className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-orange/20 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all disabled:opacity-50">
+                    <button onClick={handleGenerate} disabled={isGenerating} className="w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all">
                       <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
                     </button>
                   </div>
