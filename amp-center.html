@@ -559,36 +559,10 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup, customAgents }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
-      const [customAgents, setCustomAgents] = useState([]);
       const [confirmText, setConfirmText] = useState('');
-
-      const fetchCustomAgents = async () => {
-        if (supabaseClient && session?.user?.id) {
-          const { data } = await supabaseClient.from('agents').select('*').order('created_at', { ascending: true });
-          if (data) setCustomAgents(data.map(d => ({ ...d, name: d.role_name, description: d.persona_description, parent: d.parent || 'CMO' })));
-        } else {
-          try {
-            const agents = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
-            setCustomAgents(agents);
-          } catch(e) {}
-        }
-      };
-
-      useEffect(() => {
-        fetchCustomAgents();
-        if (supabaseClient) {
-          const channel = supabaseClient.channel('realtime:agents')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, fetchCustomAgents)
-            .subscribe();
-          return () => { supabaseClient.removeChannel(channel); };
-        } else {
-          window.addEventListener('amp-subagents-updated', fetchCustomAgents);
-          return () => window.removeEventListener('amp-subagents-updated', fetchCustomAgents);
-        }
-      }, []);
 
       const handleReset = async () => {
         if (confirmText.toLowerCase() !== 'confirm') return;
@@ -966,6 +940,33 @@
           if (data && data.length > 0) setAccountUsers(data);
         }
       };
+
+      const [customAgents, setCustomAgents] = useState([]);
+      
+      const fetchCustomAgents = async () => {
+        if (supabaseClient && session?.user?.id) {
+          const { data } = await supabaseClient.from('agents').select('*').order('created_at', { ascending: true });
+          if (data) setCustomAgents(data.map(d => ({ ...d, name: d.role_name, description: d.persona_description, parent: d.parent || 'CMO' })));
+        } else {
+          try {
+            const agents = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
+            setCustomAgents(agents);
+          } catch(e) {}
+        }
+      };
+
+      useEffect(() => {
+        fetchCustomAgents();
+        if (supabaseClient) {
+          const channel = supabaseClient.channel('realtime:agents')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, fetchCustomAgents)
+            .subscribe();
+          return () => { supabaseClient.removeChannel(channel); };
+        } else {
+          window.addEventListener('amp-subagents-updated', fetchCustomAgents);
+          return () => window.removeEventListener('amp-subagents-updated', fetchCustomAgents);
+        }
+      }, []);
 
       useEffect(() => {
         fetchAccountUsers();
@@ -1437,7 +1438,7 @@
             {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} />}
           </main>
 
           {/* Desktop Expand Tab */}
@@ -1487,7 +1488,13 @@
                   <BudgetBar agent="CMO" percentage={usagePct.CMO} />
                   <BudgetBar agent="Creative" percentage={usagePct.Creative} />
                   <BudgetBar agent="CTO" percentage={usagePct.CTO} />
-                  <BudgetBar agent="Subagents" percentage={usagePct.Subagents !== undefined ? usagePct.Subagents : 100} />
+                  {customAgents && customAgents.length > 0 ? (
+                    customAgents.map((agent, i) => (
+                      <BudgetBar key={i} agent={agent.name} percentage={100} />
+                    ))
+                  ) : (
+                    <BudgetBar agent="Subagents" percentage={usagePct.Subagents !== undefined ? usagePct.Subagents : 100} />
+                  )}
                 </div>
               </div>
             </div>

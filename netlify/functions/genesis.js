@@ -19,7 +19,7 @@ Your job is to analyze the user's description of their business ("kingdom") and 
 
 You must output a raw JSON object with NO markdown wrapping, matching this exact schema:
 {
-  "businessStage": "One of: ['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food']",
+  "businessStage": "One of: ['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food', 'Organizer']",
   "subAgents": [
     {
       "name": "Custom Agent Name (e.g. 'Ad Copywriter', 'Supply Chain Tracker')",
@@ -67,7 +67,8 @@ Rules:
     }
 
     const generatedText = data.candidates[0].content.parts[0].text;
-    const parsed = JSON.parse(generatedText);
+    const cleanText = generatedText.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleanText);
 
     return {
       statusCode: 200,
