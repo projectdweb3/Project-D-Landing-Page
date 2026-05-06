@@ -2304,7 +2304,7 @@
         switch(stage) {
           case 'Ecomm': return ['Favorites', 'Inquiries', 'Abandoned Cart'];
           case 'Software': return ['Signups', 'Active Trials', 'Needs Nurturing'];
-          case 'Organizer': return ['Prospects', 'Outreach', 'Committed'];
+          case 'Organizer': return ['Prospect', 'Communicating', 'Committed'];
           case 'Food': return ['Large Orders', 'Catering Inquiries', 'Partner Leads'];
           case 'Local Service': return ['New Inquiries', 'Quoting', 'Pending Approval'];
           default: return ['Inbound', 'Qualifying', 'Negotiation'];
@@ -3673,7 +3673,7 @@
       const [selectedDate, setSelectedDate] = useState(new Date());
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [showAddModal, setShowAddModal] = useState(false);
-      const [newEvent, setNewEvent] = useState({ title: '', time: '09:00', type: 'meeting', participants: '' });
+      const [newEvent, setNewEvent] = useState({ title: '', time: '09:00', type: 'meeting', participants: '', notes: '' });
       const [expandedTaskId, setExpandedTaskId] = useState(null);
       const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'tasks'
 
@@ -3732,6 +3732,7 @@
           date_time: eventDateTime,
           agent_role: 'User',
           participants: newEvent.participants,
+          notes: newEvent.notes,
           created_by: activeUserName || 'User'
         };
         const completePayload = { id: Date.now().toString(), ...payload, created_at: new Date().toISOString() };
@@ -3746,7 +3747,7 @@
         }
         
         setShowAddModal(false);
-        setNewEvent({ title: '', time: '09:00', type: 'meeting', participants: '' });
+        setNewEvent({ title: '', time: '09:00', type: 'meeting', participants: '', notes: '' });
       };
 
       // Generate next 7 days for the date strip
@@ -3977,6 +3978,10 @@
                     <label className="block text-xs text-gray-500 mb-1">Participants (Optional)</label>
                     <input type="text" value={newEvent.participants} onChange={e => setNewEvent({...newEvent, participants: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" placeholder="John Doe, Jane Smith" />
                   </div>
+                  <div>
+                     <label className="block text-xs text-gray-500 mb-1">Notes (Optional)</label>
+                     <textarea value={newEvent.notes} onChange={e => setNewEvent({...newEvent, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="3" placeholder="Add some details..."></textarea>
+                   </div>
                 </div>
                 <div className="flex gap-2 mt-6">
                   <button onClick={() => setShowAddModal(false)} className="flex-1 amp-button secondary py-2">Cancel</button>
@@ -4003,7 +4008,8 @@
                 </div>
                 <div className="text-sm text-gray-700 dark:text-gray-300">
                   {selectedEvent.participants && <p className="mb-2"><strong>Participants:</strong> {selectedEvent.participants}</p>}
-                  <p className="capitalize"><strong>Type:</strong> {selectedEvent.event_type?.replace('_', ' ')}</p>
+                  <p className="capitalize mb-2"><strong>Type:</strong> {selectedEvent.event_type?.replace('_', ' ')}</p>
+                  {selectedEvent.notes && <div className="mt-4 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5"><strong>Notes:</strong><p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{selectedEvent.notes}</p></div>}
                 </div>
                 <button onClick={() => setSelectedEvent(null)} className="w-full amp-button primary py-2 mt-6">Close Details</button>
               </div>
