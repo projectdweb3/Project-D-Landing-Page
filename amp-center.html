@@ -1487,8 +1487,8 @@
             lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
             client: 'Member Ledger', clientSub: 'Manage active members and roles.', clientMob: 'Members', 
             finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding',
-            clientCols: ['Member', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Member Name', 'Facility', 'Active Role / Activity'],
+            clientCols: ['Member', 'Rank', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Member Name', 'Rank (1-5)', 'Facility', 'Active Role / Activity'],
             leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
             clientAction: 'Member'
           };
@@ -2538,7 +2538,7 @@
       const isOrganizer = userProfile?.stage === 'Organizer';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false });
+      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1' });
 
       const fetchClients = async () => {
         if (supabaseClient) {
@@ -2630,7 +2630,7 @@
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
               <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
@@ -2655,6 +2655,11 @@
                       {c.name}
                       {isOrganizer && c.is_leader && <span className="bg-pd-orange text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ml-2">Leader</span>}
                     </td>
+                    {isOrganizer && (
+                      <td className="p-4 text-gray-600 dark:text-gray-300">
+                        <span className="bg-black/5 dark:bg-white/10 px-2 py-1 rounded text-xs font-mono">{c.rank || '1'}</span>
+                      </td>
+                    )}
                     <td className="p-4 text-gray-600 dark:text-gray-300">
                       <div>{c.retainer || '-'}</div>
                       {c.notes && <div className="text-[10px] text-gray-400 mt-1 italic truncate max-w-[150px]">{c.notes}</div>}
@@ -2688,13 +2693,29 @@
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[1] || (isEcomm ? 'Products Bought' : 'Retainer (Monthly)')}</label>
-                      <input type="text" value={formData.retainer} onChange={e => setFormData({...formData, retainer: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      {isOrganizer ? (
+                        <select value={formData.rank} onChange={e => setFormData({...formData, rank: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
+                          <option value="1">1 - Leader</option>
+                          <option value="2">2 - Activist</option>
+                          <option value="3">3 - Supporter</option>
+                          <option value="4">4 - Passive</option>
+                          <option value="5">5 - Anti-union</option>
+                        </select>
+                      ) : (
+                        <input type="text" value={formData.retainer} onChange={e => setFormData({...formData, retainer: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || (isEcomm ? 'Total Spent' : 'Total LTV')}</label>
-                      <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      <input type="text" value={isOrganizer ? formData.retainer : formData.ltv} onChange={e => setFormData({...formData, [isOrganizer ? 'retainer' : 'ltv']: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                   </div>
+                  {isOrganizer && (
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[3] || 'Active Role'}</label>
+                      <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Notes</label>
                     <textarea value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="2" placeholder="Add notes..."></textarea>
