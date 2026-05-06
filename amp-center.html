@@ -1345,12 +1345,54 @@
       
       const getLabels = (s) => {
         switch(s) {
-          case 'Ecomm': return { lead: 'Sales Pipeline', leadSub: 'Track customer interest and abandoned carts.', leadMob: 'Sales', client: 'Customer Ledger', clientSub: 'Manage customer LTV and retainers.', clientMob: 'Customers', finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances' };
-          case 'Software': return { lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR' };
-          case 'Organizer': return { lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', client: 'Member Ledger', clientSub: 'Manage active members and union dues.', clientMob: 'Members', finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding' };
-          case 'Food': return { lead: 'Order Pipeline', leadSub: 'Track incoming orders and catering prospects.', leadMob: 'Orders', client: 'Customer Ledger', clientSub: 'Manage recurring customers and feedback.', clientMob: 'Customers', finance: 'Sales Tracker', financeSub: 'Track daily sales and operational expenses.', financeMob: 'Sales' };
-          case 'Local Service': return { lead: 'Prospect Pipeline', leadSub: 'Manage inbound quotes and service requests.', leadMob: 'Prospects', client: 'Customer Ledger', clientSub: 'Manage ongoing jobs and clients.', clientMob: 'Customers', finance: 'Revenue Tracker', financeSub: 'Track project revenue and material expenses.', financeMob: 'Revenue' };
-          default: return { lead: 'Lead Pipeline', leadSub: 'Manage prospects and activate AI sequences.', leadMob: 'Leads', client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances' };
+          case 'Ecomm': return { 
+            lead: 'Sales Pipeline', leadSub: 'Track customer interest and abandoned carts.', leadMob: 'Sales', 
+            client: 'Customer Ledger', clientSub: 'Manage customer LTV and retainers.', clientMob: 'Customers', 
+            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+            clientCols: ['Customer', 'Products Bought', 'Total Spent', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Customer Name', 'Products Bought', 'Total Spent'],
+            leadInputs: ['Customer Name', 'Contact Info', 'Cart Value']
+          };
+          case 'Software': return { 
+            lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
+            client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', 
+            finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR',
+            clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
+            leadInputs: ['User Name', 'Email', 'Est. Value']
+          };
+          case 'Organizer': return { 
+            lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
+            client: 'Member Ledger', clientSub: 'Manage active members and union dues.', clientMob: 'Members', 
+            finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding',
+            clientCols: ['Member', 'Dues', 'Contributions', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Member Name', 'Union Dues', 'Total Contributions'],
+            leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level']
+          };
+          case 'Food': return { 
+            lead: 'Order Pipeline', leadSub: 'Track incoming orders and catering prospects.', leadMob: 'Orders', 
+            client: 'Customer Ledger', clientSub: 'Manage recurring customers and feedback.', clientMob: 'Customers', 
+            finance: 'Sales Tracker', financeSub: 'Track daily sales and operational expenses.', financeMob: 'Sales',
+            clientCols: ['Customer', 'Recent Orders', 'Total Spent', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Customer Name', 'Recent Orders', 'Total Spent'],
+            leadInputs: ['Customer Name', 'Contact Info', 'Order Value']
+          };
+          case 'Local Service': return { 
+            lead: 'Prospect Pipeline', leadSub: 'Manage inbound quotes and service requests.', leadMob: 'Prospects', 
+            client: 'Customer Ledger', clientSub: 'Manage ongoing jobs and clients.', clientMob: 'Customers', 
+            finance: 'Revenue Tracker', financeSub: 'Track project revenue and material expenses.', financeMob: 'Revenue',
+            clientCols: ['Customer', 'Active Jobs', 'Total Spent', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Customer Name', 'Active Jobs', 'Total Spent'],
+            leadInputs: ['Prospect Name', 'Contact Info', 'Est. Job Value']
+          };
+          default: return { 
+            lead: 'Lead Pipeline', leadSub: 'Manage prospects and activate AI sequences.', leadMob: 'Leads', 
+            client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', 
+            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+            clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
+            leadInputs: ['Lead Name', 'Contact Info', 'Est. Value']
+          };
         }
       };
       
@@ -1427,11 +1469,11 @@
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
-              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} />
+              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} />
             </div>
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
-            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} />}
-            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead'))} />}
+            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} tableCols={labels.clientCols} inputLabels={labels.clientInputs} entityLabel={labels.clientAction} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
@@ -1476,7 +1518,7 @@
               </div>
               <div className="space-y-4">
                 {displayTasks.length > 0 ? displayTasks.filter(t => tasksFilter === 'completed' ? t.status === 'done' : t.status !== 'done').slice(0, 5).map((task, idx) => (
-                  <TaskCard key={task.id || idx} agent={task.agent || 'CEO'} task={task.title + (task.scheduled_time && task.status !== 'done' ? ' ⏳' : '')} status={task.status === 'done' ? 'done' : 'running'} color={task.agent === 'Creative' ? 'pd-orange' : 'pd-teal'} />
+                  <TaskCard key={task.id || idx} agent={task.agent || 'CEO'} task={task.title + (task.scheduled_time && task.status !== 'done' ? ' ⏳' : '')} status={task.status === 'done' ? 'done' : 'running'} color={(task.parentAgent === 'Creative' || task.agent === 'Creative') ? 'pd-purple' : (task.parentAgent === 'CTO' || task.agent === 'CTO') ? 'pd-orange' : 'pd-teal'} />
                 )) : (
                   <div className="text-xs text-gray-500 italic">No {tasksFilter === 'completed' ? 'completed' : 'active'} tasks.</div>
                 )}
@@ -1654,7 +1696,7 @@
         );
       };
 
-      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks, activeUserName }) => {
+      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks, activeUserName, customAgents }) => {
       const [messages, setMessages] = useState(() => {
         try {
           const saved = localStorage.getItem('amp_chat_history');
@@ -1777,10 +1819,33 @@
         if (setTempTasks) {
           const tks = [];
           const txt = msgText.toLowerCase();
-          if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market')) tks.push({ id: 'temp-cmo', agent: 'CMO', title: 'Executing Marketing Objective...', status: 'running' });
-          if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo')) tks.push({ id: 'temp-creative', agent: 'Creative', title: 'Generating Content...', status: 'running' });
-          if (txt.includes('inventory') || txt.includes('sync') || txt.includes('product') || txt.includes('data')) tks.push({ id: 'temp-cto', agent: 'CTO', title: 'Processing Data Operations...', status: 'running' });
-          if (txt.includes('plan') || txt.includes('strategy') || tks.length === 0) tks.push({ id: 'temp-ceo', agent: 'CEO', title: 'Formulating Neural Architecture...', status: 'running' });
+          
+          tks.push({ id: 'temp-ceo', agent: 'CEO', title: 'Delegating to Department Head...', status: 'running' });
+          
+          let targetAgent = '';
+          let targetTitle = '';
+          if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market')) {
+            targetAgent = 'CMO'; targetTitle = 'Executing Marketing Objective...';
+          } else if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo')) {
+            targetAgent = 'Creative'; targetTitle = 'Generating Content...';
+          } else if (txt.includes('inventory') || txt.includes('sync') || txt.includes('product') || txt.includes('data')) {
+            targetAgent = 'CTO'; targetTitle = 'Processing Data Operations...';
+          } else {
+            tks[0].title = 'Formulating Neural Architecture...';
+          }
+
+          if (targetAgent) {
+            tks.push({ id: `temp-${targetAgent.toLowerCase()}`, agent: targetAgent, parentAgent: targetAgent, title: targetTitle, status: 'running' });
+            
+            // Delegate to subagents
+            if (customAgents && customAgents.length > 0) {
+              const subs = customAgents.filter(a => a.parent === targetAgent);
+              subs.forEach((sub, idx) => {
+                tks.push({ id: `temp-sub-${targetAgent.toLowerCase()}-${idx}`, agent: sub.name, parentAgent: targetAgent, title: `Executing ${sub.name} tasks...`, status: 'running' });
+              });
+            }
+          }
+          
           setTempTasks(tks);
         }
 
@@ -2102,9 +2167,18 @@
       );
     };
 
-    const LeadPipeline = ({ session, activeTasks, userProfile, onAddLead, onImportCsv, title, subtitle }) => {
-      const isEcomm = userProfile?.stage === 'Ecomm';
-      const stages = isEcomm ? ['Favorites', 'Inquiries', 'Abandoned Cart'] : ['Inbound', 'Qualifying', 'Negotiation'];
+    const LeadPipeline = ({ session, activeTasks, userProfile, onAddLead, onImportCsv, title, subtitle, inputLabels, entityLabel }) => {
+      const getStages = (stage) => {
+        switch(stage) {
+          case 'Ecomm': return ['Favorites', 'Inquiries', 'Abandoned Cart'];
+          case 'Software': return ['Signups', 'Active Trials', 'Needs Nurturing'];
+          case 'Organizer': return ['Prospects', 'Outreach', 'Committed'];
+          case 'Food': return ['Large Orders', 'Catering Inquiries', 'Partner Leads'];
+          case 'Local Service': return ['New Inquiries', 'Quoting', 'Pending Approval'];
+          default: return ['Inbound', 'Qualifying', 'Negotiation'];
+        }
+      };
+      const stages = getStages(userProfile?.stage);
       
       const [leads, setLeads] = useState([]);
       const [showModal, setShowModal] = useState(false);
@@ -2113,7 +2187,7 @@
 
       useEffect(() => {
         setActiveMobileStage(stages[0]);
-      }, [isEcomm]);
+      }, [userProfile?.stage]);
 
       const fetchLeads = async () => {
         let localLeads = [];
@@ -2275,21 +2349,21 @@
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">{formData.id ? 'Edit Lead' : 'Manual Lead Entry'}</h3>
+                  <h3 className="font-semibold">{formData.id ? `Edit ${entityLabel || 'Lead'}` : `Manual ${entityLabel || 'Lead'} Entry`}</h3>
                   <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Name / Company</label>
+                    <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[0] || 'Name / Company'}</label>
                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Contact Info</label>
+                    <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[1] || 'Contact Info'}</label>
                     <input type="text" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">Est. Value</label>
+                      <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || 'Est. Value'}</label>
                       <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                     <div className="flex-1">
@@ -2299,7 +2373,7 @@
                       </select>
                     </div>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Lead</button>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || 'Lead'}</button>
                 </div>
               </div>
             </div>
@@ -2308,7 +2382,7 @@
       );
     };
 
-    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle }) => {
+    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle, tableCols, inputLabels, entityLabel }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
@@ -2399,7 +2473,11 @@
           <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
             <table className="w-full text-left text-sm min-w-[600px]">
               <thead className="bg-black/5 dark:bg-black/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
-                <tr><th className="p-4">{isEcomm ? 'Customer' : 'Client'}</th><th className="p-4">{isEcomm ? 'Products Bought' : 'Retainer'}</th><th className="p-4">{isEcomm ? 'Total Spent' : 'LTV'}</th><th className="p-4">Assigned Agents</th><th className="p-4 text-right">Actions</th></tr>
+                <tr>
+                  {tableCols ? tableCols.map((col, i) => <th key={i} className={`p-4 ${i === tableCols.length - 1 ? 'text-right' : ''}`}>{col}</th>) : (
+                    <><th className="p-4">{isEcomm ? 'Customer' : 'Client'}</th><th className="p-4">{isEcomm ? 'Products Bought' : 'Retainer'}</th><th className="p-4">{isEcomm ? 'Total Spent' : 'LTV'}</th><th className="p-4">Assigned Agents</th><th className="p-4 text-right">Actions</th></>
+                  )}
+                </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
                 {clients.map(c => (
@@ -2424,25 +2502,25 @@
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">{formData.id ? (isEcomm ? 'Edit Customer' : 'Edit Client') : (isEcomm ? 'Manual Customer Entry' : 'Manual Client Entry')}</h3>
+                  <h3 className="font-semibold">{formData.id ? `Edit ${entityLabel || (isEcomm ? 'Customer' : 'Client')}` : `Manual ${entityLabel || (isEcomm ? 'Customer' : 'Client')} Entry`}</h3>
                   <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Customer Name' : 'Client Name'}</label>
+                    <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[0] || (isEcomm ? 'Customer Name' : 'Client Name')}</label>
                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Products Bought' : 'Retainer (Monthly)'}</label>
+                      <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[1] || (isEcomm ? 'Products Bought' : 'Retainer (Monthly)')}</label>
                       <input type="text" value={formData.retainer} onChange={e => setFormData({...formData, retainer: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">{isEcomm ? 'Total Spent' : 'Total LTV'}</label>
+                      <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || (isEcomm ? 'Total Spent' : 'Total LTV')}</label>
                       <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">{isEcomm ? 'Save Customer' : 'Save Client'}</button>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || (isEcomm ? 'Customer' : 'Client')}</button>
                 </div>
               </div>
             </div>

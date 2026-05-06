@@ -32,8 +32,8 @@ You must output a raw JSON object with NO markdown wrapping, matching this exact
 
 Rules:
 1. Select the businessStage that best fits their description. If none fit perfectly, default to 'Solo' or 'Local Service' depending on context.
-2. Generate exactly 2 to 4 highly specific subAgents tailored to their business model.
-3. Distribute the subAgents logically among the 'CMO', 'CTO', and 'Creative' parents.
+2. Generate EXACTLY 6 highly specific subAgents tailored to their business model.
+3. You MUST distribute them evenly: exactly 2 subAgents for 'CMO', exactly 2 for 'CTO', and exactly 2 for 'Creative'.
 4. Keep the agent names punchy and professional.`;
 
     const modelId = "gemini-2.5-flash";
