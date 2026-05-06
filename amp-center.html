@@ -2503,11 +2503,11 @@
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || 'Est. Value'}</label>
                       {isOrganizer ? (
                         <select value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
-                          <option value="1">1 - Very Low</option>
-                          <option value="2">2 - Low</option>
-                          <option value="3">3 - Medium</option>
-                          <option value="4">4 - High</option>
-                          <option value="5">5 - Fully Committed</option>
+                          <option value="1">1 - Leader</option>
+                          <option value="2">2 - Activist</option>
+                          <option value="3">3 - Supporter</option>
+                          <option value="4">4 - Passive</option>
+                          <option value="5">5 - Anti-union</option>
                         </select>
                       ) : (
                         <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
