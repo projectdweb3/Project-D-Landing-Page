@@ -1255,28 +1255,16 @@
         const reader = new FileReader();
         reader.onload = async (ev) => {
           const text = ev.target.result;
-          const lines = text.split('\n').filter(l => l.trim().length > 0);
-          if (lines.length < 2) return;
-          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-          const records = lines.slice(1).map(line => {
-            const values = line.split(',');
-            const obj = {};
-            headers.forEach((h, i) => { obj[h] = values[i]?.trim(); });
-            return obj;
-          });
+          const entityType = table === 'clients' ? 'Clients/Members' : 'Leads/Supporters';
+          const preview = text.substring(0, 2000); // Send the first 2000 characters to Gemini to avoid context limits if huge, but usually enough for a batch
           
-          if (supabaseClient && session?.user?.id) {
-             const toInsert = records.map(r => mapper(r, session.user.id));
-             try {
-               await supabaseClient.from(table).insert(toInsert);
-               alert(`Successfully imported ${toInsert.length} records into ${table}!`);
-             } catch (err) {
-               console.error("Import failed:", err);
-               alert("Failed to import. Ensure your CSV matches the required columns.");
-             }
-          } else {
-             alert(`Database not connected. Simulated import of ${records.length} records.`);
-          }
+          setActiveModule('neural-chat');
+          setTimeout(() => {
+            setTriggerPrompt({ 
+              sender: 'user', 
+              text: `I am uploading a CSV file containing ${entityType} data. Please analyze this CSV data and use the appropriate tool (add_multiple_leads or add_multiple_clients) to import these records into my pipeline/ledger. Map the fields appropriately based on my business type.\n\nCSV Data:\n${preview}` 
+            });
+          }, 150);
         };
         reader.readAsText(file);
         e.target.value = null; // reset input
@@ -2120,6 +2108,12 @@
                     localStorage.setItem('amp_leads', JSON.stringify([...newLeads, ...local]));
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Generated ${action.payload.leads.length} Leads`, 'CEO');
+                  } else if (action.type === 'add_multiple_clients') {
+                    const local = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+                    const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, created_at: new Date().toISOString() }));
+                    localStorage.setItem('amp_clients', JSON.stringify([...newClients, ...local]));
+                    window.dispatchEvent(new Event('amp-simulated-sale'));
+                    logAction(`Imported ${action.payload.clients.length} Clients/Members`, 'CEO');
                   } else if (action.type === 'update_lead') {
                     const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());

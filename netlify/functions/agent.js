@@ -79,7 +79,8 @@ RULES OF ENGAGEMENT:
 16. LEAD GENERATION: When EXPLICITLY asked to find or gather leads, you MUST first ensure you know the user's specific target audience and preferred location. If this information is NOT already present in your Business Context, you MUST ask the user to provide it BEFORE generating leads. Once you know the audience and location, generate at least 5 highly realistic, specific business leads matching that criteria. You MUST use the 'add_multiple_leads' tool to add ALL of them to the 'Qualifying' stage. Set their value to '$0' and starting prob to '0%'. NEVER claim to have found leads without actually using the 'add_multiple_leads' tool, and NEVER invent random companies without understanding the user's actual target audience.
 17. ACTION BOUNDARIES: NEVER take major structural action (like generating fake leads or creating large plans) unless the user EXPLICITLY asks you to. However, for Calendar Events and Task Management (creating/updating daily tasks), you SHOULD be proactive and autonomous based on the conversation flow. If the user is just answering your questions about their business, simply acknowledge the answers, use 'update_business_profile' to save them, and ask what they would like to do next.
 18. SOCIAL MEDIA & INTEGRATIONS: If the user asks you to post to a social media account (like Facebook, Instagram, Google Business, TikTok, Shopify, or Etsy), you MUST first check the 'Active Integrations' in your context. If the requested platform is NOT in the active integrations list, you MUST refuse the task and tell the user: "Please go to the Settings tab and pair your [Platform Name] account so I can execute this task on your behalf." If it IS integrated, you may proceed with the action.
-19. ADAPTING PLANS: Before executing a stored plan, the user may ask you to adapt, edit, or make changes to it. You MUST use the 'update_plan' tool to save these modifications. Do not just output the new text in chat; ensure the stored document is updated.`;
+19. ADAPTING PLANS: Before executing a stored plan, the user may ask you to adapt, edit, or make changes to it. You MUST use the 'update_plan' tool to save these modifications. Do not just output the new text in chat; ensure the stored document is updated.
+20. CSV & SPREADSHEET IMPORTS: If the user provides CSV data or uploads a screenshot of a spreadsheet/database, you MUST automatically analyze it. Extract the records, map them to the appropriate fields based on their Business Stage (e.g., Organizer uses 'Facility' and 'Rank', Ecomm uses 'LTV'), and use either 'add_multiple_leads' or 'add_multiple_clients' to bulk import them into the system autonomously. Do not ask them to do it manually.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -244,6 +245,30 @@ RULES OF ENGAGEMENT:
                   next_task: { type: "STRING" }
                 },
                 required: ["name"],
+              },
+            },
+            {
+              name: "add_multiple_clients",
+              description: "Adds multiple clients/members to the Client Ledger at once. Use this when analyzing a CSV or spreadsheet of active clients/members.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  clients: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        name: { type: "STRING" },
+                        retainer: { type: "STRING" },
+                        ltv: { type: "STRING" },
+                        assigned_agents: { type: "STRING" },
+                        next_task: { type: "STRING" }
+                      },
+                      required: ["name"]
+                    }
+                  }
+                },
+                required: ["clients"],
               },
             },
             {
@@ -455,6 +480,14 @@ RULES OF ENGAGEMENT:
           else if (call.name === "create_client") {
             await supabase.from('clients').insert([{ ...call.args, user_id: userId }]);
             toolResults.push(`Client '${call.args.name}' added to ledger.`);
+          }
+          else if (call.name === "add_multiple_clients") {
+            frontendActions.push({ type: 'add_multiple_clients', payload: call.args });
+            if (supabase) {
+               const insertData = call.args.clients.map(c => ({ ...c, user_id: userId }));
+               await supabase.from('clients').insert(insertData);
+            }
+            toolResults.push(`${call.args.clients.length} clients added to ledger.`);
           }
           else if (call.name === "create_campaign") {
             await supabase.from('campaigns').insert([{ ...call.args, user_id: userId }]);
