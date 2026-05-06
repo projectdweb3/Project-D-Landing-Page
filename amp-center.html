@@ -1471,7 +1471,8 @@
             finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
             clientCols: ['Customer', 'Products Bought', 'Total Spent', 'Assigned Agents', 'Actions'],
             clientInputs: ['Customer Name', 'Products Bought', 'Total Spent'],
-            leadInputs: ['Customer Name', 'Contact Info', 'Cart Value']
+            leadInputs: ['Customer Name', 'Contact Info', 'Cart Value'],
+            clientAction: 'Customer'
           };
           case 'Software': return { 
             lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
@@ -1479,39 +1480,44 @@
             finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR',
             clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
             clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
-            leadInputs: ['User Name', 'Email', 'Est. Value']
+            leadInputs: ['User Name', 'Email', 'Est. Value'],
+            clientAction: 'Subscriber'
           };
           case 'Organizer': return { 
             lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
-            client: 'Member Ledger', clientSub: 'Manage active members and union dues.', clientMob: 'Members', 
+            client: 'Member Ledger', clientSub: 'Manage active members and roles.', clientMob: 'Members', 
             finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding',
-            clientCols: ['Member', 'Dues', 'Contributions', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Member Name', 'Union Dues', 'Total Contributions'],
-            leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level']
+            clientCols: ['Member', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Member Name', 'Facility', 'Active Role / Activity'],
+            leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
+            clientAction: 'Member'
           };
           case 'Food': return { 
             lead: 'Order Pipeline', leadSub: 'Track incoming orders and catering prospects.', leadMob: 'Orders', 
             client: 'Customer Ledger', clientSub: 'Manage recurring customers and feedback.', clientMob: 'Customers', 
             finance: 'Sales Tracker', financeSub: 'Track daily sales and operational expenses.', financeMob: 'Sales',
-            clientCols: ['Customer', 'Recent Orders', 'Total Spent', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Customer Name', 'Recent Orders', 'Total Spent'],
-            leadInputs: ['Customer Name', 'Contact Info', 'Order Value']
+            clientCols: ['Customer', 'Favorite Order', 'LTV', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Customer Name', 'Favorite Order', 'Total LTV'],
+            leadInputs: ['Order Name', 'Contact Info', 'Est. Value'],
+            clientAction: 'Customer'
           };
           case 'Local Service': return { 
-            lead: 'Prospect Pipeline', leadSub: 'Manage inbound quotes and service requests.', leadMob: 'Prospects', 
-            client: 'Customer Ledger', clientSub: 'Manage ongoing jobs and clients.', clientMob: 'Customers', 
-            finance: 'Revenue Tracker', financeSub: 'Track project revenue and material expenses.', financeMob: 'Revenue',
-            clientCols: ['Customer', 'Active Jobs', 'Total Spent', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Customer Name', 'Active Jobs', 'Total Spent'],
-            leadInputs: ['Prospect Name', 'Contact Info', 'Est. Job Value']
+            lead: 'Lead Pipeline', leadSub: 'Track quotes and pending jobs.', leadMob: 'Leads', 
+            client: 'Client Ledger', clientSub: 'Manage service history and recurring clients.', clientMob: 'Clients', 
+            finance: 'Revenue Tracker', financeSub: 'Track job revenue and material expenses.', financeMob: 'Revenue',
+            clientCols: ['Client', 'Service Type', 'LTV', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Client Name', 'Service Type', 'Total LTV'],
+            leadInputs: ['Client Name', 'Contact Info', 'Quote Value'],
+            clientAction: 'Client'
           };
           default: return { 
-            lead: 'Lead Pipeline', leadSub: 'Manage prospects and activate AI sequences.', leadMob: 'Leads', 
+            lead: 'Lead Pipeline', leadSub: 'Track inbound leads and prospects.', leadMob: 'Leads', 
             client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', 
             finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
             clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
             clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
-            leadInputs: ['Lead Name', 'Contact Info', 'Est. Value']
+            leadInputs: ['Lead Name', 'Contact Info', 'Est. Value'],
+            clientAction: 'Client'
           };
         }
       };
@@ -2305,10 +2311,11 @@
         }
       };
       const stages = getStages(userProfile?.stage);
+      const isOrganizer = userProfile?.stage === 'Organizer';
       
       const [leads, setLeads] = useState([]);
       const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: '$0', stage: stages[0] });
+      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: isOrganizer ? '1' : '$0', stage: stages[0], notes: '' });
       const [activeMobileStage, setActiveMobileStage] = useState(stages[0]);
 
       useEffect(() => {
@@ -2427,19 +2434,23 @@
                 {leads.filter(l => l.stage === col).map(lead => (
                   <div key={lead.id} className="amp-card p-5 relative overflow-hidden group flex-shrink-0">
                     <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-2">
+                      <div className="flex flex-col gap-1 w-[60%]">
+                        <span className="font-semibold text-gray-900 dark:text-white truncate flex items-center gap-2">
                           {lead.name}
+                          {isOrganizer && lead.is_leader && <iconify-icon icon="solar:crown-minimalistic-bold" className="text-pd-orange"></iconify-icon>}
+                        </span>
+                        <span className="text-[10px] text-gray-500">{lead.contact}</span>
+                        {lead.notes && <span className="text-[10px] text-gray-400 italic truncate">{lead.notes}</span>}
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2 mb-1">
                           <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
-                            <iconify-icon icon="solar:pen-linear"></iconify-icon>
+                              <iconify-icon icon="solar:pen-linear"></iconify-icon>
                           </button>
                           <button onClick={() => deleteLead(lead.id)} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all" title="Delete">
                             <iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon>
                           </button>
-                        </h4>
-                        <span className="text-[10px] text-gray-500">{lead.contact}</span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
+                        </div>
                         <select 
                           value={lead.stage} 
                           onChange={(e) => updateLeadStage(lead.id, e.target.value)}
@@ -2450,7 +2461,7 @@
                       </div>
                     </div>
                     <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
-                      <div className="flex justify-between"><span className="text-gray-500">Value</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value || '$0'}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">{isOrganizer ? 'Commitment' : 'Value'}</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value || (isOrganizer ? '1' : '$0')}</span></div>
                       <div className="flex flex-col gap-1 mt-1">
                         <div className="flex justify-between"><span className="text-gray-500">Win Prob</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.prob || '0%'}</span></div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1 overflow-hidden">
@@ -2490,7 +2501,17 @@
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || 'Est. Value'}</label>
-                      <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      {isOrganizer ? (
+                        <select value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
+                          <option value="1">1 - Very Low</option>
+                          <option value="2">2 - Low</option>
+                          <option value="3">3 - Medium</option>
+                          <option value="4">4 - High</option>
+                          <option value="5">5 - Fully Committed</option>
+                        </select>
+                      ) : (
+                        <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">Stage</label>
@@ -2498,6 +2519,10 @@
                         {stages.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Notes</label>
+                    <textarea value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="2" placeholder="Add notes..."></textarea>
                   </div>
                   <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || 'Lead'}</button>
                 </div>
@@ -2510,9 +2535,10 @@
 
     const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle, tableCols, inputLabels, entityLabel }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
+      const isOrganizer = userProfile?.stage === 'Organizer';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '' });
+      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false });
 
       const fetchClients = async () => {
         if (supabaseClient) {
@@ -2533,13 +2559,29 @@
       };
 
       const handleSave = async () => {
-        if (!supabaseClient || !session?.user?.id) return;
-        const payload = { ...formData, user_id: session.user.id };
-        if (formData.id) {
-          await supabaseClient.from('clients').update(payload).eq('id', formData.id);
+        const payload = { ...formData };
+        if (supabaseClient && session?.user?.id) {
+          payload.user_id = session.user.id;
+          if (formData.id) {
+            await supabaseClient.from('clients').update(payload).eq('id', formData.id);
+          } else {
+            delete payload.id;
+            await supabaseClient.from('clients').insert([payload]);
+          }
         } else {
-          delete payload.id;
-          await supabaseClient.from('clients').insert([payload]);
+          try {
+            const local = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+            if (formData.id) {
+              const idx = local.findIndex(c => c.id === formData.id);
+              if (idx > -1) local[idx] = { ...local[idx], ...payload };
+            } else {
+              payload.id = Date.now().toString();
+              payload.created_at = new Date().toISOString();
+              local.unshift(payload);
+            }
+            localStorage.setItem('amp_clients', JSON.stringify(local));
+            setClients(local);
+          } catch(e) {}
         }
         setShowModal(false);
       };
@@ -2608,8 +2650,15 @@
               <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
                 {clients.map(c => (
                   <tr key={c.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
-                    <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]"><div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>{c.name}</td>
-                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.retainer || '-'}</td>
+                    <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]">
+                      <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>
+                      {c.name}
+                      {isOrganizer && c.is_leader && <span className="bg-pd-orange text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ml-2">Leader</span>}
+                    </td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">
+                      <div>{c.retainer || '-'}</div>
+                      {c.notes && <div className="text-[10px] text-gray-400 mt-1 italic truncate max-w-[150px]">{c.notes}</div>}
+                    </td>
                     <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv || '-'}</td>
                     <td className="p-4">{getAssignedAgent(c.name, c.assigned_agents)}</td>
                     <td className="p-4 text-right">
@@ -2646,6 +2695,16 @@
                       <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                   </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Notes</label>
+                    <textarea value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="2" placeholder="Add notes..."></textarea>
+                  </div>
+                  {isOrganizer && (
+                    <div className="flex items-center gap-2 mt-2 mb-2">
+                      <input type="checkbox" id="is_leader" checked={formData.is_leader} onChange={e => setFormData({...formData, is_leader: e.target.checked})} className="w-4 h-4 text-pd-teal bg-black/5 border-gray-300 rounded focus:ring-pd-teal" />
+                      <label htmlFor="is_leader" className="text-sm text-gray-700 dark:text-gray-300">Mark as Leader</label>
+                    </div>
+                  )}
                   <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || (isEcomm ? 'Customer' : 'Client')}</button>
                 </div>
               </div>
