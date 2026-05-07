@@ -1236,6 +1236,13 @@
       const [activeDriver, setActiveDriver] = useState(null);
       const [messages, setMessages] = useState({});
       const [inputMsg, setInputMsg] = useState('');
+      const endRef = useRef(null);
+
+      useEffect(() => {
+        if (endRef.current) {
+          endRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, [messages, activeDriver]);
 
       const fetchDrivers = async () => {
         let currentLocal = [];
