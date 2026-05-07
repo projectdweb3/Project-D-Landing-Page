@@ -4024,7 +4024,37 @@
               {timelineEvents.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-40 text-gray-400">
                   <iconify-icon icon="solar:calendar-search-linear" width="32" className="mb-2 opacity-50"></iconify-icon>
-                  <p className="text-xs">No events or deployments scheduled.</p>
+                  <p className="text-xs">No {isDispatcher ? 'drivers scheduled' : 'events or deployments scheduled'}.</p>
+                </div>
+              ) : isDispatcher ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {timelineEvents.map((ev, i) => {
+                    const timeStr = new Date(ev.date_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const style = typeColors[ev.event_type] || typeColors['manual'];
+                    return (
+                      <div key={i} onClick={() => setSelectedEvent(ev)} className="bg-white/80 dark:bg-black/20 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm hover:border-pd-teal/50 transition-all cursor-pointer flex flex-col relative overflow-hidden group">
+                        <div className={`absolute top-0 left-0 w-1 h-full ${style.bg.replace('/10', '')} opacity-50`}></div>
+                        <div className="flex justify-between items-start mb-3 ml-2">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.bg} ${style.text}`}>
+                            <iconify-icon icon={style.icon} width="20"></iconify-icon>
+                          </div>
+                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded border ${style.bg} ${style.text} ${style.border}`}>
+                            {ev.event_type?.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1 truncate ml-2">{ev.task_name}</h4>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-4 font-mono ml-2">
+                           <iconify-icon icon="solar:clock-circle-linear"></iconify-icon> Start: {timeStr}
+                        </div>
+                        {ev.participants && (
+                          <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 ml-2">
+                            <iconify-icon icon="solar:routing-2-bold-duotone" className="text-pd-teal text-lg"></iconify-icon> 
+                            <span className="truncate">{ev.participants}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 dark:before:via-white/10 before:to-transparent">
@@ -4048,8 +4078,8 @@
                           <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1 truncate">{ev.task_name}</h4>
                           {(ev.participants || ev.agent_role) && (
                             <div className="flex flex-wrap gap-2 text-[10px] text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/5">
-                              {ev.participants && <span className="flex items-center gap-1"><iconify-icon icon={isDispatcher ? "solar:routing-2-linear" : "solar:users-group-rounded-linear"}></iconify-icon> {ev.participants}</span>}
-                              {ev.agent_role && !isDispatcher && <span className="flex items-center gap-1"><iconify-icon icon="solar:shield-user-linear"></iconify-icon> {ev.agent_role}</span>}
+                              {ev.participants && <span className="flex items-center gap-1"><iconify-icon icon="solar:users-group-rounded-linear"></iconify-icon> {ev.participants}</span>}
+                              {ev.agent_role && <span className="flex items-center gap-1"><iconify-icon icon="solar:shield-user-linear"></iconify-icon> {ev.agent_role}</span>}
                             </div>
                           )}
                         </div>
