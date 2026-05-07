@@ -447,9 +447,20 @@
         } catch(err) {
           console.error("Genesis analysis failed, using fallback subagents", err);
           let fbStage = 'Ecomm';
-          if (input.toLowerCase().includes('organiz') || input.toLowerCase().includes('union')) fbStage = 'Organizer';
-          else if (input.toLowerCase().includes('software') || input.toLowerCase().includes('saas')) fbStage = 'Software';
-          
+          const lowerInput = input.toLowerCase();
+          if (lowerInput.match(/amazon|logistic|dispatch|truck|driver|fleet/)) {
+            fbStage = 'Dispatcher';
+          } else if (lowerInput.match(/web|app|develop|software|saas|ai|automation|code/)) {
+            fbStage = 'Software';
+          } else if (lowerInput.match(/freelanc|camera|graphic|design|plumb|service|local|repair|contractor/)) {
+            fbStage = 'Local Service';
+          } else if (lowerInput.match(/union|community|teamster|organiz|nonprofit|activis/)) {
+            fbStage = 'Organizer';
+          } else if (lowerInput.match(/ecomm|store|shop|product|retail|sell/)) {
+            fbStage = 'Ecomm';
+          } else {
+            fbStage = 'Default';
+          }
           const fallbackAgents = [
             { name: 'Lead Gen Pro', parent: 'CMO', description: 'Sources new prospects.', icon: 'solar:users-group-two-rounded-linear' },
             { name: 'Funnel Optimizer', parent: 'CMO', description: 'Improves conversion rates.', icon: 'solar:graph-up-linear' },
@@ -1055,7 +1066,7 @@
                 if (data && data.subAgents) {
                   localStorage.setItem('amp_custom_agents', JSON.stringify(data.subAgents));
                   localStorage.setItem(currentStageKey, 'true');
-                  window.location.reload();
+                  window.dispatchEvent(new Event('amp-subagents-updated'));
                 }
               } else {
                 throw new Error("Server response not ok");
@@ -1093,7 +1104,7 @@
               }
               localStorage.setItem('amp_custom_agents', JSON.stringify(agents));
               localStorage.setItem(currentStageKey, 'true');
-              window.location.reload();
+              window.dispatchEvent(new Event('amp-subagents-updated'));
             }
           }
         };
