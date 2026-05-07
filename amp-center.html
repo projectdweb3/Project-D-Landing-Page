@@ -1806,7 +1806,7 @@
           window.removeEventListener('amp-tasks-updated', handleTasksUpdate);
           window.removeEventListener('amp-profile-updated', handleProfileUpdate);
         };
-      }, []);
+      }, [userProfile?.stage]);
 
       // Background Execution Engine
       useEffect(() => {
@@ -1867,7 +1867,7 @@
             .subscribe();
           return () => { supabaseClient.removeChannel(channel); };
         }
-      }, [session]);
+      }, [session, userProfile?.stage]);
 
       useEffect(() => {
         window.simulateSale = () => {
