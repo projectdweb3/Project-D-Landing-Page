@@ -408,12 +408,109 @@
       );
     };
 
+    const getLabels = (s) => {
+      switch(s) {
+        case 'Ecomm': return { 
+          lead: 'Sales Pipeline', leadSub: 'Track customer interest and abandoned carts.', leadMob: 'Sales', 
+          client: 'Customer Ledger', clientSub: 'Manage customer LTV and retainers.', clientMob: 'Customers', 
+          finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+          clientCols: ['Customer', 'Products Bought', 'Total Spent', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Customer Name', 'Products Bought', 'Total Spent'],
+          leadInputs: ['Customer Name', 'Contact Info', 'Cart Value'],
+          clientAction: 'Customer',
+          agents: {
+            ceo: { name: 'Store Manager', role: 'Store Strategy' },
+            cmo: { name: 'Growth Marketer', role: 'Ads & Promotions' },
+            cto: { name: 'Store Architect', role: 'Platform Tech' },
+            creative: { name: 'Visual Merchandiser', role: 'Product Assets' }
+          }
+        };
+        case 'Software': return { 
+          lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
+          client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', 
+          finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR',
+          clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
+          leadInputs: ['User Name', 'Email', 'Est. Value'],
+          clientAction: 'Subscriber',
+          agents: {
+            ceo: { name: 'Product Manager', role: 'Product Strategy' },
+            cmo: { name: 'Growth Lead', role: 'User Acquisition' },
+            cto: { name: 'Lead Engineer', role: 'Infrastructure' },
+            creative: { name: 'UX/UI Designer', role: 'Interface Design' }
+          }
+        };
+        case 'Organizer': return { 
+          lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
+          client: 'Member Ledger', clientSub: 'Manage active members and roles.', clientMob: 'Members', 
+          finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding',
+          clientCols: ['Member', 'Rank', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Member Name', 'Rank (1-5)', 'Facility', 'Active Role / Activity'],
+          leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
+          clientAction: 'Member',
+          agents: {
+            ceo: { name: 'Lead Organizer', role: 'Campaign Strategy' },
+            cmo: { name: 'Outreach Director', role: 'Membership Growth' },
+            cto: { name: 'Data Coordinator', role: 'Database Management' },
+            creative: { name: 'Comms Director', role: 'Messaging & Speeches' }
+          }
+        };
+        case 'Dispatcher': return { 
+          lead: 'Hiring Pipeline', leadSub: 'Track driver prospects and interviews.', leadMob: 'Hiring', 
+          client: 'Active Drivers', clientSub: 'Manage your daily driver fleet and routes.', clientMob: 'Drivers', 
+          finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+          clientCols: ['Driver', 'Assigned Route/Location', 'Work Days', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Driver Name', 'Assigned Route/Location', 'Work Days'],
+          leadInputs: ['Prospect Name', 'Contact Info', 'Est. Value'],
+          clientAction: 'Driver',
+          agents: {
+            ceo: { name: 'Dispatch Director', role: 'Operations Oversight' },
+            cmo: { name: 'Recruitment Chief', role: 'Hiring & Growth' },
+            cto: { name: 'Systems Architect', role: 'Logistics Tech' },
+            creative: { name: 'Driver Comms', role: 'Internal Communication' }
+          }
+        };
+        case 'Local Service': return { 
+          lead: 'Lead Pipeline', leadSub: 'Track quotes and pending jobs.', leadMob: 'Leads', 
+          client: 'Client Ledger', clientSub: 'Manage service history and recurring clients.', clientMob: 'Clients', 
+          finance: 'Revenue Tracker', financeSub: 'Track job revenue and material expenses.', financeMob: 'Revenue',
+          clientCols: ['Client', 'Service Type', 'LTV', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Client Name', 'Service Type', 'Total LTV'],
+          leadInputs: ['Client Name', 'Contact Info', 'Quote Value'],
+          clientAction: 'Client',
+          agents: {
+            ceo: { name: 'Operations Lead', role: 'Service Strategy' },
+            cmo: { name: 'Marketing Manager', role: 'Lead Generation' },
+            cto: { name: 'Systems Admin', role: 'Booking Tech' },
+            creative: { name: 'Brand Designer', role: 'Visual Identity' }
+          }
+        };
+        default: return { 
+          lead: 'Lead Pipeline', leadSub: 'Track inbound leads and prospects.', leadMob: 'Leads', 
+          client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', 
+          finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+          clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
+          leadInputs: ['Lead Name', 'Contact Info', 'Est. Value'],
+          clientAction: 'Client',
+          agents: {
+            ceo: { name: 'CEO Agent', role: 'Strategic Intelligence' },
+            cmo: { name: 'CMO Agent', role: 'Marketing & Growth' },
+            cto: { name: 'CTO Agent', role: 'Development & Automation' },
+            creative: { name: 'Creative Agent', role: 'Content & Branding' }
+          }
+        };
+      }
+    };
+
     const Genesis = ({ onComplete, typingSpeed, setTypingSpeed }) => {
       const [input, setInput] = useState('');
       const [stage, setStage] = useState(0);
+      const [bizStage, setBizStage] = useState('Default');
       const [ceoText, setCeoText] = useState('');
       const [generatedAgents, setGeneratedAgents] = useState([]);
-      const fullCeoText = "Initialization complete. I am your Custom CEO Agent. I have analyzed your kingdom parameters and am assembling your autonomous workforce...";
+      const labels = getLabels(bizStage);
+      const fullCeoText = `Initialization complete. I am your Custom ${labels.agents.ceo.name}. I have analyzed your kingdom parameters and am assembling your autonomous workforce...`;
 
       const handleType = (e) => {
         setInput(e.target.value);
@@ -437,6 +534,7 @@
           if (res.ok) {
             const data = await res.json();
             if (data && data.businessStage) {
+              setBizStage(data.businessStage);
               localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: '', bio: '', stage: data.businessStage }));
             }
             if (data && data.subAgents) {
@@ -515,6 +613,7 @@
               { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
             ];
           }
+          setBizStage(fbStage);
           localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: '', bio: '', stage: fbStage }));
           localStorage.setItem('amp_custom_agents', JSON.stringify(fallbackAgents));
           setGeneratedAgents(fallbackAgents);
@@ -567,7 +666,7 @@
                   <iconify-icon icon="solar:user-bold" width="20" className="text-pd-teal"></iconify-icon>
                 </div>
                 <div>
-                  <div className="text-xs font-mono text-pd-teal mb-1 uppercase tracking-widest">CEO Agent</div>
+                  <div className="text-xs font-mono text-pd-teal mb-1 uppercase tracking-widest">{labels.agents.ceo.name}</div>
                   <div className="text-gray-800 dark:text-gray-200 leading-relaxed min-h-[3rem]"><FormatText text={ceoText} /></div>
                 </div>
               </div>
@@ -578,7 +677,7 @@
                       <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">CEO</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels.agents.ceo.name}</div>
                       <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Active
                       </div>
@@ -599,8 +698,8 @@
                           <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">CMO Agent</div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Lead Gen & Marketing</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels.agents.cmo.name}</div>
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{labels.agents.cmo.role}</div>
                         </div>
                       </div>
                       {generatedAgents.filter(a => a.parent === 'CMO').map((agent, i) => (
@@ -621,8 +720,8 @@
                           <iconify-icon icon="solar:settings-linear" width="16"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">CTO Agent</div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Systems & Code</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels.agents.cto.name}</div>
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{labels.agents.cto.role}</div>
                         </div>
                       </div>
                       {generatedAgents.filter(a => a.parent === 'CTO').map((agent, i) => (
@@ -643,8 +742,8 @@
                           <iconify-icon icon="solar:palette-linear" width="16"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">Creative Agent</div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Content & Assets</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels.agents.creative.name}</div>
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{labels.agents.creative.role}</div>
                         </div>
                       </div>
                       {generatedAgents.filter(a => a.parent === 'Creative').map((agent, i) => (
@@ -1545,101 +1644,7 @@
       const stage = userProfile?.stage || 'Solo';
       const isEcomm = stage === 'Ecomm';
       
-      const getLabels = (s) => {
-        switch(s) {
-          case 'Ecomm': return { 
-            lead: 'Sales Pipeline', leadSub: 'Track customer interest and abandoned carts.', leadMob: 'Sales', 
-            client: 'Customer Ledger', clientSub: 'Manage customer LTV and retainers.', clientMob: 'Customers', 
-            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
-            clientCols: ['Customer', 'Products Bought', 'Total Spent', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Customer Name', 'Products Bought', 'Total Spent'],
-            leadInputs: ['Customer Name', 'Contact Info', 'Cart Value'],
-            clientAction: 'Customer',
-            agents: {
-              ceo: { name: 'Store Manager', role: 'Store Strategy' },
-              cmo: { name: 'Growth Marketer', role: 'Ads & Promotions' },
-              cto: { name: 'Store Architect', role: 'Platform Tech' },
-              creative: { name: 'Visual Merchandiser', role: 'Product Assets' }
-            }
-          };
-          case 'Software': return { 
-            lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
-            client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', 
-            finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR',
-            clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
-            leadInputs: ['User Name', 'Email', 'Est. Value'],
-            clientAction: 'Subscriber',
-            agents: {
-              ceo: { name: 'Product Manager', role: 'Product Strategy' },
-              cmo: { name: 'Growth Lead', role: 'User Acquisition' },
-              cto: { name: 'Lead Engineer', role: 'Infrastructure' },
-              creative: { name: 'UX/UI Designer', role: 'Interface Design' }
-            }
-          };
-          case 'Organizer': return { 
-            lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
-            client: 'Member Ledger', clientSub: 'Manage active members and roles.', clientMob: 'Members', 
-            finance: 'Funding Tracker', financeSub: 'Track campaign funding and organization expenses.', financeMob: 'Funding',
-            clientCols: ['Member', 'Rank', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Member Name', 'Rank (1-5)', 'Facility', 'Active Role / Activity'],
-            leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
-            clientAction: 'Member',
-            agents: {
-              ceo: { name: 'Lead Organizer', role: 'Campaign Strategy' },
-              cmo: { name: 'Outreach Director', role: 'Membership Growth' },
-              cto: { name: 'Data Coordinator', role: 'Database Management' },
-              creative: { name: 'Comms Director', role: 'Messaging & Speeches' }
-            }
-          };
-          case 'Dispatcher': return { 
-            lead: 'Hiring Pipeline', leadSub: 'Track driver prospects and interviews.', leadMob: 'Hiring', 
-            client: 'Active Drivers', clientSub: 'Manage your daily driver fleet and routes.', clientMob: 'Drivers', 
-            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
-            clientCols: ['Driver', 'Assigned Route/Location', 'Work Days', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Driver Name', 'Assigned Route/Location', 'Work Days'],
-            leadInputs: ['Prospect Name', 'Contact Info', 'Est. Value'],
-            clientAction: 'Driver',
-            agents: {
-              ceo: { name: 'Dispatch Director', role: 'Operations Oversight' },
-              cmo: { name: 'Recruitment Chief', role: 'Hiring & Growth' },
-              cto: { name: 'Systems Architect', role: 'Logistics Tech' },
-              creative: { name: 'Driver Comms', role: 'Internal Communication' }
-            }
-          };
-          case 'Local Service': return { 
-            lead: 'Lead Pipeline', leadSub: 'Track quotes and pending jobs.', leadMob: 'Leads', 
-            client: 'Client Ledger', clientSub: 'Manage service history and recurring clients.', clientMob: 'Clients', 
-            finance: 'Revenue Tracker', financeSub: 'Track job revenue and material expenses.', financeMob: 'Revenue',
-            clientCols: ['Client', 'Service Type', 'LTV', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Client Name', 'Service Type', 'Total LTV'],
-            leadInputs: ['Client Name', 'Contact Info', 'Quote Value'],
-            clientAction: 'Client',
-            agents: {
-              ceo: { name: 'Operations Lead', role: 'Service Strategy' },
-              cmo: { name: 'Marketing Manager', role: 'Lead Generation' },
-              cto: { name: 'Systems Admin', role: 'Booking Tech' },
-              creative: { name: 'Brand Designer', role: 'Visual Identity' }
-            }
-          };
-          default: return { 
-            lead: 'Lead Pipeline', leadSub: 'Track inbound leads and prospects.', leadMob: 'Leads', 
-            client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', 
-            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
-            clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
-            leadInputs: ['Lead Name', 'Contact Info', 'Est. Value'],
-            clientAction: 'Client',
-            agents: {
-              ceo: { name: 'CEO Agent', role: 'Strategic Intelligence' },
-              cmo: { name: 'CMO Agent', role: 'Marketing & Growth' },
-              cto: { name: 'CTO Agent', role: 'Development & Automation' },
-              creative: { name: 'Creative Agent', role: 'Content & Branding' }
-            }
-          };
-        }
-      };
-      
+
       const labels = getLabels(stage);
 
       const navItems = [
