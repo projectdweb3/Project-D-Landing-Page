@@ -4719,7 +4719,7 @@ CRITICAL RULE on Names & Meetings: If the user mentions interacting with or sche
       const timelineEvents = events.filter(ev => {
          if (!ev.date_time) return false;
          return new Date(ev.date_time).toLocaleDateString() === selectedDateStr;
-      }).sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
+      }).sort((a, b) => new Date(b.date_time) - new Date(a.date_time));
 
       const priorityWeight = { 'High': 3, 'Medium': 2, 'Low': 1 };
       const todaysTasks = (activeTasks || [])
