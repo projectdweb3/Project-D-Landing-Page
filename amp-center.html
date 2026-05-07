@@ -1005,6 +1005,21 @@
         return localStorage.getItem('amp_active_user_id') || '1';
       });
 
+      const [customAgents, setCustomAgents] = useState([]);
+      const [activeModule, setActiveModule] = useState('neural-chat');
+      const [isStatsOpen, setIsStatsOpen] = useState(false);
+      const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
+      const [activeTasks, setActiveTasks] = useState([]);
+      const [tasksFilter, setTasksFilter] = useState('active');
+      const [tempProcessingTasks, setTempProcessingTasks] = useState([]);
+      const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
+      const [contentReferences, setContentReferences] = useState([]);
+      const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
+      const [isAgentsModalOpen, setIsAgentsModalOpen] = useState(false);
+      const [triggerPrompt, setTriggerPrompt] = useState(null);
+      const [unreadCounts, setUnreadCounts] = useState({ 'all': 0 });
+      const [totalUnreadTeam, setTotalUnreadTeam] = useState(0);
+
       const fetchAccountUsers = async () => {
         if (supabaseClient && session?.user?.id) {
           const { data } = await supabaseClient.from('account_users').select('*').eq('user_id', session.user.id).order('created_at', { ascending: true });
@@ -1012,7 +1027,6 @@
         }
       };
 
-      const [customAgents, setCustomAgents] = useState([]);
       
       const fetchCustomAgents = async () => {
         if (supabaseClient && session?.user?.id) {
@@ -1114,20 +1128,6 @@
 
       const activeUserName = accountUsers.find(u => u.id === activeUserId)?.name || 'Primary User';
 
-      const [activeModule, setActiveModule] = useState('neural-chat');
-      const [isStatsOpen, setIsStatsOpen] = useState(false);
-      const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
-      const [activeTasks, setActiveTasks] = useState([]);
-      const [tasksFilter, setTasksFilter] = useState('active');
-      const [tempProcessingTasks, setTempProcessingTasks] = useState([]);
-      const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
-      const [contentReferences, setContentReferences] = useState([]);
-      const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
-      const [isAgentsModalOpen, setIsAgentsModalOpen] = useState(false);
-      const [triggerPrompt, setTriggerPrompt] = useState(null);
-      
-      const [unreadCounts, setUnreadCounts] = useState({ 'all': 0 });
-      const [totalUnreadTeam, setTotalUnreadTeam] = useState(0);
 
       useEffect(() => {
         let count = 0;
@@ -3942,7 +3942,8 @@
         'shift': { bg: 'bg-pd-teal/10', text: 'text-pd-teal', border: 'border-pd-teal/20', icon: 'solar:steering-linear' },
         'vto': { bg: 'bg-gray-500/10', text: 'text-gray-400 dark:text-gray-400', border: 'border-gray-500/20', icon: 'solar:home-linear' },
         'pto': { bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/20', icon: 'solar:palmtree-linear' },
-        'call_out': { bg: 'bg-red-500/10', text: 'text-red-500 dark:text-red-400', border: 'border-red-500/20', icon: 'solar:danger-triangle-linear' }
+        'call_out': { bg: 'bg-red-500/10', text: 'text-red-500 dark:text-red-400', border: 'border-red-500/20', icon: 'solar:danger-triangle-linear' },
+        'manual': { bg: 'bg-pd-orange/10', text: 'text-pd-orange', border: 'border-pd-orange/20', icon: 'solar:user-linear' },
       } : {
         'meeting': { bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/20', icon: 'solar:calendar-date-linear' },
         'agent_deployment': { bg: 'bg-pd-teal/10', text: 'text-pd-teal', border: 'border-pd-teal/20', icon: 'solar:cpu-linear' },
