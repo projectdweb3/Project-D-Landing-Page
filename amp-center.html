@@ -503,6 +503,67 @@
       }
     };
 
+    const RemovalModal = ({ isOpen, onClose, onConfirm, entityName }) => {
+      const [reason, setReason] = React.useState('');
+      const [step, setStep] = React.useState(1);
+
+      if (!isOpen) return null;
+
+      const handleNext = () => {
+        if (!reason.trim()) {
+           alert('Please provide a reason for removal.');
+           return;
+        }
+        setStep(2);
+      };
+
+      const handleConfirm = () => {
+        onConfirm(reason);
+        setReason('');
+        setStep(1);
+        onClose();
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl animate-fade-in">
+             <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Confirm Removal</h3>
+                <button onClick={() => { setStep(1); setReason(''); onClose(); }} className="text-gray-400 hover:text-gray-600"><iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon></button>
+             </div>
+             
+             {step === 1 ? (
+               <>
+                 <p className="text-sm text-gray-500 mb-4">Please state the reason for removing <strong>{entityName}</strong> from the ledger.</p>
+                 <textarea 
+                   value={reason} 
+                   onChange={e => setReason(e.target.value)} 
+                   className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:border-pd-teal outline-none mb-6 resize-none text-gray-900 dark:text-white" 
+                   rows="3" 
+                   placeholder="e.g. Contract expired, Driver resigned, Refund issued..."
+                 ></textarea>
+                 <button onClick={handleNext} className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-all">Proceed to Confirm</button>
+               </>
+             ) : (
+               <>
+                 <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-6 text-center">
+                    <p className="text-xs text-red-500 font-bold mb-1 uppercase tracking-widest">Final Confirmation</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">Removing: <strong>{entityName}</strong></p>
+                    <div className="text-[11px] italic text-gray-500 mt-3 p-3 bg-white/5 rounded-lg border border-gray-100 dark:border-white/5">
+                      "Reason: {reason}"
+                    </div>
+                 </div>
+                 <div className="flex gap-3">
+                   <button onClick={() => setStep(1)} className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-white/10 text-gray-500 font-bold text-sm hover:bg-black/5 transition-all">Back</button>
+                   <button onClick={handleConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Confirm Removal</button>
+                 </div>
+               </>
+             )}
+          </div>
+        </div>
+      );
+    };
+
     const Genesis = ({ onComplete, typingSpeed, setTypingSpeed }) => {
       const [input, setInput] = useState('');
       const [stage, setStage] = useState(0);
@@ -771,7 +832,7 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup, customAgents, labels }) => {
+    const SettingsMenu = ({ session, handleLogout, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup, customAgents, labels }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
       const [confirmText, setConfirmText] = useState('');
@@ -831,12 +892,7 @@
         setLoading(false);
       };
 
-      const handleLogout = async () => {
-        if (supabaseClient) {
-          await supabaseClient.auth.signOut();
-          window.location.reload();
-        }
-      };
+
 
       const cmoTask = activeTasks?.find(t => t.agent === 'CMO' && t.status !== 'done');
       const creativeTask = activeTasks?.find(t => t.agent === 'Creative' && t.status !== 'done');
@@ -885,13 +941,7 @@
             {needsProfileSetup && <div className="bg-pd-orange/10 text-pd-orange px-3 py-1 rounded-full text-xs font-bold animate-pulse">Required</div>}
           </div>
           
-          {session && (
-            <div className="mb-8 md:hidden">
-              <button onClick={handleLogout} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors">
-                <iconify-icon icon="solar:logout-2-linear"></iconify-icon> Log Out
-              </button>
-            </div>
-          )}
+          </div>
 
           <div className="mb-8 p-6 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">User Management (Max 5)</h3>
@@ -922,7 +972,7 @@
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Profile Settings */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-pd-teal/5 to-pd-orange/5 pointer-events-none"></div>
@@ -1162,6 +1212,16 @@
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* User Logout Button (Moved to Bottom of Settings) */}
+          {session && (
+            <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10">
+              <button onClick={handleLogout} className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md border border-red-500/20">
+                <iconify-icon icon="solar:logout-2-linear" width="20"></iconify-icon> Log Out of AMP Center
+              </button>
+              <p className="text-center text-[10px] text-gray-500 mt-4 uppercase tracking-widest font-mono">End of Secure Session</p>
             </div>
           )}
         </div>
@@ -1641,6 +1701,13 @@
         e.target.value = null; // reset input
       };
 
+      const handleLogout = async () => {
+        if (window.supabaseClient) {
+          await window.supabaseClient.auth.signOut();
+          window.location.reload();
+        }
+      };
+
       const checkProfile = async () => {
         let loadedProfile = { company_name: '', bio: '', stage: 'Solo' };
         let setupNeeded = true;
@@ -1930,7 +1997,7 @@
             {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} userProfile={userProfile} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} labels={labels} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} handleLogout={handleLogout} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} labels={labels} />}
           </main>
 
            {/* Agent Workforce Modal */}
@@ -2783,6 +2850,8 @@
       
       const [leads, setLeads] = useState([]);
       const [showModal, setShowModal] = useState(false);
+      const [showRemovalModal, setShowRemovalModal] = useState(false);
+      const [itemToDelete, setItemToDelete] = useState(null);
       const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: isOrganizer ? '1' : '$0', stage: stages[0], notes: '' });
       const [activeMobileStage, setActiveMobileStage] = useState(stages[0]);
 
@@ -2825,15 +2894,19 @@
         try { await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id); } catch(e){}
       };
 
-      const deleteLead = async (id) => {
-        if (!confirm('Are you sure you want to delete this lead?')) return;
+      const deleteLead = async (reason) => {
+        if (!itemToDelete) return;
+        const id = itemToDelete.id;
         const localLeads = JSON.parse(localStorage.getItem(storageKey) || '[]');
         const updated = localLeads.filter(l => l.id !== id);
         localStorage.setItem(storageKey, JSON.stringify(updated));
         setLeads(updated);
 
         if (!supabaseClient) return;
-        try { await supabaseClient.from('leads').delete().eq('id', id); } catch(e){}
+        try { 
+          await supabaseClient.from('leads').delete().eq('id', id); 
+          // Log deletion with reason if needed - for now just delete
+        } catch(e){}
       };
 
       const handleSave = async () => {
@@ -2935,7 +3008,7 @@
                           <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
                               <iconify-icon icon="solar:pen-linear"></iconify-icon>
                           </button>
-                          <button onClick={() => deleteLead(lead.id)} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all" title="Delete">
+                          <button onClick={() => { setItemToDelete(lead); setShowRemovalModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all" title="Delete">
                             <iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon>
                           </button>
                         </div>
@@ -3017,6 +3090,14 @@
               </div>
             </div>
           )}
+          {showRemovalModal && (
+            <RemovalModal 
+              isOpen={showRemovalModal} 
+              onClose={() => setShowRemovalModal(false)} 
+              onConfirm={deleteLead} 
+              entityName={itemToDelete?.name || 'this lead'} 
+            />
+          )}
         </div>
       );
     };
@@ -3027,12 +3108,28 @@
       const isDispatcher = userProfile?.stage === 'Dispatcher';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
+      const [showRemovalModal, setShowRemovalModal] = useState(false);
+      const [itemToDelete, setItemToDelete] = useState(null);
       const [sortBy, setSortBy] = useState('date');
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
       const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' });
 
       const currentStage = userProfile?.stage || 'Default';
       const storageKey = `amp_clients_${currentStage}`;
+
+      const deleteClient = async (reason) => {
+        if (!itemToDelete) return;
+        const id = itemToDelete.id;
+        const local = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const updated = local.filter(l => l.id !== id);
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+        setClients(updated);
+
+        if (!supabaseClient) return;
+        try { 
+          await supabaseClient.from('clients').delete().eq('id', id); 
+        } catch(e){}
+      };
 
       const fetchClients = async () => {
         let currentLocal = [];
@@ -3214,6 +3311,9 @@
                         <button onClick={() => { setFormData({...c, chat_platform: c.chat_platform || 'whatsapp'}); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors" title={`Edit ${isDispatcher ? 'Driver' : 'Member'}`}>
                           <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
                         </button>
+                        <button onClick={() => { setItemToDelete(c); setShowRemovalModal(true); }} className="text-gray-400 hover:text-red-500 transition-colors" title={`Remove ${isDispatcher ? 'Driver' : 'Member'}`}>
+                          <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -3310,6 +3410,13 @@
               </div>
             </div>
           )}
+
+          <RemovalModal 
+            isOpen={showRemovalModal} 
+            onClose={() => setShowRemovalModal(false)} 
+            onConfirm={deleteClient} 
+            entityName={itemToDelete?.name || 'this entry'} 
+          />
         </div>
       );
     };
@@ -3317,10 +3424,26 @@
     const InventoryTracker = ({ session, activeTasks, userProfile, onSync, onImportCsv }) => {
       const [inventory, setInventory] = useState([]);
       const [showModal, setShowModal] = useState(false);
+      const [showRemovalModal, setShowRemovalModal] = useState(false);
+      const [itemToDelete, setItemToDelete] = useState(null);
       const [formData, setFormData] = useState({ id: null, product_name: '', sku_link: '', stock: '', price: '' });
 
       const currentStage = userProfile?.stage || 'Default';
       const storageKey = `amp_inventory_${currentStage}`;
+
+      const deleteProduct = async (reason) => {
+        if (!itemToDelete) return;
+        const id = itemToDelete.id;
+        const local = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const updated = local.filter(l => l.id !== id);
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+        setInventory(updated);
+
+        if (!supabaseClient) return;
+        try { 
+          await supabaseClient.from('inventory').delete().eq('id', id); 
+        } catch(e){}
+      };
 
       const fetchInventory = async () => {
         let currentLocal = [];
@@ -3455,6 +3578,9 @@
                       <button onClick={() => { setFormData(item); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors">
                         <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
                       </button>
+                      <button onClick={() => { setItemToDelete(item); setShowRemovalModal(true); }} className="text-gray-400 hover:text-red-500 transition-colors ml-3" title="Delete Product">
+                        <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -3493,6 +3619,14 @@
               </div>
             </div>
           )}
+
+          <RemovalModal 
+            isOpen={showRemovalModal} 
+            onClose={() => setShowRemovalModal(false)} 
+            onConfirm={deleteProduct} 
+            entityName={itemToDelete?.product_name || 'this product'} 
+          />
+        </div>
         </div>
       );
     };
