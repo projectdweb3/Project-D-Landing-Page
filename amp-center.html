@@ -772,7 +772,7 @@
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Type</label>
                   <select value={userProfile?.stage || 'Solo'} onChange={e => setUserProfile({...userProfile, stage: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm appearance-none">
-                    {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Food', 'Organizer'].map(s => <option key={s} value={s}>{s}</option>)}
+                    {['Solo', 'Family', 'Ecomm', 'Local Service', 'Software', 'Dispatcher', 'Organizer'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 {userProfile?.stage === 'Ecomm' && (
@@ -1480,14 +1480,14 @@
             leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
             clientAction: 'Member'
           };
-          case 'Food': return { 
-            lead: 'Order Pipeline', leadSub: 'Track incoming orders and catering prospects.', leadMob: 'Orders', 
-            client: 'Customer Ledger', clientSub: 'Manage recurring customers and feedback.', clientMob: 'Customers', 
-            finance: 'Sales Tracker', financeSub: 'Track daily sales and operational expenses.', financeMob: 'Sales',
-            clientCols: ['Customer', 'Favorite Order', 'LTV', 'Assigned Agents', 'Actions'],
-            clientInputs: ['Customer Name', 'Favorite Order', 'Total LTV'],
-            leadInputs: ['Order Name', 'Contact Info', 'Est. Value'],
-            clientAction: 'Customer'
+          case 'Dispatcher': return { 
+            lead: 'Hiring Pipeline', leadSub: 'Track driver prospects and interviews.', leadMob: 'Hiring', 
+            client: 'Active Drivers', clientSub: 'Manage your daily driver fleet and routes.', clientMob: 'Drivers', 
+            finance: 'Financial Tracker', financeSub: 'Autonomous revenue tracking & expense logging.', financeMob: 'Finances',
+            clientCols: ['Driver', 'Assigned Route/Location', 'Work Days', 'Assigned Agents', 'Actions'],
+            clientInputs: ['Driver Name', 'Assigned Route/Location', 'Work Days'],
+            leadInputs: ['Prospect Name', 'Contact Info', 'Est. Value'],
+            clientAction: 'Driver'
           };
           case 'Local Service': return { 
             lead: 'Lead Pipeline', leadSub: 'Track quotes and pending jobs.', leadMob: 'Leads', 
@@ -1591,7 +1591,7 @@
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
             {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
-            {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
+            {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} userProfile={userProfile} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} />}
@@ -2299,7 +2299,7 @@
           case 'Ecomm': return ['Favorites', 'Inquiries', 'Abandoned Cart'];
           case 'Software': return ['Signups', 'Active Trials', 'Needs Nurturing'];
           case 'Organizer': return ['Prospect', 'Communicating', 'Committed'];
-          case 'Food': return ['Large Orders', 'Catering Inquiries', 'Partner Leads'];
+          case 'Dispatcher': return ['Resumes Considered', 'Interview Scheduled', 'Recently Hired'];
           case 'Local Service': return ['New Inquiries', 'Quoting', 'Pending Approval'];
           default: return ['Inbound', 'Qualifying', 'Negotiation'];
         }
@@ -3756,12 +3756,13 @@
       );
     };
 
-    const TacticalCalendar = ({ activeTasks, setActiveModule, setTriggerPrompt, activeUserName }) => {
+    const TacticalCalendar = ({ activeTasks, setActiveModule, setTriggerPrompt, activeUserName, userProfile }) => {
+      const isDispatcher = userProfile?.stage === 'Dispatcher';
       const [events, setEvents] = useState([]);
       const [selectedDate, setSelectedDate] = useState(new Date());
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [showAddModal, setShowAddModal] = useState(false);
-      const [newEvent, setNewEvent] = useState({ title: '', time: '09:00', type: 'meeting', participants: '', notes: '' });
+      const [newEvent, setNewEvent] = useState({ title: '', time: '09:00', type: isDispatcher ? 'shift' : 'meeting', participants: '', notes: '' });
       const [expandedTaskId, setExpandedTaskId] = useState(null);
       const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'tasks'
 
@@ -3862,7 +3863,12 @@
            return pB - pA;
         });
 
-      const typeColors = {
+      const typeColors = isDispatcher ? {
+        'shift': { bg: 'bg-pd-teal/10', text: 'text-pd-teal', border: 'border-pd-teal/20', icon: 'solar:steering-linear' },
+        'vto': { bg: 'bg-gray-500/10', text: 'text-gray-400 dark:text-gray-400', border: 'border-gray-500/20', icon: 'solar:home-linear' },
+        'pto': { bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/20', icon: 'solar:palmtree-linear' },
+        'call_out': { bg: 'bg-red-500/10', text: 'text-red-500 dark:text-red-400', border: 'border-red-500/20', icon: 'solar:danger-triangle-linear' }
+      } : {
         'meeting': { bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/20', icon: 'solar:calendar-date-linear' },
         'agent_deployment': { bg: 'bg-pd-teal/10', text: 'text-pd-teal', border: 'border-pd-teal/20', icon: 'solar:cpu-linear' },
         'manual': { bg: 'bg-pd-orange/10', text: 'text-pd-orange', border: 'border-pd-orange/20', icon: 'solar:user-linear' },
@@ -3891,8 +3897,8 @@
           <div className={`w-full flex-[1.5] flex flex-col min-h-[400px] ${activeTab !== 'timeline' ? 'hidden lg:flex' : 'flex'}`}>
             <div className="mb-6 flex justify-between items-center">
               <div>
-                <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Tactical Calendar</h2>
-                <p className="text-xs text-gray-500">Autonomous scheduling and daily activity timeline.</p>
+                <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{isDispatcher ? 'Driver Schedule' : 'Tactical Calendar'}</h2>
+                <p className="text-xs text-gray-500">{isDispatcher ? "Manage daily driver shifts and routes for the week." : "Autonomous scheduling and daily activity timeline."}</p>
               </div>
               <div className="flex gap-2 w-full md:w-auto">
                 <button onClick={() => setShowAddModal(true)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
@@ -3948,14 +3954,18 @@
                         </div>
                         <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-2xl border ${style.border} bg-white/80 dark:bg-black/20 shadow-sm hover:scale-[1.02] transition-transform`}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className={`text-[10px] font-bold ${style.text} uppercase`}>{timeStr}</span>
-                            <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-full">{ev.agent_role || 'General'}</span>
+                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${style.bg} ${style.text} ${style.border}`}>
+                              {ev.event_type?.replace('_', ' ')}
+                            </span>
+                            <span className="text-xs font-mono text-gray-400 dark:text-gray-500">{timeStr}</span>
                           </div>
-                          <div>
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{ev.task_name}</div>
-                            {ev.created_by && <div className="text-[10px] text-gray-500 mt-0.5">By {ev.created_by}</div>}
-                          </div>
-                          {ev.participants && <p className="text-xs text-gray-500 mt-2 flex items-center gap-1"><iconify-icon icon="solar:users-group-rounded-linear"></iconify-icon> {ev.participants}</p>}
+                          <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1 truncate">{ev.task_name}</h4>
+                          {(ev.participants || ev.agent_role) && (
+                            <div className="flex flex-wrap gap-2 text-[10px] text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/5">
+                              {ev.participants && <span className="flex items-center gap-1"><iconify-icon icon={isDispatcher ? "solar:routing-2-linear" : "solar:users-group-rounded-linear"}></iconify-icon> {ev.participants}</span>}
+                              {ev.agent_role && !isDispatcher && <span className="flex items-center gap-1"><iconify-icon icon="solar:shield-user-linear"></iconify-icon> {ev.agent_role}</span>}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -4043,11 +4053,14 @@
           {showAddModal && (
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
-                <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">Schedule Event</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{isDispatcher ? 'Schedule Driver' : 'Manual Event Entry'}</h3>
+                  <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Event Title</label>
-                    <input type="text" value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" placeholder="E.g. Discovery Call with Acme Corp" />
+                    <label className="block text-xs text-gray-500 mb-1">{isDispatcher ? 'Driver Name' : 'Event Title'}</label>
+                    <input type="text" value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" placeholder={isDispatcher ? "John Doe" : "Meeting with Client"} />
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
@@ -4055,16 +4068,27 @@
                       <input type="time" value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-xs text-gray-500 mb-1">Type</label>
+                      <label className="block text-xs text-gray-500 mb-1">{isDispatcher ? 'Status/Type' : 'Type'}</label>
                       <select value={newEvent.type} onChange={e => setNewEvent({...newEvent, type: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none">
-                        <option value="meeting">Meeting</option>
-                        <option value="manual">Manual Task</option>
+                        {isDispatcher ? (
+                          <>
+                            <option value="shift">Normal Shift</option>
+                            <option value="vto">VTO (Voluntary Time Off)</option>
+                            <option value="pto">PTO</option>
+                            <option value="call_out">Call Out</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="meeting">Meeting</option>
+                            <option value="manual">Manual Task</option>
+                          </>
+                        )}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Participants (Optional)</label>
-                    <input type="text" value={newEvent.participants} onChange={e => setNewEvent({...newEvent, participants: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" placeholder="John Doe, Jane Smith" />
+                    <label className="block text-xs text-gray-500 mb-1">{isDispatcher ? 'Assigned Route/Location (Optional)' : 'Participants (Optional)'}</label>
+                    <input type="text" value={newEvent.participants} onChange={e => setNewEvent({...newEvent, participants: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" placeholder={isDispatcher ? "Route B / Downtown" : "John Doe, Jane Smith"} />
                   </div>
                   <div>
                      <label className="block text-xs text-gray-500 mb-1">Notes (Optional)</label>
@@ -4085,9 +4109,7 @@
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-start mb-4 border-b border-gray-200 dark:border-pd-glassBorder pb-3">
                   <div>
-                    <h3 className="font-semibold text-lg flex items-center gap-2 text-gray-900 dark:text-white">
-                      {selectedEvent.task_name}
-                    </h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{selectedEvent.task_name}</h3>
                     <p className="text-xs text-gray-500 mt-1">
                       {new Date(selectedEvent.date_time).toLocaleString()} • {selectedEvent.agent_role || 'User'}
                     </p>
@@ -4095,8 +4117,8 @@
                   <button onClick={() => setSelectedEvent(null)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                  {selectedEvent.participants && <p className="mb-2"><strong>Participants:</strong> {selectedEvent.participants}</p>}
-                  <p className="capitalize mb-2"><strong>Type:</strong> {selectedEvent.event_type?.replace('_', ' ')}</p>
+                  {selectedEvent.participants && <p className="mb-2"><strong>{isDispatcher ? 'Route/Location:' : 'Participants:'}</strong> {selectedEvent.participants}</p>}
+                  <p className="capitalize mb-2"><strong>{isDispatcher ? 'Status:' : 'Type:'}</strong> {selectedEvent.event_type?.replace('_', ' ')}</p>
                   {selectedEvent.notes && <div className="mt-4 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5"><strong>Notes:</strong><p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{selectedEvent.notes}</p></div>}
                 </div>
                 <button onClick={() => setSelectedEvent(null)} className="w-full amp-button primary py-2 mt-6">Close Details</button>
