@@ -1819,19 +1819,43 @@
                  const sched = new Date(t.scheduled_time);
                  if (now >= sched) {
                    changed = true;
-                   return { ...t, status: 'done', executed_at: now.toISOString() };
+                   const completedTask = { ...t, status: 'done', executed_at: now.toISOString() };
+                   
+                   // Create timeline event for auto-completed tasks
+                   const currentStage = userProfile?.stage || 'Default';
+                   const calKey = `amp_calendar_events_${currentStage}`;
+                   try {
+                     const localEvents = JSON.parse(localStorage.getItem(calKey) || '[]');
+                     localEvents.push({
+                       id: 'auto-done-' + Date.now() + '-' + t.id,
+                       task_name: t.title,
+                       event_type: 'agent_deployment',
+                       date_time: now.toISOString(),
+                       agent_role: t.agent || 'AI',
+                       participants: '',
+                       notes: 'Autonomous task execution completed.',
+                       created_by: t.agent || 'AI',
+                       business_stage: currentStage,
+                       created_at: now.toISOString()
+                     });
+                     localStorage.setItem(calKey, JSON.stringify(localEvents));
+                     window.dispatchEvent(new Event('amp-calendar-updated'));
+                   } catch(e) {}
+
+                   return completedTask;
                  }
                }
                return t;
             });
             if (changed) {
                try { localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(updated)); } catch(e) {}
+               window.dispatchEvent(new Event('amp-tasks-updated'));
             }
             return changed ? updated : prev;
           });
         }, 5000); // Check every 5 seconds
         return () => clearInterval(interval);
-      }, []);
+      }, [userProfile?.stage]);
 
       const [usagePct, setUsagePct] = useState(() => {
         const saved = localStorage.getItem('amp_usage_pct');
@@ -1959,7 +1983,7 @@
       ];
 
       return (
-        <div className="flex flex-col lg:flex-row w-full h-[100dvh] overflow-hidden p-2 sm:p-4 gap-2 sm:gap-4 z-10 relative glass-reveal">
+        <div className="flex flex-col lg:flex-row w-full h-[100dvh] overflow-hidden p-2 sm:p-4 lg:p-3 xl:p-4 gap-2 sm:gap-4 lg:gap-3 xl:gap-4 z-10 relative glass-reveal">
 
           {/* Mobile Header */}
           <div className="lg:hidden flex justify-between items-center bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl p-3 shadow-sm z-40 flex-shrink-0">
@@ -1977,7 +2001,7 @@
           </div>
 
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:flex w-56 xl:w-64 flex-col bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-3xl overflow-hidden shadow-xl flex-shrink-0">
+          <aside className="hidden lg:flex lg:w-48 xl:w-64 flex-col bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-3xl overflow-hidden shadow-xl flex-shrink-0">
             <div className="p-6 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/50 dark:bg-transparent">
               <div className="flex items-center gap-3">
                 <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_800w.png" className="w-8 h-8 rounded object-cover shadow-[0_0_15px_rgba(0,242,234,0.3)]" alt="Project D Logo" />
@@ -2166,8 +2190,8 @@
             <div className="lg:hidden fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-50" onClick={() => setIsStatsOpen(false)}></div>
           )}
 
-          <aside className={`fixed lg:static top-0 right-0 h-full lg:h-auto bg-white/95 dark:bg-[#0b0f19]/95 lg:bg-white/40 lg:dark:bg-pd-glass border-l lg:border border-gray-200 dark:border-pd-glassBorder backdrop-blur-3xl lg:rounded-3xl overflow-y-auto overflow-x-hidden shadow-2xl lg:shadow-xl flex-shrink-0 z-50 transition-all duration-300 origin-right ${isStatsOpen ? 'translate-x-0 w-72 sm:w-80' : 'translate-x-full w-72 sm:w-80 lg:translate-x-0'} ${isRightSidebarCollapsed ? 'lg:w-0 lg:border-0 lg:opacity-0 pointer-events-none' : 'lg:w-72 xl:w-80 lg:opacity-100 pointer-events-auto'}`}>
-            <div className="w-72 sm:w-80 lg:w-72 xl:w-80 p-4 xl:p-6 flex flex-col gap-6 h-full">
+          <aside className={`fixed lg:static top-0 right-0 h-full lg:h-auto bg-white/95 dark:bg-[#0b0f19]/95 lg:bg-white/40 lg:dark:bg-pd-glass border-l lg:border border-gray-200 dark:border-pd-glassBorder backdrop-blur-3xl lg:rounded-3xl overflow-y-auto overflow-x-hidden shadow-2xl lg:shadow-xl flex-shrink-0 z-50 transition-all duration-300 origin-right ${isStatsOpen ? 'translate-x-0 w-72 sm:w-80' : 'translate-x-full w-72 sm:w-80 lg:translate-x-0'} ${isRightSidebarCollapsed ? 'lg:w-0 lg:border-0 lg:opacity-0 pointer-events-none' : 'lg:w-60 xl:w-80 lg:opacity-100 pointer-events-auto'}`}>
+            <div className="w-72 sm:w-80 lg:w-60 xl:w-80 p-4 xl:p-6 flex flex-col gap-6 h-full">
               <div className="flex justify-between items-center lg:hidden mb-2 border-b border-gray-200 dark:border-pd-glassBorder pb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:chart-square-linear" className="text-pd-teal"></iconify-icon> System Stats</h3>
                 <button onClick={() => setIsStatsOpen(false)} className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-600 dark:text-gray-400 transition-colors"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
@@ -4643,12 +4667,41 @@ CRITICAL RULE on Names & Meetings: If the user mentions interacting with or sche
       };
 
       const updateTaskLocal = (taskId, updates) => {
-        const local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
+        const currentStage = userProfile?.stage || 'Default';
+        const tasksKey = `amp_tasks_${currentStage}`;
+        const local = JSON.parse(localStorage.getItem(tasksKey) || '[]');
         const targetIdx = local.findIndex(t => t.id === taskId);
+        
         if (targetIdx !== -1) {
-          local[targetIdx] = { ...local[targetIdx], ...updates };
-          localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+          const task = local[targetIdx];
+          local[targetIdx] = { ...task, ...updates };
+          localStorage.setItem(tasksKey, JSON.stringify(local));
           window.dispatchEvent(new Event('amp-tasks-updated'));
+
+          // If marking as done, create a timeline event
+          if (updates.status === 'done') {
+            const calKey = `amp_calendar_events_${currentStage}`;
+            const localEvents = JSON.parse(localStorage.getItem(calKey) || '[]');
+            const newEvent = {
+              id: 'task-done-' + Date.now(),
+              task_name: task.title,
+              event_type: task.agent ? 'agent_deployment' : 'manual',
+              date_time: new Date().toISOString(),
+              agent_role: task.agent || 'User',
+              participants: '',
+              notes: 'Task completed manually.',
+              created_by: activeUserName || 'User',
+              business_stage: currentStage,
+              created_at: new Date().toISOString()
+            };
+            localEvents.push(newEvent);
+            localStorage.setItem(calKey, JSON.stringify(localEvents));
+            window.dispatchEvent(new Event('amp-calendar-updated'));
+
+            if (supabaseClient && session?.user?.id) {
+               supabaseClient.from('calendar_events').insert([{ ...newEvent, user_id: session.user.id }]).then();
+            }
+          }
         }
       };
 
@@ -4758,7 +4811,7 @@ CRITICAL RULE on Names & Meetings: If the user mentions interacting with or sche
       };
 
       return (
-        <div className="p-4 md:p-8 h-full flex flex-col gap-6 relative overflow-y-auto custom-scrollbar">
+        <div className="p-4 lg:p-6 xl:p-8 h-full flex flex-col gap-6 relative overflow-y-auto custom-scrollbar">
           
           {/* Tab Switcher (Mobile & Vertical iPad) */}
           <div className="lg:hidden flex items-center gap-2 mb-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit">
