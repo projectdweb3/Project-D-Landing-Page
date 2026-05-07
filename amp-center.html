@@ -2557,7 +2557,7 @@ Available Tools & Channels:
 3. 'store_plan' / 'create_plan' -> Populates 'Strategic Planning'. Payload: { title: '...', content: '...' }.
 4. 'create_campaign' -> Populates 'Marketing Pipeline'. Payload: { name: '...', description: '...', stage: 'Planning' }.
 5. 'add_multiple_leads' or 'add_lead' -> Populates 'Hiring Pipeline' or 'Marketing Pipeline'. Payload: { leads: [{name, email, phone}] } or { name, contact, stage, value, prob, next_step }.
-6. 'create_task' -> Populates the 'Active Tasks' to-do list. Do NOT rely solely on creating tasks as 'executing a plan'. Actually execute the content of the tasks by sending messages or booking calendar events where applicable.
+6. 'create_task' -> Populates the "Today's Tasks" list (also known as "Active Tasks"). If a task must be done by the user in real life (IRL) and you cannot do it automatically (like physically checking vans, calling someone, etc.), use this tool to add it to their "Today's Tasks". NEVER use the word "Kanban". Always refer to this as "Today's Tasks".
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
@@ -4809,63 +4809,37 @@ CRITICAL RULE on Names & Meetings: If the user mentions interacting with or sche
                   <iconify-icon icon="solar:calendar-search-linear" width="32" className="mb-2 opacity-50"></iconify-icon>
                   <p className="text-xs">No {isDispatcher ? 'drivers scheduled' : 'events or deployments scheduled'}.</p>
                 </div>
-              ) : isDispatcher ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {timelineEvents.map((ev, i) => {
-                    const timeStr = new Date(ev.date_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    const style = typeColors[ev.event_type] || typeColors['manual'];
-                    return (
-                      <div key={i} onClick={() => setSelectedEvent(ev)} className="bg-white/80 dark:bg-black/20 border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm hover:border-pd-teal/50 transition-all cursor-pointer flex flex-col relative overflow-hidden group">
-                        <div className={`absolute top-0 left-0 w-1 h-full ${style.bg.replace('/10', '')} opacity-50`}></div>
-                        <div className="flex justify-between items-start mb-3 ml-2">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.bg} ${style.text}`}>
-                            <iconify-icon icon={style.icon} width="20"></iconify-icon>
-                          </div>
-                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded border ${style.bg} ${style.text} ${style.border}`}>
-                            {ev.event_type?.replace('_', ' ')}
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1 truncate ml-2">{ev.task_name}</h4>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-4 font-mono ml-2">
-                           <iconify-icon icon="solar:clock-circle-linear"></iconify-icon> Start: {timeStr}
-                        </div>
-                        {ev.participants && (
-                          <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 ml-2">
-                            <iconify-icon icon="solar:routing-2-bold-duotone" className="text-pd-teal text-lg"></iconify-icon> 
-                            <span className="truncate">{ev.participants}</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
               ) : (
-                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 dark:before:via-white/10 before:to-transparent">
+                <div className="flex flex-col gap-2">
                   {timelineEvents.map((ev, i) => {
                     const timeStr = new Date(ev.date_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     const style = typeColors[ev.event_type] || typeColors['manual'];
                     return (
-                      <div key={i} onClick={() => setSelectedEvent(ev)} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-pointer">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-[#0b0f19] bg-white dark:bg-[#0b0f19] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${style.bg} ${style.text}`}>
+                      <div key={i} onClick={() => setSelectedEvent(ev)} className="bg-white/60 dark:bg-black/20 border border-gray-200 dark:border-white/5 rounded-xl p-3 shadow-sm hover:border-pd-teal/50 transition-all cursor-pointer flex items-center justify-between relative overflow-hidden group">
+                        <div className={`absolute top-0 left-0 w-1 h-full ${style.bg.replace('/10', '')} opacity-50`}></div>
+                        <div className="flex items-center gap-3 ml-2 overflow-hidden flex-1">
+                          <div className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center ${style.bg} ${style.text}`}>
                             <iconify-icon icon={style.icon} width="16"></iconify-icon>
                           </div>
-                        </div>
-                        <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-2xl border ${style.border} bg-white/80 dark:bg-black/20 shadow-sm hover:scale-[1.02] transition-transform`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${style.bg} ${style.text} ${style.border}`}>
-                              {ev.event_type?.replace('_', ' ')}
-                            </span>
-                            <span className="text-xs font-mono text-gray-400 dark:text-gray-500">{timeStr}</span>
-                          </div>
-                          <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1 truncate">{ev.task_name}</h4>
-                          {(ev.participants || ev.agent_role) && (
-                            <div className="flex flex-wrap gap-2 text-[10px] text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/5">
-                              {ev.participants && <span className="flex items-center gap-1"><iconify-icon icon="solar:users-group-rounded-linear"></iconify-icon> {ev.participants}</span>}
-                              {ev.agent_role && <span className="flex items-center gap-1"><iconify-icon icon="solar:shield-user-linear"></iconify-icon> {ev.agent_role}</span>}
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className={`text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded border ${style.bg} ${style.text} ${style.border}`}>
+                                {ev.event_type?.replace('_', ' ')}
+                              </span>
+                              <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+                                <iconify-icon icon="solar:clock-circle-linear"></iconify-icon> {timeStr}
+                              </span>
                             </div>
-                          )}
+                            <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">{ev.task_name}</h4>
+                            {(ev.participants || ev.agent_role) && (
+                              <div className="flex flex-wrap gap-2 text-[10px] text-gray-500 mt-0.5">
+                                {ev.participants && <span className="flex items-center gap-1"><iconify-icon icon="solar:routing-2-bold-duotone" className="text-pd-teal"></iconify-icon> {ev.participants}</span>}
+                                {ev.agent_role && <span className="flex items-center gap-1"><iconify-icon icon="solar:shield-user-linear" className="text-pd-teal"></iconify-icon> {ev.agent_role}</span>}
+                              </div>
+                            )}
+                          </div>
                         </div>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" className="text-gray-400 group-hover:text-pd-teal ml-2"></iconify-icon>
                       </div>
                     );
                   })}
