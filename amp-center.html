@@ -884,6 +884,14 @@
             </div>
             {needsProfileSetup && <div className="bg-pd-orange/10 text-pd-orange px-3 py-1 rounded-full text-xs font-bold animate-pulse">Required</div>}
           </div>
+          
+          {session && (
+            <div className="mb-8 md:hidden">
+              <button onClick={handleLogout} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors">
+                <iconify-icon icon="solar:logout-2-linear"></iconify-icon> Log Out
+              </button>
+            </div>
+          )}
 
           <div className="mb-8 p-6 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">User Management (Max 5)</h3>
@@ -1484,6 +1492,7 @@
             if (data && data.company_name) {
               loadedProfile = { ...loadedProfile, company_name: data.company_name, bio: data.bio || loadedProfile.bio, stage: data.stage || loadedProfile.stage, store_link: data.store_link !== undefined ? data.store_link : loadedProfile.store_link };
               setupNeeded = !data.company_name || !data.stage;
+              localStorage.setItem('amp_business_profile', JSON.stringify(loadedProfile));
             }
           } catch(e) {
             console.warn("Supabase profile fetch failed, relying on localStorage.");
@@ -1495,15 +1504,26 @@
       };
 
       const fetchTasks = async () => {
-        if (supabaseClient) {
-          const { data } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false }).limit(50);
-          if (data) setActiveTasks(data);
-        } else {
+        const currentStage = userProfile?.stage || 'Default';
+        const storageKey = `amp_tasks_${currentStage}`;
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch(e) {}
+
+        if (supabaseClient && session?.user?.id) {
           try {
-            const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
-            setActiveTasks(local);
+            const { data, error } = await supabaseClient.from('tasks').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false }).limit(50);
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setActiveTasks([...data, ...localOnly]);
+              return;
+            }
           } catch(e) {}
         }
+        
+        setActiveTasks(currentLocal);
       };
 
       useEffect(() => {
@@ -1534,7 +1554,7 @@
                return t;
             });
             if (changed) {
-               try { localStorage.setItem('amp_tasks', JSON.stringify(updated)); } catch(e) {}
+               try { localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(updated)); } catch(e) {}
             }
             return changed ? updated : prev;
           });
@@ -1594,10 +1614,10 @@
             description: `Auto-Synced Order from ${platform}`,
             created_at: new Date().toISOString()
           });
-          localStorage.setItem('amp_finances', JSON.stringify(finances));
+          localStorage.setItem(`amp_finances_${userProfile?.stage || 'Default'}`, JSON.stringify(finances));
 
           // Add to clients
-          const clients = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+          const clients = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
           clients.unshift({
             id: Date.now().toString(),
             name: `Customer #${Math.floor(Math.random() * 9000) + 1000}`,
@@ -1606,16 +1626,16 @@
             assigned_agents: 'CEO',
             created_at: new Date().toISOString()
           });
-          localStorage.setItem('amp_clients', JSON.stringify(clients));
+          localStorage.setItem(`amp_clients_${userProfile?.stage || 'Default'}`, JSON.stringify(clients));
 
           // Update inventory (deduct stock)
-          const inventory = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
+          const inventory = JSON.parse(localStorage.getItem(`amp_inventory_${userProfile?.stage || 'Default'}`) || '[]');
           if (inventory.length > 0) {
             const randomItem = inventory[Math.floor(Math.random() * inventory.length)];
             const currentStock = parseInt(randomItem.stock, 10) || 0;
             if (currentStock > 0) {
               randomItem.stock = (currentStock - 1).toString();
-              localStorage.setItem('amp_inventory', JSON.stringify(inventory));
+              localStorage.setItem(`amp_inventory_${userProfile?.stage || 'Default'}`, JSON.stringify(inventory));
             }
           }
 
@@ -2302,7 +2322,7 @@
                   created_at: new Date().toISOString() 
                 };
                 localCal.push(histPayload);
-                localStorage.setItem('amp_calendar_events', JSON.stringify(localCal));
+                localStorage.setItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`, JSON.stringify(localCal));
                 window.dispatchEvent(new Event('amp-calendar-updated'));
                 if (supabaseClient && session?.user?.id) {
                    supabaseClient.from('calendar_events').insert([{ ...histPayload, user_id: session.user.id }]).then();
@@ -2324,31 +2344,35 @@
                     const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
                     local.push({ id: Date.now() + Math.random(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_inventory', JSON.stringify(local));
-                  } else if (action.type === 'store_plan') {
+                  } else if (action.type === 'create_plan') {
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
-                    local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
+                    const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
+                    local.push(payload);
                     localStorage.setItem('amp_plans', JSON.stringify(local));
-                    logAction(`Created Plan: ${action.payload.title}`, action.payload.agent);
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('plans').insert([{ ...payload, user_id: session.user.id }]).then(); }
+                    window.dispatchEvent(new Event('amp-plans-updated'));    logAction(`Created Plan: ${action.payload.title}`, action.payload.agent);
                   } else if (action.type === 'create_task') {
-                    const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
-                    local.unshift({ id: Date.now().toString(), title: action.payload.title, status: action.payload.column_id || 'todo', agent: action.payload.assigned_agent || 'CEO', scheduled_time: action.payload.scheduled_time || null, priority: action.payload.priority || 'Medium', created_at: new Date().toISOString() });
-                    localStorage.setItem('amp_tasks', JSON.stringify(local));
+                    const local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
+                    const payload = { id: Date.now().toString(), title: action.payload.title, status: action.payload.column_id || 'todo', agent: action.payload.assigned_agent || 'CEO', scheduled_time: action.payload.scheduled_time || null, priority: action.payload.priority || 'Medium', business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() };
+                    local.unshift(payload);
+                    localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('tasks').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-tasks-updated'));
                     logAction(`Delegated Task: ${action.payload.title}`, action.payload.assigned_agent);
                   } else if (action.type === 'update_task') {
-                    let local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
+                    let local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
                     const targetIdx = local.findIndex(t => t.id === action.payload.task_title_or_id || t.title.toLowerCase() === action.payload.task_title_or_id.toLowerCase());
                     if (targetIdx !== -1) {
                       if (action.payload.priority) local[targetIdx].priority = action.payload.priority;
                       if (action.payload.status) local[targetIdx].status = action.payload.status;
-                      localStorage.setItem('amp_tasks', JSON.stringify(local));
+                      localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
                       window.dispatchEvent(new Event('amp-tasks-updated'));
                       logAction(`Updated Task: ${action.payload.task_title_or_id}`, 'CEO');
                     }
                   } else if (action.type === 'add_calendar_event') {
-                    const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
+                    const local = JSON.parse(localStorage.getItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`) || '[]');
                     local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
-                    localStorage.setItem('amp_calendar_events', JSON.stringify(local));
+                    localStorage.setItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-calendar-updated'));
                   } else if (action.type === 'update_business_profile') {
                     const localData = localStorage.getItem('amp_business_profile');
@@ -2365,29 +2389,33 @@
                     window.dispatchEvent(new Event('amp-subagents-updated'));
                     logAction(`Hired Subagent: ${action.payload.role_name}`, 'CEO');
                   } else if (action.type === 'add_lead') {
-                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
-                    local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
-                    localStorage.setItem('amp_leads', JSON.stringify(local));
+                    const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
+                    const payload = { id: Date.now().toString(), ...action.payload, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() };
+                    local.unshift(payload);
+                    localStorage.setItem(`amp_leads_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Added Lead: ${action.payload.name}`, 'CEO');
                   } else if (action.type === 'add_multiple_leads') {
-                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
-                    const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, created_at: new Date().toISOString() }));
-                    localStorage.setItem('amp_leads', JSON.stringify([...newLeads, ...local]));
+                    const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
+                    const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
+                    localStorage.setItem(`amp_leads_${userProfile?.stage || 'Default'}`, JSON.stringify([...newLeads, ...local]));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').insert(newLeads.map(l => ({...l, user_id: session.user.id}))).then(); }
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Generated ${action.payload.leads.length} Leads`, 'CEO');
                   } else if (action.type === 'add_multiple_clients') {
-                    const local = JSON.parse(localStorage.getItem('amp_clients') || '[]');
-                    const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, created_at: new Date().toISOString() }));
-                    localStorage.setItem('amp_clients', JSON.stringify([...newClients, ...local]));
+                    const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
+                    const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
+                    localStorage.setItem(`amp_clients_${userProfile?.stage || 'Default'}`, JSON.stringify([...newClients, ...local]));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').insert(newClients.map(c => ({...c, user_id: session.user.id}))).then(); }
                     window.dispatchEvent(new Event('amp-simulated-sale'));
                     logAction(`Imported ${action.payload.clients.length} Clients/Members`, 'CEO');
                   } else if (action.type === 'update_lead') {
-                    const local = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
                     if (index >= 0) {
                       local[index] = { ...local[index], ...action.payload, updated_at: new Date().toISOString() };
-                      localStorage.setItem('amp_leads', JSON.stringify(local));
+                      localStorage.setItem(`amp_leads_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
                       window.dispatchEvent(new Event('amp-simulated-lead'));
                       logAction(`Updated Lead: ${action.payload.name}`, 'CEO');
                     }
@@ -2584,65 +2612,83 @@
         setActiveMobileStage(stages[0]);
       }, [userProfile?.stage]);
 
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_leads_${currentStage}`;
+
       const fetchLeads = async () => {
-        let localLeads = [];
+        let currentLocal = [];
         try {
-          localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
         } catch(e) {}
 
-        if (supabaseClient) {
-          const { data } = await supabaseClient.from('leads').select('*').order('created_at', { ascending: false });
-          if (data && data.length > 0) {
-            setLeads(data);
-            return;
-          }
+        if (supabaseClient && session?.user?.id) {
+          try {
+            const { data, error } = await supabaseClient.from('leads').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setLeads([...data, ...localOnly]);
+              return;
+            }
+          } catch(e) {}
         }
-        setLeads(localLeads);
+        setLeads(currentLocal);
       };
 
       const updateLeadStage = async (id, newStage) => {
-        const localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+        const localLeads = JSON.parse(localStorage.getItem(storageKey) || '[]');
         const updated = localLeads.map(l => l.id === id ? { ...l, stage: newStage } : l);
-        localStorage.setItem('amp_leads', JSON.stringify(updated));
+        localStorage.setItem(storageKey, JSON.stringify(updated));
         setLeads(updated);
 
         if (!supabaseClient) return;
-        await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id);
+        try { await supabaseClient.from('leads').update({ stage: newStage }).eq('id', id); } catch(e){}
       };
 
       const deleteLead = async (id) => {
         if (!confirm('Are you sure you want to delete this lead?')) return;
-        const localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+        const localLeads = JSON.parse(localStorage.getItem(storageKey) || '[]');
         const updated = localLeads.filter(l => l.id !== id);
-        localStorage.setItem('amp_leads', JSON.stringify(updated));
+        localStorage.setItem(storageKey, JSON.stringify(updated));
         setLeads(updated);
 
         if (!supabaseClient) return;
-        await supabaseClient.from('leads').delete().eq('id', id);
+        try { await supabaseClient.from('leads').delete().eq('id', id); } catch(e){}
       };
 
       const handleSave = async () => {
-        const payload = { ...formData, user_id: session?.user?.id || 'local' };
-        let localLeads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
-        
-        if (formData.id) {
-          localLeads = localLeads.map(l => l.id === formData.id ? payload : l);
-        } else {
-          payload.id = Date.now().toString();
-          payload.created_at = new Date().toISOString();
-          localLeads.unshift(payload);
-        }
-        
-        localStorage.setItem('amp_leads', JSON.stringify(localLeads));
-        setLeads(localLeads);
-        setShowModal(false);
+        try {
+          const payload = { ...formData, user_id: session?.user?.id || 'local', business_stage: currentStage };
+          let localLeads = [];
+          try {
+            const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (Array.isArray(parsed)) localLeads = parsed;
+          } catch(e) {}
+          
+          if (formData.id) {
+            localLeads = localLeads.map(l => l.id === formData.id ? payload : l);
+          } else {
+            payload.id = Date.now().toString();
+            payload.created_at = new Date().toISOString();
+            localLeads.unshift(payload);
+          }
+          
+          localStorage.setItem(storageKey, JSON.stringify(localLeads));
+          setLeads([...localLeads]);
+          setShowModal(false);
 
-        if (!supabaseClient || !session?.user?.id) return;
-        if (formData.id) {
-          await supabaseClient.from('leads').update(payload).eq('id', formData.id);
-        } else {
-          delete payload.id;
-          await supabaseClient.from('leads').insert([payload]);
+          if (!supabaseClient || !session?.user?.id) return;
+          try {
+            if (formData.id) {
+              await supabaseClient.from('leads').update(payload).eq('id', formData.id);
+            } else {
+              const remotePayload = { ...payload };
+              delete remotePayload.id;
+              await supabaseClient.from('leads').insert([remotePayload]);
+            }
+          } catch(e) {}
+        } catch(error) {
+          alert('Failed to save lead: ' + error.message);
         }
       };
 
@@ -2661,7 +2707,7 @@
           };
         }
         return () => window.removeEventListener('amp-simulated-lead', handleSync);
-      }, []);
+      }, [session, userProfile?.stage]);
 
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
@@ -2802,50 +2848,64 @@
       const [showModal, setShowModal] = useState(false);
       const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1' });
 
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_clients_${currentStage}`;
+
       const fetchClients = async () => {
-        if (supabaseClient) {
-          const { data } = await supabaseClient.from('clients').select('*').order('created_at', { ascending: false });
-          if (data) {
-            setClients(data);
-            return;
-          }
-        }
-        
+        let currentLocal = [];
         try {
-          const local = localStorage.getItem('amp_clients');
-          if (local) {
-            const parsed = JSON.parse(local);
-            if (Array.isArray(parsed)) setClients(parsed);
-          }
-        } catch (e) {}
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch(e) {}
+
+        if (supabaseClient && session?.user?.id) {
+          try {
+            const { data, error } = await supabaseClient.from('clients').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setClients([...data, ...localOnly]);
+              return;
+            }
+          } catch(e) {}
+        }
+        setClients(currentLocal);
       };
 
       const handleSave = async () => {
-        const payload = { ...formData };
-        if (supabaseClient && session?.user?.id) {
-          payload.user_id = session.user.id;
-          if (formData.id) {
-            await supabaseClient.from('clients').update(payload).eq('id', formData.id);
-          } else {
-            delete payload.id;
-            await supabaseClient.from('clients').insert([payload]);
-          }
-        } else {
+        try {
+          const payload = { ...formData, business_stage: currentStage };
+          
+          let local = [];
           try {
-            const local = JSON.parse(localStorage.getItem('amp_clients') || '[]');
-            if (formData.id) {
-              const idx = local.findIndex(c => c.id === formData.id);
-              if (idx > -1) local[idx] = { ...local[idx], ...payload };
-            } else {
-              payload.id = Date.now().toString();
-              payload.created_at = new Date().toISOString();
-              local.unshift(payload);
-            }
-            localStorage.setItem('amp_clients', JSON.stringify(local));
-            setClients(local);
+            const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (Array.isArray(parsed)) local = parsed;
           } catch(e) {}
+          if (formData.id) {
+            local = local.map(c => c.id === formData.id ? { ...c, ...payload } : c);
+          } else {
+            payload.id = Date.now().toString();
+            payload.created_at = new Date().toISOString();
+            local.unshift(payload);
+          }
+          localStorage.setItem(storageKey, JSON.stringify(local));
+          setClients([...local]);
+          setShowModal(false);
+
+          if (supabaseClient && session?.user?.id) {
+            payload.user_id = session.user.id;
+            try {
+              if (formData.id) {
+                await supabaseClient.from('clients').update(payload).eq('id', formData.id);
+              } else {
+                const remotePayload = { ...payload };
+                delete remotePayload.id;
+                await supabaseClient.from('clients').insert([remotePayload]);
+              }
+            } catch(e) {}
+          }
+        } catch (error) {
+          alert('Failed to save client: ' + error.message);
         }
-        setShowModal(false);
       };
 
       useEffect(() => {
@@ -2865,7 +2925,7 @@
         }
         
         return () => window.removeEventListener('amp-simulated-sale', handleSync);
-      }, []);
+      }, [session, userProfile?.stage]);
 
       const getAssignedAgent = (clientName, dbAgent) => {
         if (!activeTasks || !clientName) return dbAgent || 'Support';
@@ -3002,61 +3062,63 @@
       const [showModal, setShowModal] = useState(false);
       const [formData, setFormData] = useState({ id: null, product_name: '', sku_link: '', stock: '', price: '' });
 
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_inventory_${currentStage}`;
+
       const fetchInventory = async () => {
-        let dbData = null;
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch(e) {}
+
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data, error } = await supabaseClient.from('inventory').select('*').order('created_at', { ascending: false });
-            if (!error && data) dbData = data;
-          } catch (e) {
-            console.warn("Inventory table missing or fetch failed.", e);
-          }
-        }
-        
-        if (dbData) {
-          setInventory(dbData);
-        } else {
-          try {
-            const local = localStorage.getItem('amp_inventory');
-            if (local) {
-              const parsed = JSON.parse(local);
-              if (Array.isArray(parsed)) setInventory(parsed);
+            const { data, error } = await supabaseClient.from('inventory').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setInventory([...data, ...localOnly]);
+              return;
             }
-          } catch (e) {}
+          } catch(e) {}
         }
+        setInventory(currentLocal);
       };
 
       const handleSave = async () => {
-        if (!session?.user?.id) return;
-        const payload = { ...formData, user_id: session.user.id };
-        let success = false;
-        if (supabaseClient) {
+        try {
+          const payload = { ...formData, user_id: session?.user?.id || 'local', business_stage: currentStage };
+          
+          let local = [];
           try {
-            if (formData.id) {
-              const { error } = await supabaseClient.from('inventory').update(payload).eq('id', formData.id);
-              if (!error) success = true;
-            } else {
-              delete payload.id;
-              const { error } = await supabaseClient.from('inventory').insert([payload]);
-              if (!error) success = true;
-            }
-          } catch (e) { console.warn("Inventory upsert failed, relying on localStorage."); }
-        }
+            const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (Array.isArray(parsed)) local = parsed;
+          } catch(e) {}
+          if (formData.id) {
+            local = local.map(i => i.id === formData.id ? { ...i, ...payload } : i);
+          } else {
+            payload.id = Date.now().toString();
+            payload.created_at = new Date().toISOString();
+            local.unshift(payload);
+          }
+          localStorage.setItem(storageKey, JSON.stringify(local));
+          setInventory([...local]);
+          setShowModal(false);
 
-        if (!success) {
-          try {
-            const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
-            if (formData.id) {
-              const idx = local.findIndex(i => i.id === formData.id);
-              if (idx > -1) local[idx] = { ...local[idx], ...payload };
-            } else {
-              local.push({ id: Date.now() + Math.random(), ...payload, created_at: new Date().toISOString() });
-            }
-            localStorage.setItem('amp_inventory', JSON.stringify(local));
-          } catch (e) {}
+          if (supabaseClient && session?.user?.id) {
+            try {
+              if (formData.id) {
+                await supabaseClient.from('inventory').update(payload).eq('id', formData.id);
+              } else {
+                const remotePayload = { ...payload };
+                delete remotePayload.id;
+                await supabaseClient.from('inventory').insert([remotePayload]);
+              }
+            } catch (e) { console.warn("Inventory upsert failed."); }
+          }
+        } catch(error) {
+          alert('Failed to save inventory: ' + error.message);
         }
-        setShowModal(false);
-        fetchInventory();
       };
 
       useEffect(() => {
@@ -3185,41 +3247,56 @@
       const [monthlyReport, setMonthlyReport] = useState(null);
 
       const isEcomm = userProfile?.stage === 'Ecomm';
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_finances_${currentStage}`;
 
       const fetchClients = async () => {
-        if (!supabaseClient) return;
-        const { data } = await supabaseClient.from('clients').select('*');
-        if (data) {
-          setClients(data);
-          let total = 0;
-          data.forEach(c => {
-            const valStr = String(isEcomm ? (c.ltv || '0') : (c.retainer || '0'));
-            const val = parseFloat(valStr.replace(/[^0-9.]/g, '')) || 0;
-            total += val;
-          });
-          setAutoIncome(total);
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem(`amp_clients_${currentStage}`) || '[]');
+        } catch(e) {}
+        
+        let allClients = [...currentLocal];
+        if (supabaseClient && session?.user?.id) {
+           try {
+             const { data, error } = await supabaseClient.from('clients').select('*').eq('business_stage', currentStage);
+             if (!error && data) {
+                const remoteIds = new Set(data.map(d => d.id));
+                const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+                allClients = [...data, ...localOnly];
+             }
+           } catch(e) {}
         }
+        setClients(allClients);
+        let total = 0;
+        allClients.forEach(c => {
+          const valStr = String(isEcomm ? (c.ltv || '0') : (c.retainer || '0'));
+          const val = parseFloat(valStr.replace(/[^0-9.]/g, '')) || 0;
+          total += val;
+        });
+        setAutoIncome(total);
       };
 
       const fetchFinances = async () => {
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch(e) {}
+
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data, error } = await supabaseClient.from('finances').select('*').order('created_at', { ascending: false });
+            const { data, error } = await supabaseClient.from('finances').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
             if (!error && data) {
-              setTransactions(data);
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setTransactions([...data, ...localOnly]);
               return;
             }
           } catch (e) {
              console.warn("Finances table likely missing.");
           }
         }
-        try {
-          const local = localStorage.getItem('amp_finances');
-          if (local) {
-            const parsed = JSON.parse(local);
-            if (Array.isArray(parsed)) setTransactions(parsed);
-          }
-        } catch (e) {}
+        setTransactions(currentLocal);
       };
 
       useEffect(() => {
@@ -3233,7 +3310,7 @@
         window.addEventListener('amp-simulated-sale', handleSync);
         
         return () => window.removeEventListener('amp-simulated-sale', handleSync);
-      }, [userProfile]);
+      }, [userProfile?.stage, session]);
 
       const manualIncome = transactions.filter(t => t.type === 'Income').reduce((acc, t) => acc + t.amount, 0);
       const manualExpenses = transactions.filter(t => t.type === 'Expense').reduce((acc, t) => acc + t.amount, 0);
@@ -3246,7 +3323,7 @@
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
         
         if (today.getDate() === lastDayOfMonth) {
-          const reportKey = `amp_report_${today.getFullYear()}_${today.getMonth()}`;
+          const reportKey = `amp_report_${currentStage}_${today.getFullYear()}_${today.getMonth()}`;
           const saved = localStorage.getItem(reportKey);
           if (saved) {
             setMonthlyReport(JSON.parse(saved));
@@ -3262,13 +3339,14 @@
             setMonthlyReport(report);
           }
         }
-      }, [totalIncome, manualExpenses, netProfit]);
+      }, [totalIncome, manualExpenses, netProfit, currentStage]);
 
       const handleAddTx = async () => {
         if (!newTx.amount || !newTx.description) return;
         const amountNum = parseFloat(newTx.amount.replace(/[^0-9.]/g, ''));
         const payload = {
           user_id: session?.user?.id || 'local',
+          business_stage: currentStage,
           type: newTx.type,
           amount: amountNum,
           description: newTx.description,
@@ -3283,7 +3361,7 @@
         
         const newTxs = [payload, ...transactions];
         setTransactions(newTxs);
-        localStorage.setItem('amp_finances', JSON.stringify(newTxs));
+        localStorage.setItem(storageKey, JSON.stringify(newTxs));
         
         setNewTx({ type: 'Expense', amount: '', description: '' });
         setShowManualAdd(false);
@@ -3613,13 +3691,13 @@
             user_id: session?.user?.id || 'local'
           };
           
-          const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
+          const local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
           local.unshift({
             id: Date.now().toString(),
             ...taskPayload,
             created_at: new Date().toISOString()
           });
-          localStorage.setItem('amp_tasks', JSON.stringify(local));
+          localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
           window.dispatchEvent(new Event('amp-tasks-updated'));
 
           if (typeof supabaseClient !== 'undefined' && supabaseClient && session?.user?.id) {
@@ -4042,32 +4120,43 @@
       };
 
       const updateTaskLocal = (taskId, updates) => {
-        const local = JSON.parse(localStorage.getItem('amp_tasks') || '[]');
+        const local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
         const targetIdx = local.findIndex(t => t.id === taskId);
         if (targetIdx !== -1) {
           local[targetIdx] = { ...local[targetIdx], ...updates };
-          localStorage.setItem('amp_tasks', JSON.stringify(local));
+          localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
           window.dispatchEvent(new Event('amp-tasks-updated'));
         }
       };
 
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_calendar_events_${currentStage}`;
+
       const fetchEvents = async () => {
-        if (supabaseClient) {
-          const { data } = await supabaseClient.from('calendar_events').select('*').order('created_at', { ascending: true });
-          if (data) setEvents(data);
-        } else {
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch(e) {}
+
+        if (supabaseClient && session?.user?.id) {
           try {
-            const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
-            setEvents(local);
+            const { data, error } = await supabaseClient.from('calendar_events').select('*').eq('business_stage', currentStage).order('created_at', { ascending: true });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
+              setEvents([...data, ...localOnly]);
+              return;
+            }
           } catch(e) {}
         }
+        setEvents(currentLocal);
       };
 
       useEffect(() => {
         const handleCalUpdate = () => fetchEvents();
         window.addEventListener('amp-calendar-updated', handleCalUpdate);
         return () => window.removeEventListener('amp-calendar-updated', handleCalUpdate);
-      }, []);
+      }, [userProfile?.stage]);
 
       useEffect(() => {
         fetchEvents();
@@ -4077,7 +4166,7 @@
             .subscribe();
           return () => { supabaseClient.removeChannel(channel); };
         }
-      }, []);
+      }, [userProfile?.stage, session]);
 
       const handleAddManualEvent = async () => {
         if (!newEvent.title) return;
@@ -4092,15 +4181,16 @@
           notes: newEvent.notes,
           created_by: activeUserName || 'User'
         };
-        const completePayload = { id: Date.now().toString(), ...payload, created_at: new Date().toISOString() };
+        const completePayload = { id: Date.now().toString(), ...payload, business_stage: currentStage, created_at: new Date().toISOString() };
         
+        const local = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        local.push(completePayload);
+        localStorage.setItem(storageKey, JSON.stringify(local));
+        window.dispatchEvent(new Event('amp-calendar-updated'));
+        setEvents(local);
+
         if (supabaseClient && session?.user?.id) {
-           await supabaseClient.from('calendar_events').insert([{ ...completePayload, user_id: session.user.id }]);
-        } else {
-           const local = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
-           local.push(completePayload);
-           localStorage.setItem('amp_calendar_events', JSON.stringify(local));
-           window.dispatchEvent(new Event('amp-calendar-updated'));
+           try { await supabaseClient.from('calendar_events').insert([{ ...completePayload, user_id: session.user.id }]); } catch(e){}
         }
         
         setShowAddModal(false);
