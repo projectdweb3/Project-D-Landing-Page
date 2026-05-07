@@ -1080,6 +1080,16 @@
                   { name: 'Copywriter', parent: 'Creative', description: 'Writes compelling speeches.', icon: 'solar:document-text-linear' }
                 ];
               }
+              if (stage === 'Dispatcher') {
+                agents = [
+                  { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.', icon: 'solar:map-arrow-up-linear' },
+                  { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
+                  { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.', icon: 'solar:users-group-rounded-linear' },
+                  { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
+                  { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
+                  { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
+                ];
+              }
               localStorage.setItem('amp_custom_agents', JSON.stringify(agents));
               localStorage.setItem('amp_force_upgrade_subagents', 'true');
               window.location.reload();
