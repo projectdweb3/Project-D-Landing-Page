@@ -461,7 +461,7 @@
           } else {
             fbStage = 'Default';
           }
-          const fallbackAgents = [
+          let fallbackAgents = [
             { name: 'Lead Gen Pro', parent: 'CMO', description: 'Sources new prospects.', icon: 'solar:users-group-two-rounded-linear' },
             { name: 'Funnel Optimizer', parent: 'CMO', description: 'Improves conversion rates.', icon: 'solar:graph-up-linear' },
             { name: 'Data Architect', parent: 'CTO', description: 'Manages backend systems.', icon: 'solar:database-linear' },
@@ -469,7 +469,52 @@
             { name: 'Brand Designer', parent: 'Creative', description: 'Designs high-end graphics.', icon: 'solar:pen-linear' },
             { name: 'Copywriter', parent: 'Creative', description: 'Writes engaging text.', icon: 'solar:document-text-linear' }
           ];
-          
+          if (fbStage === 'Ecomm') {
+            fallbackAgents = [
+              { name: 'Ad Buyer', parent: 'CMO', description: 'Manages paid traffic campaigns.', icon: 'solar:dollar-linear' },
+              { name: 'Retention Expert', parent: 'CMO', description: 'Optimizes email/SMS marketing.', icon: 'solar:letter-linear' },
+              { name: 'Inventory Sync', parent: 'CTO', description: 'Manages stock and SKUs.', icon: 'solar:box-linear' },
+              { name: 'Checkout Optimizer', parent: 'CTO', description: 'Improves cart conversion rate.', icon: 'solar:cart-large-linear' },
+              { name: 'Product Photographer', parent: 'Creative', description: 'Enhances product images.', icon: 'solar:camera-linear' },
+              { name: 'Listing Writer', parent: 'Creative', description: 'Writes SEO product descriptions.', icon: 'solar:document-text-linear' }
+            ];
+          } else if (fbStage === 'Software') {
+            fallbackAgents = [
+              { name: 'Growth Hacker', parent: 'CMO', description: 'Drives user acquisition.', icon: 'solar:rocket-linear' },
+              { name: 'Sales Engineer', parent: 'CMO', description: 'Conducts technical demos.', icon: 'solar:monitor-camera-linear' },
+              { name: 'DevOps Lead', parent: 'CTO', description: 'Manages deployment pipelines.', icon: 'solar:server-square-update-linear' },
+              { name: 'QA Tester', parent: 'CTO', description: 'Automates bug tracking.', icon: 'solar:bug-linear' },
+              { name: 'UI/UX Designer', parent: 'Creative', description: 'Designs software interfaces.', icon: 'solar:pen-linear' },
+              { name: 'Technical Writer', parent: 'Creative', description: 'Drafts API documentation.', icon: 'solar:document-text-linear' }
+            ];
+          } else if (fbStage === 'Local Service') {
+            fallbackAgents = [
+              { name: 'Local SEO Specialist', parent: 'CMO', description: 'Ranks GMB profiles.', icon: 'solar:map-point-linear' },
+              { name: 'Lead Qualifier', parent: 'CMO', description: 'Screens inbound calls.', icon: 'solar:phone-calling-linear' },
+              { name: 'Scheduling Bot', parent: 'CTO', description: 'Automates calendar bookings.', icon: 'solar:calendar-linear' },
+              { name: 'CRM Integrator', parent: 'CTO', description: 'Syncs customer data.', icon: 'solar:database-linear' },
+              { name: 'Ad Creator', parent: 'Creative', description: 'Designs local service flyers.', icon: 'solar:pen-linear' },
+              { name: 'Review Manager', parent: 'Creative', description: 'Drafts review responses.', icon: 'solar:star-linear' }
+            ];
+          } else if (fbStage === 'Organizer') {
+            fallbackAgents = [
+              { name: 'Recruiter', parent: 'CMO', description: 'Finds and onboards new members.', icon: 'solar:users-group-two-rounded-linear' },
+              { name: 'Campaign Marketer', parent: 'CMO', description: 'Runs outreach campaigns.', icon: 'solar:megaphone-linear' },
+              { name: 'Database Manager', parent: 'CTO', description: 'Organizes member lists.', icon: 'solar:database-linear' },
+              { name: 'Systems Integrator', parent: 'CTO', description: 'Connects organizing tools.', icon: 'solar:cpu-linear' },
+              { name: 'Flyer Designer', parent: 'Creative', description: 'Designs union graphics.', icon: 'solar:pen-linear' },
+              { name: 'Copywriter', parent: 'Creative', description: 'Writes compelling speeches.', icon: 'solar:document-text-linear' }
+            ];
+          } else if (fbStage === 'Dispatcher') {
+            fallbackAgents = [
+              { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.', icon: 'solar:map-arrow-up-linear' },
+              { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
+              { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.', icon: 'solar:users-group-rounded-linear' },
+              { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
+              { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
+              { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
+            ];
+          }
           localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: '', bio: '', stage: fbStage }));
           localStorage.setItem('amp_custom_agents', JSON.stringify(fallbackAgents));
           setGeneratedAgents(fallbackAgents);
@@ -1075,14 +1120,41 @@
               console.log("Fallback agent generator triggered");
               const stage = userProfile?.stage || 'Default';
               let agents = [
-                { name: 'Lead Generator', parent: 'CMO', description: 'Finds inbound prospects.', icon: 'solar:users-group-two-rounded-linear' },
-                { name: 'Funnel Expert', parent: 'CMO', description: 'Optimizes sales funnels.', icon: 'solar:graph-up-linear' },
-                { name: 'Data Architect', parent: 'CTO', description: 'Manages CRM backend.', icon: 'solar:database-linear' },
-                { name: 'API Integrator', parent: 'CTO', description: 'Connects external tools.', icon: 'solar:cpu-linear' },
-                { name: 'Brand Designer', parent: 'Creative', description: 'Creates visual assets.', icon: 'solar:pen-linear' },
-                { name: 'Content Writer', parent: 'Creative', description: 'Writes blogs and posts.', icon: 'solar:document-text-linear' }
+                { name: 'Lead Gen Pro', parent: 'CMO', description: 'Sources new prospects.', icon: 'solar:users-group-two-rounded-linear' },
+                { name: 'Funnel Optimizer', parent: 'CMO', description: 'Improves conversion rates.', icon: 'solar:graph-up-linear' },
+                { name: 'Data Architect', parent: 'CTO', description: 'Manages backend systems.', icon: 'solar:database-linear' },
+                { name: 'API Integrator', parent: 'CTO', description: 'Connects software tools.', icon: 'solar:cpu-linear' },
+                { name: 'Brand Designer', parent: 'Creative', description: 'Designs high-end graphics.', icon: 'solar:pen-linear' },
+                { name: 'Copywriter', parent: 'Creative', description: 'Writes engaging text.', icon: 'solar:document-text-linear' }
               ];
-              if (stage === 'Organizer') {
+              if (stage === 'Ecomm') {
+                agents = [
+                  { name: 'Ad Buyer', parent: 'CMO', description: 'Manages paid traffic campaigns.', icon: 'solar:dollar-linear' },
+                  { name: 'Retention Expert', parent: 'CMO', description: 'Optimizes email/SMS marketing.', icon: 'solar:letter-linear' },
+                  { name: 'Inventory Sync', parent: 'CTO', description: 'Manages stock and SKUs.', icon: 'solar:box-linear' },
+                  { name: 'Checkout Optimizer', parent: 'CTO', description: 'Improves cart conversion rate.', icon: 'solar:cart-large-linear' },
+                  { name: 'Product Photographer', parent: 'Creative', description: 'Enhances product images.', icon: 'solar:camera-linear' },
+                  { name: 'Listing Writer', parent: 'Creative', description: 'Writes SEO product descriptions.', icon: 'solar:document-text-linear' }
+                ];
+              } else if (stage === 'Software') {
+                agents = [
+                  { name: 'Growth Hacker', parent: 'CMO', description: 'Drives user acquisition.', icon: 'solar:rocket-linear' },
+                  { name: 'Sales Engineer', parent: 'CMO', description: 'Conducts technical demos.', icon: 'solar:monitor-camera-linear' },
+                  { name: 'DevOps Lead', parent: 'CTO', description: 'Manages deployment pipelines.', icon: 'solar:server-square-update-linear' },
+                  { name: 'QA Tester', parent: 'CTO', description: 'Automates bug tracking.', icon: 'solar:bug-linear' },
+                  { name: 'UI/UX Designer', parent: 'Creative', description: 'Designs software interfaces.', icon: 'solar:pen-linear' },
+                  { name: 'Technical Writer', parent: 'Creative', description: 'Drafts API documentation.', icon: 'solar:document-text-linear' }
+                ];
+              } else if (stage === 'Local Service') {
+                agents = [
+                  { name: 'Local SEO Specialist', parent: 'CMO', description: 'Ranks GMB profiles.', icon: 'solar:map-point-linear' },
+                  { name: 'Lead Qualifier', parent: 'CMO', description: 'Screens inbound calls.', icon: 'solar:phone-calling-linear' },
+                  { name: 'Scheduling Bot', parent: 'CTO', description: 'Automates calendar bookings.', icon: 'solar:calendar-linear' },
+                  { name: 'CRM Integrator', parent: 'CTO', description: 'Syncs customer data.', icon: 'solar:database-linear' },
+                  { name: 'Ad Creator', parent: 'Creative', description: 'Designs local service flyers.', icon: 'solar:pen-linear' },
+                  { name: 'Review Manager', parent: 'Creative', description: 'Drafts review responses.', icon: 'solar:star-linear' }
+                ];
+              } else if (stage === 'Organizer') {
                 agents = [
                   { name: 'Recruiter', parent: 'CMO', description: 'Finds and onboards new members.', icon: 'solar:users-group-two-rounded-linear' },
                   { name: 'Campaign Marketer', parent: 'CMO', description: 'Runs outreach campaigns.', icon: 'solar:megaphone-linear' },
@@ -1091,8 +1163,7 @@
                   { name: 'Flyer Designer', parent: 'Creative', description: 'Designs union graphics.', icon: 'solar:pen-linear' },
                   { name: 'Copywriter', parent: 'Creative', description: 'Writes compelling speeches.', icon: 'solar:document-text-linear' }
                 ];
-              }
-              if (stage === 'Dispatcher') {
+              } else if (stage === 'Dispatcher') {
                 agents = [
                   { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.', icon: 'solar:map-arrow-up-linear' },
                   { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
@@ -1645,7 +1716,7 @@
 
           <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
-              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} />
+              <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} labels={labels} />
             </div>
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Driver' ? 'Prospect' : (labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead')))} />}
@@ -1684,13 +1755,63 @@
                        { name: labels.agents.cto.name, role: labels.agents.cto.role, desc: 'Manages core architecture and pipelines.' },
                        { name: labels.agents.creative.name, role: labels.agents.creative.role, desc: 'Generates branded assets and copy.' },
                        ...customAgents.map(a => ({ name: a.name, role: a.parent ? a.parent + ' Team' : 'Specialist', desc: a.description || 'Custom deployed subagent.' })),
-                       // Fill to 10 if needed
-                       ...Array.from({ length: Math.max(0, 6 - customAgents.length) }).map((_, i) => ({ 
-                         name: 'Subagent ' + (customAgents.length + i + 1), 
-                         role: 'Specialist', 
-                         desc: 'Specialized autonomous worker assigned to specific sub-tasks.',
-                         pending: true
-                       }))
+                       ...(customAgents.length > 0 ? [] : (function() {
+                          let fbAgents = [
+                            { name: 'Lead Gen Pro', parent: 'CMO', description: 'Sources new prospects.' },
+                            { name: 'Funnel Optimizer', parent: 'CMO', description: 'Improves conversion rates.' },
+                            { name: 'Data Architect', parent: 'CTO', description: 'Manages backend systems.' },
+                            { name: 'API Integrator', parent: 'CTO', description: 'Connects software tools.' },
+                            { name: 'Brand Designer', parent: 'Creative', description: 'Designs high-end graphics.' },
+                            { name: 'Copywriter', parent: 'Creative', description: 'Writes engaging text.' }
+                          ];
+                          if (userProfile?.stage === 'Ecomm') {
+                            fbAgents = [
+                              { name: 'Ad Buyer', parent: 'CMO', description: 'Manages paid traffic campaigns.' },
+                              { name: 'Retention Expert', parent: 'CMO', description: 'Optimizes email/SMS marketing.' },
+                              { name: 'Inventory Sync', parent: 'CTO', description: 'Manages stock and SKUs.' },
+                              { name: 'Checkout Optimizer', parent: 'CTO', description: 'Improves cart conversion rate.' },
+                              { name: 'Product Photographer', parent: 'Creative', description: 'Enhances product images.' },
+                              { name: 'Listing Writer', parent: 'Creative', description: 'Writes SEO product descriptions.' }
+                            ];
+                          } else if (userProfile?.stage === 'Software') {
+                            fbAgents = [
+                              { name: 'Growth Hacker', parent: 'CMO', description: 'Drives user acquisition.' },
+                              { name: 'Sales Engineer', parent: 'CMO', description: 'Conducts technical demos.' },
+                              { name: 'DevOps Lead', parent: 'CTO', description: 'Manages deployment pipelines.' },
+                              { name: 'QA Tester', parent: 'CTO', description: 'Automates bug tracking.' },
+                              { name: 'UI/UX Designer', parent: 'Creative', description: 'Designs software interfaces.' },
+                              { name: 'Technical Writer', parent: 'Creative', description: 'Drafts API documentation.' }
+                            ];
+                          } else if (userProfile?.stage === 'Local Service') {
+                            fbAgents = [
+                              { name: 'Local SEO Specialist', parent: 'CMO', description: 'Ranks GMB profiles.' },
+                              { name: 'Lead Qualifier', parent: 'CMO', description: 'Screens inbound calls.' },
+                              { name: 'Scheduling Bot', parent: 'CTO', description: 'Automates calendar bookings.' },
+                              { name: 'CRM Integrator', parent: 'CTO', description: 'Syncs customer data.' },
+                              { name: 'Ad Creator', parent: 'Creative', description: 'Designs local service flyers.' },
+                              { name: 'Review Manager', parent: 'Creative', description: 'Drafts review responses.' }
+                            ];
+                          } else if (userProfile?.stage === 'Organizer') {
+                            fbAgents = [
+                              { name: 'Recruiter', parent: 'CMO', description: 'Finds and onboards new members.' },
+                              { name: 'Campaign Marketer', parent: 'CMO', description: 'Runs outreach campaigns.' },
+                              { name: 'Database Manager', parent: 'CTO', description: 'Organizes member lists.' },
+                              { name: 'Systems Integrator', parent: 'CTO', description: 'Connects organizing tools.' },
+                              { name: 'Flyer Designer', parent: 'Creative', description: 'Designs union graphics.' },
+                              { name: 'Copywriter', parent: 'Creative', description: 'Writes compelling speeches.' }
+                            ];
+                          } else if (userProfile?.stage === 'Dispatcher') {
+                            fbAgents = [
+                              { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.' },
+                              { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.' },
+                              { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.' },
+                              { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.' },
+                              { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.' },
+                              { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.' }
+                            ];
+                          }
+                          return fbAgents.map(a => ({ name: a.name, role: a.parent ? a.parent + ' Team' : 'Specialist', desc: a.description, pending: true }));
+                        })())
                      ].slice(0, 10).map((agent, idx) => {
                        const isActive = activeTasks.some(t => (t.assigned_to === agent.name || t.assigned_to === agent.role) && t.status === 'in_progress');
                        return (
@@ -1949,7 +2070,7 @@
         );
       };
 
-      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks, activeUserName, customAgents }) => {
+      const NeuralChat = ({ session, needsProfileSetup, depleteBudget, userProfile, triggerPrompt, setTriggerPrompt, setTempTasks, activeUserName, customAgents, labels }) => {
       const [messages, setMessages] = useState(() => {
         try {
           const saved = localStorage.getItem('amp_chat_history');
@@ -2032,9 +2153,18 @@
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
           const genesisInput = typeof localStorage !== 'undefined' ? localStorage.getItem('amp_genesis_input') : null;
+          
+          let prompts = '"Analyze my target audience", "Create a marketing strategy", or "Log a new client lead"';
+          if (userProfile?.stage === 'Dispatcher') prompts = '"Optimize my drivers\' routes", "Find new candidates", or "Log a maintenance issue"';
+          if (userProfile?.stage === 'Software') prompts = '"Draft a new API spec", "Plan an agile sprint", or "Write launch copy"';
+          if (userProfile?.stage === 'Ecomm') prompts = '"Audit my inventory limits", "Create a holiday promo", or "Analyze my store traffic"';
+          if (userProfile?.stage === 'Organizer') prompts = '"Draft a fundraising email", "Organize a union rally", or "Log a new volunteer"';
+          if (userProfile?.stage === 'Local Service') prompts = '"Draft an invoice", "Schedule a home repair", or "Create a Facebook ad"';
+
           const greetingText = genesisInput 
-            ? `Systems online. I have analyzed your digital kingdom parameters for: "${genesisInput}".\n\nI am your custom CEO Agent. I orchestrate a team of specialized AI agents (CMO, CTO, Creative) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **"Analyze my target audience"**, **"Create a marketing strategy"**, or **"Log a new client lead"**.\n- I will automatically route your requests to the correct agent and update your pipelines on the left.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`
-            : `Systems online. I am your custom CEO Agent. I orchestrate a team of specialized AI agents (CMO, CTO, Creative) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **"Analyze my target audience"**, **"Create a marketing strategy"**, or **"Log a new client lead"**.\n- I will automatically route your requests to the correct agent and update your pipelines on the left.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`;
+            ? `Systems online. I have analyzed your digital kingdom parameters for: "${genesisInput}".\n\nI am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`
+            : `Systems online. I am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`;
+          
           setMessages([
             { sender: 'ceo', text: greetingText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
           ]);
