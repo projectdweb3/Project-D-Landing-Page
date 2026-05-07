@@ -941,7 +941,7 @@
             {needsProfileSetup && <div className="bg-pd-orange/10 text-pd-orange px-3 py-1 rounded-full text-xs font-bold animate-pulse">Required</div>}
           </div>
           
-          </div>
+
 
           <div className="mb-8 p-6 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">User Management (Max 5)</h3>
@@ -1911,7 +1911,7 @@
 
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
-        { id: 'team-chat', icon: 'solar:users-group-rounded-linear', label: 'Team Chat', mobileLabel: 'Team', badge: totalUnreadTeam },
+        { id: 'team-chat', icon: 'solar:users-group-rounded-linear', label: 'Team Chat', mobileLabel: 'Team', badge: Object.values(unreadCounts).reduce((a, b) => a + b, 0) },
         ...(stage === 'Dispatcher' ? [{ id: 'fleet-comms', icon: 'solar:chat-round-line-linear', label: 'Fleet Comms', mobileLabel: 'Fleet' }] : []),
         ...(stage === 'Organizer' ? [{ id: 'fleet-comms', icon: 'solar:chat-round-line-linear', label: 'Member Comms', mobileLabel: 'Comms' }] : []),
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: labels.lead, mobileLabel: labels.leadMob },
@@ -3227,7 +3227,7 @@
 
       const isWorkingToday = (workDaysString) => {
         if (!workDaysString) return false;
-        return workDaysString.toLowerCase().includes(today.toLowerCase());
+        return String(workDaysString).toLowerCase().includes(today.toLowerCase());
       };
 
       const sortedClients = React.useMemo(() => {
@@ -3279,11 +3279,6 @@
                 {sortedClients.map(c => (
                   <tr key={c.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
                     <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]">
-                      {(!isDispatcher || isWorkingToday(c.ltv)) ? (
-                        <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]" title={isDispatcher ? "Working Today" : "Active"}></div>
-                      ) : (
-                        <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" title="Off Today"></div>
-                      )}
                       {c.name}
                       {isOrganizer && c.is_leader && <span className="bg-pd-orange text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ml-2">Leader</span>}
                     </td>
@@ -3296,7 +3291,20 @@
                       <div>{c.retainer || '-'}</div>
                       {c.notes && <div className="text-[10px] text-gray-400 mt-1 italic truncate max-w-[150px]">{c.notes}</div>}
                     </td>
-                    <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv || '-'}</td>
+                    <td className="p-4 text-gray-600 dark:text-gray-300">
+                      {isDispatcher ? (
+                        <div className="flex items-center gap-2">
+                          {isWorkingToday(c.ltv) ? (
+                            <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]" title="Working Today"></div>
+                          ) : (
+                            <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" title="Off Today"></div>
+                          )}
+                          {c.ltv || '-'}
+                        </div>
+                      ) : (
+                        c.ltv || '-'
+                      )}
+                    </td>
                     <td className="p-4">{getAssignedAgent(c.name, c.assigned_agents)}</td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-3">
@@ -3626,7 +3634,6 @@
             onConfirm={deleteProduct} 
             entityName={itemToDelete?.product_name || 'this product'} 
           />
-        </div>
         </div>
       );
     };
