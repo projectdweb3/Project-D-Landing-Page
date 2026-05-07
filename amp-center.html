@@ -996,9 +996,20 @@
                         </div>
                       ) : (
                         <button onClick={() => {
-                          const url = prompt(`[SIMULATED OAUTH]\nEnter your ${platform.name} URL to pair this account.\n(Real OAuth backend requires your developer API keys)`);
-                          if (url) {
-                            setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: url } });
+                          if (platform.id === 'whatsapp' || platform.id === 'telegram') {
+                            // Simulated plug-and-play OAuth Flow
+                            alert(`[OAUTH SIMULATION]\nRedirecting to ${platform.name} secure login...`);
+                            setTimeout(() => {
+                              if (window.confirm(`${platform.name} wants to access your AMP Center account to send and receive messages on your behalf. Allow?`)) {
+                                setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: 'oauth_connected_token' } });
+                                alert(`Successfully linked ${platform.name}!`);
+                              }
+                            }, 500);
+                          } else {
+                            const url = prompt(`[SIMULATED OAUTH]\nEnter your ${platform.name} URL to pair this account.\n(Real OAuth backend requires your developer API keys)`);
+                            if (url) {
+                              setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: url } });
+                            }
                           }
                         }} className="w-full py-1.5 mt-auto bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-xs font-semibold shadow-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-1">
                           <iconify-icon icon="solar:link-linear"></iconify-icon> Pair Account
@@ -1006,10 +1017,8 @@
                       )}
                     </div>
                   );
-                })}
-              </div>
             </div>
-
+            
             {/* Agent Workforce Tree */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto shadow-xl relative">
               <div className="absolute inset-0 bg-gradient-to-tl from-pd-teal/5 to-transparent pointer-events-none"></div>

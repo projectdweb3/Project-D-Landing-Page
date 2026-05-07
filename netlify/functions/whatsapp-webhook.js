@@ -1,22 +1,36 @@
 exports.handler = async (event, context) => {
   const httpMethod = event.httpMethod;
+  const queryParams = event.queryStringParameters || {};
+  const uid = queryParams.uid;
+
+  // We require a uid parameter to identify which user's account this message belongs to
+  if (!uid) {
+    return { statusCode: 400, body: 'Missing user ID in webhook URL' };
+  }
+
+  // TODO: Initialize Supabase client
+  // const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  
+  // TODO: Fetch user profile to get their specific API keys
+  // const { data: profile } = await supabase.from('business_profile').select('api_keys').eq('user_id', uid).single();
+  // const userVerifyToken = profile?.api_keys?.whatsapp_verify;
+  
+  // Simulated for now:
+  const userVerifyToken = process.env.WHATSAPP_VERIFY_TOKEN; // Replace this with the DB fetch
 
   // Verify Webhook Setup from Meta
   if (httpMethod === 'GET') {
-    const queryParams = event.queryStringParameters;
-    if (queryParams) {
-      const mode = queryParams['hub.mode'];
-      const verifyToken = queryParams['hub.verify_token'];
-      const challenge = queryParams['hub.challenge'];
+    const mode = queryParams['hub.mode'];
+    const verifyToken = queryParams['hub.verify_token'];
+    const challenge = queryParams['hub.challenge'];
 
-      if (mode === 'subscribe' && verifyToken === process.env.WHATSAPP_VERIFY_TOKEN) {
-        return {
-          statusCode: 200,
-          body: challenge
-        };
-      } else {
-        return { statusCode: 403, body: 'Forbidden' };
-      }
+    if (mode === 'subscribe' && verifyToken === userVerifyToken) {
+      return {
+        statusCode: 200,
+        body: challenge
+      };
+    } else {
+      return { statusCode: 403, body: 'Forbidden: Invalid Verify Token' };
     }
   }
 
@@ -36,13 +50,11 @@ exports.handler = async (event, context) => {
           const from = message.from; // Sender's phone number
           const text = message.text?.body; // Message content
 
-          console.log(`Received message from ${from}: ${text}`);
-
-          // TODO: Initialize Supabase client
-          // const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+          console.log(`[User: ${uid}] Received message from ${from}: ${text}`);
           
-          // TODO: Insert into driver_messages table
+          // TODO: Insert into driver_messages table linked to this specific user
           // await supabase.from('driver_messages').insert([{
+          //   user_id: uid,
           //   sender_phone: from,
           //   text: text,
           //   platform: 'whatsapp',
