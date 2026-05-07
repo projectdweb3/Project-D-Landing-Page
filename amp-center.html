@@ -1275,6 +1275,18 @@
         return () => window.removeEventListener('open-fleet-comms', handleOpenComms);
       }, []);
 
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+      const isWorkingToday = (workDays) => (workDays || '').toLowerCase().includes(today.toLowerCase());
+
+      const sortedDrivers = [...drivers].sort((a, b) => {
+        if (isDispatcher) {
+          const aActive = isWorkingToday(a.ltv) ? 1 : 0;
+          const bActive = isWorkingToday(b.ltv) ? 1 : 0;
+          return bActive - aActive;
+        }
+        return 0;
+      });
+
       const handleSend = () => {
         if (!inputMsg.trim() || !activeDriver) return;
         
@@ -1307,21 +1319,28 @@
               <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{isDispatcher ? 'Active Drivers' : 'Active Members'}</h2>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
-              {drivers.map(d => (
-                <button 
-                  key={d.id} 
-                  onClick={() => setActiveDriver(d)}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-colors ${activeDriver?.id === d.id ? 'bg-pd-teal/10 text-pd-teal' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <div className="w-2 h-2 rounded-full bg-pd-teal flex-shrink-0"></div>
-                    <span className="font-medium truncate text-sm">{d.name}</span>
-                  </div>
-                  {d.chat_platform && (
-                    <iconify-icon icon={d.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className="text-gray-400"></iconify-icon>
-                  )}
-                </button>
-              ))}
+              {sortedDrivers.map(d => {
+                const isActive = isDispatcher ? isWorkingToday(d.ltv) : true;
+                return (
+                  <button 
+                    key={d.id} 
+                    onClick={() => setActiveDriver(d)}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl transition-colors ${activeDriver?.id === d.id ? 'bg-pd-teal/10 text-pd-teal' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      {isActive ? (
+                        <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA] flex-shrink-0" title={isDispatcher ? "Working Today" : "Active"}></div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" title="Off Today"></div>
+                      )}
+                      <span className="font-medium truncate text-sm">{d.name}</span>
+                    </div>
+                    {d.chat_platform && (
+                      <iconify-icon icon={d.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className="text-gray-400"></iconify-icon>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
           
