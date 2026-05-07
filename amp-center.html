@@ -1123,6 +1123,7 @@
       const [needsProfileSetup, setNeedsProfileSetup] = useState(false);
       const [contentReferences, setContentReferences] = useState([]);
       const [userProfile, setUserProfile] = useState({ company_name: '', bio: '', stage: 'Solo', store_link: '' });
+      const [isAgentsModalOpen, setIsAgentsModalOpen] = useState(false);
       const [triggerPrompt, setTriggerPrompt] = useState(null);
       
       const [unreadCounts, setUnreadCounts] = useState({ 'all': 0 });
@@ -1563,10 +1564,13 @@
               ))}
             </nav>
             <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder">
-              <div className="amp-card p-3 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></div>
-                System Online: 4 Agents
-              </div>
+              <div 
+                 onClick={() => setIsAgentsModalOpen(true)}
+                 className="amp-card p-3 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
+               >
+                 <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse group-hover:scale-110 transition-transform"></div>
+                 System Online: 10 Agents
+               </div>
             </div>
           </aside>
 
@@ -1586,7 +1590,7 @@
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} />
             </div>
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
-            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead'))} />}
+            {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Driver' ? 'Prospect' : (labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead')))} />}
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} tableCols={labels.clientCols} inputLabels={labels.clientInputs} entityLabel={labels.clientAction} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
@@ -1596,6 +1600,77 @@
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} />}
           </main>
+
+           {/* Agent Workforce Modal */}
+           {isAgentsModalOpen && (
+             <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4" onClick={() => setIsAgentsModalOpen(false)}>
+               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-[2.5rem] w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
+                 <div className="p-8 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                        <iconify-icon icon="solar:users-group-rounded-bold-duotone" className="text-pd-teal text-3xl"></iconify-icon>
+                        Active Workforce
+                      </h2>
+                      <p className="text-xs text-gray-500 mt-1">Real-time status of your autonomous AI agent team.</p>
+                    </div>
+                    <button onClick={() => setIsAgentsModalOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                      <iconify-icon icon="solar:close-circle-linear" width="24" className="text-gray-400"></iconify-icon>
+                    </button>
+                 </div>
+                 
+                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     {[
+                       { name: 'CEO', role: 'Strategic Intelligence', desc: 'Directs all operations and manages high-level strategy.' },
+                       { name: 'CMO', role: 'Marketing & Growth', desc: 'Handles lead generation and marketing campaigns.' },
+                       { name: 'COO', role: 'Operations & Logistics', desc: 'Manages driver routes and daily logistics.' },
+                       { name: 'CFO', role: 'Financial Oversight', desc: 'Tracks revenue and daily expenses.' },
+                       ...customAgents.map(a => ({ name: a.name, role: a.name, desc: a.description || 'Custom deployed subagent.' })),
+                       // Fill to 10 if needed
+                       ...Array.from({ length: Math.max(0, 6 - customAgents.length) }).map((_, i) => ({ 
+                         name: 'Subagent ' + (customAgents.length + i + 1), 
+                         role: 'Specialist', 
+                         desc: 'Specialized autonomous worker assigned to specific sub-tasks.',
+                         pending: true
+                       }))
+                     ].slice(0, 10).map((agent, idx) => {
+                       const isActive = activeTasks.some(t => (t.assigned_to === agent.name || t.assigned_to === agent.role) && t.status === 'in_progress');
+                       return (
+                         <div key={idx} className="bg-black/5 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group">
+                           <div className="flex items-center justify-between relative z-10">
+                             <div className="flex items-center gap-3">
+                               <div className="w-10 h-10 rounded-xl bg-pd-teal/10 flex items-center justify-center text-pd-teal">
+                                 <iconify-icon icon={idx < 4 ? "solar:shield-user-bold" : "solar:user-circle-bold"} width="20"></iconify-icon>
+                               </div>
+                               <div>
+                                 <h4 className="font-bold text-sm text-gray-900 dark:text-white leading-none">{agent.name}</h4>
+                                 <p className="text-[10px] text-pd-teal font-bold tracking-widest uppercase mt-1">{agent.role}</p>
+                               </div>
+                             </div>
+                             <div className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse' : 'bg-gray-300 dark:bg-white/10'}`}></div>
+                           </div>
+                           <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed relative z-10">{agent.desc}</p>
+                           <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <iconify-icon icon="solar:info-circle-linear" width="14" className="text-gray-300"></iconify-icon>
+                           </div>
+                         </div>
+                       );
+                     })}
+                   </div>
+                 </div>
+                 
+                 <div className="p-8 bg-gray-50 dark:bg-black/20 border-t border-gray-100 dark:border-white/5">
+                   <div className="flex items-center justify-between text-xs text-gray-500">
+                     <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Active Tasking</span>
+                        <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-white/20"></div> Idle/Awaiting</span>
+                     </div>
+                     <span>v3.1.0-PRO</span>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           )}
 
           {/* Desktop Expand Tab */}
           {isRightSidebarCollapsed && (
