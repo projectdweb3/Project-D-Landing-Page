@@ -2012,8 +2012,8 @@
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} tableCols={labels.clientCols} inputLabels={labels.clientInputs} entityLabel={labels.clientAction} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
-            {activeModule === 'marketing-pipeline' && <MarketingPipeline onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
-            {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} userProfile={userProfile} />}
+            {activeModule === 'marketing-pipeline' && <MarketingPipeline session={session} onAddCampaign={triggerCampaignPrompt} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} />}
+            {activeModule === 'tactical-calendar' && <TacticalCalendar session={session} activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} userProfile={userProfile} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
             {activeModule === 'settings' && <SettingsMenu session={session} handleLogout={handleLogout} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} labels={labels} />}
@@ -2543,16 +2543,32 @@
           setTempTasks(tks);
         }
 
+        const localLeads = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
+        const localClients = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
+        const leadNames = localLeads.map(l => l.name).join(', ') || 'None';
+        const clientNames = localClients.map(c => c.name).join(', ') || 'None';
+
         const systemPromptAddon = `\n\n[SYSTEM INSTRUCTION: You are an autonomous AI agent integrated directly into the AMP Center platform.
-CRITICAL Rule on Execution: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools (e.g., physically booking a caterer, making a phone call), you must explicitly inform the user that you cannot do it instead of faking it.
+CRITICAL Rule on Execution: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools, you must explicitly inform the user instead of faking it.
+
 Available Tools & Channels:
-1. 'send_team_message' -> Populates the 'Team Chat' channel. Use this to announce programs, boost morale, send surveys, or notify the team. Payload: { agent_name: 'Your Name', message: '...', channel: 'all' }.
-2. 'add_calendar_event' -> Populates the 'Tactical Calendar'. Use this to schedule deadlines, meetings, or checks. Payload: { task_name: '...', event_type: 'meeting', date_time: new Date().toISOString(), participants: '...' }.
+1. 'send_team_message' -> Populates the 'Team Chat' channel. Payload: { agent_name: 'Your Name', message: '...', channel: 'all' }.
+2. 'add_calendar_event' -> Populates the 'Tactical Calendar'. Payload: { task_name: '...', event_type: 'meeting', date_time: new Date().toISOString(), participants: '...' }.
 3. 'store_plan' / 'create_plan' -> Populates 'Strategic Planning'. Payload: { title: '...', content: '...' }.
 4. 'create_campaign' -> Populates 'Marketing Pipeline'. Payload: { name: '...', description: '...', stage: 'Planning' }.
-5. 'add_multiple_leads' -> Populates 'Hiring Pipeline' or 'Marketing Pipeline'. Payload: { leads: [{name, email, phone}] }.
-6. 'create_task' -> Populates the 'Active Tasks' to-do list. Do NOT rely solely on creating tasks as 'executing a plan'. Actually do the work if possible (e.g., write the outline and send it via team chat, or schedule it on the calendar).
-DO NOT say "Task added to Kanban" unless you are explicitly referring to the 'Active Tasks' list. Actually execute the content of the tasks by sending messages or booking calendar events where applicable.]`;
+5. 'add_multiple_leads' or 'add_lead' -> Populates 'Hiring Pipeline' or 'Marketing Pipeline'. Payload: { leads: [{name, email, phone}] } or { name, contact, stage, value, prob, next_step }.
+6. 'create_task' -> Populates the 'Active Tasks' to-do list. Do NOT rely solely on creating tasks as 'executing a plan'. Actually execute the content of the tasks by sending messages or booking calendar events where applicable.
+
+CONTEXT INJECTION:
+Current Known Leads/Prospects: ${leadNames}
+Current Known Clients/Members/Drivers (Ledger): ${clientNames}
+
+CRITICAL RULE on Names & Meetings: If the user mentions interacting with or scheduling a meeting with a person/company by name:
+1. First, check if that name exists in the Known Leads or Known Clients lists above.
+2. If the name is UNRECOGNIZED (not in either list), you MUST treat them as a prospect/lead. You must output multiple actions: FIRST use 'add_lead' (or 'add_multiple_leads') to create them as a new qualifying lead, AND THEN use 'add_calendar_event' to book the meeting.
+3. NEVER assume an unrecognized name is a Client/Member/Driver. Always add them to the leads pipeline first.
+4. If they are already in the Known Clients/Ledger list, just book the calendar event without creating a lead.
+5. You are capable of returning multiple action tools in a single response to accomplish this workflow.]`;
 
         fetch('/.netlify/functions/agent', {
           method: 'POST',
@@ -3935,7 +3951,7 @@ DO NOT say "Task added to Kanban" unless you are explicitly referring to the 'Ac
       );
     };
 
-    const MarketingPipeline = ({ onAddCampaign, setActiveModule, setTriggerPrompt }) => {
+    const MarketingPipeline = ({ session, onAddCampaign, setActiveModule, setTriggerPrompt }) => {
       const [campaigns, setCampaigns] = useState([]);
       const [showModal, setShowModal] = useState(false);
       const [formData, setFormData] = useState({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' });
@@ -4595,7 +4611,7 @@ DO NOT say "Task added to Kanban" unless you are explicitly referring to the 'Ac
       );
     };
 
-    const TacticalCalendar = ({ activeTasks, setActiveModule, setTriggerPrompt, activeUserName, userProfile }) => {
+    const TacticalCalendar = ({ session, activeTasks, setActiveModule, setTriggerPrompt, activeUserName, userProfile }) => {
       const isDispatcher = userProfile?.stage === 'Dispatcher';
       const [events, setEvents] = useState([]);
       const [selectedDate, setSelectedDate] = useState(new Date());
@@ -4707,7 +4723,7 @@ DO NOT say "Task added to Kanban" unless you are explicitly referring to the 'Ac
 
       const priorityWeight = { 'High': 3, 'Medium': 2, 'Low': 1 };
       const todaysTasks = (activeTasks || [])
-        .filter(t => t.status !== 'done' && !t.id.startsWith('temp-'))
+        .filter(t => t.status !== 'done' && t.id && !t.id.toString().startsWith('temp-'))
         .sort((a, b) => {
            const pA = priorityWeight[a.priority] || 2;
            const pB = priorityWeight[b.priority] || 2;
