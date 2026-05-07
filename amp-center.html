@@ -1017,6 +1017,8 @@
                       )}
                     </div>
                   );
+                })}
+              </div>
             </div>
             
             {/* Agent Workforce Tree */}
@@ -1175,11 +1177,26 @@
       const [messages, setMessages] = useState({});
       const [inputMsg, setInputMsg] = useState('');
 
-      const fetchDrivers = () => {
+      const fetchDrivers = async () => {
+        let currentLocal = [];
         try {
-          const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage}`) || '[]');
-          setDrivers(local);
+          currentLocal = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage}`) || '[]');
         } catch(e) {}
+
+        if (window.supabaseClient && session?.user?.id) {
+          try {
+            const { data, error } = await window.supabaseClient.from('clients').select('*').eq('business_stage', userProfile?.stage).order('created_at', { ascending: false });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id || d.name));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.name));
+              const merged = [...data, ...localOnly];
+              setDrivers(merged);
+              localStorage.setItem(`amp_clients_${userProfile?.stage}`, JSON.stringify(merged));
+              return;
+            }
+          } catch(e) {}
+        }
+        setDrivers(currentLocal);
       };
 
       useEffect(() => {
@@ -1643,7 +1660,7 @@
           try {
             const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
             if (data && data.company_name) {
-              loadedProfile = { ...loadedProfile, company_name: data.company_name, bio: data.bio || loadedProfile.bio, stage: data.stage || loadedProfile.stage, store_link: data.store_link !== undefined ? data.store_link : loadedProfile.store_link };
+              loadedProfile = { ...loadedProfile, ...data };
               setupNeeded = !data.company_name || !data.stage;
               localStorage.setItem('amp_business_profile', JSON.stringify(loadedProfile));
             }
@@ -1668,14 +1685,15 @@
           try {
             const { data, error } = await supabaseClient.from('tasks').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false }).limit(50);
             if (!error && data) {
-              const remoteIds = new Set(data.map(d => d.id));
-              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
-              setActiveTasks([...data, ...localOnly]);
+              const remoteIds = new Set(data.map(d => d.id || d.created_at));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.created_at));
+              const merged = [...data, ...localOnly];
+              setActiveTasks(merged);
+              localStorage.setItem(storageKey, JSON.stringify(merged));
               return;
             }
           } catch(e) {}
         }
-        
         setActiveTasks(currentLocal);
       };
 
@@ -2785,9 +2803,11 @@
           try {
             const { data, error } = await supabaseClient.from('leads').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
             if (!error && data) {
-              const remoteIds = new Set(data.map(d => d.id));
-              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
-              setLeads([...data, ...localOnly]);
+              const remoteIds = new Set(data.map(d => d.id || d.name));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.name));
+              const merged = [...data, ...localOnly];
+              setLeads(merged);
+              localStorage.setItem(storageKey, JSON.stringify(merged));
               return;
             }
           } catch(e) {}
@@ -3024,9 +3044,11 @@
           try {
             const { data, error } = await supabaseClient.from('clients').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
             if (!error && data) {
-              const remoteIds = new Set(data.map(d => d.id));
-              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
-              setClients([...data, ...localOnly]);
+              const remoteIds = new Set(data.map(d => d.id || d.name));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.name));
+              const merged = [...data, ...localOnly];
+              setClients(merged);
+              localStorage.setItem(storageKey, JSON.stringify(merged));
               return;
             }
           } catch(e) {}
@@ -3310,9 +3332,11 @@
           try {
             const { data, error } = await supabaseClient.from('inventory').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
             if (!error && data) {
-              const remoteIds = new Set(data.map(d => d.id));
-              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
-              setInventory([...data, ...localOnly]);
+              const remoteIds = new Set(data.map(d => d.id || d.product_name));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.product_name));
+              const merged = [...data, ...localOnly];
+              setInventory(merged);
+              localStorage.setItem(storageKey, JSON.stringify(merged));
               return;
             }
           } catch(e) {}
