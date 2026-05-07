@@ -1310,33 +1310,25 @@
 
       return (
         <div className="flex h-full overflow-hidden">
-          {/* Sidebar */}
-          <div className="w-1/3 md:w-64 border-r border-gray-200 dark:border-pd-glassBorder flex flex-col bg-white/30 dark:bg-black/10">
-            <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder">
-              <h2 className="font-bold text-gray-900 dark:text-white">{isDispatcher ? 'Fleet Comms' : 'Member Comms'}</h2>
-            </div>
-            <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{isDispatcher ? 'Active Drivers' : 'Active Members'}</h2>
-            </div>
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {/* Sidebar (Desktop Only) */}
+          <div className="hidden md:flex w-1/4 border-r border-gray-200 dark:border-pd-glassBorder bg-black/5 dark:bg-white/5 flex-col p-4 overflow-y-auto">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">{isDispatcher ? 'Fleet Comms' : 'Member Comms'}</h3>
+            <div className="text-xs text-gray-400 font-semibold mb-2 mt-2 uppercase">{isDispatcher ? 'Active Drivers' : 'Active Members'}</div>
+            <div className="space-y-1">
               {sortedDrivers.map(d => {
                 const isActive = isDispatcher ? isWorkingToday(d.ltv) : true;
                 return (
                   <button 
                     key={d.id} 
                     onClick={() => setActiveDriver(d)}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl transition-colors ${activeDriver?.id === d.id ? 'bg-pd-teal/10 text-pd-teal' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-colors group ${activeDriver?.id === d.id ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}
                   >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      {isActive ? (
-                        <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA] flex-shrink-0" title={isDispatcher ? "Working Today" : "Active"}></div>
-                      ) : (
-                        <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" title="Off Today"></div>
-                      )}
-                      <span className="font-medium truncate text-sm">{d.name}</span>
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? (activeDriver?.id === d.id ? 'bg-pd-dark' : 'bg-pd-teal shadow-[0_0_5px_#00F2EA]') : 'bg-gray-300 dark:bg-white/10'}`}></div>
+                      <span className="truncate">{d.name}</span>
                     </div>
                     {d.chat_platform && (
-                      <iconify-icon icon={d.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className="text-gray-400"></iconify-icon>
+                      <iconify-icon icon={d.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className={`${activeDriver?.id === d.id ? 'text-pd-dark/60' : 'text-gray-400'}`}></iconify-icon>
                     )}
                   </button>
                 );
@@ -1345,60 +1337,82 @@
           </div>
           
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-white/10 dark:bg-transparent">
+          <div className="flex-1 flex flex-col relative overflow-hidden bg-white/40 dark:bg-black/20 w-full">
+            {/* Mobile Channel Dropdown */}
+            <div className="md:hidden border-b border-gray-200 dark:border-pd-glassBorder bg-white/60 dark:bg-black/40 p-3 shadow-sm z-10">
+              <select 
+                value={activeDriver?.id || ''} 
+                onChange={e => setActiveDriver(drivers.find(d => d.id === e.target.value))}
+                className="w-full bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal font-medium appearance-none"
+              >
+                <option value="" disabled>Select {isDispatcher ? 'Driver' : 'Member'}...</option>
+                {sortedDrivers.map(d => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
             {activeDriver ? (
               <>
-                <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/50 dark:bg-black/20">
+                <div className="p-4 md:px-6 md:py-4 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/60 dark:bg-black/40">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pd-teal to-blue-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pd-teal to-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
                       {activeDriver.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white">{activeDriver.name}</h3>
-                      <p className="text-xs text-gray-500">
-                        {activeDriver.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}: {activeDriver.chat_link || 'No contact info'}
+                      <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-tight">{activeDriver.name}</h3>
+                      <p className="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+                        <iconify-icon icon={activeDriver.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className="text-pd-teal"></iconify-icon>
+                        {activeDriver.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}: {activeDriver.chat_link || 'Direct Line'}
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="p-2 rounded-lg bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors">
-                      <iconify-icon icon="solar:phone-linear" width="20"></iconify-icon>
+                    <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors border border-transparent hover:border-pd-teal/20">
+                      <iconify-icon icon="solar:phone-linear" width="18"></iconify-icon>
+                    </button>
+                    <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors border border-transparent hover:border-pd-teal/20">
+                      <iconify-icon icon="solar:videocamera-record-linear" width="18"></iconify-icon>
                     </button>
                   </div>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
-                  <div className="text-center text-xs text-gray-400 my-4">This is the start of your encrypted conversation with {activeDriver.name}.</div>
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 flex flex-col">
+                  <div className="text-center text-[10px] text-gray-400 font-medium uppercase tracking-widest my-6 py-1 px-4 border border-gray-100 dark:border-white/5 rounded-full self-center bg-gray-50/50 dark:bg-white/5">Start of encrypted conversation</div>
                   {(messages[activeDriver.id] || []).map(msg => (
-                    <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[70%] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? (msg.platform === 'telegram' ? 'bg-[#229ED9] text-white rounded-tr-sm' : 'bg-[#25D366] text-white rounded-tr-sm') : 'bg-white dark:bg-[#1a2235] text-gray-900 dark:text-white rounded-tl-sm border border-gray-100 dark:border-white/5 shadow-sm'}`}>
+                    <div key={msg.id} className={`flex flex-col max-w-[80%] ${msg.sender === 'me' ? 'ml-auto items-end' : 'mr-auto items-start'}`}>
+                      <div className="text-[10px] text-gray-500 mb-1">{msg.sender === 'me' ? 'You' : activeDriver.name} • {msg.time}</div>
+                      <div className={`px-4 py-2.5 text-sm shadow-sm ${msg.sender === 'me' ? 'bg-pd-teal text-pd-dark rounded-2xl rounded-br-sm font-medium' : 'bg-white dark:bg-[#1a2133] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl rounded-bl-sm'}`}>
                         {msg.text}
-                        <div className={`text-[10px] mt-1 text-right ${msg.sender === 'me' ? 'text-white/70' : 'text-gray-400'}`}>{msg.time}</div>
                       </div>
                     </div>
                   ))}
+                  <div ref={endRef} />
                 </div>
                 
-                <div className="p-4 bg-white/50 dark:bg-black/20 border-t border-gray-200 dark:border-pd-glassBorder">
-                  <div className="flex gap-2 items-center relative">
-                    <input 
-                      type="text" 
-                      value={inputMsg}
-                      onChange={e => setInputMsg(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleSend()}
-                      placeholder={`Message via ${activeDriver.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}...`}
-                      className="flex-1 bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-pd-teal outline-none shadow-inner"
-                    />
-                    <button onClick={handleSend} className={`p-3 rounded-xl text-white transition-transform hover:scale-105 active:scale-95 ${activeDriver.chat_platform === 'telegram' ? 'bg-[#229ED9]' : 'bg-[#25D366]'}`}>
-                      <iconify-icon icon="solar:plain-bold" width="20"></iconify-icon>
-                    </button>
-                  </div>
+                <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-pd-glass backdrop-blur-md">
+                   <div className="relative">
+                      <input 
+                        type="text" 
+                        value={inputMsg}
+                        onChange={e => setInputMsg(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleSend()}
+                        placeholder={`Message ${activeDriver.name}...`} 
+                        className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" 
+                      />
+                      <button onClick={handleSend} className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all">
+                        <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
+                      </button>
+                   </div>
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
-                <iconify-icon icon="solar:chat-round-line-linear" width="64" className="text-gray-300 dark:text-gray-700 mb-4"></iconify-icon>
-                <p>Select a {isDispatcher ? 'driver' : 'member'} to message</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8">
+                <div className="w-16 h-16 rounded-3xl bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4">
+                  <iconify-icon icon="solar:chat-round-line-linear" width="32" className="text-gray-300 dark:text-gray-700"></iconify-icon>
+                </div>
+                <p className="text-sm font-medium">Select a {isDispatcher ? 'driver' : 'member'} to message</p>
+                <p className="text-xs opacity-60 mt-1">Direct integration with WhatsApp and Telegram</p>
               </div>
             )}
           </div>
