@@ -2235,8 +2235,13 @@
             const handleStorage = (e) => {
               if (e.key === 'amp_team_messages' && e.newValue) setMessages(JSON.parse(e.newValue));
             };
+            const handleCustomEvent = () => fetchMessages();
             window.addEventListener('storage', handleStorage);
-            return () => window.removeEventListener('storage', handleStorage);
+            window.addEventListener('amp-team-messages', handleCustomEvent);
+            return () => {
+              window.removeEventListener('storage', handleStorage);
+              window.removeEventListener('amp-team-messages', handleCustomEvent);
+            };
           }
         }, []);
 
@@ -2502,10 +2507,12 @@
           setTempTasks(tks);
         }
 
+        const systemPromptAddon = "\n\n[SYSTEM INSTRUCTION: You have the ability to execute actions. If you deem it necessary to notify other team members about something, update them on a plan execution, or if a team-wide announcement is beneficial, you MUST return an action with type 'send_team_message' and payload { agent_name: 'CEO Agent', message: 'Your message here', channel: 'all' }. Do this automatically whenever a team update is useful.]";
+
         fetch('/.netlify/functions/agent', {
           method: 'POST',
           body: JSON.stringify({ 
-            message: msgText, 
+            message: msgText + systemPromptAddon, 
             userId: session?.user?.id,
             userProfile: userProfile,
             attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null,
@@ -2679,6 +2686,22 @@
                       localStorage.setItem('amp_plans', JSON.stringify(local));
                       logAction(`Adapted Plan: ${action.payload.plan_id_or_title}`, 'CEO');
                     }
+                  } else if (action.type === 'send_team_message') {
+                    const localMessages = JSON.parse(localStorage.getItem('amp_team_messages') || '[]');
+                    const payload = { 
+                      id: Date.now().toString() + Math.random().toString(36).substr(2, 5), 
+                      account_id: session?.user?.id || 'local', 
+                      sender_id: action.payload.agent_id || 'system', 
+                      sender_name: action.payload.agent_name || action.payload.agent || 'CEO Agent', 
+                      channel: action.payload.channel || 'all', 
+                      text: action.payload.message, 
+                      created_at: new Date().toISOString() 
+                    };
+                    localMessages.push(payload);
+                    localStorage.setItem('amp_team_messages', JSON.stringify(localMessages));
+                    window.dispatchEvent(new Event('amp-team-messages'));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('team_messages').insert([payload]).then(); }
+                    logAction(`Sent Team Announcement`, action.payload.agent_name || 'CEO');
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
