@@ -616,7 +616,7 @@
       );
     };
 
-    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup, customAgents }) => {
+    const SettingsMenu = ({ session, onSaveComplete, activeTasks, userProfile, setUserProfile, onConnectPlatform, accountUsers, setAccountUsers, activeUserId, setActiveUserId, activeUserName, needsProfileSetup, customAgents, labels }) => {
       const [loading, setLoading] = useState(false);
       const [showResetModal, setShowResetModal] = useState(false);
       const [confirmText, setConfirmText] = useState('');
@@ -860,7 +860,7 @@
                       <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange"></iconify-icon>
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">CEO</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.ceo?.name || 'CEO'}</div>
                       <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         {(cmoTask || creativeTask || ctoTask) ? <><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Orchestrating</> : 'Idle'}
                       </div>
@@ -887,7 +887,7 @@
                           <iconify-icon icon="solar:global-linear" width="18"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">CMO Agent</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.cmo?.name || 'CMO Agent'}</div>
                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{cmoTask ? cmoTask.title : 'Marketing'}</div>
                         </div>
                       </div>
@@ -910,7 +910,7 @@
                           <iconify-icon icon="solar:code-circle-linear" width="18"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">CTO Agent</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.cto?.name || 'CTO Agent'}</div>
                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">{ctoTask ? ctoTask.title : 'Development'}</div>
                         </div>
                       </div>
@@ -933,7 +933,7 @@
                           <iconify-icon icon="solar:palette-linear" width="18"></iconify-icon>
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">Creative Agent</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.creative?.name || 'Creative Agent'}</div>
                           <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
                             {creativeTask ? <><span className="w-1.5 h-1.5 rounded-full bg-pd-orange animate-pulse"></span> Designing</> : 'Idle'}
                           </div>
@@ -1043,7 +1043,8 @@
       useEffect(() => {
         // FORCE UPGRADE FOR THE USER TO SEE SUBAGENTS
         const forceUpgrade = async () => {
-          if (localStorage.getItem('amp_force_upgrade_subagents') !== 'true' && userProfile?.stage) {
+          const currentStageKey = `amp_subagents_version_${userProfile?.stage || 'Default'}`;
+          if (localStorage.getItem(currentStageKey) !== 'true' && userProfile?.stage) {
             try {
               const res = await fetch('/.netlify/functions/genesis', {
                 method: 'POST',
@@ -1053,7 +1054,7 @@
                 const data = await res.json();
                 if (data && data.subAgents) {
                   localStorage.setItem('amp_custom_agents', JSON.stringify(data.subAgents));
-                  localStorage.setItem('amp_force_upgrade_subagents', 'true');
+                  localStorage.setItem(currentStageKey, 'true');
                   window.location.reload();
                 }
               } else {
@@ -1091,7 +1092,7 @@
                 ];
               }
               localStorage.setItem('amp_custom_agents', JSON.stringify(agents));
-              localStorage.setItem('amp_force_upgrade_subagents', 'true');
+              localStorage.setItem(currentStageKey, 'true');
               window.location.reload();
             }
           }
@@ -1471,7 +1472,13 @@
             clientCols: ['Customer', 'Products Bought', 'Total Spent', 'Assigned Agents', 'Actions'],
             clientInputs: ['Customer Name', 'Products Bought', 'Total Spent'],
             leadInputs: ['Customer Name', 'Contact Info', 'Cart Value'],
-            clientAction: 'Customer'
+            clientAction: 'Customer',
+            agents: {
+              ceo: { name: 'Store Manager', role: 'Store Strategy' },
+              cmo: { name: 'Growth Marketer', role: 'Ads & Promotions' },
+              cto: { name: 'Store Architect', role: 'Platform Tech' },
+              creative: { name: 'Visual Merchandiser', role: 'Product Assets' }
+            }
           };
           case 'Software': return { 
             lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
@@ -1480,7 +1487,13 @@
             clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
             clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
             leadInputs: ['User Name', 'Email', 'Est. Value'],
-            clientAction: 'Subscriber'
+            clientAction: 'Subscriber',
+            agents: {
+              ceo: { name: 'Product Manager', role: 'Product Strategy' },
+              cmo: { name: 'Growth Lead', role: 'User Acquisition' },
+              cto: { name: 'Lead Engineer', role: 'Infrastructure' },
+              creative: { name: 'UX/UI Designer', role: 'Interface Design' }
+            }
           };
           case 'Organizer': return { 
             lead: 'Supporter Pipeline', leadSub: 'Track community leads and prospective members.', leadMob: 'Supporters', 
@@ -1489,7 +1502,13 @@
             clientCols: ['Member', 'Rank', 'Facility', 'Activity', 'Assigned Agents', 'Actions'],
             clientInputs: ['Member Name', 'Rank (1-5)', 'Facility', 'Active Role / Activity'],
             leadInputs: ['Supporter Name', 'Contact Info', 'Commitment Level'],
-            clientAction: 'Member'
+            clientAction: 'Member',
+            agents: {
+              ceo: { name: 'Lead Organizer', role: 'Campaign Strategy' },
+              cmo: { name: 'Outreach Director', role: 'Membership Growth' },
+              cto: { name: 'Data Coordinator', role: 'Database Management' },
+              creative: { name: 'Comms Director', role: 'Messaging & Speeches' }
+            }
           };
           case 'Dispatcher': return { 
             lead: 'Hiring Pipeline', leadSub: 'Track driver prospects and interviews.', leadMob: 'Hiring', 
@@ -1498,7 +1517,13 @@
             clientCols: ['Driver', 'Assigned Route/Location', 'Work Days', 'Assigned Agents', 'Actions'],
             clientInputs: ['Driver Name', 'Assigned Route/Location', 'Work Days'],
             leadInputs: ['Prospect Name', 'Contact Info', 'Est. Value'],
-            clientAction: 'Driver'
+            clientAction: 'Driver',
+            agents: {
+              ceo: { name: 'Dispatch Director', role: 'Operations Oversight' },
+              cmo: { name: 'Recruitment Chief', role: 'Hiring & Growth' },
+              cto: { name: 'Systems Architect', role: 'Logistics Tech' },
+              creative: { name: 'Driver Comms', role: 'Internal Communication' }
+            }
           };
           case 'Local Service': return { 
             lead: 'Lead Pipeline', leadSub: 'Track quotes and pending jobs.', leadMob: 'Leads', 
@@ -1507,7 +1532,13 @@
             clientCols: ['Client', 'Service Type', 'LTV', 'Assigned Agents', 'Actions'],
             clientInputs: ['Client Name', 'Service Type', 'Total LTV'],
             leadInputs: ['Client Name', 'Contact Info', 'Quote Value'],
-            clientAction: 'Client'
+            clientAction: 'Client',
+            agents: {
+              ceo: { name: 'Operations Lead', role: 'Service Strategy' },
+              cmo: { name: 'Marketing Manager', role: 'Lead Generation' },
+              cto: { name: 'Systems Admin', role: 'Booking Tech' },
+              creative: { name: 'Brand Designer', role: 'Visual Identity' }
+            }
           };
           default: return { 
             lead: 'Lead Pipeline', leadSub: 'Track inbound leads and prospects.', leadMob: 'Leads', 
@@ -1516,7 +1547,13 @@
             clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
             clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
             leadInputs: ['Lead Name', 'Contact Info', 'Est. Value'],
-            clientAction: 'Client'
+            clientAction: 'Client',
+            agents: {
+              ceo: { name: 'CEO Agent', role: 'Strategic Intelligence' },
+              cmo: { name: 'CMO Agent', role: 'Marketing & Growth' },
+              cto: { name: 'CTO Agent', role: 'Development & Automation' },
+              creative: { name: 'Creative Agent', role: 'Content & Branding' }
+            }
           };
         }
       };
@@ -1608,7 +1645,7 @@
             {activeModule === 'tactical-calendar' && <TacticalCalendar activeTasks={displayTasks} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} userProfile={userProfile} />}
             {activeModule === 'content-factory' && <ContentFactory session={session} activeTasks={displayTasks} depleteBudget={depleteBudget} references={contentReferences} setReferences={setContentReferences} onAddContent={triggerContentPrompt} />}
             {activeModule === 'strategic-planning' && <StrategicPlanning session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} activeUserName={activeUserName} />}
-            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} />}
+            {activeModule === 'settings' && <SettingsMenu session={session} onSaveComplete={handleProfileSaved} activeTasks={displayTasks} userProfile={userProfile} setUserProfile={setUserProfile} accountUsers={accountUsers} setAccountUsers={setAccountUsers} activeUserId={activeUserId} setActiveUserId={setActiveUserId} activeUserName={activeUserName} needsProfileSetup={needsProfileSetup} customAgents={customAgents} labels={labels} />}
           </main>
 
            {/* Agent Workforce Modal */}
@@ -1631,11 +1668,11 @@
                  <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      {[
-                       { name: 'CEO', role: 'Strategic Intelligence', desc: 'Directs all operations and manages high-level strategy.' },
-                       { name: 'CMO', role: 'Marketing & Growth', desc: 'Handles lead generation and marketing campaigns.' },
-                       { name: 'COO', role: 'Operations & Logistics', desc: 'Manages driver routes and daily logistics.' },
-                       { name: 'CFO', role: 'Financial Oversight', desc: 'Tracks revenue and daily expenses.' },
-                       ...customAgents.map(a => ({ name: a.name, role: a.name, desc: a.description || 'Custom deployed subagent.' })),
+                       { name: labels.agents.ceo.name, role: labels.agents.ceo.role, desc: 'Directs operations and manages high-level strategy.' },
+                       { name: labels.agents.cmo.name, role: labels.agents.cmo.role, desc: 'Handles lead generation and growth campaigns.' },
+                       { name: labels.agents.cto.name, role: labels.agents.cto.role, desc: 'Manages core architecture and pipelines.' },
+                       { name: labels.agents.creative.name, role: labels.agents.creative.role, desc: 'Generates branded assets and copy.' },
+                       ...customAgents.map(a => ({ name: a.name, role: a.parent ? a.parent + ' Team' : 'Specialist', desc: a.description || 'Custom deployed subagent.' })),
                        // Fill to 10 if needed
                        ...Array.from({ length: Math.max(0, 6 - customAgents.length) }).map((_, i) => ({ 
                          name: 'Subagent ' + (customAgents.length + i + 1), 
@@ -1725,10 +1762,10 @@
               <div className="mt-auto pt-6 border-t border-gray-200 dark:border-pd-glassBorder">
                 <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Neural Capacity</h3>
                 <div className="space-y-3">
-                  <BudgetBar agent="CEO" percentage={usagePct.CEO} />
-                  <BudgetBar agent="CMO" percentage={usagePct.CMO} />
-                  <BudgetBar agent="Creative" percentage={usagePct.Creative} />
-                  <BudgetBar agent="CTO" percentage={usagePct.CTO} />
+                  <BudgetBar agent={labels.agents.ceo.name} percentage={usagePct.CEO} />
+                  <BudgetBar agent={labels.agents.cmo.name} percentage={usagePct.CMO} />
+                  <BudgetBar agent={labels.agents.creative.name} percentage={usagePct.Creative} />
+                  <BudgetBar agent={labels.agents.cto.name} percentage={usagePct.CTO} />
                 </div>
               </div>
             </div>
