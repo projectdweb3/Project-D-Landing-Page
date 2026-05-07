@@ -1157,6 +1157,150 @@
       );
     };
 
+    const FleetComms = ({ session, userProfile }) => {
+      const isDispatcher = userProfile?.stage === 'Dispatcher';
+      const isOrganizer = userProfile?.stage === 'Organizer';
+      const isCommsEnabled = isDispatcher || isOrganizer;
+      const [drivers, setDrivers] = useState([]);
+      const [activeDriver, setActiveDriver] = useState(null);
+      const [messages, setMessages] = useState({});
+      const [inputMsg, setInputMsg] = useState('');
+
+      const fetchDrivers = () => {
+        try {
+          const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage}`) || '[]');
+          setDrivers(local);
+        } catch(e) {}
+      };
+
+      useEffect(() => {
+        fetchDrivers();
+        const handleSync = () => fetchDrivers();
+        window.addEventListener('amp-simulated-sale', handleSync);
+        return () => window.removeEventListener('amp-simulated-sale', handleSync);
+      }, []);
+
+      useEffect(() => {
+        const handleOpenComms = (e) => {
+          const driver = e.detail;
+          setActiveDriver(driver);
+        };
+        window.addEventListener('open-fleet-comms', handleOpenComms);
+        return () => window.removeEventListener('open-fleet-comms', handleOpenComms);
+      }, []);
+
+      const handleSend = () => {
+        if (!inputMsg.trim() || !activeDriver) return;
+        
+        const newMsg = {
+          id: Date.now().toString(),
+          text: inputMsg,
+          sender: 'me',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          platform: activeDriver.chat_platform || 'whatsapp'
+        };
+
+        setMessages(prev => ({
+          ...prev,
+          [activeDriver.id]: [...(prev[activeDriver.id] || []), newMsg]
+        }));
+        
+        setInputMsg('');
+      };
+
+      if (!isCommsEnabled) return <div className="p-8 text-gray-500">Fleet Comms is only available for Dispatchers and Organizers.</div>;
+
+      return (
+        <div className="flex h-full overflow-hidden">
+          {/* Sidebar */}
+          <div className="w-1/3 md:w-64 border-r border-gray-200 dark:border-pd-glassBorder flex flex-col bg-white/30 dark:bg-black/10">
+            <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder">
+              <h2 className="font-bold text-gray-900 dark:text-white">{isDispatcher ? 'Fleet Comms' : 'Member Comms'}</h2>
+            </div>
+            <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{isDispatcher ? 'Active Drivers' : 'Active Members'}</h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+              {drivers.map(d => (
+                <button 
+                  key={d.id} 
+                  onClick={() => setActiveDriver(d)}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-colors ${activeDriver?.id === d.id ? 'bg-pd-teal/10 text-pd-teal' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="w-2 h-2 rounded-full bg-pd-teal flex-shrink-0"></div>
+                    <span className="font-medium truncate text-sm">{d.name}</span>
+                  </div>
+                  {d.chat_platform && (
+                    <iconify-icon icon={d.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} className="text-gray-400"></iconify-icon>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Chat Area */}
+          <div className="flex-1 flex flex-col bg-white/10 dark:bg-transparent">
+            {activeDriver ? (
+              <>
+                <div className="p-4 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/50 dark:bg-black/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pd-teal to-blue-500 flex items-center justify-center text-white font-bold">
+                      {activeDriver.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white">{activeDriver.name}</h3>
+                      <p className="text-xs text-gray-500">
+                        {activeDriver.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}: {activeDriver.chat_link || 'No contact info'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="p-2 rounded-lg bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors">
+                      <iconify-icon icon="solar:phone-linear" width="20"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+                  <div className="text-center text-xs text-gray-400 my-4">This is the start of your encrypted conversation with {activeDriver.name}.</div>
+                  {(messages[activeDriver.id] || []).map(msg => (
+                    <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[70%] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? (msg.platform === 'telegram' ? 'bg-[#229ED9] text-white rounded-tr-sm' : 'bg-[#25D366] text-white rounded-tr-sm') : 'bg-white dark:bg-[#1a2235] text-gray-900 dark:text-white rounded-tl-sm border border-gray-100 dark:border-white/5 shadow-sm'}`}>
+                        {msg.text}
+                        <div className={`text-[10px] mt-1 text-right ${msg.sender === 'me' ? 'text-white/70' : 'text-gray-400'}`}>{msg.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="p-4 bg-white/50 dark:bg-black/20 border-t border-gray-200 dark:border-pd-glassBorder">
+                  <div className="flex gap-2 items-center relative">
+                    <input 
+                      type="text" 
+                      value={inputMsg}
+                      onChange={e => setInputMsg(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleSend()}
+                      placeholder={`Message via ${activeDriver.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}...`}
+                      className="flex-1 bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-pd-teal outline-none shadow-inner"
+                    />
+                    <button onClick={handleSend} className={`p-3 rounded-xl text-white transition-transform hover:scale-105 active:scale-95 ${activeDriver.chat_platform === 'telegram' ? 'bg-[#229ED9]' : 'bg-[#25D366]'}`}>
+                      <iconify-icon icon="solar:plain-bold" width="20"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
+                <iconify-icon icon="solar:chat-round-line-linear" width="64" className="text-gray-300 dark:text-gray-700 mb-4"></iconify-icon>
+                <p>Select a {isDispatcher ? 'driver' : 'member'} to message</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
     const CommandCenter = ({ session }) => {
       const [accountUsers, setAccountUsers] = useState(() => {
         try {
@@ -1654,10 +1798,14 @@
           }
         };
 
-        // Automatic periodic sync removed per user request
-
+        const handleNavigate = (e) => {
+          if (e.detail) setActiveModule(e.detail);
+        };
+        window.addEventListener('amp-navigate', handleNavigate);
+        
         return () => {
           delete window.simulateSale;
+          window.removeEventListener('amp-navigate', handleNavigate);
         };
       }, [userProfile, session]);
 
@@ -1670,6 +1818,8 @@
       const navItems = [
         { id: 'neural-chat', icon: 'solar:command-linear', label: 'Neural Chat', mobileLabel: 'Chat' },
         { id: 'team-chat', icon: 'solar:users-group-rounded-linear', label: 'Team Chat', mobileLabel: 'Team', badge: totalUnreadTeam },
+        ...(stage === 'Dispatcher' ? [{ id: 'fleet-comms', icon: 'solar:chat-round-line-linear', label: 'Fleet Comms', mobileLabel: 'Fleet' }] : []),
+        ...(stage === 'Organizer' ? [{ id: 'fleet-comms', icon: 'solar:chat-round-line-linear', label: 'Member Comms', mobileLabel: 'Comms' }] : []),
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: labels.lead, mobileLabel: labels.leadMob },
         { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: labels.client, mobileLabel: labels.clientMob },
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
@@ -1744,6 +1894,7 @@
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} labels={labels} />
             </div>
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
+            {activeModule === 'fleet-comms' && <FleetComms session={session} userProfile={userProfile} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Driver' ? 'Prospect' : (labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead')))} />}
             {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} tableCols={labels.clientCols} inputLabels={labels.clientInputs} entityLabel={labels.clientAction} />}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
@@ -2844,9 +2995,12 @@
     const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle, tableCols, inputLabels, entityLabel }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
       const isOrganizer = userProfile?.stage === 'Organizer';
+      const isDispatcher = userProfile?.stage === 'Dispatcher';
       const [clients, setClients] = useState([]);
       const [showModal, setShowModal] = useState(false);
-      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1' });
+      const [sortBy, setSortBy] = useState('date');
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+      const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' });
 
       const currentStage = userProfile?.stage || 'Default';
       const storageKey = `amp_clients_${currentStage}`;
@@ -2943,16 +3097,40 @@
         return <span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-gray-700 dark:text-gray-300">{dbAgent || 'Support'}</span>;
       };
 
+      const isWorkingToday = (workDaysString) => {
+        if (!workDaysString) return false;
+        return workDaysString.toLowerCase().includes(today.toLowerCase());
+      };
+
+      const sortedClients = React.useMemo(() => {
+        let sorted = [...clients];
+        if (sortBy === 'alpha') {
+          sorted.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        } else if (sortBy === 'active' && isDispatcher) {
+          sorted.sort((a, b) => {
+            const aActive = isWorkingToday(a.ltv) ? 1 : 0;
+            const bActive = isWorkingToday(b.ltv) ? 1 : 0;
+            return bActive - aActive;
+          });
+        }
+        return sorted;
+      }, [clients, sortBy, isDispatcher, today]);
+
       return (
         <div className="p-4 md:p-8 h-full flex flex-col relative">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || (isEcomm ? 'Customer Ledger' : 'Client Ledger')}</h2><p className="text-xs text-gray-500">{subtitle || (isEcomm ? 'Active customers and purchase history.' : 'Active accounts and automated deliverable tracking.')}</p></div>
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex flex-wrap gap-2 w-full md:w-auto">
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="bg-black/5 dark:bg-white/10 border-none rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-pd-teal outline-none cursor-pointer">
+                <option value="date">Sort: Date Added</option>
+                <option value="alpha">Sort: A-Z</option>
+                {isDispatcher && <option value="active">Sort: Active Today</option>}
+              </select>
               <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
               <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
@@ -2970,10 +3148,14 @@
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-pd-glassBorder">
-                {clients.map(c => (
+                {sortedClients.map(c => (
                   <tr key={c.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
                     <td className="p-4 font-semibold text-gray-900 dark:text-white flex items-center gap-2 sticky left-0 bg-white/95 dark:bg-[#0b0f19]/95 group-hover:bg-gray-50 dark:group-hover:bg-white/5 backdrop-blur z-10 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.05)]">
-                      <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]"></div>
+                      {(!isDispatcher || isWorkingToday(c.ltv)) ? (
+                        <div className="w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA]" title={isDispatcher ? "Working Today" : "Active"}></div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600" title="Off Today"></div>
+                      )}
                       {c.name}
                       {isOrganizer && c.is_leader && <span className="bg-pd-orange text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ml-2">Leader</span>}
                     </td>
@@ -2989,9 +3171,19 @@
                     <td className="p-4 text-gray-600 dark:text-gray-300">{c.ltv || '-'}</td>
                     <td className="p-4">{getAssignedAgent(c.name, c.assigned_agents)}</td>
                     <td className="p-4 text-right">
-                      <button onClick={() => { setFormData(c); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors">
-                        <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
-                      </button>
+                      <div className="flex items-center justify-end gap-3">
+                        {(isDispatcher || isOrganizer) && c.chat_link && (
+                          <button onClick={() => {
+                            window.dispatchEvent(new CustomEvent('open-fleet-comms', { detail: c }));
+                            window.dispatchEvent(new CustomEvent('amp-navigate', { detail: 'fleet-comms' }));
+                          }} className={`text-gray-400 hover:text-[${c.chat_platform === 'telegram' ? '#229ED9' : '#25D366'}] transition-colors`} title={`Message ${isDispatcher ? 'Driver' : 'Member'} on ${c.chat_platform === 'telegram' ? 'Telegram' : 'WhatsApp'}`}>
+                            <iconify-icon icon={c.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} width="18"></iconify-icon>
+                          </button>
+                        )}
+                        <button onClick={() => { setFormData({...c, chat_platform: c.chat_platform || 'whatsapp'}); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors" title={`Edit ${isDispatcher ? 'Driver' : 'Member'}`}>
+                          <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -3029,13 +3221,47 @@
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || (isEcomm ? 'Total Spent' : 'Total LTV')}</label>
-                      <input type="text" value={isOrganizer ? formData.retainer : formData.ltv} onChange={e => setFormData({...formData, [isOrganizer ? 'retainer' : 'ltv']: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      {isDispatcher ? (
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+                            const isSelected = (formData.ltv || '').includes(day);
+                            return (
+                              <button key={day} onClick={(e) => {
+                                e.preventDefault();
+                                let days = formData.ltv ? formData.ltv.split(',').map(d => d.trim()).filter(Boolean) : [];
+                                if (isSelected) days = days.filter(d => d !== day);
+                                else days.push(day);
+                                setFormData({...formData, ltv: days.join(', ')});
+                              }} className={`px-2 py-1 text-[10px] md:text-xs rounded-lg border font-medium transition-colors ${isSelected ? 'bg-pd-teal/20 border-pd-teal text-pd-teal' : 'bg-black/5 dark:bg-white/10 border-transparent text-gray-500 hover:bg-black/10 dark:hover:bg-white/20'}`}>
+                                {day.slice(0, 3)}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <input type="text" value={isOrganizer ? formData.retainer : formData.ltv} onChange={e => setFormData({...formData, [isOrganizer ? 'retainer' : 'ltv']: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      )}
                     </div>
                   </div>
                   {isOrganizer && (
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[3] || 'Active Role'}</label>
                       <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                  )}
+                  {(isDispatcher || isOrganizer) && (
+                    <div className="flex gap-4">
+                      <div className="w-1/3">
+                        <label className="block text-xs text-gray-500 mb-1">Chat Platform</label>
+                        <select value={formData.chat_platform || 'whatsapp'} onChange={e => setFormData({...formData, chat_platform: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
+                          <option value="whatsapp">WhatsApp</option>
+                          <option value="telegram">Telegram</option>
+                        </select>
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Phone / Username</label>
+                        <input type="text" value={formData.chat_link || ''} onChange={e => setFormData({...formData, chat_link: e.target.value})} placeholder={formData.chat_platform === 'telegram' ? '@username' : '+1234567890'} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      </div>
                     </div>
                   )}
                   <div>
