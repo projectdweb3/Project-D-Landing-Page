@@ -1736,7 +1736,7 @@
           if (localData) {
             const parsed = JSON.parse(localData);
             loadedProfile = { ...loadedProfile, ...parsed };
-            setupNeeded = !parsed.company_name || !parsed.stage;
+            setupNeeded = !parsed.company_name?.trim() || !parsed.stage;
           }
         } catch (e) {
           console.error("Local storage error:", e);
@@ -1745,9 +1745,9 @@
         if (supabaseClient && session?.user?.id) {
           try {
             const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
-            if (data && data.company_name) {
+            if (data) {
               loadedProfile = { ...loadedProfile, ...data };
-              setupNeeded = !data.company_name || !data.stage;
+              setupNeeded = !data.company_name?.trim() || !data.stage;
               localStorage.setItem('amp_business_profile', JSON.stringify(loadedProfile));
             }
           } catch(e) {
@@ -2455,9 +2455,11 @@
           if (userProfile?.stage === 'Organizer') prompts = '"Draft a fundraising email", "Organize a union rally", or "Log a new volunteer"';
           if (userProfile?.stage === 'Local Service') prompts = '"Draft an invoice", "Schedule a home repair", or "Create a Facebook ad"';
 
+          const baseGreeting = `Systems online. I am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Important Note on Business Types:**\nSelecting a different business type in Settings will fundamentally change the entire experience, from the names of your agents to the tools they use. Choose the one that fits best and stick with it.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Be sure to lock in your business profile by saving it. Once configured, your team will be ready to execute.`;
+          
           const greetingText = genesisInput 
-            ? `Systems online. I have analyzed your digital kingdom parameters for: "${genesisInput}".\n\nI am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`
-            : `Systems online. I am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Once configured, your team will be ready to execute.`;
+            ? `Systems online. I have analyzed your digital kingdom parameters for: "${genesisInput}".\n\n` + baseGreeting.replace('Systems online. ', '')
+            : baseGreeting;
           
           setMessages([
             { sender: 'ceo', text: greetingText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
@@ -2497,30 +2499,45 @@
           const tks = [];
           const txt = msgText.toLowerCase();
           
-          tks.push({ id: 'temp-ceo', agent: 'CEO', title: 'Delegating to Department Head...', status: 'running' });
+          const ceoName = labels?.agents?.ceo?.name || 'CEO';
+          const cmoName = labels?.agents?.cmo?.name || 'CMO';
+          const ctoName = labels?.agents?.cto?.name || 'CTO';
+          const creativeName = labels?.agents?.creative?.name || 'Creative';
+
+          tks.push({ id: 'temp-ceo', agent: ceoName, title: `${ceoName} Delegating Request...`, status: 'running' });
           
-          let targetAgent = '';
-          let targetTitle = '';
+          // Always show a chain of command
+          let agentsChain = ['CEO'];
+          tks[0].title = `${ceoName} Analyzing Request...`;
+          
           if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market')) {
-            targetAgent = 'CMO'; targetTitle = 'Executing Marketing Objective...';
-          } else if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo')) {
-            targetAgent = 'Creative'; targetTitle = 'Generating Content...';
+            agentsChain.push('CMO');
+            tks.push({ id: 'temp-cmo', agent: cmoName, parentAgent: 'CMO', title: 'Executing Marketing Objective...', status: 'running' });
+          } else if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo') || txt.includes('video')) {
+            agentsChain.push('Creative');
+            tks.push({ id: 'temp-creative', agent: creativeName, parentAgent: 'Creative', title: 'Generating Visual Assets...', status: 'running' });
           } else if (txt.includes('inventory') || txt.includes('sync') || txt.includes('product') || txt.includes('data')) {
-            targetAgent = 'CTO'; targetTitle = 'Processing Data Operations...';
+            agentsChain.push('CTO');
+            tks.push({ id: 'temp-cto', agent: ctoName, parentAgent: 'CTO', title: 'Processing Data Operations...', status: 'running' });
+          } else if (txt.includes('plan') || txt.includes('strateg') || txt.includes('execute') || txt.includes('schedule') || txt.includes('morale')) {
+            agentsChain.push('CTO', 'CMO');
+            tks[0].title = `${ceoName} Formulating Strategic Plan...`;
+            tks.push({ id: 'temp-cto', agent: ctoName, parentAgent: 'CTO', title: 'Preparing System Infrastructure...', status: 'running' });
+            tks.push({ id: 'temp-cmo', agent: cmoName, parentAgent: 'CMO', title: 'Aligning Human Capital...', status: 'running' });
           } else {
-            tks[0].title = 'Formulating Neural Architecture...';
+            tks[0].title = `${ceoName} Formulating Neural Architecture...`;
+            agentsChain.push('CTO');
+            tks.push({ id: 'temp-cto', agent: ctoName, parentAgent: 'CTO', title: 'Querying Knowledge Base...', status: 'running' });
           }
 
-          if (targetAgent) {
-            tks.push({ id: `temp-${targetAgent.toLowerCase()}`, agent: targetAgent, parentAgent: targetAgent, title: targetTitle, status: 'running' });
-            
-            // Delegate to subagents
-            if (customAgents && customAgents.length > 0) {
-              const subs = customAgents.filter(a => a.parent === targetAgent);
+          // Delegate to subagents for all involved main agents
+          if (customAgents && customAgents.length > 0) {
+            agentsChain.forEach(mainAgent => {
+              const subs = customAgents.filter(a => a.parent === mainAgent);
               subs.forEach((sub, idx) => {
-                tks.push({ id: `temp-sub-${targetAgent.toLowerCase()}-${idx}`, agent: sub.name, parentAgent: targetAgent, title: `Executing ${sub.name} tasks...`, status: 'running' });
+                tks.push({ id: `temp-sub-${mainAgent.toLowerCase()}-${idx}`, agent: sub.name, parentAgent: mainAgent, title: `Executing ${sub.name} routines...`, status: 'running' });
               });
-            }
+            });
           }
           
           setTempTasks(tks);
@@ -2543,10 +2560,20 @@
             if (depleteBudget) depleteBudget('CEO', 0.5);
             
             if (setTempTasks) {
-              setTempTasks(prev => prev.map(t => ({ ...t, status: 'done' })));
-              setTimeout(() => {
-                setTempTasks([]);
-              }, 2000);
+              let delay = 0;
+              setTempTasks(prev => {
+                const updated = [...prev];
+                updated.forEach((t, i) => {
+                  setTimeout(() => {
+                    setTempTasks(current => current.map(ct => ct.id === t.id ? { ...ct, status: 'done' } : ct));
+                  }, delay);
+                  delay += 800; // sequential delay
+                });
+                setTimeout(() => {
+                  setTempTasks([]);
+                }, delay + 2000);
+                return updated;
+              });
             }
 
             // Execute frontend actions to populate localStorage when Supabase is missing/failing
@@ -2615,7 +2642,7 @@
                     const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
                     local.push({ id: Date.now() + Math.random(), ...action.payload, created_at: new Date().toISOString() });
                     localStorage.setItem('amp_inventory', JSON.stringify(local));
-                  } else if (action.type === 'create_plan') {
+                  } else if (action.type === 'create_plan' || action.type === 'store_plan') {
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
                     const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
                     local.push(payload);
@@ -4281,28 +4308,43 @@
       const [editBuffer, setEditBuffer] = useState({ title: '', content: '' });
 
       const fetchPlans = async () => {
-        if (supabaseClient) {
-          const { data } = await supabaseClient.from('plans').select('*').order('created_at', { ascending: false });
-          if (data) setPlans(data);
-        } else {
+        let currentLocal = [];
+        try {
+          currentLocal = JSON.parse(localStorage.getItem('amp_plans') || '[]');
+        } catch(e) {}
+
+        if (supabaseClient && session?.user?.id) {
           try {
-            const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
-            setPlans(local);
+            const { data, error } = await supabaseClient.from('plans').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+            if (!error && data) {
+              const remoteIds = new Set(data.map(d => d.id || d.created_at));
+              const localOnly = currentLocal.filter(l => !remoteIds.has(l.id || l.created_at));
+              const merged = [...data, ...localOnly];
+              setPlans(merged);
+              localStorage.setItem('amp_plans', JSON.stringify(merged));
+              return;
+            }
           } catch(e) {}
         }
+        setPlans(currentLocal);
       };
 
       useEffect(() => {
         fetchPlans();
+        const handleLocalUpdate = () => fetchPlans();
+        window.addEventListener('amp-plans-updated', handleLocalUpdate);
+        
+        let channel;
         if (supabaseClient) {
-          const channel = supabaseClient.channel('realtime:plans')
+          channel = supabaseClient.channel('realtime:plans')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, fetchPlans)
             .subscribe();
-          return () => { supabaseClient.removeChannel(channel); };
-        } else {
-          const interval = setInterval(fetchPlans, 2000);
-          return () => clearInterval(interval);
         }
+        
+        return () => {
+          if (channel) supabaseClient.removeChannel(channel);
+          window.removeEventListener('amp-plans-updated', handleLocalUpdate);
+        };
       }, []);
 
       const executePlan = (plan) => {
