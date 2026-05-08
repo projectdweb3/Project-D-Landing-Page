@@ -1880,6 +1880,12 @@
       };
 
       const handleLogout = async () => {
+        // Prevent data leakage by clearing local storage on logout
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('amp_')) {
+            localStorage.removeItem(key);
+          }
+        });
         if (window.supabaseClient) {
           await window.supabaseClient.auth.signOut();
           window.location.reload();
@@ -5458,6 +5464,20 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
       useEffect(() => {
         if (supabaseClient) {
+          const handleUserSwitch = (sess) => {
+            if (!sess) return;
+            const lastUser = localStorage.getItem('amp_last_user_id');
+            if (lastUser && lastUser !== sess.user.id) {
+              // Different user logged in! Wipe all amp_ keys to prevent data leakage.
+              Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('amp_')) {
+                  localStorage.removeItem(key);
+                }
+              });
+            }
+            localStorage.setItem('amp_last_user_id', sess.user.id);
+          };
+
           const checkUserGenesis = async (sess) => {
             if (!sess) return;
             if (localStorage.getItem('amp_genesis_complete') === 'true') {
@@ -5474,10 +5494,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           };
 
           supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            handleUserSwitch(session);
             setSession(session);
             checkUserGenesis(session);
           });
           supabaseClient.auth.onAuthStateChange((_event, session) => {
+            handleUserSwitch(session);
             setSession(session);
             checkUserGenesis(session);
           });
