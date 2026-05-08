@@ -637,7 +637,10 @@
             const data = await res.json();
             if (data && data.businessStage) {
               setBizStage(data.businessStage);
-              localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: '', bio: '', stage: data.businessStage }));
+              let exName = '';
+              const match = input.match(/(?:my business is called|my company is called|the name of my business is|the name of my company is|I run|I am the owner of)\s+([^.,!?\n]+)/i);
+              if (match) exName = match[1].trim();
+              localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: exName, bio: '', stage: data.businessStage }));
             }
             if (data && data.subAgents) {
               localStorage.setItem('amp_custom_agents', JSON.stringify(data.subAgents));
@@ -708,15 +711,18 @@
           } else if (fbStage === 'Dispatcher') {
             fallbackAgents = [
               { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.', icon: 'solar:map-arrow-up-linear' },
-              { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
+              { name: 'Fleet Manager', parent: 'CTO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
               { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.', icon: 'solar:users-group-rounded-linear' },
-              { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
-              { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
-              { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
+              { name: 'Shift Coordinator', parent: 'CMO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
+              { name: 'Payroll Specialist', parent: 'Creative', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
+              { name: 'Safety Officer', parent: 'Creative', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
             ];
           }
           setBizStage(fbStage);
-          localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: '', bio: '', stage: fbStage }));
+          let exNameFallback = '';
+          const matchFallback = input.match(/(?:my business is called|my company is called|the name of my business is|the name of my company is|I run|I am the owner of)\s+([^.,!?\n]+)/i);
+          if (matchFallback) exNameFallback = matchFallback[1].trim();
+          localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: exNameFallback, bio: '', stage: fbStage }));
           localStorage.setItem('amp_custom_agents', JSON.stringify(fallbackAgents));
           setGeneratedAgents(fallbackAgents);
         }
@@ -1623,11 +1629,11 @@
               } else if (stage === 'Dispatcher') {
                 agents = [
                   { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.', icon: 'solar:map-arrow-up-linear' },
-                  { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
+                  { name: 'Fleet Manager', parent: 'CTO', description: 'Tracks vehicle status and maintenance.', icon: 'solar:bus-linear' },
                   { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.', icon: 'solar:users-group-rounded-linear' },
-                  { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
-                  { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
-                  { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
+                  { name: 'Shift Coordinator', parent: 'CMO', description: 'Handles driver scheduling and call-outs.', icon: 'solar:calendar-date-linear' },
+                  { name: 'Payroll Specialist', parent: 'Creative', description: 'Tracks driver hours and calculates pay.', icon: 'solar:wallet-money-linear' },
+                  { name: 'Safety Officer', parent: 'Creative', description: 'Monitors compliance and incidents.', icon: 'solar:shield-warning-linear' }
                 ];
               }
               localStorage.setItem('amp_custom_agents', JSON.stringify(agents));
@@ -2218,11 +2224,11 @@
                           } else if (userProfile?.stage === 'Dispatcher') {
                             fbAgents = [
                               { name: 'Route Optimizer', parent: 'CTO', description: 'Calculates efficient delivery routes.' },
-                              { name: 'Fleet Manager', parent: 'COO', description: 'Tracks vehicle status and maintenance.' },
+                              { name: 'Fleet Manager', parent: 'CTO', description: 'Tracks vehicle status and maintenance.' },
                               { name: 'Driver Recruiter', parent: 'CMO', description: 'Sources and screens driver candidates.' },
-                              { name: 'Shift Coordinator', parent: 'COO', description: 'Handles driver scheduling and call-outs.' },
-                              { name: 'Payroll Specialist', parent: 'CFO', description: 'Tracks driver hours and calculates pay.' },
-                              { name: 'Safety Officer', parent: 'COO', description: 'Monitors compliance and incidents.' }
+                              { name: 'Shift Coordinator', parent: 'CMO', description: 'Handles driver scheduling and call-outs.' },
+                              { name: 'Payroll Specialist', parent: 'Creative', description: 'Tracks driver hours and calculates pay.' },
+                              { name: 'Safety Officer', parent: 'Creative', description: 'Monitors compliance and incidents.' }
                             ];
                           }
                           return fbAgents.map(a => ({ name: a.name, role: a.parent ? a.parent + ' Team' : 'Specialist', desc: a.description, pending: true }));
@@ -5425,6 +5431,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 </body>
 
 </html>
+
+
 
 
 
