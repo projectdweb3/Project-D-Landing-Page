@@ -849,7 +849,7 @@
           });
           
           if (supabaseClient && session?.user?.id) {
-            const tables = ['business_profile', 'tasks', 'leads', 'clients', 'inventory', 'campaigns', 'calendar_events', 'finances', 'account_users', 'plans', 'agents'];
+            const tables = ['business_profile', 'tasks', 'leads', 'clients', 'inventory', 'campaigns', 'calendar_events', 'finances', 'account_users', 'plans', 'agents', 'documents'];
             for (const table of tables) {
               try {
                 await supabaseClient.from(table).delete().eq('user_id', session.user.id);
@@ -936,20 +936,12 @@
       const handleEditUser = async (userId, currentName) => {
         const newName = prompt("Enter new name for this user:", currentName);
         if (newName && newName.trim() && newName !== currentName) {
-          const trimmedName = newName.trim();
-          
-          // Update local state immediately for responsiveness
-          const updated = accountUsers.map(u => u.id === userId ? { ...u, name: trimmedName } : u);
-          setAccountUsers(updated);
-          localStorage.setItem('amp_account_users', JSON.stringify(updated));
-
           if (supabaseClient && session?.user?.id) {
-             // Use upsert to handle both existing and new (Primary User) records
-             await supabaseClient.from('account_users').upsert({ 
-               id: userId, 
-               name: trimmedName, 
-               user_id: session.user.id 
-             });
+             await supabaseClient.from('account_users').update({ name: newName.trim() }).eq('id', userId).eq('user_id', session.user.id);
+          } else {
+             const updated = accountUsers.map(u => u.id === userId ? { ...u, name: newName.trim() } : u);
+             setAccountUsers(updated);
+             localStorage.setItem('amp_account_users', JSON.stringify(updated));
           }
         }
       };
@@ -2170,7 +2162,7 @@
                           return fbAgents.map(a => ({ name: a.name, role: a.parent ? a.parent + ' Team' : 'Specialist', desc: a.description, pending: true }));
                         })())
                      ].slice(0, 10).map((agent, idx) => {
-                       const isActive = activeTasks.some(t => (t.agent === agent.name || t.agent === agent.role || t.parentAgent === agent.name) && t.status !== 'done' && t.scheduled_time);
+                       const isActive = activeTasks.some(t => (t.assigned_to === agent.name || t.assigned_to === agent.role) && t.status === 'in_progress');
                        return (
                          <div key={idx} className="bg-black/5 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group">
                            <div className="flex items-center justify-between relative z-10">
@@ -2242,14 +2234,11 @@
                 <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
               </div>
               <div className="space-y-4">
-                {(() => {
-                  const filtered = displayTasks.filter(t => tasksFilter === 'completed' ? (t.status === 'done' && t.scheduled_time) : (t.status !== 'done' && t.scheduled_time));
-                  return filtered.length > 0 ? filtered.slice(0, 5).map((task, idx) => (
-                    <TaskCard key={task.id || idx} agent={task.agent || 'CEO'} task={task.title + (task.status !== 'done' ? ' ⏳' : '')} status={task.status === 'done' ? 'done' : 'running'} color={(task.parentAgent === 'Creative' || task.agent === 'Creative') ? 'pd-purple' : (task.parentAgent === 'CTO' || task.agent === 'CTO') ? 'pd-orange' : 'pd-teal'} />
-                  )) : (
-                    <div className="text-xs text-gray-500 italic">No {tasksFilter === 'completed' ? 'completed' : 'active'} autonomous tasks.</div>
-                  );
-                })()}
+                {displayTasks.length > 0 ? displayTasks.filter(t => tasksFilter === 'completed' ? t.status === 'done' : t.status !== 'done').slice(0, 5).map((task, idx) => (
+                  <TaskCard key={task.id || idx} agent={task.agent || 'CEO'} task={task.title + (task.scheduled_time && task.status !== 'done' ? ' ⏳' : '')} status={task.status === 'done' ? 'done' : 'running'} color={(task.parentAgent === 'Creative' || task.agent === 'Creative') ? 'pd-purple' : (task.parentAgent === 'CTO' || task.agent === 'CTO') ? 'pd-orange' : 'pd-teal'} />
+                )) : (
+                  <div className="text-xs text-gray-500 italic">No {tasksFilter === 'completed' ? 'completed' : 'active'} tasks.</div>
+                )}
               </div>
               <div className="mt-auto pt-6 border-t border-gray-200 dark:border-pd-glassBorder">
                 <h3 className="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Neural Capacity</h3>
@@ -2460,6 +2449,36 @@
       const [showHistory, setShowHistory] = useState(false);
       const endRef = useRef(null);
       const fileInputRef = useRef(null);
+      const [lastActionBatch, setLastActionBatch] = useState(null);
+      const [activeDocument, setActiveDocument] = useState(null);
+      const [showDocumentArchive, setShowDocumentArchive] = useState(false);
+      const [documents, setDocuments] = useState(() => {
+        try {
+          const saved = localStorage.getItem('amp_documents');
+          if (saved) return JSON.parse(saved);
+        } catch (e) {}
+        return [];
+      });
+
+      useEffect(() => {
+        const handleDocsUpdate = () => {
+          setDocuments(JSON.parse(localStorage.getItem('amp_documents') || '[]'));
+        };
+        window.addEventListener('amp-documents-updated', handleDocsUpdate);
+        return () => window.removeEventListener('amp-documents-updated', handleDocsUpdate);
+      }, []);
+
+      const fetchDocuments = async () => {
+        if (supabaseClient && session?.user?.id) {
+          const { data } = await supabaseClient.from('documents').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+          if (data) {
+            setDocuments(data);
+            localStorage.setItem('amp_documents', JSON.stringify(data));
+          }
+        }
+      };
+
+      useEffect(() => { fetchDocuments(); }, [session]);
 
       const handleNewChat = () => {
         if (messages.length > 1) {
@@ -2480,6 +2499,45 @@
       const loadThread = (t) => {
         setMessages(t.messages);
         setShowHistory(false);
+      };
+
+      const handleUndo = async () => {
+        if (!lastActionBatch) return;
+        setLoading(true);
+        try {
+          for (const action of lastActionBatch) {
+            if (action.type === 'delete') {
+              if (action.key) {
+                const local = JSON.parse(localStorage.getItem(action.key) || '[]');
+                const filtered = local.filter(x => x.id !== action.id);
+                localStorage.setItem(action.key, JSON.stringify(filtered));
+              }
+              if (supabaseClient && session?.user?.id && action.table) {
+                await supabaseClient.from(action.table).delete().eq('id', action.id).eq('user_id', session.user.id);
+              }
+            }
+          }
+          window.dispatchEvent(new Event('amp-tasks-updated'));
+          window.dispatchEvent(new Event('amp-simulated-lead'));
+          window.dispatchEvent(new Event('amp-simulated-sale'));
+          window.dispatchEvent(new Event('amp-campaigns-updated'));
+          window.dispatchEvent(new Event('amp-calendar-updated'));
+          window.dispatchEvent(new Event('amp-subagents-updated'));
+          window.dispatchEvent(new Event('amp-profile-updated'));
+          window.dispatchEvent(new Event('amp-team-messages'));
+          window.dispatchEvent(new Event('amp-documents-updated'));
+          
+          setLastActionBatch(null);
+          appendMessage({ 
+            sender: 'ceo', 
+            text: "I have successfully reversed the previous actions and restored the system state.", 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          });
+        } catch (e) {
+          console.error("Undo failed", e);
+        } finally {
+          setLoading(false);
+        }
       };
 
       const fetchMessages = async () => {
@@ -2644,13 +2702,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
         fetch('/.netlify/functions/agent', {
           method: 'POST',
-          body: JSON.stringify({ 
-            message: msgText + systemPromptAddon, 
-            userId: session?.user?.id,
-            userProfile: userProfile,
-            attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null,
-            history: messages.map(m => ({ sender: m.sender, text: m.text }))
-          })
+          body: JSON.stringify({ userId: session?.user?.id, msg: msgText + systemPromptAddon, history: messages.map(m => ({ sender: m.sender, text: m.text })), attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null, userProfile }),
         })
           .then(res => res.json().then(data => ({ status: res.status, data })))
           .then(({ status, data }) => {
@@ -2673,8 +2725,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               });
             }
 
-            // Execute frontend actions to populate localStorage when Supabase is missing/failing
             if (data.actions && Array.isArray(data.actions)) {
+              const revertActions = [];
               data.actions.forEach(action => {
                 let agentForLog = 'CEO';
                 let taskNameLog = 'System Task';
@@ -2754,6 +2806,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('tasks').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-tasks-updated'));
                     logAction(`Delegated Task: ${action.payload.title}`, action.payload.assigned_agent);
+                    revertActions.push({ type: 'delete', table: 'tasks', id: payload.id, key: `amp_tasks_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'update_task') {
                     let local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
                     const targetIdx = local.findIndex(t => t.id === action.payload.task_title_or_id || t.title.toLowerCase() === action.payload.task_title_or_id.toLowerCase());
@@ -2766,9 +2819,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     }
                   } else if (action.type === 'add_calendar_event') {
                     const local = JSON.parse(localStorage.getItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`) || '[]');
-                    local.push({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
+                    const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
+                    local.push(payload);
                     localStorage.setItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-calendar-updated'));
+                    revertActions.push({ type: 'delete', table: 'calendar_events', id: payload.id, key: `amp_calendar_events_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'update_business_profile') {
                     const localData = localStorage.getItem('amp_business_profile');
                     let parsed = { company_name: '', bio: '', stage: 'Solo' };
@@ -2779,10 +2834,21 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     window.dispatchEvent(new Event('amp-profile-updated'));
                   } else if (action.type === 'create_agent') {
                     const local = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
-                    local.push({ id: Date.now().toString(), name: action.payload.role_name, description: action.payload.persona_description, parent: action.payload.parent || 'CMO', created_at: new Date().toISOString() });
+                    const payload = { id: Date.now().toString(), name: action.payload.role_name, description: action.payload.persona_description, parent: action.payload.parent || 'CMO', created_at: new Date().toISOString() };
+                    local.push(payload);
                     localStorage.setItem('amp_custom_agents', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-subagents-updated'));
                     logAction(`Hired Subagent: ${action.payload.role_name}`, 'CEO');
+                    revertActions.push({ type: 'delete', table: 'agents', id: payload.id, key: 'amp_custom_agents' });
+                  } else if (action.type === 'draft_document') {
+                    const local = JSON.parse(localStorage.getItem('amp_documents') || '[]');
+                    const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
+                    local.unshift(payload);
+                    localStorage.setItem('amp_documents', JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('documents').insert([{ ...payload, user_id: session.user.id }]).then(); }
+                    window.dispatchEvent(new Event('amp-documents-updated'));
+                    logAction(`Drafted Document: ${action.payload.title}`, 'CEO');
+                    revertActions.push({ type: 'delete', table: 'documents', id: payload.id, key: 'amp_documents' });
                   } else if (action.type === 'add_lead') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const payload = { id: Date.now().toString(), ...action.payload, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() };
@@ -2791,6 +2857,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Added Lead: ${action.payload.name}`, 'CEO');
+                    revertActions.push({ type: 'delete', table: 'leads', id: payload.id, key: `amp_leads_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'add_multiple_leads') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
@@ -2798,6 +2865,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').insert(newLeads.map(l => ({...l, user_id: session.user.id}))).then(); }
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Generated ${action.payload.leads.length} Leads`, 'CEO');
+                    newLeads.forEach(l => revertActions.push({ type: 'delete', table: 'leads', id: l.id, key: `amp_leads_${userProfile?.stage || 'Default'}` }));
                   } else if (action.type === 'add_multiple_clients') {
                     const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
                     const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
@@ -2805,6 +2873,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').insert(newClients.map(c => ({...c, user_id: session.user.id}))).then(); }
                     window.dispatchEvent(new Event('amp-simulated-sale'));
                     logAction(`Imported ${action.payload.clients.length} Clients/Members`, 'CEO');
+                    newClients.forEach(c => revertActions.push({ type: 'delete', table: 'clients', id: c.id, key: `amp_clients_${userProfile?.stage || 'Default'}` }));
                   } else if (action.type === 'update_lead') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
@@ -2816,10 +2885,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     }
                   } else if (action.type === 'create_campaign') {
                     const local = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
-                    local.unshift({ id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() });
+                    const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
+                    local.unshift(payload);
                     localStorage.setItem('amp_campaigns', JSON.stringify(local));
                     window.dispatchEvent(new Event('amp-campaigns-updated'));
                     logAction(`Launched Campaign: ${action.payload.name}`, 'CMO');
+                    revertActions.push({ type: 'delete', table: 'campaigns', id: payload.id, key: 'amp_campaigns' });
                   } else if (action.type === 'update_plan') {
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
                     const targetIdx = local.findIndex(p => p.id === action.payload.plan_id_or_title || p.title.toLowerCase() === action.payload.plan_id_or_title.toLowerCase());
@@ -2845,15 +2916,17 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     window.dispatchEvent(new Event('amp-team-messages'));
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('team_messages').insert([payload]).then(); }
                     logAction(`Sent Team Announcement`, action.payload.agent_name || 'CEO');
+                    revertActions.push({ type: 'delete', table: 'team_messages', id: payload.id, key: 'amp_team_messages' });
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
+              setLastActionBatch(revertActions);
             }
 
             if (status >= 400 || data.error) {
               appendMessage({ sender: 'ceo', text: `[SYSTEM ERROR] ${data.error || 'Unknown error'}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             } else {
-              appendMessage({ sender: 'ceo', text: data.content || "I have completed the task.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+              appendMessage({ sender: 'ceo', text: data.content || "I have completed the task.", actions: data.actions, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             }
             setIsTyping(false);
           })
@@ -2923,6 +2996,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             </div>
             
             <div className="flex items-center gap-2">
+              {lastActionBatch && (
+                <button onClick={handleUndo} className="px-3 py-1.5 text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg flex items-center gap-1 transition-all">
+                  <iconify-icon icon="solar:undo-left-round-linear"></iconify-icon> Undo
+                </button>
+              )}
+              <button onClick={() => setShowDocumentArchive(!showDocumentArchive)} className={`p-2 transition-all ${showDocumentArchive ? 'text-pd-teal' : 'text-gray-500 hover:text-pd-teal'}`} title="Documents Archive">
+                <iconify-icon icon="solar:document-text-linear" width="20"></iconify-icon>
+              </button>
               <button onClick={() => setShowHistory(!showHistory)} className={`p-2 transition-all ${showHistory ? 'text-pd-teal' : 'text-gray-500 hover:text-pd-teal'}`}>
                 <iconify-icon icon="solar:history-linear" width="20"></iconify-icon>
               </button>
@@ -2930,6 +3011,29 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <iconify-icon icon="solar:pen-new-square-linear"></iconify-icon> <span className="hidden sm:inline">New Chat</span>
               </button>
             </div>
+
+            {showDocumentArchive && (
+              <div className="absolute top-full right-4 mt-2 w-80 bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl p-4 z-50 max-h-96 overflow-y-auto">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Saved Documents</h3>
+                {documents.length === 0 ? (
+                  <p className="text-sm text-gray-500 italic">No documents drafted yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {documents.map(doc => (
+                      <button key={doc.id} onClick={() => { setActiveDocument(doc); setShowDocumentArchive(false); }} className="w-full text-left p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5 transition-all group flex gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                          <iconify-icon icon="solar:document-text-bold"></iconify-icon>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-sm text-gray-900 dark:text-white truncate">{doc.title}</div>
+                          <div className="text-[10px] text-gray-500 mt-0.5">{doc.document_type} • {new Date(doc.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             
             {showHistory && (
               <div className="absolute top-full right-4 mt-2 w-64 bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl p-2 z-50 max-h-64 overflow-y-auto">
@@ -2964,6 +3068,18 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <iconify-icon icon="solar:crown-minimalistic-bold" width="12"></iconify-icon>
                   </div>
                   <div><FormatText text={m.text} /></div>
+                  {m.actions && m.actions.map((act, idx) => act.type === 'draft_document' ? (
+                    <button key={idx} onClick={() => setActiveDocument(act.payload)} className="mt-4 w-full p-3 bg-white/80 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl flex items-center gap-3 hover:border-pd-teal/50 hover:bg-pd-teal/5 dark:hover:bg-pd-teal/10 transition-colors text-left group shadow-sm">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                        <iconify-icon icon="solar:document-text-bold" width="24"></iconify-icon>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-sm text-gray-900 dark:text-white truncate group-hover:text-pd-teal transition-colors">{act.payload.title}</div>
+                        <div className="text-[10px] text-gray-500 mt-0.5 uppercase tracking-wider">{act.payload.document_type}</div>
+                      </div>
+                      <iconify-icon icon="solar:alt-arrow-right-linear" className="text-gray-400 group-hover:text-pd-teal transition-colors"></iconify-icon>
+                    </button>
+                  ) : null)}
                   <div className="text-[9px] text-gray-500 dark:text-gray-400 mt-2">{m.time}</div>
                 </div>
               )
@@ -2996,6 +3112,42 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               </div>
             </div>
           </div>
+
+          {activeDocument && (
+            <div className="absolute inset-0 z-[100] bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl flex flex-col animate-fade-in">
+              <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/20">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                    <iconify-icon icon="solar:document-text-bold" width="28"></iconify-icon>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{activeDocument.title}</h3>
+                    <p className="text-xs font-semibold text-indigo-500 tracking-wider uppercase mt-1">{activeDocument.document_type} • {new Date(activeDocument.created_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => {
+                    const el = document.createElement('a');
+                    el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(activeDocument.content));
+                    el.setAttribute('download', activeDocument.title + '.txt');
+                    el.click();
+                  }} className="p-2 md:px-4 md:py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-white rounded-lg flex items-center gap-2 transition-all">
+                    <iconify-icon icon="solar:download-minimalistic-bold"></iconify-icon> <span className="hidden md:inline">Download</span>
+                  </button>
+                  <button onClick={() => setActiveDocument(null)} className="p-2 md:px-4 md:py-2 text-sm font-semibold bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-500 rounded-lg flex items-center gap-2 transition-all">
+                    <iconify-icon icon="solar:close-circle-bold" width="20"></iconify-icon> <span className="hidden md:inline">Close</span>
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 md:p-12">
+                <div className="max-w-4xl mx-auto bg-white dark:bg-[#131b2c] p-8 md:p-16 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/5 min-h-[800px]">
+                  <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-p:leading-relaxed prose-headings:font-bold whitespace-pre-wrap font-serif text-gray-800 dark:text-gray-200">
+                    <FormatText text={activeDocument.content} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };

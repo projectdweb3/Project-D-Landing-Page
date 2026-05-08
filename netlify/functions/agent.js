@@ -80,7 +80,9 @@ RULES OF ENGAGEMENT:
 17. ACTION BOUNDARIES: NEVER take major structural action (like generating fake leads or creating large plans) unless the user EXPLICITLY asks you to. However, for Calendar Events and Task Management (creating/updating daily tasks), you SHOULD be proactive and autonomous based on the conversation flow. If the user is just answering your questions about their business, simply acknowledge the answers, use 'update_business_profile' to save them, and ask what they would like to do next.
 18. SOCIAL MEDIA & INTEGRATIONS: If the user asks you to post to a social media account (like Facebook, Instagram, Google Business, TikTok, Shopify, or Etsy), you MUST first check the 'Active Integrations' in your context. If the requested platform is NOT in the active integrations list, you MUST refuse the task and tell the user: "Please go to the Settings tab and pair your [Platform Name] account so I can execute this task on your behalf." If it IS integrated, you may proceed with the action.
 19. ADAPTING PLANS: Before executing a stored plan, the user may ask you to adapt, edit, or make changes to it. You MUST use the 'update_plan' tool to save these modifications. Do not just output the new text in chat; ensure the stored document is updated.
-20. CSV & SPREADSHEET IMPORTS: If the user provides CSV data or uploads a screenshot of a spreadsheet/database, you MUST automatically analyze it. Extract the records, map them to the appropriate fields based on their Business Stage (e.g., Dispatcher uses 'Assigned Route/Location', Organizer uses 'Facility' and 'Rank', Ecomm uses 'LTV'), and use either 'add_multiple_leads' or 'add_multiple_clients' to bulk import them into the system autonomously. Do not ask them to do it manually.`;
+20. CSV & SPREADSHEET IMPORTS: If the user provides CSV data or uploads a screenshot of a spreadsheet/database, you MUST automatically analyze it. Extract the records, map them to the appropriate fields based on their Business Stage (e.g., Dispatcher uses 'Assigned Route/Location', Organizer uses 'Facility' and 'Rank', Ecomm uses 'LTV'), and use either 'add_multiple_leads' or 'add_multiple_clients' to bulk import them into the system autonomously. Do not ask them to do it manually.
+21. STRICT RESPONSE FORMAT: You MUST use the provided JSON function declarations to execute tools. NEVER output raw Python code, \`tool_code\` blocks, \`default_api\` references, or \`thought\` blocks in your text response. Always formulate a clean, conversational, human-friendly text response, and simultaneously trigger the native structured function calls.
+22. DRAFTING DOCUMENTS & OUTREACH: If the user asks you to draft an email, letter, announcement, or document (that is NOT a strategic plan or a direct message to a specific active team channel), you MUST use the 'draft_document' tool. NEVER send a message or email blindly without first presenting a draft to the user for confirmation. Ensure you set the appropriate document type (e.g., 'Email', 'Memo', 'Outreach', 'General').`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -121,6 +123,19 @@ RULES OF ENGAGEMENT:
       tools: [
         {
           function_declarations: [
+            {
+              name: "draft_document",
+              description: "Drafts a document, email, memo, or outreach message to present to the user for approval before sending or finalizing.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  title: { type: "STRING", description: "A concise title for the drafted document." },
+                  document_type: { type: "STRING", description: "The type of document, e.g., 'Email', 'Memo', 'Outreach', 'General'." },
+                  content: { type: "STRING", description: "The full body content of the drafted document." }
+                },
+                required: ["title", "document_type", "content"],
+              },
+            },
             {
               name: "create_task",
               description: "Creates a new task and adds it to the Kanban board.",
@@ -391,7 +406,10 @@ RULES OF ENGAGEMENT:
 
     for (const part of responseParts) {
       if (part.text) {
-        finalText += part.text;
+        // Strip out ReAct reasoning and mock tool code that Gemini sometimes leaks
+        let cleanText = part.text.replace(/```(?:thought|tool_code)[\s\S]*?```/gi, '');
+        cleanText = cleanText.replace(/^(?:thought|tool_code)\s*\n[\s\S]*?(?=\n\n|\n[A-Z]|$)/gim, '');
+        finalText += cleanText;
       }
       if (part.functionCall) {
         const call = part.functionCall;
@@ -526,6 +544,14 @@ RULES OF ENGAGEMENT:
               if (error) console.error("Plan update error:", error);
             }
             toolResults.push(`Plan '${call.args.plan_id_or_title}' updated with new adaptations.`);
+          }
+          else if (call.name === "draft_document") {
+            frontendActions.push({ type: 'draft_document', payload: call.args });
+            if (supabase) {
+              const { error } = await supabase.from('documents').insert([{ ...call.args, user_id: userId }]);
+              if (error) console.error("Document insert error:", error);
+            }
+            toolResults.push(`Document '${call.args.title}' drafted and presented to user for review.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);
