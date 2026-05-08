@@ -2693,14 +2693,15 @@ Available Tools & Channels:
 3. 'store_plan' / 'create_plan' -> Populates 'Strategic Planning'. Payload: { title: '...', content: '...' }.
 4. 'create_campaign' -> Populates 'Marketing Pipeline'. Payload: { name: '...', description: '...', stage: 'Planning' }.
 5. 'add_multiple_leads' or 'add_lead' -> Populates 'Hiring Pipeline' or 'Marketing Pipeline'. Payload: { leads: [{name, email, phone}] } or { name, contact, stage, value, prob, next_step }.
-6. 'create_task' -> Populates the "Today's Tasks" list (also known as "Active Tasks"). If a task must be done by the user in real life (IRL) and you cannot do it automatically (like physically checking vans, calling someone, etc.), use this tool to add it to their "Today's Tasks". NEVER use the word "Kanban". Always refer to this as "Today's Tasks".
+6. 'create_client' -> Populates the 'Client Ledger' (Drivers/Members). Payload: { name: '...' }.
+7. 'create_task' -> Populates the "Today's Tasks" list (also known as "Active Tasks"). If a task must be done by the user in real life (IRL) and you cannot do it automatically (like physically checking vans, calling someone, etc.), use this tool to add it to their "Today's Tasks". Always refer to this as "Today's Tasks".
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
 Current Known Clients/Members/Drivers (Ledger): ${clientNames}
 
 CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
-1. Names & Meetings: If the user mentions a person/company by name, check the Known Leads/Clients lists above. If UNRECOGNIZED, you MUST use 'add_lead' to create them FIRST, and then 'add_calendar_event' to book the meeting. NEVER assume an unrecognized name is a Client/Member/Driver. If they are already in the Known Clients list, just book the calendar event.
+1. Names & Meetings: If the user mentions a person/company by name, check the Known Leads/Clients lists above. If UNRECOGNIZED, you MUST use 'add_lead' to create them FIRST, UNLESS the user explicitly states they were 'hired', 'closed', or are a 'new client/driver/member', in which case you MUST use 'create_client' to add them to the ledger immediately. CRITICAL: Digital ledger records MUST be created before any human tasks are assigned.
 2. Physical Limitations & IRL Tasks: As an AI, you CANNOT perform physical actions (e.g., physical checkups, driving, manual inspections, or in-person human meetings). If a task requires physical real-world action, you MUST recognize it as an In-Real-Life (IRL) human task.
 3. Assigning IRL Human Tasks: For IRL tasks, you MUST use the 'create_task' tool to add it to "Today's Tasks". IMPORTANT: Do NOT include a 'scheduled_time' in the payload for human tasks. Leaving 'scheduled_time' empty is how the system knows it is a human task that should wait for the user to manually complete it.
 4. "Team" vs "Clients": When the user refers to the "team" (e.g., "team meeting"), they are referring to the human management staff operating this platform, NOT the drivers, members, or clients. Do not assign team meetings to drivers/clients.
@@ -2745,9 +2746,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 } else if (action.type === 'add_lead') {
                   agentForLog = 'CMO'; taskNameLog = 'Added Lead';
                   detailsLog = `Added lead: ${action.payload.name}`;
-                } else if (action.type === 'store_plan') {
+                  } else if (action.type === 'store_plan') {
                   agentForLog = 'CEO'; taskNameLog = 'Created Plan';
                   detailsLog = `Stored plan: ${action.payload.title}\n\n${action.payload.content}`;
+                } else if (action.type === 'create_client') {
+                  agentForLog = 'CEO'; taskNameLog = 'Added to Ledger';
+                  detailsLog = `Added client/driver: ${action.payload.name}`;
                 } else if (action.type === 'create_task') {
                   agentForLog = action.payload.assigned_agent || 'CEO'; taskNameLog = 'Delegated Task';
                   detailsLog = `Created task: ${action.payload.title}`;
@@ -2865,6 +2869,15 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     window.dispatchEvent(new Event('amp-simulated-lead'));
                     logAction(`Added Lead: ${action.payload.name}`, 'CEO');
                     revertActions.push({ type: 'delete', table: 'leads', id: payload.id, key: `amp_leads_${userProfile?.stage || 'Default'}` });
+                  } else if (action.type === 'create_client') {
+                    const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
+                    const payload = { id: Date.now().toString(), ...action.payload, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() };
+                    local.unshift(payload);
+                    localStorage.setItem(`amp_clients_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').insert([{ ...payload, user_id: session.user.id }]).then(); }
+                    window.dispatchEvent(new Event('amp-simulated-sale'));
+                    logAction(`Added to Ledger: ${action.payload.name}`, 'CEO');
+                    revertActions.push({ type: 'delete', table: 'clients', id: payload.id, key: `amp_clients_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'add_multiple_leads') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));

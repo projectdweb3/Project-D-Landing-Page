@@ -69,9 +69,9 @@ RULES OF ENGAGEMENT:
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
 7. BUSINESS KNOWLEDGE: If the user gives you new business details in chat, you MUST use the 'update_business_profile' tool to save them. Do not ask them to update it manually.
 8. AUTOMATIC SUBAGENT CREATION: When the user first describes their kingdom or business profile, you MUST automatically use 'create_agent' 3 to 5 times to hire custom-tailored subagents (e.g. SEO Specialist, Fulfillment Coordinator, Video Editor) that fit their exact business model. These subagents report to the Core 4. Do not wait for them to ask you to hire them.
-9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to move or update a lead, use 'update_lead' to change their stage.
-10. To move a lead to a closed client, use 'create_client' and add them to the Client Ledger.
-74. AUTONOMOUS SCHEDULING & TASK MANAGEMENT: You are fully authorized and expected to autonomously manage the user's schedule and daily tasks. As you converse with the user and identify priorities, upcoming events, or shifts in strategy, proactively use 'create_task', 'update_task', and 'add_calendar_event' to keep their Tactical Calendar updated in real-time, even if they don't explicitly ask you to schedule something. Adapt their "Today's Tasks" list seamlessly.
+9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to update a lead, use 'update_lead'. If the user mentions moving someone from a hiree/lead to a driver/client, use 'update_lead' to change their stage to 'Closed' AND simultaneously use 'create_client' to add them to the Ledger.
+10. ADDING TO LEDGER: When a user explicitly mentions hiring a new driver, adding a new member, or closing a new client, you MUST use the 'create_client' tool to add them directly to the Client Ledger. This is a digital system action that YOU MUST PERFORM IMMEDIATELY. Even if you also create a "Today's Task" for a human to perform physical onboarding, the digital record in the Ledger must be created by you first. For Dispatchers, "Drivers" are clients. For Organizers, "Members" are clients.
+74. AUTONOMOUS SCHEDULING & TASK MANAGEMENT: You are fully authorized and expected to autonomously manage the user's schedule and daily tasks. As you converse with the user and identify priorities, upcoming events, or shifts in strategy, proactively use 'create_task', 'update_task', and 'add_calendar_event' to keep their Tactical Calendar updated in real-time, even if they don't explicitly ask you to schedule something. Adapt their "Today's Tasks" list seamlessly. NEVER use the word "Kanban".
 12. Be authoritative, strategic, and highly efficient. Do not hallucinate actions. If you say you are performing an action, you MUST trigger the corresponding tool.
 13. WEB BROWSING & INVENTORY SYNC: You DO NOT have the ability to scrape URLs or browse the live internet. If a user asks you to sync inventory from a Shopify/Etsy URL, YOU CANNOT DO IT DIRECTLY. Instead of asking them to type out the product details manually (which is tedious), you MUST instruct them to upload screenshots of their store/products to the chat. Once they provide screenshots, use your vision capabilities to automatically extract product names, prices, and stock levels, and use the 'add_inventory_item' tool to log each one autonomously.
 14. STRATEGIC PLANNING: When the user asks you to create a plan (lead gen, overarching strategy, marketing plan, etc.), DO NOT just output text. You MUST use the 'store_plan' tool to create a formalized plan document. Provide a descriptive title, select the appropriate agent, and pass the detailed plan content. Remember, for Marketing Campaigns, you must simultaneously use 'create_campaign'. CRITICALLY: Anytime you create a plan, you MUST automatically recognize the immediate actionable tasks within that plan and simultaneously use the 'create_task' tool to log them into "Today's Tasks" with a 'todo' status. This serves as the user's To-Do list. Inform the user that these tasks are ready and awaiting their manual "Execute Plan" command to begin live agent activity.
@@ -150,7 +150,7 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "create_task",
-              description: "Creates a new task and adds it to the Kanban board.",
+              description: "Creates a new task and adds it to the Today's Tasks list.",
               parameters: {
                 type: "OBJECT",
                 properties: {
@@ -261,7 +261,7 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "create_client",
-              description: "Adds a closed-won client to the Client Ledger.",
+              description: "Adds a closed-won client, hired driver, or new member to the Client Ledger.",
               parameters: {
                 type: "OBJECT",
                 properties: {
@@ -410,7 +410,12 @@ RULES OF ENGAGEMENT:
       throw new Error("No candidates returned from Gemini API");
     }
 
-    const responseParts = data.candidates[0].content.parts;
+    const candidateContent = data.candidates[0].content || {};
+    const responseParts = candidateContent.parts || [];
+    
+    if (responseParts.length === 0 && data.candidates[0].finishReason) {
+      throw new Error(`Gemini blocked the response. Reason: ${data.candidates[0].finishReason}`);
+    }
     
     let toolResults = [];
     let frontendActions = [];
@@ -438,7 +443,7 @@ RULES OF ENGAGEMENT:
             if (supabase) {
               await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', scheduled_time: call.args.scheduled_time || null, user_id: userId }]);
             }
-            toolResults.push(`Task '${call.args.title}' added to Kanban${call.args.scheduled_time ? ` and scheduled for ${call.args.scheduled_time}` : ''}.`);
+            toolResults.push(`Task '${call.args.title}' added to Today's Tasks${call.args.scheduled_time ? ` and scheduled for ${call.args.scheduled_time}` : ''}.`);
           } 
           else if (call.name === "trigger_creative_agent") {
             const creativeEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -508,7 +513,10 @@ RULES OF ENGAGEMENT:
             }
           }
           else if (call.name === "create_client") {
-            await supabase.from('clients').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'create_client', payload: call.args });
+            if (supabase) {
+              await supabase.from('clients').insert([{ ...call.args, user_id: userId }]);
+            }
             toolResults.push(`Client '${call.args.name}' added to ledger.`);
           }
           else if (call.name === "add_multiple_clients") {
