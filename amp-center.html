@@ -388,28 +388,49 @@
     };
 
     const LanguageToggle = () => {
-      const [lang, setLang] = useState(() => localStorage.getItem('amp_language') || 'en');
+      const [lang, setLang] = useState(() => {
+        const saved = localStorage.getItem('amp_language');
+        if (saved) return saved;
+        const combo = document.querySelector('.goog-te-combo');
+        if (combo && combo.value) return combo.value === 'es' ? 'es' : 'en';
+        return 'en';
+      });
       const [isSwitching, setIsSwitching] = useState(false);
       
       const toggle = () => {
         if (isSwitching) return;
         setIsSwitching(true);
-        const newLang = lang === 'en' ? 'es' : 'en';
-        setLang(newLang);
-        localStorage.setItem('amp_language', newLang);
+        const targetLang = lang === 'en' ? 'es' : 'en';
         
         const selectField = document.querySelector(".goog-te-combo");
         if (selectField) {
-          selectField.value = newLang === 'en' ? '' : newLang;
-          if (selectField.selectedIndex === -1) selectField.value = newLang;
+          selectField.value = targetLang === 'en' ? 'en' : 'es'; 
           selectField.dispatchEvent(new Event('change'));
+          setTimeout(() => {
+            if (selectField.value !== (targetLang === 'en' ? 'en' : 'es')) {
+               selectField.value = targetLang === 'en' ? 'en' : 'es';
+               selectField.dispatchEvent(new Event('change'));
+            }
+          }, 150);
         }
-        setTimeout(() => setIsSwitching(false), 500);
+
+        setLang(targetLang);
+        localStorage.setItem('amp_language', targetLang);
+        setTimeout(() => setIsSwitching(false), 800);
       };
 
       return (
-        <button onClick={toggle} disabled={isSwitching} className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder transition-all text-gray-600 dark:text-gray-400 shadow-sm ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:text-pd-teal'}`} title={`Switch to ${lang === 'en' ? 'Spanish' : 'English'}`}>
-          <span className="text-[10px] font-bold uppercase" translate="no">{lang === 'en' ? 'ES' : 'EN'}</span>
+        <button 
+          onClick={toggle} 
+          disabled={isSwitching} 
+          translate="no"
+          className={`px-4 py-2 rounded-xl flex items-center gap-2 bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder transition-all text-gray-600 dark:text-gray-400 shadow-sm ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:text-pd-teal'}`}
+          title={lang === 'en' ? 'Traducir a Español' : 'Translate to English'}
+        >
+          <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            {lang === 'en' ? 'Español' : 'English'}
+          </span>
         </button>
       );
     };
@@ -638,8 +659,19 @@
             if (data && data.businessStage) {
               setBizStage(data.businessStage);
               let exName = '';
-              const match = input.match(/(?:my business is called|my company is called|the name of my business is|the name of my company is|I run|I am the owner of)\s+([^.,!?\n]+)/i);
-              if (match) exName = match[1].trim();
+              const patterns = [
+                /(?:my business is called|my company is called|the name of my business is|the name of my company is)\s+([^.,!?\n]+)/i,
+                /(?:I run|I am the owner of|I'm starting|I started)\s+([^.,!?\n]+)/i,
+                /([^.,!?\n]+)\s+(?:is the name of my business|is my business|is my company)/i
+              ];
+              for (const p of patterns) {
+                const m = input.match(p);
+                if (m) {
+                  exName = m[1].trim();
+                  if (exName.toLowerCase() === 'project d') exName = '';
+                  break;
+                }
+              }
               localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: exName, bio: '', stage: data.businessStage }));
             }
             if (data && data.subAgents) {
@@ -720,8 +752,19 @@
           }
           setBizStage(fbStage);
           let exNameFallback = '';
-          const matchFallback = input.match(/(?:my business is called|my company is called|the name of my business is|the name of my company is|I run|I am the owner of)\s+([^.,!?\n]+)/i);
-          if (matchFallback) exNameFallback = matchFallback[1].trim();
+          const patternsFallback = [
+            /(?:my business is called|my company is called|the name of my business is|the name of my company is)\s+([^.,!?\n]+)/i,
+            /(?:I run|I am the owner of|I'm starting|I started)\s+([^.,!?\n]+)/i,
+            /([^.,!?\n]+)\s+(?:is the name of my business|is my business|is my company)/i
+          ];
+          for (const p of patternsFallback) {
+            const m = input.match(p);
+            if (m) {
+              exNameFallback = m[1].trim();
+              if (exNameFallback.toLowerCase() === 'project d') exNameFallback = '';
+              break;
+            }
+          }
           localStorage.setItem('amp_business_profile', JSON.stringify({ company_name: exNameFallback, bio: '', stage: fbStage }));
           localStorage.setItem('amp_custom_agents', JSON.stringify(fallbackAgents));
           setGeneratedAgents(fallbackAgents);
@@ -745,7 +788,7 @@
 
       return (
         <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center p-6 relative z-10">
-          <div className="absolute top-6 right-6 flex items-center gap-2"><ThemeToggle /><LanguageToggle /></div>
+          <div className="absolute top-6 right-6 flex items-center gap-2"><ThemeToggle /></div>
           {stage === 0 && (
             <div className="w-full max-w-2xl mx-auto glass-reveal flex flex-col items-center">
               <div className="w-12 h-12 rounded-full border border-gray-200 dark:border-pd-glassBorder bg-white/40 dark:bg-pd-glass flex items-center justify-center mb-8 shadow-sm">
@@ -1049,7 +1092,16 @@
               <div className="space-y-5 relative z-10">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Name</label>
-                  <input type="text" value={userProfile?.company_name || ''} onChange={e => setUserProfile({...userProfile, company_name: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm" placeholder="e.g. Acme Corp" />
+                  <input 
+                    type="text" 
+                    name="business_name"
+                    autoComplete="off"
+                    translate="no"
+                    value={userProfile?.company_name || ''} 
+                    onChange={e => setUserProfile({...userProfile, company_name: e.target.value})} 
+                    className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm" 
+                    placeholder="e.g. Acme Corp" 
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Type</label>
@@ -1656,7 +1708,7 @@
           window.addEventListener('amp-subagents-updated', fetchCustomAgents);
           return () => window.removeEventListener('amp-subagents-updated', fetchCustomAgents);
         }
-      }, []);
+      }, [session]);
 
       useEffect(() => {
         fetchAccountUsers();
@@ -1672,7 +1724,7 @@
           window.addEventListener('storage', handleStorage);
           return () => window.removeEventListener('storage', handleStorage);
         }
-      }, []);
+      }, [session]);
 
       useEffect(() => {
         localStorage.setItem('amp_account_users', JSON.stringify(accountUsers));
@@ -1863,6 +1915,7 @@
           }
         }
         
+        if (loadedProfile.company_name === 'Project D') loadedProfile.company_name = '';
         setUserProfile(loadedProfile);
         setNeedsProfileSetup(setupNeeded);
       };
@@ -1977,8 +2030,12 @@
       };
 
       useEffect(() => {
-        fetchTasks();
         checkProfile();
+      }, [session]);
+
+      useEffect(() => {
+        if (!userProfile?.stage) return;
+        fetchTasks();
         if (supabaseClient) {
           const channel = supabaseClient.channel('realtime:tasks')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, fetchTasks)
@@ -2655,7 +2712,7 @@
           window.addEventListener('storage', handleStorage);
           return () => window.removeEventListener('storage', handleStorage);
         }
-      }, []);
+      }, [session]);
 
       useEffect(() => {
         if (needsProfileSetup && messages.length === 1) {
@@ -5393,17 +5450,28 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
       useEffect(() => {
         if (supabaseClient) {
+          const checkUserGenesis = async (sess) => {
+            if (!sess) return;
+            if (localStorage.getItem('amp_genesis_complete') === 'true') {
+              setCurrentScreen('dashboard');
+              return;
+            }
+            try {
+              const { data } = await supabaseClient.from('business_profile').select('stage').eq('user_id', sess.user.id).limit(1);
+              if (data && data.length > 0) {
+                localStorage.setItem('amp_genesis_complete', 'true');
+                setCurrentScreen('dashboard');
+              }
+            } catch(e) {}
+          };
+
           supabaseClient.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
-            if (session && localStorage.getItem('amp_genesis_complete') === 'true') {
-              setCurrentScreen('dashboard');
-            }
+            checkUserGenesis(session);
           });
           supabaseClient.auth.onAuthStateChange((_event, session) => {
             setSession(session);
-            if (session && localStorage.getItem('amp_genesis_complete') === 'true') {
-              setCurrentScreen('dashboard');
-            }
+            checkUserGenesis(session);
           });
         }
       }, []);
