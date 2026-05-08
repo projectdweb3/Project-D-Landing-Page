@@ -33,8 +33,8 @@ exports.handler = async function (event, context) {
     // Dynamic Context Injection
     let businessContext = "The user has not provided their business profile yet. Ask them to go to settings and fill in their business name, stage, and bio.";
     
-    if (userProfile && userProfile.company_name) {
-      businessContext = `Company Name: ${userProfile.company_name || 'Unknown'} | Stage: ${userProfile.stage || 'Unknown'} | Bio: ${userProfile.bio || 'None'}.`;
+    if (userProfile && (userProfile.company_name || userProfile.bio || userProfile.stage)) {
+      businessContext = `Company Name: ${userProfile.company_name || 'Not provided'} | Stage: ${userProfile.stage || 'Unknown'} | Bio: ${userProfile.bio || 'Not provided'}.`;
       if (userProfile.stage === 'Ecomm' && userProfile.store_link) {
         businessContext += `\nStore Link: ${userProfile.store_link}. You have access to view their store and can sync inventory or read their products.`;
       }
@@ -68,7 +68,7 @@ RULES OF ENGAGEMENT:
 5. DELEGATING TASKS: When a task is ready for execution, you MUST use the 'create_task' tool to delegate it to the appropriate sub-agent (CMO, Creative, or CTO). Instruct the agent explicitly based on the user's specific business context. If no task is requested, DO NOT create one.
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset to be created, you MUST use the 'trigger_creative_agent' tool to autonomously generate it and save it to their archive.
 7. BUSINESS KNOWLEDGE: If the user gives you new business details in chat, you MUST use the 'update_business_profile' tool to save them. Do not ask them to update it manually.
-8. AUTOMATIC SUBAGENT CREATION: When the user first describes their kingdom or business profile, you MUST automatically use 'create_agent' 3 to 5 times to hire custom-tailored subagents (e.g. SEO Specialist, Fulfillment Coordinator, Video Editor) that fit their exact business model. These subagents report to the Core 4. Do not wait for them to ask you to hire them.
+8. AUTOMATIC SUBAGENT CREATION: When the user first describes their kingdom or business profile, you MUST automatically use the 'create_agent' tool 3 to 5 times to hire custom-tailored subagents (e.g. SEO Specialist, Fulfillment Coordinator, Video Editor) that fit their exact business model. These subagents report to the Core 4. CRITICAL: You MUST trigger the tool. DO NOT just describe the subagents in text; actually use the 'create_agent' action for each one.
 9. When asked to find or create leads, use 'add_lead' to insert them into the Lead Pipeline. If a user asks to update a lead, use 'update_lead'. If the user mentions moving someone from a hiree/lead to a driver/client, use 'update_lead' to change their stage to 'Closed' AND simultaneously use 'create_client' to add them to the Ledger. CRITICAL: Before you call 'add_lead', you MUST ALWAYS ask the user to specify all necessary missing fields for a new lead/prospect if they did not provide them (e.g. Contact Info, Est. Value / Quote Value / Commitment Level). Do not guess these values.
 10. ADDING TO LEDGER: When a user explicitly mentions hiring a new driver, adding a new member, or closing a new client, you MUST use the 'create_client' tool to add them directly to the Client Ledger. This is a digital system action that YOU MUST PERFORM IMMEDIATELY. Even if you also create a "Today's Task" for a human to perform physical onboarding, the digital record in the Ledger must be created by you first. For Dispatchers, "Drivers" are clients. For Organizers, "Members" are clients. CRITICAL: Before you call 'create_client', you MUST ALWAYS ask the user to specify ALL necessary fields required for their business type if they did not provide them (e.g. Assigned Route & Work Days for Dispatchers; Products Bought & Total Spent for Ecomm; Service Type & LTV for Local Service). Do not guess these values.
 11. AUTONOMOUS SCHEDULING & TASK MANAGEMENT: You are fully authorized and expected to autonomously manage the user's schedule and daily tasks. As you converse with the user and identify priorities, upcoming events, or shifts in strategy, proactively use 'create_task', 'update_task', and 'add_calendar_event' to keep their Tactical Calendar updated in real-time, even if they don't explicitly ask you to schedule something. Adapt their "Today's Tasks" list seamlessly. NEVER use the word "Kanban".
@@ -440,9 +440,6 @@ RULES OF ENGAGEMENT:
         try {
           if (call.name === "create_task") {
             frontendActions.push({ type: 'create_task', payload: call.args });
-            if (supabase) {
-              await supabase.from('tasks').insert([{ title: call.args.title, status: call.args.column_id, agent: call.args.assigned_agent || 'CEO', scheduled_time: call.args.scheduled_time || null, user_id: userId }]);
-            }
             toolResults.push(`Task '${call.args.title}' added to Today's Tasks${call.args.scheduled_time ? ` and scheduled for ${call.args.scheduled_time}` : ''}.`);
           } 
           else if (call.name === "trigger_creative_agent") {
@@ -456,8 +453,8 @@ RULES OF ENGAGEMENT:
               if (creativeData.candidates && creativeData.candidates.length > 0 && creativeData.candidates[0].content.parts.length > 0) {
                 const part = creativeData.candidates[0].content.parts[0];
                 const contentText = part.text || "Asset generated.";
-                // Save to tasks board as done so it appears in the archive
-                await supabase.from('tasks').insert([{ title: call.args.prompt, status: 'done', agent: 'Creative', notes: contentText, user_id: userId }]);
+                
+                frontendActions.push({ type: 'create_task', payload: { title: call.args.prompt, column_id: 'done', assigned_agent: 'Creative', notes: contentText } });
                 toolResults.push(`Creative Agent successfully generated the asset and saved it to the Content Factory archive.`);
               } else {
                 toolResults.push(`Creative Agent failed to generate content.`);
@@ -468,109 +465,54 @@ RULES OF ENGAGEMENT:
           }
           else if (call.name === "update_business_profile") {
             frontendActions.push({ type: 'update_business_profile', payload: call.args });
-            if (supabase) {
-              await supabase.from('business_profile').upsert({ user_id: userId, ...call.args });
-            }
             toolResults.push(`Business Profile updated successfully.`);
           }
           else if (call.name === "create_agent") {
             frontendActions.push({ type: 'create_agent', payload: call.args });
-            if (supabase) {
-              await supabase.from('agents').insert([{ role_name: call.args.role_name, persona_description: call.args.persona_description, user_id: userId }]);
-            }
             toolResults.push(`Agent '${call.args.role_name}' successfully hired.`);
           }
           else if (call.name === "add_lead") {
             frontendActions.push({ type: 'add_lead', payload: call.args });
-            if (supabase) {
-              await supabase.from('leads').insert([{ ...call.args, user_id: userId }]);
-            }
             toolResults.push(`Lead '${call.args.name}' added to pipeline.`);
           }
           else if (call.name === "add_multiple_leads") {
             frontendActions.push({ type: 'add_multiple_leads', payload: call.args });
-            if (supabase) {
-               const insertData = call.args.leads.map(l => ({ ...l, user_id: userId }));
-               await supabase.from('leads').insert(insertData);
-            }
             toolResults.push(`${call.args.leads.length} leads added to pipeline.`);
           }
           else if (call.name === "update_lead") {
             frontendActions.push({ type: 'update_lead', payload: call.args });
-            if (supabase) {
-              const updateData = { stage: call.args.stage };
-              if (call.args.next_step) updateData.next_step = call.args.next_step;
-              if (call.args.prob) updateData.prob = call.args.prob;
-              
-              const { data, error } = await supabase.from('leads').update(updateData).eq('name', call.args.name).eq('user_id', userId).select();
-              if (data && data.length > 0) {
-                toolResults.push(`Lead '${call.args.name}' successfully moved to ${call.args.stage}.`);
-              } else {
-                toolResults.push(`Failed to update. Could not find a lead named '${call.args.name}' in the database.`);
-              }
-            } else {
-              toolResults.push(`Lead '${call.args.name}' successfully updated.`);
-            }
+            toolResults.push(`Lead '${call.args.name}' successfully updated.`);
           }
           else if (call.name === "create_client") {
             frontendActions.push({ type: 'create_client', payload: call.args });
-            if (supabase) {
-              await supabase.from('clients').insert([{ ...call.args, user_id: userId }]);
-            }
             toolResults.push(`Client '${call.args.name}' added to ledger.`);
           }
           else if (call.name === "add_multiple_clients") {
             frontendActions.push({ type: 'add_multiple_clients', payload: call.args });
-            if (supabase) {
-               const insertData = call.args.clients.map(c => ({ ...c, user_id: userId }));
-               await supabase.from('clients').insert(insertData);
-            }
             toolResults.push(`${call.args.clients.length} clients added to ledger.`);
           }
           else if (call.name === "create_campaign") {
-            await supabase.from('campaigns').insert([{ ...call.args, user_id: userId }]);
+            frontendActions.push({ type: 'create_campaign', payload: call.args });
             toolResults.push(`Campaign '${call.args.name}' added.`);
           }
           else if (call.name === "add_calendar_event") {
             frontendActions.push({ type: 'add_calendar_event', payload: call.args });
-            if (supabase) {
-              await supabase.from('calendar_events').insert([{ ...call.args, user_id: userId }]);
-            }
             toolResults.push(`Event '${call.args.task_name}' scheduled for ${call.args.day_of_week}.`);
           }
           else if (call.name === "add_inventory_item") {
             frontendActions.push({ type: 'add_inventory_item', payload: call.args });
-            if (supabase) {
-              const { error } = await supabase.from('inventory').insert([{ ...call.args, user_id: userId }]);
-              if (error) console.error("Inventory insert error:", error);
-            }
             toolResults.push(`Inventory item '${call.args.product_name}' synced.`);
           }
           else if (call.name === "store_plan") {
             frontendActions.push({ type: 'store_plan', payload: call.args });
-            if (supabase) {
-              const { error } = await supabase.from('plans').insert([{ ...call.args, user_id: userId }]);
-              if (error) console.error("Plan insert error:", error);
-            }
             toolResults.push(`Plan '${call.args.title}' stored successfully in the Planning Section.`);
           }
           else if (call.name === "update_plan") {
             frontendActions.push({ type: 'update_plan', payload: call.args });
-            if (supabase) {
-              const updateData = {};
-              if (call.args.title) updateData.title = call.args.title;
-              if (call.args.content) updateData.content = call.args.content;
-              const { error } = await supabase.from('plans').update(updateData).or(`id.eq.${call.args.plan_id_or_title},title.eq.${call.args.plan_id_or_title}`).eq('user_id', userId);
-              if (error) console.error("Plan update error:", error);
-            }
             toolResults.push(`Plan '${call.args.plan_id_or_title}' updated with new adaptations.`);
           }
           else if (call.name === "draft_document") {
             frontendActions.push({ type: 'draft_document', payload: call.args });
-            if (supabase) {
-              const { error } = await supabase.from('documents').insert([{ ...call.args, user_id: userId }]);
-              if (error) console.error("Document insert error:", error);
-            }
             toolResults.push(`Document '${call.args.title}' drafted and presented to user for review.`);
           }
         } catch (dbError) {

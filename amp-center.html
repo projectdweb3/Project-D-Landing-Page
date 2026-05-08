@@ -5,6 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <title>AMP Center | Project D</title>
+  <style>
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0 !important; }
+    #google_translate_element { display: none !important; }
+    .skiptranslate { display: none !important; }
+    body.translated-ltr, body.translated-rtl { top: 0 !important; }
+  </style>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,es', autoDisplay: false}, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -254,6 +267,7 @@
 </head>
 
 <body>
+  <div id="google_translate_element"></div>
   <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-gray-50 dark:bg-[#0b0f19]"
     id="bg-container"></div>
   <div id="root" class="relative z-10 w-full min-h-[100dvh] flex text-gray-800 dark:text-gray-200"></div>
@@ -373,6 +387,28 @@
       );
     };
 
+    const LanguageToggle = () => {
+      const [lang, setLang] = useState(() => localStorage.getItem('amp_language') || 'en');
+      
+      const toggle = () => {
+        const newLang = lang === 'en' ? 'es' : 'en';
+        setLang(newLang);
+        localStorage.setItem('amp_language', newLang);
+        
+        const selectField = document.querySelector(".goog-te-combo");
+        if (selectField) {
+          selectField.value = newLang;
+          selectField.dispatchEvent(new Event('change'));
+        }
+      };
+
+      return (
+        <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm" title={`Switch to ${lang === 'en' ? 'Spanish' : 'English'}`}>
+          <span className="text-[10px] font-bold uppercase">{lang === 'en' ? 'ES' : 'EN'}</span>
+        </button>
+      );
+    };
+
     const ThemeToggle = () => {
       const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
       const toggle = () => {
@@ -389,6 +425,7 @@
           <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
             <iconify-icon icon={isDark ? "solar:sun-linear" : "solar:moon-linear"} width="20"></iconify-icon>
           </button>
+          <LanguageToggle />
         </div>
       );
     };
@@ -2522,6 +2559,17 @@
               if (supabaseClient && session?.user?.id && action.table) {
                 await supabaseClient.from(action.table).delete().eq('id', action.id).eq('user_id', session.user.id);
               }
+            } else if (action.type === 'restore') {
+              if (action.key && action.data) {
+                const local = JSON.parse(localStorage.getItem(action.key) || '[]');
+                const idx = local.findIndex(x => x.id === action.data.id);
+                if (idx >= 0) local[idx] = action.data;
+                else local.push(action.data);
+                localStorage.setItem(action.key, JSON.stringify(local));
+              }
+              if (supabaseClient && session?.user?.id && action.table && action.data) {
+                await supabaseClient.from(action.table).update(action.data).eq('id', action.data.id).eq('user_id', session.user.id);
+              }
             }
           }
           window.dispatchEvent(new Event('amp-tasks-updated'));
@@ -2533,6 +2581,7 @@
           window.dispatchEvent(new Event('amp-profile-updated'));
           window.dispatchEvent(new Event('amp-team-messages'));
           window.dispatchEvent(new Event('amp-documents-updated'));
+          window.dispatchEvent(new Event('amp-plans-updated'));
           
           setLastActionBatch(null);
           appendMessage({ 
@@ -2708,9 +2757,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 5. Recurring Human Tasks: If the user mentions a recurring schedule (e.g., "every morning at 9am" or "every Wednesday"), use 'create_task' for the immediate next occurrence, and clarify in your response that it has been added to Today's Tasks. You may also use 'add_calendar_event' to document the recurring nature if needed.
 6. Multi-tool capability: You are capable of returning multiple action tools in a single response to accomplish complex workflows.]`;
 
+        const currentLanguage = localStorage.getItem('amp_language') || 'en';
+        const langRule = currentLanguage === 'es' ? '\n\n[CRITICAL LANGUAGE RULE: The user has selected Spanish (ES) as their preferred language. You MUST reply to them entirely in Spanish from now on. However, when using tools (like create_task, add_lead), you must keep the ENUM values (like stage names) in English, but you may translate the task titles and descriptions into Spanish.]' : '';
+
         fetch('/.netlify/functions/agent', {
           method: 'POST',
-          body: JSON.stringify({ userId: session?.user?.id, msg: msgText + systemPromptAddon, history: messages.map(m => ({ sender: m.sender, text: m.text })), attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null, userProfile }),
+          body: JSON.stringify({ userId: session?.user?.id, msg: msgText + systemPromptAddon + langRule, history: messages.map(m => ({ sender: m.sender, text: m.text })), attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null, userProfile }),
         })
           .then(res => res.json().then(data => ({ status: res.status, data })))
           .then(({ status, data }) => {
@@ -2822,9 +2874,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     let local = JSON.parse(localStorage.getItem(`amp_tasks_${userProfile?.stage || 'Default'}`) || '[]');
                     const targetIdx = local.findIndex(t => t.id === action.payload.task_title_or_id || t.title.toLowerCase() === action.payload.task_title_or_id.toLowerCase());
                     if (targetIdx !== -1) {
+                      revertActions.push({ type: 'restore', table: 'tasks', key: `amp_tasks_${userProfile?.stage || 'Default'}`, data: JSON.parse(JSON.stringify(local[targetIdx])) });
                       if (action.payload.priority) local[targetIdx].priority = action.payload.priority;
                       if (action.payload.status) local[targetIdx].status = action.payload.status;
                       localStorage.setItem(`amp_tasks_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('tasks').update({ priority: local[targetIdx].priority, status: local[targetIdx].status }).eq('id', local[targetIdx].id).eq('user_id', session.user.id).then(); }
                       window.dispatchEvent(new Event('amp-tasks-updated'));
                       logAction(`Updated Task: ${action.payload.task_title_or_id}`, 'CEO');
                     }
@@ -2833,6 +2887,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
                     local.push(payload);
                     localStorage.setItem(`amp_calendar_events_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('calendar_events').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-calendar-updated'));
                     revertActions.push({ type: 'delete', table: 'calendar_events', id: payload.id, key: `amp_calendar_events_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'update_business_profile') {
@@ -2842,12 +2897,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       try { parsed = JSON.parse(localData); } catch (e) {}
                     }
                     localStorage.setItem('amp_business_profile', JSON.stringify({ ...parsed, ...action.payload }));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('business_profile').upsert({ user_id: session.user.id, ...parsed, ...action.payload }).then(); }
                     window.dispatchEvent(new Event('amp-profile-updated'));
                   } else if (action.type === 'create_agent') {
                     const local = JSON.parse(localStorage.getItem('amp_custom_agents') || '[]');
                     const payload = { id: Date.now().toString(), name: action.payload.role_name, description: action.payload.persona_description, parent: action.payload.parent || 'CMO', created_at: new Date().toISOString() };
                     local.push(payload);
                     localStorage.setItem('amp_custom_agents', JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('agents').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-subagents-updated'));
                     logAction(`Hired Subagent: ${action.payload.role_name}`, 'CEO');
                     revertActions.push({ type: 'delete', table: 'agents', id: payload.id, key: 'amp_custom_agents' });
@@ -2858,6 +2915,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     localStorage.setItem('amp_documents', JSON.stringify(local));
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('documents').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-documents-updated'));
+          window.dispatchEvent(new Event('amp-plans-updated'));
                     logAction(`Drafted Document: ${action.payload.title}`, 'CEO');
                     revertActions.push({ type: 'delete', table: 'documents', id: payload.id, key: 'amp_documents' });
                   } else if (action.type === 'add_lead') {
@@ -2898,8 +2956,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
                     if (index >= 0) {
+                      revertActions.push({ type: 'restore', table: 'leads', key: `amp_leads_${userProfile?.stage || 'Default'}`, data: JSON.parse(JSON.stringify(local[index])) });
                       local[index] = { ...local[index], ...action.payload, updated_at: new Date().toISOString() };
                       localStorage.setItem(`amp_leads_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').update(action.payload).eq('id', local[index].id).eq('user_id', session.user.id).then(); }
                       window.dispatchEvent(new Event('amp-simulated-lead'));
                       logAction(`Updated Lead: ${action.payload.name}`, 'CEO');
                     }
@@ -2908,6 +2968,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
                     local.unshift(payload);
                     localStorage.setItem('amp_campaigns', JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('campaigns').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-campaigns-updated'));
                     logAction(`Launched Campaign: ${action.payload.name}`, 'CMO');
                     revertActions.push({ type: 'delete', table: 'campaigns', id: payload.id, key: 'amp_campaigns' });
@@ -2915,9 +2976,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
                     const targetIdx = local.findIndex(p => p.id === action.payload.plan_id_or_title || p.title.toLowerCase() === action.payload.plan_id_or_title.toLowerCase());
                     if (targetIdx !== -1) {
+                      revertActions.push({ type: 'restore', table: 'plans', key: 'amp_plans', data: JSON.parse(JSON.stringify(local[targetIdx])) });
                       if (action.payload.title) local[targetIdx].title = action.payload.title;
                       if (action.payload.content) local[targetIdx].content = action.payload.content;
                       localStorage.setItem('amp_plans', JSON.stringify(local));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('plans').update({ title: local[targetIdx].title, content: local[targetIdx].content }).eq('id', local[targetIdx].id).eq('user_id', session.user.id).then(); }
                       logAction(`Adapted Plan: ${action.payload.plan_id_or_title}`, 'CEO');
                     }
                   } else if (action.type === 'send_team_message') {
@@ -5340,6 +5403,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 </body>
 
 </html>
+
+
 
 
 
