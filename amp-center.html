@@ -2833,6 +2833,11 @@
         const clientNames = localClients.map(c => c.name).join(', ') || 'None';
 
         const systemPromptAddon = `\n\n[SYSTEM INSTRUCTION: You are an autonomous AI agent integrated directly into the AMP Center platform.
+CURRENT BUSINESS PROFILE (CRITICAL CONTEXT):
+- Business Name: ${userProfile?.company_name || 'Not Provided'}
+- Business Stage/Type: ${userProfile?.stage || 'Not Provided'}
+- Bio/Details: ${userProfile?.bio || 'None'}
+If the user tells you they have completed their profile, DO NOT ask them to do it again. Acknowledge their business type and ask how you can assist them today.
 CRITICAL Rule on Execution: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools, you must explicitly inform the user instead of faking it.
 
 Available Tools & Channels:
