@@ -90,11 +90,17 @@ RULES OF ENGAGEMENT:
     let contents = [];
     const history = body.history || [];
 
+    let lastRole = null;
     for (const msg of history) {
-      if (msg.sender === 'user') {
-        contents.push({ role: 'user', parts: [{ text: msg.text }] });
-      } else if (msg.sender === 'ceo' || msg.sender === 'bot') {
-        contents.push({ role: 'model', parts: [{ text: msg.text }] });
+      const isUser = msg.sender === 'user' || msg.sender === 'primary_user';
+      const role = isUser ? 'user' : 'model';
+      
+      // Prevent consecutive identical roles by appending to the last message
+      if (role === lastRole && contents.length > 0) {
+        contents[contents.length - 1].parts.push({ text: "\n\n" + msg.text });
+      } else {
+        contents.push({ role: role, parts: [{ text: msg.text }] });
+        lastRole = role;
       }
     }
 
@@ -112,9 +118,15 @@ RULES OF ENGAGEMENT:
     }
 
     if (userParts.length > 0) {
-      contents.push({ role: 'user', parts: userParts });
+      if (lastRole === 'user') {
+        contents[contents.length - 1].parts.push(...userParts);
+      } else {
+        contents.push({ role: 'user', parts: userParts });
+      }
     } else if (contents.length === 0) {
       contents.push({ role: 'user', parts: [{ text: "Hello" }] }); // fallback
+    } else if (lastRole !== 'user') {
+      contents.push({ role: 'user', parts: [{ text: "Please continue." }] });
     }
 
     const payload = {
