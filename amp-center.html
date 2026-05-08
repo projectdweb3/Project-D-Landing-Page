@@ -389,8 +389,11 @@
 
     const LanguageToggle = () => {
       const [lang, setLang] = useState(() => localStorage.getItem('amp_language') || 'en');
+      const [isSwitching, setIsSwitching] = useState(false);
       
       const toggle = () => {
+        if (isSwitching) return;
+        setIsSwitching(true);
         const newLang = lang === 'en' ? 'es' : 'en';
         setLang(newLang);
         localStorage.setItem('amp_language', newLang);
@@ -400,6 +403,7 @@
           selectField.value = newLang;
           selectField.dispatchEvent(new Event('change'));
         }
+        setTimeout(() => setIsSwitching(false), 500);
       };
 
       return (
