@@ -403,7 +403,7 @@
       };
 
       return (
-        <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm" title={`Switch to ${lang === 'en' ? 'Spanish' : 'English'}`}>
+        <button onClick={toggle} disabled={isSwitching} className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder transition-all text-gray-600 dark:text-gray-400 shadow-sm ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:text-pd-teal'}`} title={`Switch to ${lang === 'en' ? 'Spanish' : 'English'}`}>
           <span className="text-[10px] font-bold uppercase">{lang === 'en' ? 'ES' : 'EN'}</span>
         </button>
       );
@@ -422,7 +422,7 @@
           <a href="index.html" className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
             <iconify-icon icon="solar:home-2-linear" width="20"></iconify-icon>
           </a>
-          <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
+          <button onClick={toggle} disabled={isSwitching} className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder transition-all text-gray-600 dark:text-gray-400 shadow-sm ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:text-pd-teal'}`}>
             <iconify-icon icon={isDark ? "solar:sun-linear" : "solar:moon-linear"} width="20"></iconify-icon>
           </button>
           <LanguageToggle />
@@ -1824,10 +1824,11 @@
 
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).single();
-            if (data) {
-              loadedProfile = { ...loadedProfile, ...data };
-              setupNeeded = !data.company_name?.trim() || !data.stage;
+            const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).order('updated_at', { ascending: false }).limit(1);
+            if (data && data.length > 0) {
+              const latestData = data[0];
+              loadedProfile = { ...loadedProfile, ...latestData };
+              setupNeeded = !latestData.company_name?.trim() || !latestData.stage;
               localStorage.setItem('amp_business_profile', JSON.stringify(loadedProfile));
             }
           } catch(e) {
@@ -5403,6 +5404,9 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 </body>
 
 </html>
+
+
+
 
 
 
