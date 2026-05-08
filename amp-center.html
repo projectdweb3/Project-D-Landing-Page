@@ -2896,6 +2896,7 @@ Available Tools & Channels:
 5. 'add_multiple_leads' or 'add_lead' -> Populates 'Hiring Pipeline' or 'Marketing Pipeline'. Payload: { leads: [{name, email, phone}] } or { name, contact, stage, value, prob, next_step }.
 6. 'create_client' -> Populates the 'Client Ledger' (Drivers/Members). Payload: { name: '...' }.
 7. 'create_task' -> Populates the "Today's Tasks" list (also known as "Active Tasks"). If a task must be done by the user in real life (IRL) and you cannot do it automatically (like physically checking vans, calling someone, etc.), use this tool to add it to their "Today's Tasks". Always refer to this as "Today's Tasks".
+8. 'add_inventory_item' -> Populates the 'Inventory Tracking' ledger. This tool works for ANY product data found in screenshots, including Shopify, Etsy, WooCommerce, spreadsheets, or tables. Payload: { product_name: '...', sku_link: '...', stock: '...', price: '...' }.
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
@@ -2907,7 +2908,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 3. Assigning IRL Human Tasks: For IRL tasks, you MUST use the 'create_task' tool to add it to "Today's Tasks". IMPORTANT: Do NOT include a 'scheduled_time' in the payload for human tasks. Leaving 'scheduled_time' empty is how the system knows it is a human task that should wait for the user to manually complete it.
 4. "Team" vs "Clients": When the user refers to the "team" (e.g., "team meeting"), they are referring to the human management staff operating this platform, NOT the drivers, members, or clients. Do not assign team meetings to drivers/clients.
 5. Recurring Human Tasks: If the user mentions a recurring schedule (e.g., "every morning at 9am" or "every Wednesday"), use 'create_task' for the immediate next occurrence, and clarify in your response that it has been added to Today's Tasks. You may also use 'add_calendar_event' to document the recurring nature if needed.
-6. Multi-tool capability: You are capable of returning multiple action tools in a single response to accomplish complex workflows.]`;
+6. Multi-tool capability: You are capable of returning multiple action tools in a single response to accomplish complex workflows.
+7. Image Analysis & Universal Data Extraction: ALWAYS carefully analyze any new images provided. You are capable of extracting data from Shopify, Etsy, Amazon, or any online store listing, as well as spreadsheets, CRM screenshots, PDF exports, and handwritten tables. You must recognize which channel the data belongs to (e.g. Leads, Clients/Members, Inventory, or Tasks) and use the corresponding tool (add_lead, create_client, add_inventory_item, or create_task). This applies to ALL business stages/types. Do not assume images contain the same data as previous ones. Extract exactly what is in the new image. If multiple items/rows are present, use the relevant tool for EACH item found.]`;
 
         const currentLanguage = localStorage.getItem('amp_language') || 'en';
         const langRule = currentLanguage === 'es' ? '\n\n[CRITICAL LANGUAGE RULE: The user has selected Spanish (ES) as their preferred language. You MUST reply to them entirely in Spanish from now on. However, when using tools (like create_task, add_lead), you must keep the ENUM values (like stage names) in English, but you may translate the task titles and descriptions into Spanish.]' : '';
@@ -3003,9 +3005,13 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   };
 
                   if (action.type === 'add_inventory_item') {
-                    const local = JSON.parse(localStorage.getItem('amp_inventory') || '[]');
-                    local.push({ id: Date.now() + Math.random(), ...action.payload, created_at: new Date().toISOString() });
-                    localStorage.setItem('amp_inventory', JSON.stringify(local));
+                    const stageKey = `amp_inventory_${userProfile?.stage || 'Default'}`;
+                    const local = JSON.parse(localStorage.getItem(stageKey) || '[]');
+                    const invPayload = { id: Date.now().toString() + Math.random().toString(36).substr(2, 5), ...action.payload, business_stage: userProfile?.stage || 'Default', user_id: session?.user?.id || 'local', created_at: new Date().toISOString() };
+                    local.push(invPayload);
+                    localStorage.setItem(stageKey, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) { supabaseClient.from('inventory').insert([invPayload]).then(); }
+                    window.dispatchEvent(new Event('amp-inventory-updated'));
                   } else if (action.type === 'create_plan' || action.type === 'store_plan') {
                     const local = JSON.parse(localStorage.getItem('amp_plans') || '[]');
                     const payload = { id: Date.now().toString(), ...action.payload, created_at: new Date().toISOString() };
@@ -4069,6 +4075,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         
         const handleSync = () => fetchInventory();
         window.addEventListener('amp-simulated-sale', handleSync);
+        window.addEventListener('amp-inventory-updated', handleSync);
         
         if (supabaseClient) {
           const channel = supabaseClient.channel('realtime:inventory')
@@ -4077,10 +4084,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           return () => { 
             supabaseClient.removeChannel(channel); 
             window.removeEventListener('amp-simulated-sale', handleSync);
+            window.removeEventListener('amp-inventory-updated', handleSync);
           };
         }
         
-        return () => window.removeEventListener('amp-simulated-sale', handleSync);
+        return () => {
+          window.removeEventListener('amp-simulated-sale', handleSync);
+          window.removeEventListener('amp-inventory-updated', handleSync);
+        };
       }, []);
 
       const getAssignedAgent = (productName) => {
