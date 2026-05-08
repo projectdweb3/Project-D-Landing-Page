@@ -936,12 +936,19 @@
       const handleEditUser = async (userId, currentName) => {
         const newName = prompt("Enter new name for this user:", currentName);
         if (newName && newName.trim() && newName !== currentName) {
+          const updatedName = newName.trim();
+          
+          // Update local state immediately for responsiveness
+          const updated = accountUsers.map(u => u.id === userId ? { ...u, name: updatedName } : u);
+          setAccountUsers(updated);
+          localStorage.setItem('amp_account_users', JSON.stringify(updated));
+
           if (supabaseClient && session?.user?.id) {
-             await supabaseClient.from('account_users').update({ name: newName.trim() }).eq('id', userId).eq('user_id', session.user.id);
-          } else {
-             const updated = accountUsers.map(u => u.id === userId ? { ...u, name: newName.trim() } : u);
-             setAccountUsers(updated);
-             localStorage.setItem('amp_account_users', JSON.stringify(updated));
+             try {
+               await supabaseClient.from('account_users').update({ name: updatedName }).eq('id', userId).eq('user_id', session.user.id);
+             } catch (e) {
+               console.error("Failed to update user in Supabase", e);
+             }
           }
         }
       };
