@@ -978,7 +978,7 @@
               bio: userProfile.bio,
               stage: userProfile.stage,
               store_link: userProfile.store_link,
-              updated_at: new Date()
+              updated_at: new Date().toISOString()
             });
               if (error) throw error;
           } catch(e) {
@@ -1887,7 +1887,7 @@
       };
 
       const checkProfile = async () => {
-        let loadedProfile = { company_name: '', bio: '', stage: 'Solo' };
+        let loadedProfile = { company_name: '', bio: '', stage: 'Solo', store_link: '', integrations: {} };
         let setupNeeded = true;
         
         try {
@@ -1903,11 +1903,19 @@
 
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).order('updated_at', { ascending: false }).limit(1);
+            const { data, error } = await supabaseClient.from('business_profile').select('*').eq('user_id', session.user.id).order('updated_at', { ascending: false }).order('created_at', { ascending: false }).limit(1);
             if (data && data.length > 0) {
               const latestData = data[0];
-              loadedProfile = { ...loadedProfile, ...latestData };
-              setupNeeded = !latestData.company_name?.trim() || !latestData.stage;
+              // Merge: Only overwrite if remote data is actually present
+              const merged = { ...loadedProfile };
+              if (latestData.company_name) merged.company_name = latestData.company_name;
+              if (latestData.bio) merged.bio = latestData.bio;
+              if (latestData.stage) merged.stage = latestData.stage;
+              if (latestData.store_link) merged.store_link = latestData.store_link;
+              if (latestData.integrations) merged.integrations = { ...merged.integrations, ...latestData.integrations };
+              
+              loadedProfile = merged;
+              setupNeeded = !loadedProfile.company_name?.trim() || !loadedProfile.stage;
               localStorage.setItem('amp_business_profile', JSON.stringify(loadedProfile));
             }
           } catch(e) {
