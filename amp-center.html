@@ -5565,14 +5565,44 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
     const FormatText = ({ text }) => {
       if (!text) return null;
-      return text.split('\n').map((line, idx) => (
-        <React.Fragment key={idx}>
-          {line.split(/\*\*(.*?)\*\*/g).map((part, i) => (
-            i % 2 === 1 ? <strong key={i} className="font-bold">{part}</strong> : <span key={i}>{part}</span>
-          ))}
-          {idx < text.split('\n').length - 1 && <br />}
-        </React.Fragment>
-      ));
+
+      const renderInline = (str, keyPrefix) => {
+        // Split on **bold** first, then *italic* within remaining text
+        const boldParts = str.split(/(\*\*.*?\*\*)/g);
+        return boldParts.map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={`${keyPrefix}-b${i}`} className="font-bold">{part.slice(2, -2)}</strong>;
+          }
+          // Handle *italic* within non-bold segments
+          const italicParts = part.split(/(\*[^*]+?\*)/g);
+          return italicParts.map((ip, j) => {
+            if (ip.startsWith('*') && ip.endsWith('*') && ip.length > 2) {
+              return <em key={`${keyPrefix}-i${i}-${j}`} className="italic">{ip.slice(1, -1)}</em>;
+            }
+            return <span key={`${keyPrefix}-s${i}-${j}`}>{ip}</span>;
+          });
+        });
+      };
+
+      const lines = text.split('\n');
+      return lines.map((line, idx) => {
+        // Render bullet lines (- item or * item at line start)
+        const bulletMatch = line.match(/^(\s*)[\-\*]\s+(.*)/);
+        if (bulletMatch) {
+          return (
+            <div key={idx} className="flex gap-2 my-0.5">
+              <span className="text-pd-teal mt-0.5 shrink-0">•</span>
+              <span>{renderInline(bulletMatch[2], `${idx}`)}</span>
+            </div>
+          );
+        }
+        return (
+          <React.Fragment key={idx}>
+            {renderInline(line, `${idx}`)}
+            {idx < lines.length - 1 && <br />}
+          </React.Fragment>
+        );
+      });
     };
 
     const App = () => {
