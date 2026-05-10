@@ -94,10 +94,21 @@ RULES OF ENGAGEMENT:
 9. ADDING TO LEDGER: When a user mentions hiring a driver, adding a member, or closing a client, use 'create_client'. Ask for required fields first (Route & Work Days for Dispatchers, Products for Ecomm, etc.). Don't guess.
 10. AUTONOMOUS SCHEDULING: You CAN proactively manage calendar and tasks based on conversation — but gently. "I noticed you mentioned a team sync Friday — want me to add that to your calendar?"
 11. Be honest. If you say you're doing something, use the tool. Don't hallucinate actions.
-12. WEB BROWSING: You cannot browse URLs. If a user wants to sync inventory, instruct them to upload screenshots and use your vision to extract the data.
+12. WEB SEARCH & RESEARCH: You HAVE the ability to search Google in real-time via the google_search tool. When asked to find leads, research a business, look up competitors, or verify any real-world information — USE IT. You CAN find real businesses, real contact info, real addresses, and real reviews. However, you cannot directly load or scrape a specific URL. If a user wants to sync inventory from a URL, instruct them to upload screenshots.
 13. STRATEGIC PLANNING: When asked to create a plan, use 'store_plan'. For marketing campaigns, also use 'create_campaign'. When creating a plan, recognize actionable tasks within it and use 'create_task' to log them.
 14. EXECUTING PLANS: When the user hits "Execute Plan", use 'update_task' to move tasks to 'in_progress' and proceed with further tool calls.
-15. LEAD GENERATION: When explicitly asked to find leads, ensure you know the target audience and location first. Generate realistic leads and use 'add_multiple_leads'.
+15. LEAD GENERATION & PIPELINE STAGES: When asked to find leads, you MUST use Google Search to find REAL businesses that match the user's criteria. Here's how:
+   - First, confirm the target audience and location if not already known from the business context.
+   - Use Google Search to find real businesses: search for things like "[industry] businesses in [city]" or "[service type] companies near [location]".
+   - Extract real business names, addresses, phone numbers, and websites from the search results.
+   - Use 'add_multiple_leads' to add them ALL to the pipeline.
+   - PIPELINE STAGE RULES (CRITICAL):
+     * 'Inbound' = leads that came TO US first (form submissions, referrals, people who reached out). NEVER put outbound/researched leads here.
+     * 'Qualifying' = leads WE found or researched (Google Search results, cold prospects, scraped lists). This is the DEFAULT stage for any lead the AI generates.
+     * 'Negotiation' = leads that are actively in conversation about pricing/scope.
+   - Set initial value to '$0' and probability to '0%' for cold prospects.
+   - Include real info: business name, phone, address, website, and a 'next_step' like 'Research online presence' or 'Send intro email'.
+   - NEVER fabricate fake businesses. If Google Search returns results, use those real businesses. If you can't find enough, tell the user honestly.
 16. SOCIAL MEDIA: Check 'Active Integrations' before posting. If a platform isn't connected, tell them to pair it in Settings.
 17. ADAPTING PLANS: When a user wants to modify a plan, use 'update_plan'.
 18. CSV & SPREADSHEET IMPORTS: If CSV data or a spreadsheet screenshot is provided, auto-analyze and import using the appropriate bulk tool.
@@ -230,13 +241,13 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "add_lead",
-              description: "Adds a new lead to the CRM Pipeline.",
+              description: "Adds a new lead to the CRM Pipeline. Use 'Qualifying' for leads YOU found via search. Use 'Inbound' ONLY for leads that contacted the user first.",
               parameters: {
                 type: "OBJECT",
                 properties: {
                   name: { type: "STRING" },
                   contact: { type: "STRING" },
-                  stage: { type: "STRING", description: "'Inbound', 'Qualifying', 'Negotiation'" },
+                  stage: { type: "STRING", description: "'Inbound' = lead came to us first. 'Qualifying' = we found/researched them (DEFAULT for searched leads). 'Negotiation' = actively discussing pricing/scope." },
                   value: { type: "STRING" },
                   prob: { type: "STRING" },
                   next_step: { type: "STRING" },
@@ -252,7 +263,7 @@ RULES OF ENGAGEMENT:
                 type: "OBJECT",
                 properties: {
                   name: { type: "STRING", description: "The name of the lead to update." },
-                  stage: { type: "STRING", description: "The new stage: 'Inbound', 'Qualifying', 'Negotiation'." },
+                  stage: { type: "STRING", description: "'Inbound' = came to us. 'Qualifying' = we found them. 'Negotiation' = active pricing talks." },
                   next_step: { type: "STRING", description: "Any new next steps." },
                   prob: { type: "STRING", description: "The updated win probability, e.g. '20%', '50%', etc." }
                 },
@@ -261,7 +272,7 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "add_multiple_leads",
-              description: "Adds multiple new leads to the CRM Pipeline at once. Use this when the user asks you to find or generate a list of leads.",
+              description: "Adds multiple new leads to the CRM Pipeline at once. Use this when finding leads via Google Search. Default stage is 'Qualifying' for researched/found leads. NEVER use 'Inbound' for leads that were searched for.",
               parameters: {
                 type: "OBJECT",
                 properties: {
@@ -503,7 +514,8 @@ RULES OF ENGAGEMENT:
               },
             }
           ]
-        }
+        },
+        { google_search: {} }
       ]
     };
 
