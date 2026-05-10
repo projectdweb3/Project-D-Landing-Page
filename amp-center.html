@@ -2091,9 +2091,41 @@
 
       const handleProfileSaved = async () => {
         setNeedsProfileSetup(false);
+        
+        // Read the just-saved profile from localStorage to get the latest stage
+        let savedStage = 'Solo';
+        let savedName = '';
+        try {
+          const localData = localStorage.getItem('amp_business_profile');
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            savedStage = parsed.stage || 'Solo';
+            savedName = parsed.company_name || '';
+          }
+        } catch(e) {}
+
+        // Build tailored welcome recommendations based on business type
+        let recommendations = '';
+        if (savedStage === 'Dispatcher') {
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your drivers/fleet members so I can track assignments.\n- **Tactical Calendar:** Schedule route check-ins and team meetings.\n- **Neural Chat:** Ask me to "optimize routes for this week" or "draft a driver onboarding checklist."\n- **Marketing Pipeline:** Let me prospect new contracts or freight opportunities.\n\nThink of the AMP Center as your **dispatch command hub** — everything from driver management to client outreach, organized in one place. I can handle the tedious data entry, outreach emails, and research while you focus on operations.`;
+        } else if (savedStage === 'Ecomm') {
+          recommendations = `**Here are some ways to get started:**\n- **Inventory Tracking:** Upload a screenshot of your store products and I will sync them instantly.\n- **Marketing Pipeline:** Ask me to "create a holiday promotion" or "analyze competitor pricing."\n- **Client Ledger:** Track your top customers and repeat buyers.\n- **Neural Chat:** Try "draft product descriptions for my new collection" or "plan a product launch."\n\nThink of the AMP Center as your **e-commerce headquarters** — inventory, marketing, customer data, and content creation all in one place. I handle the repetitive work like data entry, product research, and outreach so you can focus on growing your brand.`;
+        } else if (savedStage === 'Software') {
+          recommendations = `**Here are some ways to get started:**\n- **Strategic Planning:** Ask me to "draft an API spec" or "plan an agile sprint."\n- **Marketing Pipeline:** Let me research your target market or draft launch copy.\n- **Tactical Calendar:** Schedule standups, demos, and release milestones.\n- **Neural Chat:** Try "write onboarding documentation" or "create a technical roadmap."\n\nThink of the AMP Center as your **product operations hub** — sprint planning, go-to-market strategy, and team coordination all centralized. I can accelerate the mundane tasks like documentation, research, and outreach.`;
+        } else if (savedStage === 'Organizer') {
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your members, volunteers, or organizers.\n- **Marketing Pipeline:** Ask me to "draft a fundraising email" or "plan a community event."\n- **Tactical Calendar:** Schedule rallies, meetings, and outreach campaigns.\n- **Neural Chat:** Try "create a volunteer sign-up campaign" or "research local grant opportunities."\n\nThink of the AMP Center as your **organizing command center** — membership tracking, event planning, and communications all unified. I handle the research, outreach drafting, and data management so you can focus on the mission.`;
+        } else if (savedStage === 'Local Service') {
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your existing clients so I can help manage relationships.\n- **Marketing Pipeline:** Ask me to "find 10 potential clients in my area" or "draft a follow-up email."\n- **Tactical Calendar:** Schedule appointments, jobs, and follow-ups.\n- **Neural Chat:** Try "create a Facebook ad for my services" or "draft an invoice template."\n\nThink of the AMP Center as your **business hub** — client management, scheduling, marketing, and invoicing all in one place. I handle the data entry, cold outreach research, and content creation so you can focus on delivering great service.`;
+        } else {
+          recommendations = `**Here are some ways to get started:**\n- **Marketing Pipeline:** Ask me to "find potential leads" or "create a content strategy."\n- **Strategic Planning:** Let me draft business plans, proposals, or competitive analyses.\n- **Tactical Calendar:** Schedule meetings, deadlines, and milestones.\n- **Neural Chat:** Try "analyze my target audience" or "draft a cold outreach sequence."\n\nThink of the AMP Center as the **hub of your business** — everything from lead management to content creation to scheduling, organized in one place. I handle the repetitive tasks like data entry, outreach, and research so you can focus on what matters.`;
+        }
+
+        const welcomeText = `Profile locked in. Welcome aboard${savedName ? ', **' + savedName + '**' : ''}.\n\nYour ${savedStage} workspace is fully configured and your team of specialized agents is standing by.\n\n${recommendations}`;
+
+        // Use 'ceo' sender to directly append the message without triggering AI backend
         setTriggerPrompt({
-          sender: 'user',
-          text: `I have completed my Business Profile settings. You now have access to my business details.`,
+          sender: 'ceo',
+          text: welcomeText,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         setActiveModule('neural-chat');
