@@ -2929,11 +2929,12 @@ PERSONALITY & COMMUNICATION STYLE (CRITICAL):
 - Use bold (**like this**) to highlight key actions you took or key info, so the user can scan quickly.
 - When you take actions, summarize what you did in plain English: "Done — I added Sarah to your client list and scheduled a follow-up for Thursday."
 
-PROACTIVE INTELLIGENCE (CRITICAL):
+PROACTIVE INTELLIGENCE & DIRECT ACTION (CRITICAL):
 - You are not just a command-taker. You are a proactive partner. READ THE CONVERSATION and spot opportunities.
+- DIRECT REQUESTS = IMMEDIATE EXECUTION: When the user says "add a user named Jakob", "create a lead for Sarah", "schedule a meeting Thursday", etc. — you MUST call the corresponding tool IMMEDIATELY in the same response. NO bullet-point menus, NO "we could do A or B", NO asking for confirmation when the request is already clear. Just execute.
+- MISSING INFO PROTOCOL: If a direct request is missing a required field (e.g. "add a client" but no name given), ask for ONLY the missing piece in one short question. When they respond, execute immediately. Never ask more than one round of follow-up.
 - If the user mentions something casually (a new contact, an upcoming meeting, a problem, an idea), and you think taking action would help them, SUGGEST IT and ASK FIRST. Example: "It sounds like Mike could be a solid lead — want me to add him to your pipeline so we can track the follow-up?" or "You mentioned a team sync on Friday — should I put that on your calendar?"
 - NEVER take proactive action silently. Always ask: "Want me to handle that?" / "Should I go ahead and...?" / "I can take care of that — want me to?"
-- When the user DIRECTLY REQUESTS something (e.g., "add a lead," "schedule a meeting," "create a task"), execute it immediately without asking for confirmation — they already told you what to do.
 - If the user gives you a vague request, ask ONE clarifying question max, then act. Don't interrogate them.
 
 CURRENT BUSINESS PROFILE (CRITICAL CONTEXT):
@@ -3232,31 +3233,35 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     logAction(`Sent Team Announcement`, action.payload.agent_name || 'CEO');
                     revertActions.push({ type: 'delete', table: 'team_messages', id: payload.id, key: 'amp_team_messages' });
                   } else if (action.type === 'add_user') {
-                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
-                    if (users.length < 5 && !users.find(u => u.toLowerCase() === action.payload.name.toLowerCase())) {
-                      users.push(action.payload.name);
-                      localStorage.setItem('amp_users', JSON.stringify(users));
-                      window.dispatchEvent(new Event('amp-users-changed'));
-                      logAction(`Added User: ${action.payload.name}`, 'CEO');
+                    const users = JSON.parse(localStorage.getItem('amp_account_users') || '[{"id":"1","name":"Primary User"}]');
+                    const nameToAdd = action.payload.name;
+                    if (users.length < 5 && !users.find(u => u.name.toLowerCase() === nameToAdd.toLowerCase())) {
+                      const newUser = { id: Date.now().toString(), name: nameToAdd };
+                      users.push(newUser);
+                      localStorage.setItem('amp_account_users', JSON.stringify(users));
+                      // Trigger React's storage listener to update state immediately
+                      window.dispatchEvent(new StorageEvent('storage', { key: 'amp_account_users', newValue: JSON.stringify(users) }));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('account_users').insert([{ ...newUser, user_id: session.user.id }]).then(); }
+                      logAction(`Added User: ${nameToAdd}`, 'CEO');
                     }
                   } else if (action.type === 'edit_user') {
-                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
-                    const idx = users.findIndex(u => u.toLowerCase() === action.payload.current_name.toLowerCase());
-                    if (idx !== -1 && users[idx] !== 'Primary User') {
-                      revertActions.push({ type: 'restore', table: 'users', key: 'amp_users', data: [...users] });
-                      users[idx] = action.payload.new_name;
-                      localStorage.setItem('amp_users', JSON.stringify(users));
-                      window.dispatchEvent(new Event('amp-users-changed'));
+                    const users = JSON.parse(localStorage.getItem('amp_account_users') || '[{"id":"1","name":"Primary User"}]');
+                    const idx = users.findIndex(u => u.name.toLowerCase() === action.payload.current_name.toLowerCase());
+                    if (idx !== -1 && users[idx].name !== 'Primary User') {
+                      users[idx].name = action.payload.new_name;
+                      localStorage.setItem('amp_account_users', JSON.stringify(users));
+                      window.dispatchEvent(new StorageEvent('storage', { key: 'amp_account_users', newValue: JSON.stringify(users) }));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('account_users').update({ name: action.payload.new_name }).eq('id', users[idx].id).eq('user_id', session.user.id).then(); }
                       logAction(`Renamed User: ${action.payload.current_name} → ${action.payload.new_name}`, 'CEO');
                     }
                   } else if (action.type === 'remove_user') {
-                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
-                    const idx = users.findIndex(u => u.toLowerCase() === action.payload.name.toLowerCase());
-                    if (idx !== -1 && users[idx] !== 'Primary User') {
-                      revertActions.push({ type: 'restore', table: 'users', key: 'amp_users', data: [...users] });
-                      users.splice(idx, 1);
-                      localStorage.setItem('amp_users', JSON.stringify(users));
-                      window.dispatchEvent(new Event('amp-users-changed'));
+                    const users = JSON.parse(localStorage.getItem('amp_account_users') || '[{"id":"1","name":"Primary User"}]');
+                    const idx = users.findIndex(u => u.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (idx !== -1 && users[idx].name !== 'Primary User') {
+                      const removed = users.splice(idx, 1)[0];
+                      localStorage.setItem('amp_account_users', JSON.stringify(users));
+                      window.dispatchEvent(new StorageEvent('storage', { key: 'amp_account_users', newValue: JSON.stringify(users) }));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('account_users').delete().eq('id', removed.id).eq('user_id', session.user.id).then(); }
                       logAction(`Removed User: ${action.payload.name}`, 'CEO');
                     }
                   } else if (action.type === 'update_client') {
