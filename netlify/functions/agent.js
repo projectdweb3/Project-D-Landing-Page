@@ -95,7 +95,11 @@ RULES OF ENGAGEMENT:
 18. CSV & SPREADSHEET IMPORTS: If CSV data or a spreadsheet screenshot is provided, auto-analyze and import using the appropriate bulk tool.
 19. STRICT FORMAT: Use the JSON function declarations for tool calls. NEVER output raw Python, tool_code blocks, or thought blocks. Keep responses clean and human.
 20. DRAFTING DOCUMENTS: For emails, letters, or outreach (not strategic plans), use 'draft_document'. Always present drafts for user confirmation before "sending."
-21. SUBAGENT CREATION: ONLY create new subagents with 'create_agent' if the user EXPLICITLY asks you to hire or create a new agent. The initial agent team is set up during the onboarding genesis phase — do NOT auto-create agents after profile save.`;
+21. SUBAGENT CREATION: ONLY create new subagents with 'create_agent' if the user EXPLICITLY asks you to hire or create a new agent. The initial agent team is set up during the onboarding genesis phase — do NOT auto-create agents after profile save.
+22. USER MANAGEMENT: You can add, edit, or remove users on the account using 'add_user', 'edit_user', and 'remove_user'. If someone asks to add a user, just do it. If they ask to rename or remove a user, do it.
+23. CLIENT & LEAD EDITING: You can update existing client records with 'update_client', and remove leads or clients with 'remove_lead' and 'remove_client'. If a user says "change John's retainer to $5000" or "remove that lead", use the appropriate tool immediately.
+24. TEAM MESSAGING: You can send messages to team channels using 'send_team_message'. Use this when the user asks you to announce something or send a message to the team.
+25. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -390,6 +394,105 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["plan_id_or_title"],
               },
+            },
+            {
+              name: "add_user",
+              description: "Adds a new user to the AMP Center account. Max 5 users per account.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The display name for the new user." }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "edit_user",
+              description: "Renames or edits an existing user on the account.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  current_name: { type: "STRING", description: "The current name of the user to edit." },
+                  new_name: { type: "STRING", description: "The new display name." }
+                },
+                required: ["current_name", "new_name"],
+              },
+            },
+            {
+              name: "remove_user",
+              description: "Removes a user from the account. Cannot remove the Primary User.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The name of the user to remove." }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "update_client",
+              description: "Updates an existing client's information in the Client Ledger. Use this to change retainer, LTV, assigned agents, name, or next task.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The name of the client to update." },
+                  new_name: { type: "STRING", description: "Optional. Change the client's name." },
+                  retainer: { type: "STRING", description: "Optional. Updated retainer amount." },
+                  ltv: { type: "STRING", description: "Optional. Updated lifetime value." },
+                  assigned_agents: { type: "STRING", description: "Optional. Change assigned agents." },
+                  next_task: { type: "STRING", description: "Optional. Update next task." }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "remove_lead",
+              description: "Removes a lead from the CRM Pipeline by name.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The name of the lead to remove." }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "remove_client",
+              description: "Removes a client from the Client Ledger by name.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The name of the client to remove." }
+                },
+                required: ["name"],
+              },
+            },
+            {
+              name: "send_team_message",
+              description: "Sends a message or announcement to a team channel.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  message: { type: "STRING", description: "The message content to send." },
+                  channel: { type: "STRING", description: "Optional. Target channel: 'all', 'marketing', 'operations', 'creative'. Defaults to 'all'." },
+                  agent_name: { type: "STRING", description: "Optional. Which agent is sending. Defaults to 'CEO Agent'." }
+                },
+                required: ["message"],
+              },
+            },
+            {
+              name: "update_campaign",
+              description: "Updates an existing marketing campaign's name, description, or stage.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING", description: "The current name of the campaign to update." },
+                  new_name: { type: "STRING", description: "Optional. New campaign name." },
+                  description: { type: "STRING", description: "Optional. Updated description." },
+                  stage: { type: "STRING", description: "Optional. 'Planning', 'Active', 'Completed'." }
+                },
+                required: ["name"],
+              },
             }
           ]
         }
@@ -527,6 +630,38 @@ RULES OF ENGAGEMENT:
           else if (call.name === "draft_document") {
             frontendActions.push({ type: 'draft_document', payload: call.args });
             toolResults.push(`Document '${call.args.title}' drafted and presented to user for review.`);
+          }
+          else if (call.name === "add_user") {
+            frontendActions.push({ type: 'add_user', payload: call.args });
+            toolResults.push(`User '${call.args.name}' added to the account.`);
+          }
+          else if (call.name === "edit_user") {
+            frontendActions.push({ type: 'edit_user', payload: call.args });
+            toolResults.push(`User '${call.args.current_name}' renamed to '${call.args.new_name}'.`);
+          }
+          else if (call.name === "remove_user") {
+            frontendActions.push({ type: 'remove_user', payload: call.args });
+            toolResults.push(`User '${call.args.name}' removed from the account.`);
+          }
+          else if (call.name === "update_client") {
+            frontendActions.push({ type: 'update_client', payload: call.args });
+            toolResults.push(`Client '${call.args.name}' updated successfully.`);
+          }
+          else if (call.name === "remove_lead") {
+            frontendActions.push({ type: 'remove_lead', payload: call.args });
+            toolResults.push(`Lead '${call.args.name}' removed from the pipeline.`);
+          }
+          else if (call.name === "remove_client") {
+            frontendActions.push({ type: 'remove_client', payload: call.args });
+            toolResults.push(`Client '${call.args.name}' removed from the ledger.`);
+          }
+          else if (call.name === "send_team_message") {
+            frontendActions.push({ type: 'send_team_message', payload: call.args });
+            toolResults.push(`Message sent to ${call.args.channel || 'all'} channel.`);
+          }
+          else if (call.name === "update_campaign") {
+            frontendActions.push({ type: 'update_campaign', payload: call.args });
+            toolResults.push(`Campaign '${call.args.name}' updated.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);

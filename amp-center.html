@@ -2947,7 +2947,7 @@ FRAMING THE PLATFORM:
 - Your job is to help them USE every channel. If a channel is empty, look for natural moments in conversation to suggest populating it. Example: If they mention clients but their Client Ledger is empty, say "I notice your client list is empty — want to start adding your current clients so we can track everything in one place?"
 - Position the AI agents (yourself and the sub-agents) as a team that handles the boring stuff — data entry, drafting outreach, research, organizing info — so the user can focus on the work that actually makes them money.
 
-Available Tools & Channels:
+Available Tools & Channels (you have FULL CONTROL over every single one):
 1. 'send_team_message' -> Populates the 'Team Chat' channel. Payload: { agent_name: 'Your Name', message: '...', channel: 'all' }.
 2. 'add_calendar_event' -> Populates the 'Tactical Calendar'. Payload: { task_name: '...', event_type: 'meeting', date_time: new Date().toISOString(), participants: '...' }.
 3. 'store_plan' / 'create_plan' -> Populates 'Strategic Planning'. Payload: { title: '...', content: '...' }.
@@ -2956,6 +2956,19 @@ Available Tools & Channels:
 6. 'create_client' -> Populates the 'Client Ledger' (Drivers/Members). Payload: { name: '...' }.
 7. 'create_task' -> Populates the "Today's Tasks" list (also known as "Active Tasks"). If a task must be done by the user in real life (IRL) and you cannot do it automatically (like physically checking vans, calling someone, etc.), use this tool to add it to their "Today's Tasks". Always refer to this as "Today's Tasks".
 8. 'add_inventory_item' -> Populates the 'Inventory Tracking' ledger. This tool works for ANY product data found in screenshots, including Shopify, Etsy, WooCommerce, spreadsheets, or tables. Payload: { product_name: '...', sku_link: '...', stock: '...', price: '...' }.
+9. 'add_user' -> Adds a new user to the account (max 5). Payload: { name: '...' }. Just do it when asked.
+10. 'edit_user' -> Renames an existing user. Payload: { current_name: '...', new_name: '...' }. Cannot edit 'Primary User'.
+11. 'remove_user' -> Removes a user from the account. Payload: { name: '...' }. Cannot remove 'Primary User'.
+12. 'update_client' -> Edits an existing client's info (name, retainer, ltv, assigned_agents, next_task). Payload: { name: '...', retainer: '...' }.
+13. 'remove_lead' -> Deletes a lead from the pipeline. Payload: { name: '...' }.
+14. 'remove_client' -> Deletes a client from the ledger. Payload: { name: '...' }.
+15. 'update_campaign' -> Edits a campaign's name, description, or stage. Payload: { name: '...', stage: 'Active' }.
+16. 'update_lead' -> Updates an existing lead's stage, next step, or probability.
+17. 'update_plan' -> Edits a stored plan's title or content.
+18. 'draft_document' -> Drafts an email, memo, or outreach document for user review.
+19. 'trigger_creative_agent' -> Generates visual assets.
+20. 'create_agent' -> Hires a new AI sub-agent (only when explicitly asked).
+21. 'update_business_profile' -> Saves new business details mentioned in conversation.
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
@@ -3218,6 +3231,78 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('team_messages').insert([payload]).then(); }
                     logAction(`Sent Team Announcement`, action.payload.agent_name || 'CEO');
                     revertActions.push({ type: 'delete', table: 'team_messages', id: payload.id, key: 'amp_team_messages' });
+                  } else if (action.type === 'add_user') {
+                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
+                    if (users.length < 5 && !users.find(u => u.toLowerCase() === action.payload.name.toLowerCase())) {
+                      users.push(action.payload.name);
+                      localStorage.setItem('amp_users', JSON.stringify(users));
+                      window.dispatchEvent(new Event('amp-users-changed'));
+                      logAction(`Added User: ${action.payload.name}`, 'CEO');
+                    }
+                  } else if (action.type === 'edit_user') {
+                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
+                    const idx = users.findIndex(u => u.toLowerCase() === action.payload.current_name.toLowerCase());
+                    if (idx !== -1 && users[idx] !== 'Primary User') {
+                      revertActions.push({ type: 'restore', table: 'users', key: 'amp_users', data: [...users] });
+                      users[idx] = action.payload.new_name;
+                      localStorage.setItem('amp_users', JSON.stringify(users));
+                      window.dispatchEvent(new Event('amp-users-changed'));
+                      logAction(`Renamed User: ${action.payload.current_name} → ${action.payload.new_name}`, 'CEO');
+                    }
+                  } else if (action.type === 'remove_user') {
+                    const users = JSON.parse(localStorage.getItem('amp_users') || '["Primary User"]');
+                    const idx = users.findIndex(u => u.toLowerCase() === action.payload.name.toLowerCase());
+                    if (idx !== -1 && users[idx] !== 'Primary User') {
+                      revertActions.push({ type: 'restore', table: 'users', key: 'amp_users', data: [...users] });
+                      users.splice(idx, 1);
+                      localStorage.setItem('amp_users', JSON.stringify(users));
+                      window.dispatchEvent(new Event('amp-users-changed'));
+                      logAction(`Removed User: ${action.payload.name}`, 'CEO');
+                    }
+                  } else if (action.type === 'update_client') {
+                    const clients = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+                    const ci = clients.findIndex(c => c.name && c.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (ci !== -1) {
+                      revertActions.push({ type: 'restore', table: 'clients', key: 'amp_clients', data: JSON.parse(JSON.stringify(clients[ci])) });
+                      if (action.payload.new_name) clients[ci].name = action.payload.new_name;
+                      if (action.payload.retainer) clients[ci].retainer = action.payload.retainer;
+                      if (action.payload.ltv) clients[ci].ltv = action.payload.ltv;
+                      if (action.payload.assigned_agents) clients[ci].assigned_agents = action.payload.assigned_agents;
+                      if (action.payload.next_task) clients[ci].next_task = action.payload.next_task;
+                      localStorage.setItem('amp_clients', JSON.stringify(clients));
+                      logAction(`Updated Client: ${action.payload.name}`, 'CEO');
+                    }
+                  } else if (action.type === 'remove_lead') {
+                    const leads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    const li = leads.findIndex(l => l.name && l.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (li !== -1) {
+                      revertActions.push({ type: 'restore', table: 'leads', key: 'amp_leads', data: JSON.parse(JSON.stringify(leads[li])) });
+                      leads.splice(li, 1);
+                      localStorage.setItem('amp_leads', JSON.stringify(leads));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').delete().eq('name', action.payload.name).eq('user_id', session.user.id).then(); }
+                      logAction(`Removed Lead: ${action.payload.name}`, 'CEO');
+                    }
+                  } else if (action.type === 'remove_client') {
+                    const clients = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+                    const ci2 = clients.findIndex(c => c.name && c.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (ci2 !== -1) {
+                      revertActions.push({ type: 'restore', table: 'clients', key: 'amp_clients', data: JSON.parse(JSON.stringify(clients[ci2])) });
+                      clients.splice(ci2, 1);
+                      localStorage.setItem('amp_clients', JSON.stringify(clients));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').delete().eq('name', action.payload.name).eq('user_id', session.user.id).then(); }
+                      logAction(`Removed Client: ${action.payload.name}`, 'CEO');
+                    }
+                  } else if (action.type === 'update_campaign') {
+                    const campaigns = JSON.parse(localStorage.getItem('amp_campaigns') || '[]');
+                    const cIdx = campaigns.findIndex(c => c.name && c.name.toLowerCase() === action.payload.name.toLowerCase());
+                    if (cIdx !== -1) {
+                      revertActions.push({ type: 'restore', table: 'campaigns', key: 'amp_campaigns', data: JSON.parse(JSON.stringify(campaigns[cIdx])) });
+                      if (action.payload.new_name) campaigns[cIdx].name = action.payload.new_name;
+                      if (action.payload.description) campaigns[cIdx].description = action.payload.description;
+                      if (action.payload.stage) campaigns[cIdx].stage = action.payload.stage;
+                      localStorage.setItem('amp_campaigns', JSON.stringify(campaigns));
+                      logAction(`Updated Campaign: ${action.payload.name}`, 'CEO');
+                    }
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
