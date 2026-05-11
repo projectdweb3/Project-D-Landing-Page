@@ -165,6 +165,139 @@ RULES OF ENGAGEMENT:
       contents.push({ role: 'user', parts: [{ text: "Please continue." }] });
     }
 
+    // --- TWO-STAGE LEAD GENERATION ---
+    // Gemini cannot combine google_search and function_declarations in one request.
+    // When lead-gen is detected: Stage 1 uses google_search to find real businesses,
+    // then Stage 2 uses function declarations to add them to the pipeline.
+    const isLeadGenRequest = /find.*leads?|get.*leads?|generate.*leads?|gather.*leads?|look.*leads?|search.*leads?|leads?\s+for\s+me|prospect/i.test(userMessage);
+
+    if (isLeadGenRequest) {
+      // --- QUALIFYING CRITERIA CHECK ---
+      // Before searching, make sure we have enough to find well-qualified leads.
+      // Pull what we know from the business profile and the current message.
+      const msgLower = (userMessage || '').toLowerCase();
+      const profileBio = userProfile?.bio || '';
+      const profileStage = userProfile?.stage || '';
+
+      // Check if a location is mentioned anywhere useful
+      const hasLocation = /\b(in|near|around|from|at)\s+[a-z\s]+|\b[a-z]+,\s*[a-z]{2}\b|\bcity\b|\bstate\b|\barea\b/i.test(msgLower + ' ' + profileBio);
+      // Check if an industry/target type is mentioned
+      const hasIndustry = /\b(salon|restaurant|gym|dentist|lawyer|plumber|contractor|retailer|spa|clinic|agency|coach|realtor|accountant|shop|store|studio|service|industry|niche|type|business|company|client)\b/i.test(msgLower + ' ' + profileBio);
+
+      const missingLocation = !hasLocation;
+      const missingIndustry = !hasIndustry && !profileStage;
+
+      // Build a list of what we're missing
+      const missing = [];
+      if (missingIndustry) missing.push('what type of business or industry you\'re targeting (e.g. hair salons, law firms, gyms)');
+      if (missingLocation) missing.push('where you want to find them (city, state, or region)');
+
+      if (missing.length > 0) {
+        // Not enough info — ask before searching so results are actually useful
+        const askText = `Before I start searching, I want to make sure I find the right people for you — not just any random list.\n\nCould you tell me:\n${missing.map((m, i) => `**${i + 1}.** ${m}`).join('\n')}\n\nOnce I know that, I'll search Google and pull together a solid list of real qualified leads and drop them straight into your pipeline. 🎯`;
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ role: 'assistant', content: askText, actions: [] })
+        };
+      }
+
+      // --- STAGE 1: Google Search for real businesses ---
+      const searchPayload = {
+        system_instruction: { parts: [{ text: `You are a lead research assistant. The user wants to find real business leads. 
+Business Context: ${businessContext}
+Your job: Search Google for real businesses matching what the user wants. 
+Return a clean JSON array of leads with this exact format (nothing else, no markdown, just raw JSON):
+[{"name":"Business Name","contact":"phone or email or website","address":"full address","website":"url","next_step":"Send intro email"}]
+Find at minimum 5 real businesses. If you can find 10, even better. Only include businesses you actually found — never fabricate.` }] },
+        contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+        tools: [{ google_search: {} }],
+        generationConfig: { temperature: 1.0 }
+      };
+
+      const searchRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(searchPayload)
+      });
+
+      let searchResultText = '';
+      if (searchRes.ok) {
+        const searchData = await searchRes.json();
+        const parts = searchData?.candidates?.[0]?.content?.parts || [];
+        searchResultText = parts.filter(p => p.text).map(p => p.text).join('\n');
+      }
+
+      // --- STAGE 2: Function call to add leads using the search results ---
+      const addLeadsPrompt = `You found these businesses via Google Search:\n${searchResultText}\n\nNow use the 'add_multiple_leads' tool to add ALL of them to the pipeline with stage='Qualifying', value='$0', prob='0%'. Then give the user a friendly summary of what you found and added.`;
+
+      const addPayload = {
+        system_instruction: { parts: [{ text: systemInstruction }] },
+        contents: [
+          ...contents.slice(0, -1), // history without the last user message
+          { role: 'user', parts: [{ text: addLeadsPrompt }] }
+        ],
+        tools: [{ function_declarations: [
+          {
+            name: "add_multiple_leads",
+            description: "Adds multiple new leads to the CRM Pipeline at once.",
+            parameters: {
+              type: "OBJECT",
+              properties: {
+                leads: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      name: { type: "STRING" },
+                      contact: { type: "STRING" },
+                      stage: { type: "STRING" },
+                      value: { type: "STRING" },
+                      prob: { type: "STRING" },
+                      next_step: { type: "STRING" }
+                    },
+                    required: ["name", "stage"]
+                  }
+                }
+              },
+              required: ["leads"]
+            }
+          }
+        ]}]
+      };
+
+      const addRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addPayload)
+      });
+
+      if (!addRes.ok) {
+        const errText = await addRes.text();
+        throw new Error(`Gemini API Error (Stage 2): ${addRes.status} ${errText}`);
+      }
+
+      const addData = await addRes.json();
+      const addParts = addData?.candidates?.[0]?.content?.parts || [];
+      let finalText = addParts.filter(p => p.text).map(p => p.text).join('');
+      let frontendActions = [];
+
+      for (const part of addParts) {
+        if (part.functionCall && part.functionCall.name === 'add_multiple_leads') {
+          frontendActions.push({ type: 'add_multiple_leads', payload: part.functionCall.args });
+          const count = part.functionCall.args?.leads?.length || 0;
+          finalText += `\n\n**Actions Executed:**\n- ${count} leads added to the Qualifying pipeline.`;
+        }
+      }
+
+      if (!finalText) finalText = searchResultText ? `Found businesses via Google Search but couldn't add them automatically. Here's what I found:\n\n${searchResultText}` : "I couldn't find matching leads right now. Try being more specific about the industry and location.";
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ role: "assistant", content: finalText, actions: frontendActions })
+      };
+    }
+
+    // --- STANDARD REQUEST: Function declarations only (no google_search) ---
     const payload = {
       system_instruction: { parts: [{ text: systemInstruction }] },
       contents: contents,
@@ -514,8 +647,7 @@ RULES OF ENGAGEMENT:
               },
             }
           ]
-        },
-        { google_search: {} }
+        }
       ]
     };
 
