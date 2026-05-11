@@ -21,7 +21,7 @@ exports.handler = async function (event, context) {
     }
 
     const body = JSON.parse(event.body);
-    const userMessage = body.message;
+    const userMessage = body.msg || body.message || ''; // frontend sends 'msg'
     const userId = body.userId;
     const userProfile = body.userProfile;
     const attachment = body.attachment; // { data: base64, mimeType: string }
@@ -172,7 +172,7 @@ RULES OF ENGAGEMENT:
     const isLeadGenRequest = /find.*leads?|get.*leads?|generate.*leads?|gather.*leads?|look.*leads?|search.*leads?|leads?\s+for\s+me|prospect/i.test(userMessage);
 
     // Check if the user is ANSWERING our criteria question from a previous turn.
-    // If the last bot message asked for lead criteria, the user's current message IS the answer.
+    // The frontend sends history with sender values: 'user'/'primary_user' for user, 'ceo'/'model'/'assistant' for bot.
     const lastBotMsg = [...(body.history || [])].reverse().find(m => m.sender !== 'user' && m.sender !== 'primary_user');
     const wasAskingForCriteria = lastBotMsg && /before I start searching|what type of business|what kind of business|industry.*targeting|location.*find|where.*find them/i.test(lastBotMsg.text || '');
     const isFollowUpCriteria = wasAskingForCriteria && !isLeadGenRequest;
