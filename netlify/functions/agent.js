@@ -171,45 +171,57 @@ RULES OF ENGAGEMENT:
     // then Stage 2 uses function declarations to add them to the pipeline.
     const isLeadGenRequest = /find.*leads?|get.*leads?|generate.*leads?|gather.*leads?|look.*leads?|search.*leads?|leads?\s+for\s+me|prospect/i.test(userMessage);
 
-    if (isLeadGenRequest) {
-      // --- QUALIFYING CRITERIA CHECK ---
-      // Before searching, make sure we have enough to find well-qualified leads.
-      // Pull what we know from the business profile and the current message.
-      const msgLower = (userMessage || '').toLowerCase();
-      const profileBio = userProfile?.bio || '';
-      const profileStage = userProfile?.stage || '';
+    // Check if the user is ANSWERING our criteria question from a previous turn.
+    // If the last bot message asked for lead criteria, the user's current message IS the answer.
+    const lastBotMsg = [...(body.history || [])].reverse().find(m => m.sender !== 'user' && m.sender !== 'primary_user');
+    const wasAskingForCriteria = lastBotMsg && /before I start searching|what type of business|what kind of business|industry.*targeting|location.*find|where.*find them/i.test(lastBotMsg.text || '');
+    const isFollowUpCriteria = wasAskingForCriteria && !isLeadGenRequest;
 
-      // Check if a location is mentioned anywhere useful
-      const hasLocation = /\b(in|near|around|from|at)\s+[a-z\s]+|\b[a-z]+,\s*[a-z]{2}\b|\bcity\b|\bstate\b|\barea\b/i.test(msgLower + ' ' + profileBio);
-      // Check if an industry/target type is mentioned
-      const hasIndustry = /\b(salon|restaurant|gym|dentist|lawyer|plumber|contractor|retailer|spa|clinic|agency|coach|realtor|accountant|shop|store|studio|service|industry|niche|type|business|company|client)\b/i.test(msgLower + ' ' + profileBio);
+    if (isLeadGenRequest || isFollowUpCriteria) {
+      // If this is a follow-up answer, we already have the criteria in the current message.
+      // Skip the criteria gate entirely — the user already answered.
+      const skipCriteriaCheck = isFollowUpCriteria;
 
-      const missingLocation = !hasLocation;
-      const missingIndustry = !hasIndustry && !profileStage;
+      if (!skipCriteriaCheck) {
+        // --- QUALIFYING CRITERIA CHECK (only on first request) ---
+        const msgLower = (userMessage || '').toLowerCase();
+        const profileBio = userProfile?.bio || '';
+        const profileStage = userProfile?.stage || '';
 
-      // Build a list of what we're missing
-      const missing = [];
-      if (missingIndustry) missing.push('what type of business or industry you\'re targeting (e.g. hair salons, law firms, gyms)');
-      if (missingLocation) missing.push('where you want to find them (city, state, or region)');
+        const hasLocation = /\b(in|near|around|from|at)\s+[a-z\s]+|\b[a-z]+,\s*[a-z]{2}\b|\bcity\b|\bstate\b|\barea\b/i.test(msgLower + ' ' + profileBio);
+        const hasIndustry = /\b(salon|restaurant|gym|dentist|lawyer|plumber|contractor|retailer|spa|clinic|agency|coach|realtor|accountant|shop|store|studio|service|industry|niche|type|business|company|client)/i.test(msgLower + ' ' + profileBio);
 
-      if (missing.length > 0) {
-        // Not enough info — ask before searching so results are actually useful
-        const askText = `Before I start searching, I want to make sure I find the right people for you — not just any random list.\n\nCould you tell me:\n${missing.map((m, i) => `**${i + 1}.** ${m}`).join('\n')}\n\nOnce I know that, I'll search Google and pull together a solid list of real qualified leads and drop them straight into your pipeline. 🎯`;
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ role: 'assistant', content: askText, actions: [] })
-        };
+        const missing = [];
+        if (!hasIndustry && !profileStage) missing.push('what type of business or industry you\'re targeting (e.g. hair salons, law firms, gyms)');
+        if (!hasLocation) missing.push('where you want to find them (city, state, or region)');
+
+        if (missing.length > 0) {
+          const askText = `Before I start searching, I want to make sure I find the **right** people for you — not just any random list.\n\nCould you tell me:\n${missing.map((m, i) => `**${i + 1}.** ${m}`).join('\n')}\n\nOnce I know that, I'll search Google and pull together a solid list of real qualified leads and drop them straight into your pipeline. 🎯`;
+          return {
+            statusCode: 200,
+            body: JSON.stringify({ role: 'assistant', content: askText, actions: [] })
+          };
+        }
       }
+
+      // Build the full search query from history context + current message + profile
+      // This ensures the search has ALL the info — not just the latest message.
+      const historyContext = (body.history || []).slice(-6).map(m => m.text).join(' ');
+      const searchQuery = `${userMessage}. Additional context from conversation: ${historyContext}. Business profile: ${businessContext}`;
 
       // --- STAGE 1: Google Search for real businesses ---
       const searchPayload = {
-        system_instruction: { parts: [{ text: `You are a lead research assistant. The user wants to find real business leads. 
+        system_instruction: { parts: [{ text: `You are a lead research assistant. Your ONLY job is to search Google and find REAL businesses.
 Business Context: ${businessContext}
-Your job: Search Google for real businesses matching what the user wants. 
-Return a clean JSON array of leads with this exact format (nothing else, no markdown, just raw JSON):
-[{"name":"Business Name","contact":"phone or email or website","address":"full address","website":"url","next_step":"Send intro email"}]
-Find at minimum 5 real businesses. If you can find 10, even better. Only include businesses you actually found — never fabricate.` }] },
-        contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+The user wants leads matching their criteria. Search Google for real businesses.
+Return a clean list of businesses you found. For each business include:
+- Business name
+- Phone number (if found)
+- Address (if found)
+- Website (if found)
+- A brief note about what they do
+Find at MINIMUM 5 real businesses. Aim for 10 if possible. ONLY include businesses you actually found via search — NEVER fabricate or make up businesses.` }] },
+        contents: [{ role: 'user', parts: [{ text: searchQuery }] }],
         tools: [{ google_search: {} }],
         generationConfig: { temperature: 1.0 }
       };
