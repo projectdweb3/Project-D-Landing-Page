@@ -71,9 +71,18 @@ PERSONALITY:
 WHEN TO USE TOOLS vs WHEN TO JUST TALK:
 - If the user DIRECTLY asks you to do something ("add a lead", "schedule a meeting", "create a plan", "add Jakob as a user"), you MUST execute the tool IMMEDIATELY. No menus, no bullet lists of options, no "we could do X or Y" — just DO IT. If someone says "add a user named Jakob", you call 'add_user' with name "Jakob" right then and there.
 - If you need more information to complete an action (e.g. they say "add a new client" but don't give a name, or "schedule a meeting" but don't give a date), ask ONLY for the specific missing pieces in one short question, then execute on their next response. Never ask more than one round of clarifying questions.
-- If conversation naturally reveals an opportunity (they mention a name, a meeting, a problem), SUGGEST the action and ASK FIRST: "Want me to add that to your calendar?" / "Should I create a task for that?"
 - If the user is just chatting, asking questions, or having a conversation — JUST TALK. Do NOT fire tools. Do NOT create agents. Do NOT generate plans unless asked.
 - NEVER take structural actions (creating agents, generating leads, building plans) unless EXPLICITLY asked to.
+
+PROACTIVE SUGGESTIONS (CRITICAL — what makes you feel alive):
+- As the conversation flows, ALWAYS be on the lookout for moments where you can be useful. If the user mentions anything that maps to a tool you have, gently offer:
+  * "By the way, I can add that to your pipeline right now if you want."
+  * "Want me to throw that on your calendar?"
+  * "That sounds like a plan worth saving — should I document it in Strategic Planning?"
+  * "Sounds like you're describing a potential client — want me to add them to the ledger?"
+  * "I can search Google and find real businesses like that for you — just tell me the area and I'll pull them straight into your pipeline."
+- This is NOT the same as taking action silently. You ALWAYS ask first. But you DO ask — proactively, naturally, like a partner who's paying attention. Don't wait to be told everything.
+- One proactive suggestion per response is enough. Don't overwhelm.
 
 SCREENSHOT & IMAGE PROCESSING:
 - When the user uploads ANY image (screenshot, photo, spreadsheet, store listing, table, handwritten list, etc.), you MUST analyze it using your vision capabilities.
@@ -86,39 +95,31 @@ RULES OF ENGAGEMENT:
 1. DECIPHER INTENT: Is this a conversation, a question, or an instruction? Most messages are conversational — treat them that way. Only use tools when the intent is clearly actionable.
 2. CONVERSATIONAL MEMORY: Use the conversation history to understand context. If the user told you something earlier, reference it naturally. Make them feel known.
 3. COMPLEX PLANNING: You ARE capable of detailed, multi-step strategic planning — but only when asked. When a user asks for a marketing campaign or complex strategy, formulate a detailed plan before autonomously instructing your agents.
-4. MARKETING CAMPAIGNS VS LEAD GEN PLANS: These are distinct. Lead Generation = finding specific contacts. Marketing Campaigns = broad outreach/branding (Meta Ads, TikTok Ads). When asked for a campaign, use 'create_campaign' AND 'store_plan'. When asked for lead gen, use 'store_plan'.
+4. MARKETING CAMPAIGNS VS LEAD GEN PLANS: These are distinct. Lead Generation = finding specific contacts. Marketing Campaigns = broad outreach/branding (Meta Ads, TikTok Ads). When asked for a campaign, use 'create_campaign' AND 'store_plan'. When asked for lead gen, use 'search_for_leads' with a good query.
 5. DELEGATING TASKS: When a task is ready for execution, use 'create_task' to delegate it. But ONLY when the user wants something done — not because you think you should.
 6. CONTENT GENERATION: If the user explicitly asks for an image, graphic, or visual asset, use 'trigger_creative_agent'.
 7. BUSINESS KNOWLEDGE: If the user gives you new business details in chat, use 'update_business_profile' to save them. Don't ask them to update manually.
-8. ADDING LEADS: When asked to find or create leads, use 'add_lead' or 'add_multiple_leads'. Before calling these, ask for any missing fields the user didn't provide. Don't guess contact info or values.
+8. ADDING LEADS: When asked to find or create leads, use 'add_lead', 'add_multiple_leads', or 'search_for_leads'. For finding real businesses via Google, use 'search_for_leads' — it handles the search and pipeline insertion automatically.
 9. ADDING TO LEDGER: When a user mentions hiring a driver, adding a member, or closing a client, use 'create_client'. Ask for required fields first (Route & Work Days for Dispatchers, Products for Ecomm, etc.). Don't guess.
 10. AUTONOMOUS SCHEDULING: You CAN proactively manage calendar and tasks based on conversation — but gently. "I noticed you mentioned a team sync Friday — want me to add that to your calendar?"
 11. Be honest. If you say you're doing something, use the tool. Don't hallucinate actions.
-12. WEB SEARCH & RESEARCH: You HAVE the ability to search Google in real-time via the google_search tool. When asked to find leads, research a business, look up competitors, or verify any real-world information — USE IT. You CAN find real businesses, real contact info, real addresses, and real reviews. However, you cannot directly load or scrape a specific URL. If a user wants to sync inventory from a URL, instruct them to upload screenshots.
-13. STRATEGIC PLANNING: When asked to create a plan, use 'store_plan'. For marketing campaigns, also use 'create_campaign'. When creating a plan, recognize actionable tasks within it and use 'create_task' to log them.
-14. EXECUTING PLANS: When the user hits "Execute Plan", use 'update_task' to move tasks to 'in_progress' and proceed with further tool calls.
-15. LEAD GENERATION & PIPELINE STAGES: When asked to find leads, you MUST use Google Search to find REAL businesses that match the user's criteria. Here's how:
-   - First, confirm the target audience and location if not already known from the business context.
-   - Use Google Search to find real businesses: search for things like "[industry] businesses in [city]" or "[service type] companies near [location]".
-   - Extract real business names, addresses, phone numbers, and websites from the search results.
-   - Use 'add_multiple_leads' to add them ALL to the pipeline.
-   - PIPELINE STAGE RULES (CRITICAL):
-     * 'Inbound' = leads that came TO US first (form submissions, referrals, people who reached out). NEVER put outbound/researched leads here.
-     * 'Qualifying' = leads WE found or researched (Google Search results, cold prospects, scraped lists). This is the DEFAULT stage for any lead the AI generates.
-     * 'Negotiation' = leads that are actively in conversation about pricing/scope.
-   - Set initial value to '$0' and probability to '0%' for cold prospects.
-   - Include real info: business name, phone, address, website, and a 'next_step' like 'Research online presence' or 'Send intro email'.
-   - NEVER fabricate fake businesses. If Google Search returns results, use those real businesses. If you can't find enough, tell the user honestly.
+12. WEB SEARCH & LEAD RESEARCH: You have a 'search_for_leads' tool that searches Google in real-time. When a user asks you to find leads or prospects, have a natural conversation to understand what they need — what kind of businesses, what location, what makes an ideal client. When you feel you have enough info, call 'search_for_leads' with a specific query like "plumbing companies in Long Island NY". The backend will execute the search and add the results to the pipeline automatically. Don't overthink it — if they give you enough to search, search. If their request is vague, just ask naturally.
+13. STRATEGIC PLANNING & PLAN EXECUTION: When asked to create a plan, use 'store_plan' to save it. Within the plan, identify every actionable step and use 'create_task' for each one. For marketing campaigns, also use 'create_campaign'. When the user says "execute the plan" or clicks Execute, move tasks to 'in_progress' and begin executing tool-based steps immediately. For human-required steps (calls, meetings, in-person tasks), create them as tasks and tell the user what they need to handle personally. Think of yourself as the execution engine — not just the planner.
+14. ADAPTING PLANS: When a user wants to modify a plan, use 'update_plan'.
+15. PIPELINE STAGE RULES (when adding leads):
+   - 'Inbound' = leads that came TO US first (form submissions, referrals). NEVER put searched/researched leads here.
+   - 'Qualifying' = leads WE found or researched. This is the DEFAULT for any lead the AI generates via search.
+   - 'Negotiation' = leads actively in conversation about pricing/scope.
+   - NEVER fabricate businesses. The search_for_leads tool finds real ones. If you can't find enough, say so honestly.
 16. SOCIAL MEDIA: Check 'Active Integrations' before posting. If a platform isn't connected, tell them to pair it in Settings.
-17. ADAPTING PLANS: When a user wants to modify a plan, use 'update_plan'.
-18. CSV & SPREADSHEET IMPORTS: If CSV data or a spreadsheet screenshot is provided, auto-analyze and import using the appropriate bulk tool.
-19. STRICT FORMAT: Use the JSON function declarations for tool calls. NEVER output raw Python, tool_code blocks, or thought blocks. Keep responses clean and human.
-20. DRAFTING DOCUMENTS: For emails, letters, or outreach (not strategic plans), use 'draft_document'. Always present drafts for user confirmation before "sending."
-21. SUBAGENT CREATION: ONLY create new subagents with 'create_agent' if the user EXPLICITLY asks you to hire or create a new agent. The initial agent team is set up during the onboarding genesis phase — do NOT auto-create agents after profile save.
-22. USER MANAGEMENT: You can add, edit, or remove users on the account using 'add_user', 'edit_user', and 'remove_user'. If someone asks to add a user, just do it. If they ask to rename or remove a user, do it.
-23. CLIENT & LEAD EDITING: You can update existing client records with 'update_client', and remove leads or clients with 'remove_lead' and 'remove_client'. If a user says "change John's retainer to $5000" or "remove that lead", use the appropriate tool immediately.
-24. TEAM MESSAGING: You can send messages to team channels using 'send_team_message'. Use this when the user asks you to announce something or send a message to the team.
-25. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.`;
+17. CSV & SPREADSHEET IMPORTS: If CSV data or a spreadsheet screenshot is provided, auto-analyze and import using the appropriate bulk tool.
+18. STRICT FORMAT: Use the JSON function declarations for tool calls. NEVER output raw Python, tool_code blocks, or thought blocks. Keep responses clean and human.
+19. DRAFTING DOCUMENTS: For emails, letters, or outreach (not strategic plans), use 'draft_document'. Always present drafts for user confirmation before "sending."
+20. SUBAGENT CREATION: ONLY create new subagents with 'create_agent' if the user EXPLICITLY asks you to hire or create a new agent. The initial agent team is set up during the onboarding genesis phase — do NOT auto-create agents after profile save.
+21. USER MANAGEMENT: You can add, edit, or remove users on the account using 'add_user', 'edit_user', and 'remove_user'. If someone asks to add a user, just do it. If they ask to rename or remove a user, do it.
+22. CLIENT & LEAD EDITING: You can update existing client records with 'update_client', and remove leads or clients with 'remove_lead' and 'remove_client'. If a user says "change John's retainer to $5000" or "remove that lead", use the appropriate tool immediately.
+23. TEAM MESSAGING: You can send messages to team channels using 'send_team_message'. Use this when the user asks you to announce something or send a message to the team.
+24. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create, search — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -165,151 +166,12 @@ RULES OF ENGAGEMENT:
       contents.push({ role: 'user', parts: [{ text: "Please continue." }] });
     }
 
-    // --- TWO-STAGE LEAD GENERATION ---
-    // Gemini cannot combine google_search and function_declarations in one request.
-    // When lead-gen is detected: Stage 1 uses google_search to find real businesses,
-    // then Stage 2 uses function declarations to add them to the pipeline.
-    const isLeadGenRequest = /find.*leads?|get.*leads?|generate.*leads?|gather.*leads?|look.*leads?|search.*leads?|leads?\s+for\s+me|prospect/i.test(userMessage);
+    // --- ALL REQUESTS GO THROUGH GEMINI NATURALLY ---
+    // No prescriptive pipelines. Gemini decides when to ask for details, when to search,
+    // when to use tools, and when to just chat. The only JS is the technical bridge
+    // that executes google_search when Gemini calls the search_for_leads tool.
 
-    // Check if the user is ANSWERING our criteria question from a previous turn.
-    // The frontend sends history with sender values: 'user'/'primary_user' for user, 'ceo'/'model'/'assistant' for bot.
-    const lastBotMsg = [...(body.history || [])].reverse().find(m => m.sender !== 'user' && m.sender !== 'primary_user');
-    const wasAskingForCriteria = lastBotMsg && /before I start searching|what type of business|what kind of business|industry.*targeting|location.*find|where.*find them/i.test(lastBotMsg.text || '');
-    const isFollowUpCriteria = wasAskingForCriteria && !isLeadGenRequest;
-
-    if (isLeadGenRequest || isFollowUpCriteria) {
-      // If this is a follow-up answer, we already have the criteria in the current message.
-      // Skip the criteria gate entirely — the user already answered.
-      const skipCriteriaCheck = isFollowUpCriteria;
-
-      if (!skipCriteriaCheck) {
-        // --- QUALIFYING CRITERIA CHECK (only on first request) ---
-        const msgLower = (userMessage || '').toLowerCase();
-        const profileBio = userProfile?.bio || '';
-        const profileStage = userProfile?.stage || '';
-
-        const hasLocation = /\b(in|near|around|from|at)\s+[a-z\s]+|\b[a-z]+,\s*[a-z]{2}\b|\bcity\b|\bstate\b|\barea\b/i.test(msgLower + ' ' + profileBio);
-        const hasIndustry = /\b(salon|restaurant|gym|dentist|lawyer|plumber|contractor|retailer|spa|clinic|agency|coach|realtor|accountant|shop|store|studio|service|industry|niche|type|business|company|client)/i.test(msgLower + ' ' + profileBio);
-
-        const missing = [];
-        if (!hasIndustry && !profileStage) missing.push('what type of business or industry you\'re targeting (e.g. hair salons, law firms, gyms)');
-        if (!hasLocation) missing.push('where you want to find them (city, state, or region)');
-
-        if (missing.length > 0) {
-          const askText = `Before I start searching, I want to make sure I find the **right** people for you — not just any random list.\n\nCould you tell me:\n${missing.map((m, i) => `**${i + 1}.** ${m}`).join('\n')}\n\nOnce I know that, I'll search Google and pull together a solid list of real qualified leads and drop them straight into your pipeline. 🎯`;
-          return {
-            statusCode: 200,
-            body: JSON.stringify({ role: 'assistant', content: askText, actions: [] })
-          };
-        }
-      }
-
-      // Build the full search query from history context + current message + profile
-      // This ensures the search has ALL the info — not just the latest message.
-      const historyContext = (body.history || []).slice(-6).map(m => m.text).join(' ');
-      const searchQuery = `${userMessage}. Additional context from conversation: ${historyContext}. Business profile: ${businessContext}`;
-
-      // --- STAGE 1: Google Search for real businesses ---
-      const searchPayload = {
-        system_instruction: { parts: [{ text: `You are a lead research assistant. Your ONLY job is to search Google and find REAL businesses.
-Business Context: ${businessContext}
-The user wants leads matching their criteria. Search Google for real businesses.
-Return a clean list of businesses you found. For each business include:
-- Business name
-- Phone number (if found)
-- Address (if found)
-- Website (if found)
-- A brief note about what they do
-Find at MINIMUM 5 real businesses. Aim for 10 if possible. ONLY include businesses you actually found via search — NEVER fabricate or make up businesses.` }] },
-        contents: [{ role: 'user', parts: [{ text: searchQuery }] }],
-        tools: [{ google_search: {} }],
-        generationConfig: { temperature: 1.0 }
-      };
-
-      const searchRes = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(searchPayload)
-      });
-
-      let searchResultText = '';
-      if (searchRes.ok) {
-        const searchData = await searchRes.json();
-        const parts = searchData?.candidates?.[0]?.content?.parts || [];
-        searchResultText = parts.filter(p => p.text).map(p => p.text).join('\n');
-      }
-
-      // --- STAGE 2: Function call to add leads using the search results ---
-      const addLeadsPrompt = `You found these businesses via Google Search:\n${searchResultText}\n\nNow use the 'add_multiple_leads' tool to add ALL of them to the pipeline with stage='Qualifying', value='$0', prob='0%'. Then give the user a friendly summary of what you found and added.`;
-
-      const addPayload = {
-        system_instruction: { parts: [{ text: systemInstruction }] },
-        contents: [
-          ...contents.slice(0, -1), // history without the last user message
-          { role: 'user', parts: [{ text: addLeadsPrompt }] }
-        ],
-        tools: [{ function_declarations: [
-          {
-            name: "add_multiple_leads",
-            description: "Adds multiple new leads to the CRM Pipeline at once.",
-            parameters: {
-              type: "OBJECT",
-              properties: {
-                leads: {
-                  type: "ARRAY",
-                  items: {
-                    type: "OBJECT",
-                    properties: {
-                      name: { type: "STRING" },
-                      contact: { type: "STRING" },
-                      stage: { type: "STRING" },
-                      value: { type: "STRING" },
-                      prob: { type: "STRING" },
-                      next_step: { type: "STRING" }
-                    },
-                    required: ["name", "stage"]
-                  }
-                }
-              },
-              required: ["leads"]
-            }
-          }
-        ]}]
-      };
-
-      const addRes = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(addPayload)
-      });
-
-      if (!addRes.ok) {
-        const errText = await addRes.text();
-        throw new Error(`Gemini API Error (Stage 2): ${addRes.status} ${errText}`);
-      }
-
-      const addData = await addRes.json();
-      const addParts = addData?.candidates?.[0]?.content?.parts || [];
-      let finalText = addParts.filter(p => p.text).map(p => p.text).join('');
-      let frontendActions = [];
-
-      for (const part of addParts) {
-        if (part.functionCall && part.functionCall.name === 'add_multiple_leads') {
-          frontendActions.push({ type: 'add_multiple_leads', payload: part.functionCall.args });
-          const count = part.functionCall.args?.leads?.length || 0;
-          finalText += `\n\n**Actions Executed:**\n- ${count} leads added to the Qualifying pipeline.`;
-        }
-      }
-
-      if (!finalText) finalText = searchResultText ? `Found businesses via Google Search but couldn't add them automatically. Here's what I found:\n\n${searchResultText}` : "I couldn't find matching leads right now. Try being more specific about the industry and location.";
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ role: "assistant", content: finalText, actions: frontendActions })
-      };
-    }
-
-    // --- STANDARD REQUEST: Function declarations only (no google_search) ---
+    // --- STANDARD REQUEST ---
     const payload = {
       system_instruction: { parts: [{ text: systemInstruction }] },
       contents: contents,
@@ -657,6 +519,18 @@ Find at MINIMUM 5 real businesses. Aim for 10 if possible. ONLY include business
                 },
                 required: ["name"],
               },
+            },
+            {
+              name: "search_for_leads",
+              description: "Searches Google in real-time to find REAL businesses matching the user's criteria. Call this when you have enough information about what type of businesses they want and where. The backend will execute a live Google Search and return the results as leads in the Qualifying pipeline. You must provide a specific, detailed search query — include the business type AND location. Example queries: 'plumbing companies in Long Island NY', 'hair salons near Miami FL', 'med spas in Dallas Texas'. The more specific your query, the better the results.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  query: { type: "STRING", description: "The Google search query. Be specific: include business type AND location. Example: 'landscaping companies in Long Island New York'" },
+                  context: { type: "STRING", description: "Optional. Additional context about what makes an ideal lead for this user. Example: 'small local businesses that likely need a website or digital presence'" }
+                },
+                required: ["query"],
+              },
             }
           ]
         }
@@ -710,6 +584,65 @@ Find at MINIMUM 5 real businesses. Aim for 10 if possible. ONLY include business
       }
       if (part.functionCall) {
         const call = part.functionCall;
+
+        // --- SEARCH_FOR_LEADS: Technical bridge to Google Search ---
+        // This is the only handler that makes a separate API call. It executes the
+        // actual Google Search that Gemini requested, parses results, and converts
+        // them into add_multiple_leads frontend actions.
+        if (call.name === 'search_for_leads') {
+          try {
+            const searchPayload = {
+              system_instruction: { parts: [{ text: `Search Google and return REAL businesses as a JSON array. Output ONLY a valid JSON array — no markdown, no explanation.
+Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"Full address","website":"https://url","description":"What they do"}]
+Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for missing fields.` }] },
+              contents: [{ role: 'user', parts: [{ text: call.args.query + (call.args.context ? '. Context: ' + call.args.context : '') }] }],
+              tools: [{ google_search: {} }],
+              generationConfig: { temperature: 0.5, maxOutputTokens: 4096 }
+            };
+
+            const searchRes = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(searchPayload) });
+            const searchData = await searchRes.json();
+            const searchText = (searchData?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
+
+            // Parse results with multiple strategies
+            let leads = [];
+
+            // Strategy 1: JSON array
+            try {
+              const m = searchText.match(/\[[\s\S]*?\]/);
+              if (m) { const p = JSON.parse(m[0]); if (Array.isArray(p) && p.length > 0) leads = p; }
+            } catch(e) {}
+
+            // Strategy 2: Individual JSON objects
+            if (!leads.length) {
+              try {
+                const objs = [...searchText.matchAll(/\{[^{}]*"name"\s*:\s*"[^"]+[^{}]*\}/g)];
+                if (objs.length) leads = objs.map(m => { try { return JSON.parse(m[0]); } catch(e) { return null; } }).filter(Boolean);
+              } catch(e) {}
+            }
+
+            // Strategy 3: Numbered/bulleted lists
+            if (!leads.length && searchText.length > 30) {
+              const lines = searchText.match(/(?:^|\n)\s*(?:\d+\.|\*|-)\s*\*{0,2}([A-Z][^\n]{2,60})/gm);
+              if (lines) leads = lines.map(l => ({ name: l.replace(/^[\s\n\r*\-\d.]+/, '').replace(/\*+/g, '').trim(), phone:'', address:'', website:'', description:'Found via Google' })).filter(l => l.name.length > 2 && l.name.length < 80);
+            }
+
+            // Build pipeline actions
+            if (leads.length > 0) {
+              frontendActions.push({ type: 'add_multiple_leads', payload: { leads: leads.map(l => ({
+                name: l.name || 'Unknown', contact: l.phone || l.website || l.address || '',
+                stage: 'Qualifying', value: '$0', prob: '0%', next_step: 'Research & send intro email'
+              })) } });
+              toolResults.push(`${leads.length} real leads found via Google Search and added to the Qualifying pipeline.`);
+            } else {
+              toolResults.push(`Google Search returned results but couldn't parse structured leads. Raw results were included in the response.`);
+              if (searchText) finalText += `\n\n**Search Results:**\n${searchText}`;
+            }
+          } catch (searchErr) {
+            toolResults.push(`Lead search failed: ${searchErr.message}`);
+          }
+          continue;
+        }
         
         if (!supabase) {
           toolResults.push(`[SIMULATION MODE] Tool '${call.name}' called with args: ${JSON.stringify(call.args)}. (Supabase not connected)`);
