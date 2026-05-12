@@ -7,3 +7,6 @@
 
 [functions]
   directory = "netlify/functions"
+
+[functions."agent"]
+  timeout = 26

@@ -600,8 +600,29 @@ Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for miss
               generationConfig: { temperature: 0.5, maxOutputTokens: 4096 }
             };
 
-            const searchRes = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(searchPayload) });
-            const searchData = await searchRes.json();
+            // Timeout guard: abort search after 15s to avoid Netlify timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            const searchRes = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(searchPayload),
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (!searchRes.ok) {
+              toolResults.push(`Google Search returned an error (${searchRes.status}). The leads couldn't be fetched — try a more specific query.`);
+              continue;
+            }
+
+            let searchData;
+            try { searchData = await searchRes.json(); } catch (e) {
+              toolResults.push(`Google Search returned a non-JSON response. Try again with a different query.`);
+              continue;
+            }
+
             const searchText = (searchData?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
 
             // Parse results with multiple strategies
@@ -639,7 +660,11 @@ Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for miss
               if (searchText) finalText += `\n\n**Search Results:**\n${searchText}`;
             }
           } catch (searchErr) {
-            toolResults.push(`Lead search failed: ${searchErr.message}`);
+            if (searchErr.name === 'AbortError') {
+              toolResults.push(`The Google Search took too long and timed out. Try a simpler, more specific query like "plumbers in Dallas TX".`);
+            } else {
+              toolResults.push(`Lead search failed: ${searchErr.message}`);
+            }
           }
           continue;
         }

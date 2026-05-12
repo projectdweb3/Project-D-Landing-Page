@@ -2882,9 +2882,11 @@
           let agentsChain = ['CEO'];
           tks[0].title = `${ceoName} Analyzing Request...`;
           
-          if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market')) {
+          if (txt.includes('lead') || txt.includes('prospect') || txt.includes('campaign') || txt.includes('market') || txt.includes('gather') || txt.includes('find')) {
             agentsChain.push('CMO');
-            tks.push({ id: 'temp-cmo', agent: cmoName, parentAgent: 'CMO', title: 'Executing Marketing Objective...', status: 'running' });
+            const isLeadSearch = txt.includes('lead') || txt.includes('prospect') || txt.includes('gather') || txt.includes('find');
+            tks[0].title = isLeadSearch ? `${ceoName} Initiating Lead Research...` : `${ceoName} Formulating Neural Architecture...`;
+            tks.push({ id: 'temp-cmo', agent: cmoName, parentAgent: 'CMO', title: isLeadSearch ? 'Searching Google for Real Businesses...' : 'Executing Marketing Objective...', status: 'running' });
           } else if (txt.includes('image') || txt.includes('content') || txt.includes('design') || txt.includes('logo') || txt.includes('video')) {
             agentsChain.push('Creative');
             tks.push({ id: 'temp-creative', agent: creativeName, parentAgent: 'Creative', title: 'Generating Visual Assets...', status: 'running' });
@@ -3021,7 +3023,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           method: 'POST',
           body: JSON.stringify({ userId: session?.user?.id, msg: msgText + systemPromptAddon + langRule, history: messages.map(m => ({ sender: m.sender, text: m.text })), attachment: msgAttachment ? { data: msgAttachment.data, mimeType: msgAttachment.mimeType } : null, userProfile }),
         })
-          .then(res => res.json().then(data => ({ status: res.status, data })))
+          .then(res => res.text().then(text => {
+            try {
+              return { status: res.status, data: JSON.parse(text) };
+            } catch (e) {
+              // Netlify returned non-JSON (timeout, crash, HTML error page)
+              return { status: res.status, data: { error: `Server returned non-JSON response (HTTP ${res.status}). This usually means the request timed out — try again.`, content: null } };
+            }
+          }))
           .then(({ status, data }) => {
             if (depleteBudget) depleteBudget('CEO', 0.5);
             
