@@ -53,6 +53,32 @@ exports.handler = async function (event, context) {
       }
     }
 
+    // --- AI MEMORY: Load learned insights about this user ---
+    let memoryContext = '';
+    if (supabase) {
+      try {
+        const { data: memories } = await supabase
+          .from('user_memory')
+          .select('category, content')
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false })
+          .limit(50);
+        if (memories && memories.length > 0) {
+          const grouped = {};
+          memories.forEach(m => {
+            if (!grouped[m.category]) grouped[m.category] = [];
+            grouped[m.category].push(m.content);
+          });
+          memoryContext = '\n\nUSER MEMORY (things you have learned about this user over time — use these to personalize your responses and avoid asking questions you already know the answer to):\n';
+          Object.entries(grouped).forEach(([cat, items]) => {
+            memoryContext += `[${cat}]: ${items.join(' | ')}\n`;
+          });
+        }
+      } catch (e) {
+        console.warn('Could not load user memory:', e.message);
+      }
+    }
+
     // The CEO Brain — Conversational AI + Platform Controller
     const systemInstruction = `You are the CEO Agent of the AMP Center — a smart, personable AI assistant that also has the power to control every channel on this platform.
 
@@ -60,6 +86,7 @@ MOST IMPORTANT RULE: You are a CONVERSATIONAL AI FIRST. You can talk about liter
 
 Current Business Context:
 ${businessContext}
+${memoryContext}
 
 PERSONALITY:
 - Talk like a sharp, friendly business partner. Keep it simple and natural.
@@ -119,7 +146,8 @@ RULES OF ENGAGEMENT:
 21. USER MANAGEMENT: You can add, edit, or remove users on the account using 'add_user', 'edit_user', and 'remove_user'. If someone asks to add a user, just do it. If they ask to rename or remove a user, do it.
 22. CLIENT & LEAD EDITING: You can update existing client records with 'update_client', and remove leads or clients with 'remove_lead' and 'remove_client'. If a user says "change John's retainer to $5000" or "remove that lead", use the appropriate tool immediately.
 23. TEAM MESSAGING: You can send messages to team channels using 'send_team_message'. Use this when the user asks you to announce something or send a message to the team.
-24. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create, search — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.`;
+24. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create, search — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.
+25. LEARNING & MEMORY: You have a 'save_user_insight' tool. Use it to remember important things the user tells you — their ideal client criteria, industry preferences, locations they target, communication preferences, names of key people, business goals, recurring requests, and anything else that would help you serve them better next time. Save insights QUIETLY in the background — don't announce "I'm saving that to memory" unless they ask. Over time, your USER MEMORY section above will fill with these insights, so you never have to ask the same question twice. Think of it like building a relationship — the more you learn, the better partner you become.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -531,6 +559,18 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["query"],
               },
+            },
+            {
+              name: "save_user_insight",
+              description: "Saves a learned fact about the user to persistent memory. Use this silently whenever you learn something important — their target audience, preferred locations, industry focus, communication style, key contacts, recurring requests, business goals, or action preferences. This builds your long-term knowledge of the user so you never have to ask the same question twice.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  category: { type: "STRING", description: "Category of insight: 'ideal_client', 'target_location', 'business_goals', 'preferences', 'key_contacts', 'action_patterns', 'industry_focus', 'communication_style', or 'general'" },
+                  content: { type: "STRING", description: "The insight to remember. Be specific and concise. Example: 'Targets third-party Amazon logistics companies in NY and Long Island'" }
+                },
+                required: ["category", "content"],
+              },
             }
           ]
         }
@@ -591,20 +631,25 @@ RULES OF ENGAGEMENT:
         // them into add_multiple_leads frontend actions.
         if (call.name === 'search_for_leads') {
           try {
+            // Use a FAST, LIGHTWEIGHT model for search — NOT the main agent model.
+            // The main agent (gemini-2.5-flash) already consumed ~3-5s of Netlify's 10s timeout.
+            // gemini-2.5-flash-lite responds in ~1-2s with google_search.
+            const searchModelEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+            
             const searchPayload = {
               system_instruction: { parts: [{ text: `Search Google and return REAL businesses as a JSON array. Output ONLY a valid JSON array — no markdown, no explanation.
 Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"Full address","website":"https://url","description":"What they do"}]
 Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for missing fields.` }] },
               contents: [{ role: 'user', parts: [{ text: call.args.query + (call.args.context ? '. Context: ' + call.args.context : '') }] }],
               tools: [{ google_search: {} }],
-              generationConfig: { temperature: 0.5, maxOutputTokens: 4096 }
+              generationConfig: { temperature: 0.5, maxOutputTokens: 2048 }
             };
 
-            // Timeout guard: abort search after 15s to avoid Netlify timeout
+            // Tight timeout: 7s max to stay within Netlify's 10s limit
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const timeoutId = setTimeout(() => controller.abort(), 7000);
 
-            const searchRes = await fetch(endpoint, {
+            const searchRes = await fetch(searchModelEndpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(searchPayload),
@@ -664,6 +709,25 @@ Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for miss
               toolResults.push(`The Google Search took too long and timed out. Try a simpler, more specific query like "plumbers in Dallas TX".`);
             } else {
               toolResults.push(`Lead search failed: ${searchErr.message}`);
+            }
+          }
+          continue;
+        }
+
+        // --- SAVE_USER_INSIGHT: Persist learned facts to Supabase ---
+        if (call.name === 'save_user_insight') {
+          if (supabase) {
+            try {
+              // Upsert: update if same category+similar content exists, else insert
+              await supabase.from('user_memory').insert({
+                user_id: userId,
+                category: call.args.category || 'general',
+                content: call.args.content,
+                updated_at: new Date().toISOString()
+              });
+              // Silent — don't add to toolResults so it doesn't clutter the response
+            } catch (e) {
+              console.warn('Could not save memory:', e.message);
             }
           }
           continue;

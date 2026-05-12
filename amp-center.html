@@ -332,6 +332,73 @@
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    // --- CLOUD SYNC: Data follows the user across devices ---
+    // All localStorage keys that contain user workspace data
+    const SYNC_KEYS = [
+      'amp_business_profile', 'amp_custom_agents', 'amp_account_users',
+      'amp_chat_history', 'amp_chat_threads', 'amp_team_messages',
+      'amp_documents', 'amp_usage_pct', 'amp_language'
+    ];
+    // Stage-dependent keys get resolved dynamically
+    const SYNC_STAGE_KEYS = ['amp_leads_', 'amp_clients_', 'amp_tasks_', 'amp_finances_', 'amp_inventory_', 'amp_calendar_'];
+
+    const getAllSyncKeys = (stage) => {
+      const stageVal = stage || 'Default';
+      return [...SYNC_KEYS, ...SYNC_STAGE_KEYS.map(k => k + stageVal)];
+    };
+
+    // Load all workspace data from Supabase into localStorage (runs on login)
+    const loadFromCloud = async (userId, stage) => {
+      if (!supabaseClient || !userId) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('user_workspace')
+          .select('data_key, data_value')
+          .eq('user_id', userId);
+        if (error) { console.warn('Cloud load failed:', error.message); return; }
+        if (data && data.length > 0) {
+          data.forEach(row => {
+            // Only populate localStorage if it doesn't already have newer data
+            const existing = localStorage.getItem(row.data_key);
+            if (!existing || existing === '[]' || existing === '{}' || existing === 'null') {
+              localStorage.setItem(row.data_key, row.data_value);
+            }
+          });
+          console.log(`☁️ Loaded ${data.length} data keys from cloud`);
+        }
+      } catch (e) {
+        console.warn('Cloud sync load error:', e.message);
+      }
+    };
+
+    // Save all workspace data from localStorage to Supabase (runs after data changes)
+    const syncToCloud = async (userId, stage) => {
+      if (!supabaseClient || !userId) return;
+      try {
+        const keys = getAllSyncKeys(stage);
+        const rows = [];
+        keys.forEach(key => {
+          const val = localStorage.getItem(key);
+          if (val && val !== '[]' && val !== '{}' && val !== 'null') {
+            rows.push({ user_id: userId, data_key: key, data_value: val, updated_at: new Date().toISOString() });
+          }
+        });
+        if (rows.length > 0) {
+          // Upsert: update if exists, insert if not
+          await supabaseClient.from('user_workspace').upsert(rows, { onConflict: 'user_id,data_key' });
+        }
+      } catch (e) {
+        console.warn('Cloud sync save error:', e.message);
+      }
+    };
+
+    // Debounced sync — saves at most once every 5 seconds after data changes
+    let syncTimeout = null;
+    const debouncedSync = (userId, stage) => {
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => syncToCloud(userId, stage), 5000);
+    };
+
     const AuthScreen = ({ onLogin }) => {
       const [email, setEmail] = useState('');
       const [password, setPassword] = useState('');
@@ -2132,8 +2199,29 @@
       };
 
       useEffect(() => {
-        checkProfile();
+        const init = async () => {
+          // Load cloud data first (for cross-device sync)
+          if (session?.user?.id) {
+            const localProfile = localStorage.getItem('amp_business_profile');
+            const stage = localProfile ? (JSON.parse(localProfile).stage || 'Default') : 'Default';
+            await loadFromCloud(session.user.id, stage);
+          }
+          // Then load profile
+          checkProfile();
+        };
+        init();
       }, [session]);
+
+      // Cloud sync: save to Supabase after any data change
+      useEffect(() => {
+        if (!session?.user?.id || !supabaseClient) return;
+        const triggerSync = () => debouncedSync(session.user.id, userProfile?.stage);
+        const events = ['amp-tasks-updated', 'amp-simulated-lead', 'amp-simulated-sale', 
+                        'amp-campaigns-updated', 'amp-calendar-updated', 'amp-profile-updated',
+                        'amp-team-messages', 'amp-documents-updated', 'amp-subagents-updated'];
+        events.forEach(e => window.addEventListener(e, triggerSync));
+        return () => events.forEach(e => window.removeEventListener(e, triggerSync));
+      }, [session, userProfile?.stage]);
 
       useEffect(() => {
         if (!userProfile?.stage) return;
@@ -2996,8 +3084,9 @@ Available Tools & Channels (you have FULL CONTROL over every single one):
 18. 'draft_document' -> Drafts an email, memo, or outreach document for user review.
 19. 'trigger_creative_agent' -> Generates visual assets.
 20. 'create_agent' -> Hires a new AI sub-agent (only when explicitly asked).
-22. 'search_for_leads' -> Searches Google in real-time to find REAL businesses. Call this when you know what kind of business and where. Payload: { query: 'plumbers in Dallas TX', context: 'small businesses that need websites' }. The backend executes the search and adds results directly to the Qualifying pipeline.
-21. 'update_business_profile' -> Saves new business details mentioned in conversation.
+21. 'search_for_leads' -> Searches Google in real-time to find REAL businesses. Call this when you know what kind of business and where. Payload: { query: 'plumbers in Dallas TX', context: 'small businesses that need websites' }. The backend executes the search and adds results directly to the Qualifying pipeline.
+22. 'update_business_profile' -> Saves new business details mentioned in conversation.
+23. 'save_user_insight' -> Silently saves a learned fact about the user to memory. Use whenever you learn something important (ideal client type, target location, preferences, key contacts, business goals). The user won't see this action — it runs in the background. Over time, this builds your knowledge of the user so you never ask the same question twice.
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
@@ -3014,7 +3103,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 8. HONESTY Rule: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools, say so plainly — like "I can draft the strategy and schedule the meetings, but I can't actually send emails from here yet. Want me to add a reminder to your tasks instead?"
 9. GOOGLE SEARCH & LEAD RESEARCH: You have the 'search_for_leads' tool. Use it when the user wants to find leads, prospects, or businesses. Have a natural conversation to understand what they need — what type of businesses, what location. When you have enough info, call 'search_for_leads' with a clear query. The backend does the Google Search and adds leads to the pipeline automatically. NEVER fabricate businesses.
 10. PIPELINE STAGE CLASSIFICATION: Inbound = came to us first (rare, don't use for searched leads). Qualifying = we found/researched them (DEFAULT for search results). Negotiation = actively discussing pricing.
-11. PLAN EXECUTION: When the user creates or asks you to execute a plan, break it into tasks using 'create_task', save the overall plan with 'store_plan', and begin working through tool-executable steps immediately. For human-required steps, create tasks and tell the user what they need to handle. You're a full execution engine — not just a planner.]`;
+11. PLAN EXECUTION: When the user creates or asks you to execute a plan, break it into tasks using 'create_task', save the overall plan with 'store_plan', and begin working through tool-executable steps immediately. For human-required steps, create tasks and tell the user what they need to handle. You're a full execution engine — not just a planner.
+12. LEARNING & MEMORY: Use 'save_user_insight' whenever you learn something important about this user — silently, in the background. Target audience, preferred locations, business goals, communication preferences, key people. Don't announce it. Just remember it. Next time they chat, those insights will be loaded automatically so you already know them.]`;
 
         const currentLanguage = localStorage.getItem('amp_language') || 'en';
         const langRule = currentLanguage === 'es' ? '\n\n[CRITICAL LANGUAGE RULE: The user has selected Spanish (ES) as their preferred language. You MUST reply to them entirely in Spanish from now on. However, when using tools (like create_task, add_lead), you must keep the ENUM values (like stage names) in English, but you may translate the task titles and descriptions into Spanish.]' : '';
@@ -3360,12 +3450,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             setIsTyping(false);
           })
           .catch(err => {
-            console.error(err);
+            console.error('Agent fetch error:', err);
             const userTextLower = msgText.toLowerCase();
-            let responseText = "[ERROR] Backend disconnected or API Key missing. Simulation mode active.";
+            let responseText = `⚠️ Connection issue — the request didn't go through. This can happen if the server is busy or timed out. Try sending your message again.`;
             
-            if (userTextLower.includes('lead') && (userTextLower.includes('add') || userTextLower.includes('find') || userTextLower.includes('generate') || userTextLower.includes('insert'))) {
-              responseText = "[ERROR] I cannot generate leads because my backend connection to Gemini is currently offline. Please ensure you are running this platform on a live server with API keys configured.";
+            if (userTextLower.includes('lead') || userTextLower.includes('target') || userTextLower.includes('gather') || userTextLower.includes('find') || userTextLower.includes('prospect')) {
+              responseText = `⚠️ The lead search took too long and the connection timed out. This can happen with complex searches. Try again — or simplify the request (e.g., "Find plumbing companies in Long Island").`;
             }
 
             appendMessage({ sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
