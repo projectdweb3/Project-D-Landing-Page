@@ -626,28 +626,41 @@ RULES OF ENGAGEMENT:
         const call = part.functionCall;
 
         // --- SEARCH_FOR_LEADS: Technical bridge to Google Search ---
-        // This is the only handler that makes a separate API call. It executes the
-        // actual Google Search that Gemini requested, parses results, and converts
-        // them into add_multiple_leads frontend actions.
+        // Uses gemini-2.0-flash with google_search grounding (confirmed compatible).
+        // IMPORTANT: system_instruction is NOT used here — it causes 503 errors when
+        // combined with google_search grounding. Instructions go in the user message instead.
         if (call.name === 'search_for_leads') {
           try {
-            // Use a FAST, LIGHTWEIGHT model for search — NOT the main agent model.
-            // The main agent (gemini-2.5-flash) already consumed ~3-5s of Netlify's 10s timeout.
-            // gemini-2.5-flash-lite responds in ~1-2s with google_search.
-            const searchModelEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
-            
+            // gemini-2.0-flash: proven to support google_search grounding, fast enough
+            // to fit within Netlify's 10s limit alongside the primary gemini-2.5-flash call.
+            const searchModelEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const searchQuery = call.args.query + (call.args.context ? '. Additional context: ' + call.args.context : '');
+
+            // NOTE: No system_instruction — incompatible with google_search grounding (causes 503).
+            // The output format instructions are embedded in the user message content instead.
             const searchPayload = {
-              system_instruction: { parts: [{ text: `Search Google and return REAL businesses as a JSON array. Output ONLY a valid JSON array — no markdown, no explanation.
-Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"Full address","website":"https://url","description":"What they do"}]
-Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for missing fields.` }] },
-              contents: [{ role: 'user', parts: [{ text: call.args.query + (call.args.context ? '. Context: ' + call.args.context : '') }] }],
+              contents: [{
+                role: 'user',
+                parts: [{ text: `Search Google for real businesses matching this query: "${searchQuery}"
+
+Return your findings as a JSON array ONLY — no markdown fences, no explanation text, just the raw JSON array.
+Format each business exactly like this:
+[{"name":"Business Name","phone":"(555) 123-4567","address":"Full street address, city, state","website":"https://url.com","description":"Brief description of what they do"}]
+
+Rules:
+- Find at least 7-10 real businesses
+- Never fabricate or invent businesses
+- Use empty string "" for any field you cannot find
+- Be thorough — include all relevant results from the search` }]
+              }],
               tools: [{ google_search: {} }],
-              generationConfig: { temperature: 0.5, maxOutputTokens: 2048 }
+              generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
             };
 
-            // Tight timeout: 7s max to stay within Netlify's 10s limit
+            // Timeout: 8s — gemini-2.0-flash with google_search typically responds in 2-4s
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 7000);
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             const searchRes = await fetch(searchModelEndpoint, {
               method: 'POST',
@@ -658,57 +671,82 @@ Rules: Find 7-10+ real businesses. Never fabricate. Use empty string "" for miss
             clearTimeout(timeoutId);
 
             if (!searchRes.ok) {
-              toolResults.push(`Google Search returned an error (${searchRes.status}). The leads couldn't be fetched — try a more specific query.`);
+              let errBody = '';
+              try { const e = await searchRes.json(); errBody = e?.error?.message || ''; } catch(_) {}
+              console.error(`Search API error ${searchRes.status}:`, errBody);
+              toolResults.push(`The Google Search ran into an issue (${searchRes.status}). I'll try again on your next message — your target criteria are saved.`);
               continue;
             }
 
             let searchData;
             try { searchData = await searchRes.json(); } catch (e) {
-              toolResults.push(`Google Search returned a non-JSON response. Try again with a different query.`);
+              toolResults.push(`The search returned an unexpected response. I'll retry on your next message.`);
               continue;
             }
 
             const searchText = (searchData?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
 
-            // Parse results with multiple strategies
+            // Parse results with multiple strategies — from strictest to most lenient
             let leads = [];
 
-            // Strategy 1: JSON array
+            // Strategy 1: Look for a JSON array in the response
             try {
-              const m = searchText.match(/\[[\s\S]*?\]/);
-              if (m) { const p = JSON.parse(m[0]); if (Array.isArray(p) && p.length > 0) leads = p; }
+              const m = searchText.match(/\[[\s\S]*\]/);
+              if (m) {
+                const parsed = JSON.parse(m[0]);
+                if (Array.isArray(parsed) && parsed.length > 0) leads = parsed;
+              }
             } catch(e) {}
 
-            // Strategy 2: Individual JSON objects
+            // Strategy 2: Individual JSON objects with a "name" field
             if (!leads.length) {
               try {
-                const objs = [...searchText.matchAll(/\{[^{}]*"name"\s*:\s*"[^"]+[^{}]*\}/g)];
-                if (objs.length) leads = objs.map(m => { try { return JSON.parse(m[0]); } catch(e) { return null; } }).filter(Boolean);
+                const objs = [...searchText.matchAll(/\{[^{}]{10,500}\}/g)];
+                if (objs.length) {
+                  leads = objs.map(m => {
+                    try { const p = JSON.parse(m[0]); return p.name ? p : null; } catch(e) { return null; }
+                  }).filter(Boolean);
+                }
               } catch(e) {}
             }
 
-            // Strategy 3: Numbered/bulleted lists
-            if (!leads.length && searchText.length > 30) {
-              const lines = searchText.match(/(?:^|\n)\s*(?:\d+\.|\*|-)\s*\*{0,2}([A-Z][^\n]{2,60})/gm);
-              if (lines) leads = lines.map(l => ({ name: l.replace(/^[\s\n\r*\-\d.]+/, '').replace(/\*+/g, '').trim(), phone:'', address:'', website:'', description:'Found via Google' })).filter(l => l.name.length > 2 && l.name.length < 80);
+            // Strategy 3: Extract business names from numbered/bulleted lists
+            if (!leads.length && searchText.length > 50) {
+              const lines = searchText.match(/(?:^|\n)\s*(?:\d+\.|\*|-|•)\s*\*{0,2}([A-Z][^\n]{2,80})/gm);
+              if (lines) {
+                leads = lines
+                  .map(l => ({ name: l.replace(/^[\s\n\r*\-•\d.]+/, '').replace(/\*+/g, '').trim(), phone:'', address:'', website:'', description:'Found via Google Search' }))
+                  .filter(l => l.name.length > 2 && l.name.length < 100);
+              }
             }
 
-            // Build pipeline actions
+            // Build pipeline actions from the found leads
             if (leads.length > 0) {
-              frontendActions.push({ type: 'add_multiple_leads', payload: { leads: leads.map(l => ({
-                name: l.name || 'Unknown', contact: l.phone || l.website || l.address || '',
-                stage: 'Qualifying', value: '$0', prob: '0%', next_step: 'Research & send intro email'
-              })) } });
-              toolResults.push(`${leads.length} real leads found via Google Search and added to the Qualifying pipeline.`);
+              frontendActions.push({
+                type: 'add_multiple_leads',
+                payload: {
+                  leads: leads.map(l => ({
+                    name: l.name || 'Unknown',
+                    contact: l.phone || l.website || l.address || '',
+                    stage: 'Qualifying',
+                    value: '$0',
+                    prob: '0%',
+                    next_step: 'Research & send intro email'
+                  }))
+                }
+              });
+              toolResults.push(`${leads.length} real leads found via Google Search and added to the pipeline.`);
             } else {
-              toolResults.push(`Google Search returned results but couldn't parse structured leads. Raw results were included in the response.`);
-              if (searchText) finalText += `\n\n**Search Results:**\n${searchText}`;
+              // Search returned text but couldn't parse structured leads — show raw results
+              toolResults.push(`Search completed but results were in an unstructured format. Showing raw results below.`);
+              if (searchText) finalText += `\n\n**Search Results:**\n${searchText.substring(0, 1500)}`;
             }
           } catch (searchErr) {
             if (searchErr.name === 'AbortError') {
-              toolResults.push(`The Google Search took too long and timed out. Try a simpler, more specific query like "plumbers in Dallas TX".`);
+              // Don't tell user to simplify — their query is fine, it's a server timing issue
+              toolResults.push(`The search took a moment longer than expected. Your criteria are noted — please try again and I'll run the search right away.`);
             } else {
-              toolResults.push(`Lead search failed: ${searchErr.message}`);
+              toolResults.push(`Search encountered an error: ${searchErr.message}. Please try again.`);
             }
           }
           continue;

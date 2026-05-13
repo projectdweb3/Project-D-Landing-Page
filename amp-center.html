@@ -3451,13 +3451,9 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           })
           .catch(err => {
             console.error('Agent fetch error:', err);
-            const userTextLower = msgText.toLowerCase();
-            let responseText = `⚠️ Connection issue — the request didn't go through. This can happen if the server is busy or timed out. Try sending your message again.`;
-            
-            if (userTextLower.includes('lead') || userTextLower.includes('target') || userTextLower.includes('gather') || userTextLower.includes('find') || userTextLower.includes('prospect')) {
-              responseText = `⚠️ The lead search took too long and the connection timed out. This can happen with complex searches. Try again — or simplify the request (e.g., "Find plumbing companies in Long Island").`;
-            }
-
+            // Never blame the user's query — the more detail they give, the better.
+            // This catch only fires on network errors or genuine server crashes.
+            const responseText = `⚠️ The server didn't respond in time. Just send your message again — I have your context and will pick up right where we left off.`;
             appendMessage({ sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             setIsTyping(false);
           });
