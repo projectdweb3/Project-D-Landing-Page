@@ -169,7 +169,13 @@ RULES OF ENGAGEMENT:
 9. ADDING TO LEDGER: When a user mentions hiring a driver, adding a member, or closing a client, use 'create_client'. Ask for required fields first (Route & Work Days for Dispatchers, Products for Ecomm, etc.). Don't guess.
 10. AUTONOMOUS SCHEDULING: You CAN proactively manage calendar and tasks based on conversation — but gently. "I noticed you mentioned a team sync Friday — want me to add that to your calendar?"
 11. Be honest. If you say you're doing something, use the tool. Don't hallucinate actions.
-12. WEB SEARCH & LEAD RESEARCH: You have a 'search_for_leads' tool that searches Google in real-time. When a user asks you to find leads or prospects, have a natural conversation to understand what they need — what kind of businesses, what location, what makes an ideal client. When you feel you have enough info, call 'search_for_leads' with a specific query like "plumbing companies in Long Island NY". The backend will execute the search and add the results to the pipeline automatically. Don't overthink it — if they give you enough to search, search. If their request is vague, just ask naturally.
+12. WEB SEARCH & LEAD RESEARCH: You have a 'search_for_leads' tool backed by Google Places API + Google Search. BEFORE calling it, assess whether the lead type can realistically be found via a location-based business search:
+
+   PLACES-COMPATIBLE (use 'search_for_leads'): Local or regional businesses with physical locations — contractors, med spas, restaurants, logistics companies, salons, gyms, law firms, auto shops, warehouses, retail stores, service companies, B2B suppliers, etc. These have addresses, phones, websites in Google's database. Provide a specific query with business type + location.
+
+   NOT PLACES-COMPATIBLE (use 'draft_document' instead): Individual people (influencers, freelancers, coaches, content creators), online-only brands with no physical address, remote workers, job candidates, social media personalities, e-commerce only stores, SaaS companies without local presence, or anyone identified by role/title rather than business type + location.
+
+   If the lead type is NOT Places-compatible: Do NOT call 'search_for_leads'. Instead, have a brief conversation to understand exactly who they're targeting, then call 'draft_document' with document_type='Lead Generation Playbook'. The document should be a step-by-step, repeatable manual procedure tailored to THEIR specific lead type — specific platforms to use (Instagram, LinkedIn, TikTok, Reddit, etc.), exact search filters and hashtags, how to qualify prospects, what to DM or email, and how to track them. Make it practical and immediately actionable, not generic.
 13. STRATEGIC PLANNING & PLAN EXECUTION: When asked to create a plan, use 'store_plan' to save it. Within the plan, identify every actionable step and use 'create_task' for each one. For marketing campaigns, also use 'create_campaign'. When the user says "execute the plan" or clicks Execute, move tasks to 'in_progress' and begin executing tool-based steps immediately. For human-required steps (calls, meetings, in-person tasks), create them as tasks and tell the user what they need to handle personally. Think of yourself as the execution engine — not just the planner.
 14. ADAPTING PLANS: When a user wants to modify a plan, use 'update_plan'.
 15. PIPELINE STAGE RULES (when adding leads):
@@ -589,12 +595,13 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "search_for_leads",
-              description: "Searches Google in real-time to find REAL businesses matching the user's criteria. Call this when you have enough information about what type of businesses they want and where. The backend will execute a live Google Search and return the results as leads in the Qualifying pipeline. You must provide a specific, detailed search query — include the business type AND location. Example queries: 'plumbing companies in Long Island NY', 'hair salons near Miami FL', 'med spas in Dallas Texas'. The more specific your query, the better the results.",
+              description: "Searches Google Places + Google Search in real-time to find REAL businesses with physical locations. ONLY use this for businesses that have a local presence (contractors, salons, gyms, restaurants, logistics companies, law firms, warehouses, med spas, auto shops, B2B service companies, etc.). Do NOT use this for: individual people, influencers, online-only brands, remote workers, or anyone without a physical business address. For those lead types, use 'draft_document' with a Lead Generation Playbook instead. When using this tool, include business type AND location in the query. Examples: 'third party Amazon logistics companies Long Island NY', 'hair salons Miami FL', 'med spas in Dallas Texas'. Be specific — the more detail, the better the results.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  query: { type: "STRING", description: "The Google search query. Be specific: include business type AND location. Example: 'landscaping companies in Long Island New York'" },
-                  context: { type: "STRING", description: "Optional. Additional context about what makes an ideal lead for this user. Example: 'small local businesses that likely need a website or digital presence'" }
+                  query: { type: "STRING", description: "Specific search query with business type + location. Example: 'plumbing companies Long Island New York'" },
+                  context: { type: "STRING", description: "Optional. What makes an ideal lead. Example: 'owner-operated, under 20 employees, likely no marketing agency yet'" },
+                  lead_type: { type: "STRING", description: "Optional. Set to 'places' for local physical businesses (default), or 'web_only' if Google Places is unlikely to help and you want to fall back to general web search." }
                 },
                 required: ["query"],
               },
@@ -718,8 +725,9 @@ RULES OF ENGAGEMENT:
           // ─── TIER 1: Google Places API (Apollo-equivalent for local/SMB) ───
           // Returns structured JSON: name, phone, address, website — no parsing needed.
           // Free tier: 10,000 Text Search requests/month.
-          // Activates when GOOGLE_PLACES_KEY is set in Netlify environment variables.
-          if (placesKey && leads.length === 0) {
+          // Skip if agent explicitly flagged this as web_only (non-physical lead type).
+          const isPlacesCompatible = !call.args.lead_type || call.args.lead_type !== 'web_only';
+          if (placesKey && isPlacesCompatible && leads.length === 0) {
             try {
               // Step 1: Text Search to get place IDs + basic info
               const textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(call.args.query)}&key=${placesKey}`;
@@ -733,27 +741,31 @@ RULES OF ENGAGEMENT:
                 const places = placesData.results || [];
                 console.log(`Google Places returned ${places.length} results for: ${call.args.query}`);
 
-                // Step 2: Get full details (phone, website) for top results
-                const detailPromises = places.slice(0, 10).map(async (place) => {
+                // Step 2: Get full details (phone, website) for top 8 results in parallel.
+                // Using Promise.all so all detail calls run simultaneously (~2-3s total, not sequential).
+                const topPlaces = places.slice(0, 8);
+                const detailPromises = topPlaces.map(async (place) => {
                   try {
                     const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_phone_number,formatted_address,website,business_status&key=${placesKey}`;
                     const ctrl2 = new AbortController();
-                    const t2 = setTimeout(() => ctrl2.abort(), 3000);
+                    const t2 = setTimeout(() => ctrl2.abort(), 4000);
                     const detailRes = await fetch(detailUrl, { signal: ctrl2.signal });
                     clearTimeout(t2);
                     if (detailRes.ok) {
                       const detail = await detailRes.json();
                       const r = detail.result || {};
+                      // Skip permanently closed businesses
+                      if (r.business_status === 'CLOSED_PERMANENTLY') return null;
                       return {
                         name: r.name || place.name || '',
                         phone: r.formatted_phone_number || '',
                         address: r.formatted_address || place.formatted_address || '',
                         website: r.website || '',
-                        description: place.types ? place.types.slice(0,3).join(', ').replace(/_/g,' ') : 'Local business'
+                        description: place.types ? place.types.slice(0, 3).join(', ').replace(/_/g, ' ') : 'Local business'
                       };
                     }
                   } catch(_) {}
-                  // Fallback to basic place data if detail call fails
+                  // Fallback to basic text search data if detail call times out
                   return { name: place.name || '', phone: '', address: place.formatted_address || '', website: '', description: 'Local business' };
                 });
 
