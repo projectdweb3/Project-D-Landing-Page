@@ -55,13 +55,244 @@
   }
   </script>
   <style>
+    /* Build v2.2 - Dramatic Liquid Glass */
     .goog-te-banner-frame { display: none !important; }
-    /* Build v2.1 - Liquid Glass & Smart Leads */
     body { top: 0 !important; }
     #google_translate_element { display: none !important; }
     .skiptranslate { display: none !important; }
     body.translated-ltr, body.translated-rtl { top: 0 !important; }
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #eef2f7;
+      color: #111827;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark body {
+      background-color: #070c18;
+      color: #f3f4f6;
+    }
+
+    /* ── LIQUID GLASS CARDS ── */
+    .amp-card {
+      background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.75) 0%,
+        rgba(255,255,255,0.45) 100%
+      );
+      backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 24px;
+      box-shadow:
+        0 2px 0 0 rgba(255,255,255,0.6) inset,   /* top specular */
+        0 -1px 0 0 rgba(0,0,0,0.04) inset,         /* bottom edge */
+        0 8px 32px rgba(0,0,0,0.08),               /* soft outer */
+        0 2px 8px rgba(0,0,0,0.05);                /* close shadow */
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dark .amp-card {
+      background: linear-gradient(
+        145deg,
+        rgba(60,80,120,0.22) 0%,
+        rgba(20,30,55,0.30) 100%
+      );
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 1px 0 0 rgba(255,255,255,0.08) inset,
+        0 -1px 0 0 rgba(0,0,0,0.3) inset,
+        0 8px 32px rgba(0,0,0,0.45),
+        0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .amp-card:hover {
+      transform: translateY(-5px) scale(1.015);
+      border-color: rgba(0,242,234,0.5);
+      box-shadow:
+        0 2px 0 0 rgba(255,255,255,0.8) inset,
+        0 -1px 0 0 rgba(0,0,0,0.04) inset,
+        0 20px 50px -10px rgba(0,242,234,0.25),
+        0 8px 20px rgba(0,0,0,0.08),
+        0 0 0 1px rgba(0,242,234,0.15);
+    }
+
+    .dark .amp-card:hover {
+      border-color: rgba(0,242,234,0.35);
+      box-shadow:
+        0 1px 0 0 rgba(255,255,255,0.12) inset,
+        0 -1px 0 0 rgba(0,0,0,0.4) inset,
+        0 20px 50px -10px rgba(0,242,234,0.20),
+        0 8px 20px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(0,242,234,0.12);
+    }
+
+    /* ── LIQUID GLASS PANELS (sidebar + main) ── */
+    .glass-panel {
+      background: linear-gradient(
+        160deg,
+        rgba(255,255,255,0.65) 0%,
+        rgba(255,255,255,0.35) 100%
+      );
+      backdrop-filter: blur(32px) saturate(160%);
+      -webkit-backdrop-filter: blur(32px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.75);
+      box-shadow:
+        0 2px 0 rgba(255,255,255,0.7) inset,
+        0 -1px 0 rgba(0,0,0,0.05) inset,
+        0 12px 48px rgba(0,0,0,0.07),
+        0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .dark .glass-panel {
+      background: linear-gradient(
+        160deg,
+        rgba(30,45,80,0.45) 0%,
+        rgba(10,18,40,0.55) 100%
+      );
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.07) inset,
+        0 -1px 0 rgba(0,0,0,0.35) inset,
+        0 12px 48px rgba(0,0,0,0.5),
+        0 4px 16px rgba(0,0,0,0.35);
+    }
+
+    /* ── BUTTONS ── */
+    .amp-button {
+      background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,245,255,0.55) 100%);
+      backdrop-filter: blur(12px) saturate(130%);
+      -webkit-backdrop-filter: blur(12px) saturate(130%);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 9999px;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #222;
+      box-shadow:
+        0 2px 0 rgba(255,255,255,1) inset,
+        0 -1px 0 rgba(0,0,0,0.06) inset,
+        0 4px 14px rgba(0,0,0,0.07);
+    }
+
+    .dark .amp-button {
+      background: linear-gradient(135deg, rgba(35,50,85,0.7) 0%, rgba(20,30,60,0.55) 100%);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #dde3f0;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.1) inset,
+        0 -1px 0 rgba(0,0,0,0.4) inset,
+        0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    .amp-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,95,0,0.18), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .amp-button:hover::before { transform: translateX(100%); }
+
+    .amp-button:hover {
+      border-color: rgba(255,95,0,0.55);
+      box-shadow:
+        0 2px 0 rgba(255,255,255,1) inset,
+        0 -1px 0 rgba(0,0,0,0.06) inset,
+        0 8px 25px rgba(255,95,0,0.18),
+        0 2px 8px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      color: #FF5F00;
+    }
+
+    .dark .amp-button:hover {
+      border-color: rgba(255,95,0,0.5);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.12) inset,
+        0 -1px 0 rgba(0,0,0,0.45) inset,
+        0 8px 25px rgba(255,95,0,0.15);
+      color: white;
+    }
+
+    .amp-button.primary {
+      background: linear-gradient(135deg, rgba(255,95,0,0.18) 0%, rgba(255,95,0,0.08) 100%);
+      border-color: rgba(255,95,0,0.45);
+      color: #FF5F00;
+      box-shadow:
+        0 2px 0 rgba(255,180,100,0.3) inset,
+        0 -1px 0 rgba(180,50,0,0.15) inset,
+        0 4px 14px rgba(255,95,0,0.12);
+    }
+
+    .dark .amp-button.primary {
+      color: #ff9a5c;
+      box-shadow:
+        0 1px 0 rgba(255,150,80,0.15) inset,
+        0 -1px 0 rgba(180,50,0,0.3) inset,
+        0 4px 14px rgba(255,95,0,0.1);
+    }
+
+    .amp-button.primary:hover {
+      background: linear-gradient(135deg, rgba(255,95,0,0.28) 0%, rgba(255,95,0,0.14) 100%);
+      border-color: rgba(255,95,0,0.75);
+      box-shadow:
+        0 2px 0 rgba(255,180,100,0.4) inset,
+        0 -1px 0 rgba(180,50,0,0.2) inset,
+        0 10px 28px rgba(255,95,0,0.22);
+      color: #FF5F00;
+    }
+
+    .dark .amp-button.primary:hover { color: #fff; }
+
+    /* ── ANIMATIONS ── */
+    .glass-reveal {
+      animation: glassReveal 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+
+    @keyframes glassReveal {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .stagger-4 { animation-delay: 0.4s; }
+
+    /* ── SCROLLBARS ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
+    .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    .toggle-checkbox:checked+.toggle-label { background-color: #FF5F00; border-color: #FF5F00; }
+    .toggle-checkbox:checked+.toggle-label .toggle-thumb { transform: translateX(100%); border-color: #FF5F00; }
+    .toggle-label { background-color: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); }
+    .dark .toggle-label { background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+
+    .tree-line-v { width: 1px; background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); }
+    .dark .tree-line-v { background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); }
+    .tree-line-h { height: 1px; background: rgba(0,0,0,0.2); }
+    .dark .tree-line-h { background: rgba(255,255,255,0.2); }
+
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
+</head>
+
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,es', autoDisplay: false}, 'google_translate_element');
@@ -3704,7 +3935,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const [showModal, setShowModal] = useState(false);
       const [showRemovalModal, setShowRemovalModal] = useState(false);
       const [itemToDelete, setItemToDelete] = useState(null);
-      const [formData, setFormData] = useState({ id: null, name: '', contact: '', value: isOrganizer ? '1' : '$0', stage: stages[0], notes: '' });
+      const [formData, setFormData] = useState({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: isOrganizer ? '1' : '$0', stage: stages[0], notes: '' });
       const [activeMobileStage, setActiveMobileStage] = useState(stages[0]);
 
       useEffect(() => {
@@ -3823,7 +4054,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', contact: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
               <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
@@ -3946,16 +4177,30 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   <h3 className="font-semibold">{formData.id ? `Edit ${entityLabel || 'Lead'}` : `Manual ${entityLabel || 'Lead'} Entry`}</h3>
                   <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[0] || 'Name / Company'}</label>
                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[1] || 'Contact Info'}</label>
-                    <input type="text" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Phone</label>
+                      <input type="tel" value={formData.phone || ''} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="(555) 123-4567" className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Email</label>
+                      <input type="email" value={formData.email || ''} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="name@company.com" className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                    </div>
                   </div>
-                  <div className="flex gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Website</label>
+                    <input type="text" value={formData.website || ''} onChange={e => setFormData({...formData, website: e.target.value})} placeholder="https://company.com" className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Address / Location</label>
+                    <input type="text" value={formData.address || ''} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="City, State" className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                  </div>
+                  <div className="flex gap-3">
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[2] || 'Est. Value'}</label>
                       {isOrganizer ? (
@@ -3981,7 +4226,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <label className="block text-xs text-gray-500 mb-1">Notes</label>
                     <textarea value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="2" placeholder="Add notes..."></textarea>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || 'Lead'}</button>
+                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-1">Save {entityLabel || 'Lead'}</button>
                 </div>
               </div>
             </div>
