@@ -133,44 +133,54 @@
     }
 
     .amp-card {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .dark .amp-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(15, 20, 35, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .amp-card:hover {
-      transform: translateY(-4px);
-      border-color: #00F2EA;
-      box-shadow: 0 10px 30px -10px rgba(0, 242, 234, 0.15);
+      transform: translateY(-4px) scale(1.01);
+      border-color: rgba(0, 242, 234, 0.4);
+      box-shadow: 0 15px 40px -10px rgba(0, 242, 234, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    
+    .dark .amp-card:hover {
+       border-color: rgba(0, 242, 234, 0.3);
+       box-shadow: 0 15px 40px -10px rgba(0, 242, 234, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .amp-button {
-      background: rgba(0, 0, 0, 0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       border-radius: 9999px;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      color: #111;
+      color: #333;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
     }
 
     .dark .amp-button {
-      background: rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, rgba(30, 40, 60, 0.6), rgba(20, 30, 50, 0.4));
       border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
+      color: #e2e8f0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .amp-button::before {
@@ -187,28 +197,36 @@
     }
 
     .amp-button:hover {
-      border-color: #FF5F00;
-      box-shadow: 0 0 20px rgba(255, 95, 0, 0.3);
-      transform: scale(1.02);
+      border-color: rgba(255, 95, 0, 0.6);
+      box-shadow: 0 8px 25px rgba(255, 95, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
       color: #FF5F00;
     }
 
     .dark .amp-button:hover {
+      border-color: rgba(255, 95, 0, 0.5);
+      box-shadow: 0 8px 25px rgba(255, 95, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       color: white;
     }
 
     .amp-button.primary {
-      background: rgba(255, 95, 0, 0.15);
-      border-color: rgba(255, 95, 0, 0.5);
+      background: linear-gradient(135deg, rgba(255, 95, 0, 0.15), rgba(255, 95, 0, 0.05));
+      border-color: rgba(255, 95, 0, 0.4);
       color: #FF5F00;
     }
 
     .dark .amp-button.primary {
-      color: white;
+      color: #ff8b4d;
     }
 
     .amp-button.primary:hover {
-      background: rgba(255, 95, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 95, 0, 0.25), rgba(255, 95, 0, 0.1));
+      border-color: rgba(255, 95, 0, 0.8);
+      color: #FF5F00;
+    }
+    
+    .dark .amp-button.primary:hover {
+      color: #fff;
     }
 
     .glass-reveal {
