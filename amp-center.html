@@ -699,11 +699,82 @@
       syncTimeout = setTimeout(() => syncToCloud(userId, stage), 5000);
     };
 
+    // --- REALTIME MULTI-DEVICE SYNC ---
+    // Subscribes to user_workspace table changes. When ANY device upserts a row
+    // (leads added, tasks created, etc), all other open sessions receive it
+    // instantly via WebSocket and update their localStorage + React state.
+    //
+    // SETUP REQUIRED: In Supabase Dashboard → Database → Replication,
+    // toggle ON the `user_workspace` table to enable Realtime on it.
+    let realtimeChannel = null;
+    const subscribeToRealtimeWorkspace = (userId, onDataChanged) => {
+      if (!supabaseClient || !userId || userId === 'local') return null;
+      // Clean up any existing channel first
+      if (realtimeChannel) {
+        supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+      const channel = supabaseClient
+        .channel(`workspace:${userId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // INSERT or UPDATE
+            schema: 'public',
+            table: 'user_workspace',
+            filter: `user_id=eq.${userId}`
+          },
+          (payload) => {
+            const row = payload.new;
+            if (!row || !row.data_key || !row.data_value) return;
+            // Apply the incoming value to localStorage
+            const current = localStorage.getItem(row.data_key);
+            if (current !== row.data_value) {
+              localStorage.setItem(row.data_key, row.data_value);
+              // Dispatch storage event so React hooks in other components pick it up
+              window.dispatchEvent(new StorageEvent('storage', {
+                key: row.data_key,
+                newValue: row.data_value,
+                oldValue: current,
+                storageArea: localStorage
+              }));
+              // Also fire specific AMP events for components listening to them
+              const key = row.data_key;
+              if (key.startsWith('amp_leads_'))    window.dispatchEvent(new Event('amp-leads-updated'));
+              if (key.startsWith('amp_clients_'))  window.dispatchEvent(new Event('amp-clients-updated'));
+              if (key.startsWith('amp_tasks_'))    window.dispatchEvent(new Event('amp-tasks-updated'));
+              if (key.startsWith('amp_finances_')) window.dispatchEvent(new Event('amp-finances-updated'));
+              if (key.startsWith('amp_inventory_'))window.dispatchEvent(new Event('amp-inventory-updated'));
+              if (key.startsWith('amp_calendar_')) window.dispatchEvent(new Event('amp-calendar-updated'));
+              if (key === 'amp_team_messages')     window.dispatchEvent(new Event('amp-team-messages'));
+              if (key === 'amp_custom_agents')     window.dispatchEvent(new Event('amp-subagents-updated'));
+              if (key === 'amp_business_profile')  window.dispatchEvent(new Event('amp-profile-updated'));
+              // Notify parent to re-render if needed
+              if (onDataChanged) onDataChanged(key, row.data_value);
+            }
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`🔴 Realtime active — live sync enabled for account ${userId.slice(0, 8)}...`);
+          }
+        });
+      realtimeChannel = channel;
+      return channel;
+    };
+    const unsubscribeRealtimeWorkspace = () => {
+      if (realtimeChannel && supabaseClient) {
+        supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+    };
+
     const AuthScreen = ({ onLogin }) => {
       const [email, setEmail] = useState('');
       const [password, setPassword] = useState('');
       const [isSignUp, setIsSignUp] = useState(false);
       const [loading, setLoading] = useState(false);
+      const [googleLoading, setGoogleLoading] = useState(false);
       const [error, setError] = useState('');
       const [successMsg, setSuccessMsg] = useState('');
 
@@ -739,6 +810,32 @@
         }
       };
 
+      const handleGoogleSignIn = async () => {
+        if (!supabaseClient) { setError("Supabase not connected."); return; }
+        setGoogleLoading(true);
+        setError('');
+        try {
+          const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              // After Google auth, redirect back to this exact page.
+              // Supabase automatically exchanges the code for a session.
+              redirectTo: window.location.origin + window.location.pathname,
+              queryParams: {
+                access_type: 'offline',
+                prompt: 'consent', // Always show account picker
+              }
+            }
+          });
+          if (error) throw error;
+          // Page will redirect to Google — no further action needed here.
+          // When the user returns, onAuthStateChange in App will fire and set the session.
+        } catch (err) {
+          setError(err.message);
+          setGoogleLoading(false);
+        }
+      };
+
       return (
         <div className="w-full min-h-[100dvh] flex items-center justify-center relative z-10 px-4">
           <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-xl border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-8 w-full max-w-md shadow-2xl">
@@ -747,11 +844,11 @@
                 <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_800w.png" className="w-full h-full object-cover" alt="Project D Logo" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-center mb-2 text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-center mb-1 text-gray-900 dark:text-white">
               {isSignUp ? 'Initialize Account' : 'Access AMP Center'}
             </h2>
-            <p className="text-center text-gray-500 dark:text-gray-400 mb-8">
-              Enter your credentials to proceed
+            <p className="text-center text-gray-500 dark:text-gray-400 mb-6 text-sm">
+              {isSignUp ? 'Create your account to get started' : 'Sign in to your workspace'}
             </p>
 
             {error && (
@@ -763,6 +860,37 @@
             {successMsg && (
               <div className="mb-4 p-3 bg-pd-teal/20 border border-pd-teal/50 rounded-lg text-pd-teal text-sm text-center font-medium">
                 {successMsg}
+              </div>
+            )}
+
+            {/* Google Sign-In Button */}
+            {supabaseClient && (
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading}
+                type="button"
+                className="w-full flex items-center justify-center gap-3 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 border border-gray-300 dark:border-white/20 rounded-xl py-3 px-4 text-gray-800 dark:text-white font-semibold text-sm transition-all shadow-sm disabled:opacity-60 mb-4"
+              >
+                {googleLoading ? (
+                  <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                )}
+                {googleLoading ? 'Redirecting to Google...' : 'Continue with Google'}
+              </button>
+            )}
+
+            {/* Divider */}
+            {supabaseClient && (
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 h-px bg-gray-200 dark:bg-white/10"></div>
+                <span className="text-xs text-gray-400 font-medium">or sign in with email</span>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-white/10"></div>
               </div>
             )}
 
@@ -2125,6 +2253,29 @@
           return () => window.removeEventListener('amp-subagents-updated', fetchCustomAgents);
         }
       }, [session]);
+
+      // --- REALTIME WORKSPACE SYNC ---
+      // Start listening for live data changes from other devices/users on the same account.
+      // Any write on any device propagates here instantly via Supabase WebSocket.
+      useEffect(() => {
+        if (!session?.user?.id || session.user.id === 'local') return;
+        const channel = subscribeToRealtimeWorkspace(session.user.id, (key, value) => {
+          // Trigger re-renders for key pieces of state that are read from localStorage
+          if (key === 'amp_business_profile') {
+            try { setUserProfile(JSON.parse(value)); } catch(e) {}
+          }
+          if (key === 'amp_usage_pct') {
+            try {
+              const parsed = JSON.parse(value);
+              // agentBudgets is local state in CommandCenter, dispatch to update
+              window.dispatchEvent(new CustomEvent('amp-budget-sync', { detail: parsed }));
+            } catch(e) {}
+          }
+        });
+        return () => {
+          if (channel && supabaseClient) supabaseClient.removeChannel(channel);
+        };
+      }, [session?.user?.id]);
 
       useEffect(() => {
         fetchAccountUsers();
@@ -3539,18 +3690,26 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 11. PLAN EXECUTION: When the user creates or asks you to execute a plan, break it into tasks using 'create_task', save the overall plan with 'store_plan', and begin working through tool-executable steps immediately. For human-required steps, create tasks and tell the user what they need to handle. You're a full execution engine — not just a planner.
 12. LEARNING & MEMORY: Use 'save_user_insight' whenever you learn something important about this user — silently, in the background. Target audience, preferred locations, business goals, communication preferences, key people. Don't announce it. Just remember it. Next time they chat, those insights will be loaded automatically so you already know them.
 13. TARGET MARKET PIVOTING: The user can change their desired target market, ideal client type, or lead criteria at ANY point in the conversation simply by telling you. When they say something like "actually, let's switch to dentists" or "I want to target restaurants now" or "focus on med spas in Houston going forward" — IMMEDIATELY acknowledge the change, use 'save_user_insight' to persist the new target (category: 'ideal_client' or 'target_location'), and begin acting on the new criteria. Do NOT continue using old criteria. Confirm naturally: "Got it — switching gears to [new target]. Let me search for those now."
-14. DUPLICATE / REPEAT PREVENTION: NEVER give the user repeat leads. The backend automatically deduplicates search results against the existing pipeline, but YOU must also be conversationally aware. If the user asks for more leads of the same type in the same area and the pipeline already has many of those, the search will return mostly duplicates. If a search returns fewer new leads than expected, explain clearly: "I found [X] new ones — the rest were already in your pipeline. We're getting close to exhausting [type] leads in [area]." If ALL results are duplicates, say: "We've exhausted the available [type] leads in [area] — every result is already in your pipeline."
+14. DUPLICATE / REPEAT PREVENTION: NEVER give the user repeat leads. The backend deduplicates search results against the user's CURRENT pipeline leads AND current clients — so a business that's already in the pipeline or has become a client won't be re-added. IMPORTANT: this dedup is based on current state only. If a lead was deleted and did NOT become a client, it is no longer excluded and can appear in future searches — this is intentional. Be conversationally aware: if the pipeline already has many leads of the same type in the same area, the search will return mostly duplicates. Explain clearly: "I found [X] new ones — the rest were already in your pipeline."
 15. AREA EXHAUSTION & EXPANSION: When an area is exhausted (all search results are already in the pipeline), you MUST proactively suggest 2-3 nearby geographic areas to expand into. Example: "To find fresh leads, I'd recommend expanding to [nearby city 1], [nearby city 2], or widening your search radius to [broader region]. Want me to search one of those?" The user should NEVER be left wondering why they're not getting new leads — always explain and offer a clear path forward.]`;
 
         const currentLanguage = localStorage.getItem('amp_language') || 'en';
         const langRule = currentLanguage === 'es' ? '\n\n[CRITICAL LANGUAGE RULE: The user has selected Spanish (ES) as their preferred language. You MUST reply to them entirely in Spanish from now on. However, when using tools (like create_task, add_lead), you must keep the ENUM values (like stage names) in English, but you may translate the task titles and descriptions into Spanish.]' : '';
 
-        // Collect existing lead names to prevent duplicate search results
+        // Collect existing lead + client names to prevent duplicate search results.
+        // Dedup is based on the CURRENT state of the pipeline and client ledger only.
+        // If a lead was deleted (and didn't convert to a client), it will NOT appear here
+        // and can be re-suggested freely on the next search — this is by design.
         let existingLeadNames = [];
         try {
           const currentStage = userProfile?.stage || 'Default';
+          // Current pipeline leads (not yet clients)
           const existingLeads = JSON.parse(localStorage.getItem(`amp_leads_${currentStage}`) || '[]');
-          existingLeadNames = existingLeads.map(l => l.name).filter(Boolean);
+          const leadNames = existingLeads.map(l => l.name).filter(Boolean);
+          // Existing clients (graduated from leads — should never be re-surfaced as a lead)
+          const existingClients = JSON.parse(localStorage.getItem(`amp_clients_${currentStage}`) || '[]');
+          const clientNames = existingClients.map(c => c.name).filter(Boolean);
+          existingLeadNames = [...leadNames, ...clientNames];
         } catch(_) {}
 
         fetch('/.netlify/functions/agent', {
