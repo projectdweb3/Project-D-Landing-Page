@@ -619,6 +619,20 @@ RULES OF ENGAGEMENT:
               },
             },
             {
+              name: "send_outreach",
+              description: "Sends or drafts an outreach email/message to one or more leads in the pipeline. Use this when the user asks to reach out, message, email, or contact leads. If sending to multiple leads, include all their names in the lead_names array. Always show the user the message content before confirming it was 'sent'.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  lead_names: { type: "ARRAY", items: { type: "STRING" }, description: "Names of leads to contact. For bulk outreach, include all lead names." },
+                  subject: { type: "STRING", description: "Email subject line." },
+                  message: { type: "STRING", description: "The outreach message body. Make it personalized and relevant." },
+                  send_mode: { type: "STRING", description: "'single' for one lead, 'bulk' for multiple leads at once." }
+                },
+                required: ["lead_names", "subject", "message"],
+              },
+            },
+            {
               name: "save_user_insight",
               description: "Saves a learned fact about the user to persistent memory. Use this silently whenever you learn something important — their target audience, preferred locations, industry focus, communication style, key contacts, recurring requests, business goals, or action preferences. This builds your long-term knowledge of the user so you never have to ask the same question twice.",
               parameters: {
@@ -713,6 +727,7 @@ RULES OF ENGAGEMENT:
     let toolResults = [];
     let frontendActions = [];
     let finalText = "";
+    let leadSearchDone = false; // prevent duplicate lead count messages
 
     for (const part of responseParts) {
       if (part.text) {
@@ -856,6 +871,10 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
                 leads: leads.map(l => ({
                   name: l.name || 'Unknown',
                   contact: l.phone || l.website || l.address || '',
+                  phone: l.phone || '',
+                  website: l.website || '',
+                  address: l.address || '',
+                  email: l.email || '',
                   stage: 'Qualifying',
                   value: '$0',
                   prob: '0%',
@@ -864,6 +883,7 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
               }
             });
             toolResults.push(`${leads.length} leads found via ${searchSource} and added to the pipeline.`);
+            leadSearchDone = true;
           } else {
             toolResults.push(`Searched for "${call.args.query}" across all available sources but couldn't retrieve results this time. Please try again.`);
           }
@@ -935,9 +955,18 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
             frontendActions.push({ type: 'add_lead', payload: call.args });
             toolResults.push(`Lead '${call.args.name}' added to pipeline.`);
           }
-          else if (call.name === "add_multiple_leads") {
+          else if (call.name === \"add_multiple_leads\") {
             frontendActions.push({ type: 'add_multiple_leads', payload: call.args });
-            toolResults.push(`${call.args.leads.length} leads added to pipeline.`);
+            // Only log if this wasn't already reported by search_for_leads (avoid duplicate message)
+            if (!leadSearchDone) {
+              toolResults.push(`${call.args.leads?.length || 0} leads added to pipeline.`);
+            }
+          }
+          else if (call.name === \"send_outreach\") {
+            frontendActions.push({ type: 'send_outreach', payload: call.args });
+            const names = (call.args.lead_names || []).join(', ');
+            const mode = call.args.send_mode === 'bulk' ? 'Bulk outreach' : 'Outreach';
+            toolResults.push(`${mode} prepared for: ${names}. Subject: \"${call.args.subject}\". Email shortcuts opened for each lead.`);
           }
           else if (call.name === "update_lead") {
             frontendActions.push({ type: 'update_lead', payload: call.args });

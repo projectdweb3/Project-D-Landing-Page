@@ -3833,7 +3833,13 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                           {lead.name}
                           {isOrganizer && lead.is_leader && <iconify-icon icon="solar:crown-minimalistic-bold" className="text-pd-orange"></iconify-icon>}
                         </span>
-                        <span className="text-[10px] text-gray-500">{lead.contact}</span>
+                        {/* Address / location */}
+                        {(lead.address || lead.contact) && (
+                          <span className="text-[10px] text-gray-400 flex items-center gap-1 truncate">
+                            <iconify-icon icon="solar:map-point-linear" className="flex-shrink-0"></iconify-icon>
+                            {lead.address || lead.contact}
+                          </span>
+                        )}
                         {lead.notes && <span className="text-[10px] text-gray-400 italic truncate">{lead.notes}</span>}
                       </div>
                       <div className="flex flex-col items-end gap-1">
@@ -3854,6 +3860,29 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                         </select>
                       </div>
                     </div>
+
+                    {/* Contact details row */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {(lead.phone || (lead.contact && lead.contact.match(/\d{3}/))) && (
+                        <a href={`tel:${lead.phone || lead.contact}`} className="flex items-center gap-1 text-[10px] text-pd-teal hover:text-pd-teal/70 bg-pd-teal/10 rounded px-2 py-1 transition-colors" title="Call">
+                          <iconify-icon icon="solar:phone-linear"></iconify-icon>
+                          {lead.phone || lead.contact}
+                        </a>
+                      )}
+                      {lead.website && (
+                        <a href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 bg-blue-500/10 rounded px-2 py-1 transition-colors" title="Website">
+                          <iconify-icon icon="solar:global-linear"></iconify-icon>
+                          Website
+                        </a>
+                      )}
+                      {lead.email && (
+                        <a href={`mailto:${lead.email}`} className="flex items-center gap-1 text-[10px] text-purple-400 hover:text-purple-300 bg-purple-500/10 rounded px-2 py-1 transition-colors" title="Email">
+                          <iconify-icon icon="solar:letter-linear"></iconify-icon>
+                          {lead.email}
+                        </a>
+                      )}
+                    </div>
+
                     <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 text-xs mb-3 space-y-1">
                       <div className="flex justify-between"><span className="text-gray-500">{isOrganizer ? 'Commitment' : 'Value'}</span><span className="font-medium text-gray-900 dark:text-gray-200">{lead.value || (isOrganizer ? '1' : '$0')}</span></div>
                       <div className="flex flex-col gap-1 mt-1">
@@ -3863,13 +3892,28 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-white/10">
-                      <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate max-w-[60%]"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next_step || 'N/A'}</div>
-                      <button onClick={() => onUpdateLead && onUpdateLead(lead.name)} className="text-[10px] bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal px-2 py-1.5 rounded transition-colors flex items-center gap-1 font-semibold">
-                        <iconify-icon icon="solar:chat-round-dots-linear"></iconify-icon> Update via CEO
-                      </button>
+
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-white/10 gap-2">
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate max-w-[45%]"><iconify-icon icon="solar:arrow-right-linear" className="text-pd-orange"></iconify-icon> Next: {lead.next_step || 'N/A'}</div>
+                      <div className="flex items-center gap-1.5">
+                        {/* Quick email shortcut */}
+                        {(lead.email || lead.contact?.includes('@')) && (
+                          <a
+                            href={`mailto:${lead.email || lead.contact}?subject=Introduction from ${userProfile?.company_name || 'us'}`}
+                            className="text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 px-2 py-1.5 rounded transition-colors flex items-center gap-1 font-semibold"
+                            title="Quick email"
+                          >
+                            <iconify-icon icon="solar:letter-bold"></iconify-icon> Email
+                          </a>
+                        )}
+                        {/* Outreach via Neural Chat */}
+                        <button onClick={() => onUpdateLead && onUpdateLead(`Draft an outreach message for the lead "${lead.name}"${lead.email ? ` (${lead.email})` : lead.phone ? ` (${lead.phone})` : ''} and send it`)} className="text-[10px] bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal px-2 py-1.5 rounded transition-colors flex items-center gap-1 font-semibold">
+                          <iconify-icon icon="solar:chat-round-dots-linear"></iconify-icon> Outreach
+                        </button>
+                      </div>
                     </div>
                   </div>
+
                 ))}
               </div>
             ))}
