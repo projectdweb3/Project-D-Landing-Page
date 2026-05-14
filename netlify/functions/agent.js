@@ -955,18 +955,18 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
             frontendActions.push({ type: 'add_lead', payload: call.args });
             toolResults.push(`Lead '${call.args.name}' added to pipeline.`);
           }
-          else if (call.name === \"add_multiple_leads\") {
+          else if (call.name === "add_multiple_leads") {
             frontendActions.push({ type: 'add_multiple_leads', payload: call.args });
             // Only log if this wasn't already reported by search_for_leads (avoid duplicate message)
             if (!leadSearchDone) {
               toolResults.push(`${call.args.leads?.length || 0} leads added to pipeline.`);
             }
           }
-          else if (call.name === \"send_outreach\") {
+          else if (call.name === "send_outreach") {
             frontendActions.push({ type: 'send_outreach', payload: call.args });
             const names = (call.args.lead_names || []).join(', ');
             const mode = call.args.send_mode === 'bulk' ? 'Bulk outreach' : 'Outreach';
-            toolResults.push(`${mode} prepared for: ${names}. Subject: \"${call.args.subject}\". Email shortcuts opened for each lead.`);
+            toolResults.push(`${mode} prepared for: ${names}. Subject: "${call.args.subject}". Email shortcuts opened for each lead.`);
           }
           else if (call.name === "update_lead") {
             frontendActions.push({ type: 'update_lead', payload: call.args });
