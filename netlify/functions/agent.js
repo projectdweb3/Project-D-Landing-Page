@@ -705,75 +705,114 @@ RULES OF ENGAGEMENT:
       if (part.functionCall) {
         const call = part.functionCall;
 
-        // --- SEARCH_FOR_LEADS: Find real businesses via Google Search ---
-        // Strategy: Try google_search grounding first. If it fails for ANY reason,
-        // fall back to Gemini's training data knowledge (still real businesses, just
-        // not live-searched). This guarantees the user ALWAYS gets results.
+        // --- SEARCH_FOR_LEADS: Apollo-style 3-tier lead discovery ---
+        // Tier 1: Google Places API  → structured data (name, phone, address, website) — Apollo equivalent
+        // Tier 2: Gemini google_search grounding → live web search fallback
+        // Tier 3: Gemini knowledge base → always returns something
         if (call.name === 'search_for_leads') {
-          const searchQuery = call.args.query + (call.args.context ? '. Additional context: ' + call.args.context : '');
+          const searchQuery = call.args.query + (call.args.context ? '. ' + call.args.context : '');
+          const placesKey = process.env.GOOGLE_PLACES_KEY;
           let leads = [];
           let searchSource = '';
 
-          // ─── TIER 1: Google Search Grounding (live results) ───
-          try {
-            // Use gemini-2.0-flash for search — same API key works across all models.
-            // gemini-2.0-flash is fast and has confirmed google_search grounding support.
-            const searchEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+          // ─── TIER 1: Google Places API (Apollo-equivalent for local/SMB) ───
+          // Returns structured JSON: name, phone, address, website — no parsing needed.
+          // Free tier: 10,000 Text Search requests/month.
+          // Activates when GOOGLE_PLACES_KEY is set in Netlify environment variables.
+          if (placesKey && leads.length === 0) {
+            try {
+              // Step 1: Text Search to get place IDs + basic info
+              const textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(call.args.query)}&key=${placesKey}`;
+              const ctrl1 = new AbortController();
+              const t1 = setTimeout(() => ctrl1.abort(), 5000);
+              const placesRes = await fetch(textSearchUrl, { signal: ctrl1.signal });
+              clearTimeout(t1);
 
-            const searchPayload = {
-              contents: [{
-                role: 'user',
-                parts: [{ text: `Search Google for real businesses matching: "${searchQuery}"
+              if (placesRes.ok) {
+                const placesData = await placesRes.json();
+                const places = placesData.results || [];
+                console.log(`Google Places returned ${places.length} results for: ${call.args.query}`);
 
-Return ONLY a JSON array of real businesses you find. No markdown, no explanation.
-Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"City, State","website":"https://url","description":"What they do"}]
-Find 7-10+ real businesses. Use "" for missing fields. Never invent fake businesses.` }]
-              }],
-              tools: [{ google_search: {} }],
-              generationConfig: { temperature: 0.2, maxOutputTokens: 3000 }
-            };
+                // Step 2: Get full details (phone, website) for top results
+                const detailPromises = places.slice(0, 10).map(async (place) => {
+                  try {
+                    const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_phone_number,formatted_address,website,business_status&key=${placesKey}`;
+                    const ctrl2 = new AbortController();
+                    const t2 = setTimeout(() => ctrl2.abort(), 3000);
+                    const detailRes = await fetch(detailUrl, { signal: ctrl2.signal });
+                    clearTimeout(t2);
+                    if (detailRes.ok) {
+                      const detail = await detailRes.json();
+                      const r = detail.result || {};
+                      return {
+                        name: r.name || place.name || '',
+                        phone: r.formatted_phone_number || '',
+                        address: r.formatted_address || place.formatted_address || '',
+                        website: r.website || '',
+                        description: place.types ? place.types.slice(0,3).join(', ').replace(/_/g,' ') : 'Local business'
+                      };
+                    }
+                  } catch(_) {}
+                  // Fallback to basic place data if detail call fails
+                  return { name: place.name || '', phone: '', address: place.formatted_address || '', website: '', description: 'Local business' };
+                });
 
-            const controller = new AbortController();
-            const tid = setTimeout(() => controller.abort(), 8000);
-            const res = await fetch(searchEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(searchPayload), signal: controller.signal });
-            clearTimeout(tid);
-
-            if (res.ok) {
-              const d = await res.json();
-              const txt = (d?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
-              leads = parseLeadsFromText(txt);
-              if (leads.length > 0) searchSource = 'Google Search';
-            } else {
-              const errInfo = await res.text().catch(() => '');
-              console.error(`Google Search grounding failed (${res.status}):`, errInfo.substring(0, 300));
+                const detailedPlaces = await Promise.all(detailPromises);
+                leads = detailedPlaces.filter(p => p && p.name);
+                if (leads.length > 0) searchSource = 'Google Places';
+              }
+            } catch (e) {
+              console.error('Tier 1 (Google Places) failed:', e.name, e.message);
             }
-          } catch (e) {
-            console.error('Tier 1 (google_search) failed:', e.name, e.message);
           }
 
-          // ─── TIER 2: Gemini Knowledge Fallback (if Google Search didn't work) ───
+          // ─── TIER 2: Gemini google_search grounding (live web search) ───
           if (leads.length === 0) {
             try {
-              console.log('Falling back to Gemini knowledge for leads...');
-              const fallbackPayload = {
-                contents: [{
-                  role: 'user',
-                  parts: [{ text: `I need you to list REAL businesses that match this description: "${searchQuery}"
+              const searchEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+              const searchPayload = {
+                contents: [{ role: 'user', parts: [{ text: `Search Google for real businesses matching: "${searchQuery}"
 
-You MUST return ONLY a valid JSON array — nothing else. No markdown fences, no commentary.
-Each business must be a real company that actually exists (based on your training data).
-Format: [{"name":"Real Business Name","phone":"","address":"City, State","website":"","description":"What they do"}]
-
-List at least 7-10 businesses. These must be real companies, not made-up examples.` }]
-                }],
-                generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
+Return ONLY a JSON array. No markdown, no explanation.
+Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"City, State","website":"https://url","description":"What they do"}]
+Find 7-10+ real businesses. Use "" for missing fields. Never invent businesses.` }] }],
+                tools: [{ google_search: {} }],
+                generationConfig: { temperature: 0.2, maxOutputTokens: 3000 }
               };
+              const ctrl3 = new AbortController();
+              const t3 = setTimeout(() => ctrl3.abort(), 8000);
+              const res = await fetch(searchEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(searchPayload), signal: ctrl3.signal });
+              clearTimeout(t3);
+              if (res.ok) {
+                const d = await res.json();
+                const txt = (d?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
+                leads = parseLeadsFromText(txt);
+                if (leads.length > 0) searchSource = 'Google Search';
+              } else {
+                const errInfo = await res.text().catch(() => '');
+                console.error(`Tier 2 (google_search grounding) failed (${res.status}):`, errInfo.substring(0, 200));
+              }
+            } catch (e) {
+              console.error('Tier 2 (google_search) failed:', e.name, e.message);
+            }
+          }
 
-              const controller2 = new AbortController();
-              const tid2 = setTimeout(() => controller2.abort(), 6000);
-              const res2 = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fallbackPayload), signal: controller2.signal });
-              clearTimeout(tid2);
+          // ─── TIER 3: Gemini Knowledge Fallback (always returns something) ───
+          if (leads.length === 0) {
+            try {
+              console.log('Falling back to Gemini knowledge base for leads...');
+              const fallbackPayload = {
+                contents: [{ role: 'user', parts: [{ text: `List REAL businesses matching: "${searchQuery}"
 
+Return ONLY a valid JSON array — no markdown, no commentary.
+Format: [{"name":"Real Business Name","phone":"","address":"City, State","website":"","description":"What they do"}]
+List 7-10 real companies that actually exist. No fabrications.` }] }],
+                generationConfig: { temperature: 0.4, maxOutputTokens: 3000, thinkingConfig: { thinkingBudget: 0 } }
+              };
+              const ctrl4 = new AbortController();
+              const t4 = setTimeout(() => ctrl4.abort(), 6000);
+              const res2 = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fallbackPayload), signal: ctrl4.signal });
+              clearTimeout(t4);
               if (res2.ok) {
                 const d2 = await res2.json();
                 const txt2 = (d2?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
@@ -781,11 +820,11 @@ List at least 7-10 businesses. These must be real companies, not made-up example
                 if (leads.length > 0) searchSource = 'AI Knowledge Base';
               }
             } catch (e2) {
-              console.error('Tier 2 (knowledge fallback) also failed:', e2.message);
+              console.error('Tier 3 (knowledge fallback) failed:', e2.message);
             }
           }
 
-          // ─── Build pipeline actions from whatever we found ───
+          // ─── Push to pipeline ───
           if (leads.length > 0) {
             frontendActions.push({
               type: 'add_multiple_leads',
@@ -802,12 +841,14 @@ List at least 7-10 businesses. These must be real companies, not made-up example
             });
             toolResults.push(`${leads.length} leads found via ${searchSource} and added to the pipeline.`);
           } else {
-            toolResults.push(`I searched for "${call.args.query}" but couldn't find structured results this time. Please try again — sometimes the search needs a second attempt.`);
+            toolResults.push(`Searched for "${call.args.query}" across all available sources but couldn't retrieve results this time. Please try again.`);
           }
           continue;
         }
 
+
         // --- SAVE_USER_INSIGHT: Persist learned facts to Supabase ---
+
         if (call.name === 'save_user_insight') {
           if (supabase) {
             try {
