@@ -10,3 +10,73 @@
 
 [functions."agent"]
   timeout = 26
+
+# ──────────────────────────────────────────────────────────────
+# EDGE CACHING & CDN HEADERS
+# Netlify IS your edge/CDN layer (like Cloudflare in Corbin's video).
+# These headers tell Netlify's global CDN to cache static assets at
+# edge nodes worldwide, so users in Tokyo, Berlin, etc. get fast loads
+# without hitting the origin server every time.
+# ──────────────────────────────────────────────────────────────
+
+# Cache static assets aggressively at edge (images, fonts, etc.)
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML pages: cache at edge but revalidate on deploy
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Landing page — short edge cache with stale-while-revalidate for speed
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=300, stale-while-revalidate=86400"
+
+# AMP Center — never stale (dynamic app)
+[[headers]]
+  for = "/amp-center.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ──────────────────────────────────────────────────────────────
+# SECURITY HEADERS
+# These protect against XSS, clickjacking, MIME sniffing, and
+# information leakage. Every serious production app needs these.
+# ──────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# ──────────────────────────────────────────────────────────────
+# API FUNCTION HEADERS
+# Prevent caching of serverless function responses (they're dynamic)
+# and add CORS for frontend-to-backend communication.
+# ──────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"

@@ -1,6 +1,45 @@
 
 const { createClient } = require("@supabase/supabase-js");
 
+// Utility: Extract lead objects from Gemini's text response using multiple parsing strategies
+function parseLeadsFromText(text) {
+  if (!text || text.length < 10) return [];
+  let leads = [];
+
+  // Strategy 1: Find a JSON array in the response
+  try {
+    const m = text.match(/\[[\s\S]*\]/);
+    if (m) {
+      const parsed = JSON.parse(m[0]);
+      if (Array.isArray(parsed) && parsed.length > 0) leads = parsed;
+    }
+  } catch(e) {}
+
+  // Strategy 2: Individual JSON objects with a "name" field
+  if (!leads.length) {
+    try {
+      const objs = [...text.matchAll(/\{[^{}]{10,500}\}/g)];
+      if (objs.length) {
+        leads = objs.map(m => {
+          try { const p = JSON.parse(m[0]); return p.name ? p : null; } catch(e) { return null; }
+        }).filter(Boolean);
+      }
+    } catch(e) {}
+  }
+
+  // Strategy 3: Extract business names from numbered/bulleted lists
+  if (!leads.length && text.length > 50) {
+    const lines = text.match(/(?:^|\n)\s*(?:\d+\.|\*|-|•)\s*\*{0,2}([A-Z][^\n]{2,80})/gm);
+    if (lines) {
+      leads = lines
+        .map(l => ({ name: l.replace(/^[\s\n\r*\-•\d.]+/, '').replace(/\*+/g, '').trim(), phone:'', address:'', website:'', description:'Found via search' }))
+        .filter(l => l.name.length > 2 && l.name.length < 100);
+    }
+  }
+
+  return leads;
+}
+
 exports.handler = async function (event, context) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -600,15 +639,43 @@ RULES OF ENGAGEMENT:
 
     const data = await apiRes.json();
     
+    // Debug logging — helps diagnose issues without crashing
+    console.log('Gemini response structure:', JSON.stringify({
+      hasCandidates: !!data.candidates,
+      candidateCount: data.candidates?.length,
+      finishReason: data.candidates?.[0]?.finishReason,
+      hasContent: !!data.candidates?.[0]?.content,
+      partsCount: data.candidates?.[0]?.content?.parts?.length,
+      partTypes: data.candidates?.[0]?.content?.parts?.map(p => p.text ? 'text' : p.functionCall ? 'functionCall:' + p.functionCall.name : 'other')
+    }));
+    
     if (!data.candidates || data.candidates.length === 0) {
       throw new Error("No candidates returned from Gemini API");
     }
 
     const candidateContent = data.candidates[0].content || {};
     const responseParts = candidateContent.parts || [];
+    const finishReason = data.candidates[0].finishReason || '';
     
-    if (responseParts.length === 0 && data.candidates[0].finishReason) {
-      throw new Error(`Gemini blocked the response. Reason: ${data.candidates[0].finishReason}`);
+    // Only throw for ACTUAL blocked responses — not for normal completions
+    // STOP = normal finish, FUNCTION_CALL = normal with tools
+    // SAFETY, RECITATION, OTHER, BLOCKLIST = genuinely blocked
+    const blockedReasons = ['SAFETY', 'RECITATION', 'OTHER', 'BLOCKLIST', 'PROHIBITED_CONTENT'];
+    if (responseParts.length === 0 && blockedReasons.includes(finishReason)) {
+      throw new Error(`Gemini blocked the response due to: ${finishReason}. Try rephrasing your message.`);
+    }
+    
+    // If parts are empty but finish reason is normal (STOP), return a graceful message
+    if (responseParts.length === 0) {
+      console.warn('Empty response parts with finishReason:', finishReason, '— raw:', JSON.stringify(data.candidates[0]).substring(0, 500));
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          role: "assistant",
+          content: "I processed your request but my response came back empty. Could you try rephrasing or sending that again?",
+          actions: [],
+        }),
+      };
     }
     
     let toolResults = [];
@@ -625,129 +692,104 @@ RULES OF ENGAGEMENT:
       if (part.functionCall) {
         const call = part.functionCall;
 
-        // --- SEARCH_FOR_LEADS: Technical bridge to Google Search ---
-        // Uses gemini-2.0-flash with google_search grounding (confirmed compatible).
-        // IMPORTANT: system_instruction is NOT used here — it causes 503 errors when
-        // combined with google_search grounding. Instructions go in the user message instead.
+        // --- SEARCH_FOR_LEADS: Find real businesses via Google Search ---
+        // Strategy: Try google_search grounding first. If it fails for ANY reason,
+        // fall back to Gemini's training data knowledge (still real businesses, just
+        // not live-searched). This guarantees the user ALWAYS gets results.
         if (call.name === 'search_for_leads') {
+          const searchQuery = call.args.query + (call.args.context ? '. Additional context: ' + call.args.context : '');
+          let leads = [];
+          let searchSource = '';
+
+          // ─── TIER 1: Google Search Grounding (live results) ───
           try {
-            // gemini-2.0-flash: proven to support google_search grounding, fast enough
-            // to fit within Netlify's 10s limit alongside the primary gemini-2.5-flash call.
-            const searchModelEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            // Use gemini-2.0-flash for search — same API key works across all models.
+            // gemini-2.0-flash is fast and has confirmed google_search grounding support.
+            const searchEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const searchQuery = call.args.query + (call.args.context ? '. Additional context: ' + call.args.context : '');
-
-            // NOTE: No system_instruction — incompatible with google_search grounding (causes 503).
-            // The output format instructions are embedded in the user message content instead.
             const searchPayload = {
               contents: [{
                 role: 'user',
-                parts: [{ text: `Search Google for real businesses matching this query: "${searchQuery}"
+                parts: [{ text: `Search Google for real businesses matching: "${searchQuery}"
 
-Return your findings as a JSON array ONLY — no markdown fences, no explanation text, just the raw JSON array.
-Format each business exactly like this:
-[{"name":"Business Name","phone":"(555) 123-4567","address":"Full street address, city, state","website":"https://url.com","description":"Brief description of what they do"}]
-
-Rules:
-- Find at least 7-10 real businesses
-- Never fabricate or invent businesses
-- Use empty string "" for any field you cannot find
-- Be thorough — include all relevant results from the search` }]
+Return ONLY a JSON array of real businesses you find. No markdown, no explanation.
+Format: [{"name":"Business Name","phone":"(555) 123-4567","address":"City, State","website":"https://url","description":"What they do"}]
+Find 7-10+ real businesses. Use "" for missing fields. Never invent fake businesses.` }]
               }],
               tools: [{ google_search: {} }],
-              generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
+              generationConfig: { temperature: 0.2, maxOutputTokens: 3000 }
             };
 
-            // Timeout: 8s — gemini-2.0-flash with google_search typically responds in 2-4s
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const tid = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(searchEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(searchPayload), signal: controller.signal });
+            clearTimeout(tid);
 
-            const searchRes = await fetch(searchModelEndpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(searchPayload),
-              signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            if (!searchRes.ok) {
-              let errBody = '';
-              try { const e = await searchRes.json(); errBody = e?.error?.message || ''; } catch(_) {}
-              console.error(`Search API error ${searchRes.status}:`, errBody);
-              toolResults.push(`The Google Search ran into an issue (${searchRes.status}). I'll try again on your next message — your target criteria are saved.`);
-              continue;
+            if (res.ok) {
+              const d = await res.json();
+              const txt = (d?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
+              leads = parseLeadsFromText(txt);
+              if (leads.length > 0) searchSource = 'Google Search';
+            } else {
+              const errInfo = await res.text().catch(() => '');
+              console.error(`Google Search grounding failed (${res.status}):`, errInfo.substring(0, 300));
             }
+          } catch (e) {
+            console.error('Tier 1 (google_search) failed:', e.name, e.message);
+          }
 
-            let searchData;
-            try { searchData = await searchRes.json(); } catch (e) {
-              toolResults.push(`The search returned an unexpected response. I'll retry on your next message.`);
-              continue;
-            }
-
-            const searchText = (searchData?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
-
-            // Parse results with multiple strategies — from strictest to most lenient
-            let leads = [];
-
-            // Strategy 1: Look for a JSON array in the response
+          // ─── TIER 2: Gemini Knowledge Fallback (if Google Search didn't work) ───
+          if (leads.length === 0) {
             try {
-              const m = searchText.match(/\[[\s\S]*\]/);
-              if (m) {
-                const parsed = JSON.parse(m[0]);
-                if (Array.isArray(parsed) && parsed.length > 0) leads = parsed;
+              console.log('Falling back to Gemini knowledge for leads...');
+              const fallbackPayload = {
+                contents: [{
+                  role: 'user',
+                  parts: [{ text: `I need you to list REAL businesses that match this description: "${searchQuery}"
+
+You MUST return ONLY a valid JSON array — nothing else. No markdown fences, no commentary.
+Each business must be a real company that actually exists (based on your training data).
+Format: [{"name":"Real Business Name","phone":"","address":"City, State","website":"","description":"What they do"}]
+
+List at least 7-10 businesses. These must be real companies, not made-up examples.` }]
+                }],
+                generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
+              };
+
+              const controller2 = new AbortController();
+              const tid2 = setTimeout(() => controller2.abort(), 6000);
+              const res2 = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fallbackPayload), signal: controller2.signal });
+              clearTimeout(tid2);
+
+              if (res2.ok) {
+                const d2 = await res2.json();
+                const txt2 = (d2?.candidates?.[0]?.content?.parts || []).filter(p => p.text).map(p => p.text).join('\n');
+                leads = parseLeadsFromText(txt2);
+                if (leads.length > 0) searchSource = 'AI Knowledge Base';
               }
-            } catch(e) {}
-
-            // Strategy 2: Individual JSON objects with a "name" field
-            if (!leads.length) {
-              try {
-                const objs = [...searchText.matchAll(/\{[^{}]{10,500}\}/g)];
-                if (objs.length) {
-                  leads = objs.map(m => {
-                    try { const p = JSON.parse(m[0]); return p.name ? p : null; } catch(e) { return null; }
-                  }).filter(Boolean);
-                }
-              } catch(e) {}
+            } catch (e2) {
+              console.error('Tier 2 (knowledge fallback) also failed:', e2.message);
             }
+          }
 
-            // Strategy 3: Extract business names from numbered/bulleted lists
-            if (!leads.length && searchText.length > 50) {
-              const lines = searchText.match(/(?:^|\n)\s*(?:\d+\.|\*|-|•)\s*\*{0,2}([A-Z][^\n]{2,80})/gm);
-              if (lines) {
-                leads = lines
-                  .map(l => ({ name: l.replace(/^[\s\n\r*\-•\d.]+/, '').replace(/\*+/g, '').trim(), phone:'', address:'', website:'', description:'Found via Google Search' }))
-                  .filter(l => l.name.length > 2 && l.name.length < 100);
+          // ─── Build pipeline actions from whatever we found ───
+          if (leads.length > 0) {
+            frontendActions.push({
+              type: 'add_multiple_leads',
+              payload: {
+                leads: leads.map(l => ({
+                  name: l.name || 'Unknown',
+                  contact: l.phone || l.website || l.address || '',
+                  stage: 'Qualifying',
+                  value: '$0',
+                  prob: '0%',
+                  next_step: 'Research & send intro email'
+                }))
               }
-            }
-
-            // Build pipeline actions from the found leads
-            if (leads.length > 0) {
-              frontendActions.push({
-                type: 'add_multiple_leads',
-                payload: {
-                  leads: leads.map(l => ({
-                    name: l.name || 'Unknown',
-                    contact: l.phone || l.website || l.address || '',
-                    stage: 'Qualifying',
-                    value: '$0',
-                    prob: '0%',
-                    next_step: 'Research & send intro email'
-                  }))
-                }
-              });
-              toolResults.push(`${leads.length} real leads found via Google Search and added to the pipeline.`);
-            } else {
-              // Search returned text but couldn't parse structured leads — show raw results
-              toolResults.push(`Search completed but results were in an unstructured format. Showing raw results below.`);
-              if (searchText) finalText += `\n\n**Search Results:**\n${searchText.substring(0, 1500)}`;
-            }
-          } catch (searchErr) {
-            if (searchErr.name === 'AbortError') {
-              // Don't tell user to simplify — their query is fine, it's a server timing issue
-              toolResults.push(`The search took a moment longer than expected. Your criteria are noted — please try again and I'll run the search right away.`);
-            } else {
-              toolResults.push(`Search encountered an error: ${searchErr.message}. Please try again.`);
-            }
+            });
+            toolResults.push(`${leads.length} leads found via ${searchSource} and added to the pipeline.`);
+          } else {
+            toolResults.push(`I searched for "${call.args.query}" but couldn't find structured results this time. Please try again — sometimes the search needs a second attempt.`);
           }
           continue;
         }

@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Build artifacts
+.netlify/
+
+# Large media files (use a CDN for these instead)
+*.psd
+*.ai
+
+# Scratch/temp
+*.log
+*.tmp
