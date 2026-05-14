@@ -613,7 +613,20 @@ RULES OF ENGAGEMENT:
             }
           ]
         }
-      ]
+      ],
+      // CRITICAL: Disable thinking mode. gemini-2.5-flash thinks silently by default,
+      // burning the entire token budget on internal reasoning with nothing left to output.
+      // thinkingBudget: 0 = respond directly without silent reasoning chains.
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+        thinkingConfig: {
+          thinkingBudget: 0
+        }
+      },
+      toolConfig: {
+        functionCallingConfig: { mode: "AUTO" }
+      }
     };
 
     const apiRes = await fetch(endpoint, {
