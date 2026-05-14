@@ -2145,7 +2145,7 @@
           if (needsProfileSetup) {
             setTriggerPrompt({ sender: 'user', text: "Sync my inventory.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
           } else {
-            setTriggerPrompt({ sender: 'user', text: `Sync my inventory from my store link: ${userProfile.store_link || 'my store'}.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+            setTriggerPrompt({ sender: 'user', text: `Sync my inventory. My store link is: ${userProfile.store_link || '[I need to add my store link in Settings first]'}. Pull the latest products and stock levels and update the Inventory Tracker.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
           }
         }, 300);
       };
@@ -2153,7 +2153,7 @@
       const triggerFinancePrompt = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'user', text: "Log an expense of $... for...", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          setTriggerPrompt({ sender: 'user', text: "I need to log a financial transaction. Please ask me for the amount, type (income or expense), and a brief description so you can add it to the tracker.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         }, 300);
       };
 
@@ -2163,13 +2163,13 @@
           if (needsProfileSetup) {
             setTriggerPrompt({
               sender: 'ceo',
-              text: "I cannot launch a Marketing Campaign until your Business Profile is complete. Please navigate to the Settings tab and save your profile first so I understand your target audience and goals.",
+              text: "Before I can launch a Marketing Campaign, I need your Business Profile to be complete. Head to Settings and save your profile — this tells me your target audience, location, and business goals so I can build the right campaign.",
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           } else {
             setTriggerPrompt({
-              sender: 'ceo',
-              text: "I see you want to launch a new Marketing Campaign. To help me build the best campaign possible, please tell me: 1) What is the main goal of this campaign? 2) Who is the target audience? 3) Do you have any specific offers or budgets in mind? Once you provide this, I'll begin complex planning and delegate the tasks to the CMO.",
+              sender: 'user',
+              text: `Launch a new marketing campaign for ${userProfile.company_name || 'my business'}. We serve ${userProfile.target_market || 'our target market'} in ${userProfile.city || 'our area'}. Build a campaign strategy, delegate tasks to the CMO, and add key milestones to the calendar.`,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           }
@@ -2182,13 +2182,13 @@
           if (needsProfileSetup) {
             setTriggerPrompt({
               sender: 'ceo',
-              text: "I cannot manage leads until your Business Profile is complete. Please navigate to the Settings tab and save your profile first.",
+              text: "Before I can search for leads, I need your Business Profile set up. Head to Settings and fill in your business type, target market, and location — that's all I need to start finding you qualified prospects.",
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           } else {
             setTriggerPrompt({
-              sender: 'ceo',
-              text: "You'd like to add a new Lead to the pipeline. Let's gather their information. Please provide their Name, Company, and any notes about what they are looking for so I can instruct the CMO to track them.",
+              sender: 'user',
+              text: `Find me leads. My business is ${userProfile.company_name || 'my company'} — we target ${userProfile.target_market || 'businesses in our niche'} in ${userProfile.city || 'our area'}. Search for 8 qualified prospects and add them to the pipeline.`,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           }
@@ -2198,7 +2198,7 @@
       const triggerLeadUpdatePrompt = (leadName) => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'user', text: `I want to update the status of lead [${leadName}]. Here is what happened: `, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          setTriggerPrompt({ sender: 'user', text: `Update the lead "${leadName}" in my pipeline. I just [had a call / sent a proposal / met with them / received a response — edit this]. Move them to the right stage and log any follow-up tasks.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         }, 150);
       };
 
@@ -2206,9 +2206,9 @@
         setActiveModule('neural-chat');
         setTimeout(() => {
           if (needsProfileSetup) {
-            setTriggerPrompt({ sender: 'ceo', text: "I cannot generate content until your Business Profile is complete. Please navigate to the Settings tab and save your profile first so my Creative Director understands your brand." });
+            setTriggerPrompt({ sender: 'ceo', text: "Before I can create content, I need your Business Profile set up. Go to Settings and save your profile — this lets my Creative Director understand your brand voice, colors, and goals." });
           } else {
-            setTriggerPrompt({ sender: 'ceo', text: "You want the Creative Director to generate some new content. Please describe what kind of asset you need (e.g. 'A promotional image for my new service' or 'A logo for my brand')." });
+            setTriggerPrompt({ sender: 'user', text: `Generate a branded visual asset for ${userProfile.company_name || 'my business'}. We serve ${userProfile.target_market || 'our target audience'} and our brand style is modern and professional. Create something I can use for social media or marketing.` });
           }
         }, 150);
       };
@@ -2217,9 +2217,9 @@
         setActiveModule('neural-chat');
         setTimeout(() => {
           if (needsProfileSetup) {
-            setTriggerPrompt({ sender: 'ceo', text: "I cannot manage your Client Ledger until your Business Profile is complete. Please navigate to the Settings tab and save your profile first." });
+            setTriggerPrompt({ sender: 'ceo', text: "Before I can manage your Client Ledger, I need your Business Profile set up. Head to Settings and save your profile first." });
           } else {
-            setTriggerPrompt({ sender: 'ceo', text: "You'd like to add a new Client to the Ledger. Please provide their Name, Retainer value, and any specific tasks you want the team to handle for them." });
+            setTriggerPrompt({ sender: 'user', text: `Add a new client to my ledger. Ask me for their name and any key details, then create the record and assign the appropriate team agent to manage their account.` });
           }
         }, 150);
       };
@@ -5445,7 +5445,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const handleAskCEO = () => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'ceo', text: "What kind of strategic plan would you like me to construct for you?" });
+          setTriggerPrompt({ sender: 'user', text: `Create a strategic plan for my business. Analyze what I've shared with you, identify the top priorities for growth, and store a detailed plan with clear action steps I can execute. Include which agents will handle each phase.` });
         }, 150);
       };
 
@@ -5686,8 +5686,9 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
       const handleAskCEO = () => {
         setActiveModule('neural-chat');
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'ceo', text: "What kind of calendar event or task would you like me to schedule or update for you?" });
+          setTriggerPrompt({ sender: 'user', text: `Schedule something on my calendar. Today is ${today}. Ask me what type of event, the time, and any relevant details, then add it to the timeline and create any related tasks needed.` });
         }, 150);
       };
 
