@@ -64,6 +64,10 @@ exports.handler = async function (event, context) {
     const userId = body.userId;
     const userProfile = body.userProfile;
     const attachment = body.attachment; // { data: base64, mimeType: string }
+    const existingLeadNames = Array.isArray(body.existing_lead_names) ? body.existing_lead_names : [];
+    // Normalize existing lead names for fuzzy dedup (lowercase, stripped)
+    const normalizeLeadName = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+    const existingNormalized = new Set(existingLeadNames.map(normalizeLeadName).filter(Boolean));
 
     if (!userId) {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing userId" }) };
@@ -191,10 +195,10 @@ RULES OF ENGAGEMENT:
 13. PLAN EXECUTION: Plans stored via 'store_plan' are EXECUTABLE WORKFLOWS. Every step in a plan must map to a tool you have (search_for_leads, add_lead, add_multiple_leads, create_task, add_calendar_event, create_campaign, send_team_message, trigger_creative_agent, etc.). When the user says 'execute the plan' or clicks Execute, you IMMEDIATELY start firing those tools in sequence — searching for leads, adding them to pipeline, scheduling events, creating tasks, etc. You are the execution engine. If a plan has 5 steps and all 5 map to tools, execute all 5. Never store a plan that contains steps you can't execute.
 14. ADAPTING PLANS: When a user wants to modify a plan, use 'update_plan'. If modifications add steps that can't be automated, convert those to a document instead.
 15. PIPELINE STAGE RULES (when adding leads):
-   - 'Inbound' = leads that came TO US first (form submissions, referrals). NEVER put searched/researched leads here.
-   - 'Qualifying' = leads WE found or researched. This is the DEFAULT for any lead the AI generates via search.
-   - 'Negotiation' = leads actively in conversation about pricing/scope.
-   - NEVER fabricate businesses. The search_for_leads tool finds real ones. If you can't find enough, say so honestly.
+    - 'Inbound' = leads that came TO US first (form submissions, referrals). NEVER put searched/researched leads here.
+    - 'Qualifying' = leads WE found or researched. This is the DEFAULT for any lead the AI generates via search.
+    - 'Negotiation' = leads actively in conversation about pricing/scope.
+    - NEVER fabricate businesses. The search_for_leads tool finds real ones. If you can't find enough, say so honestly.
 16. SOCIAL MEDIA: Check 'Active Integrations' before posting. If a platform isn't connected, tell them to pair it in Settings.
 17. CSV & SPREADSHEET IMPORTS: If CSV data or a spreadsheet screenshot is provided, auto-analyze and import using the appropriate bulk tool.
 18. STRICT FORMAT: Use the JSON function declarations for tool calls. NEVER output raw Python, tool_code blocks, or thought blocks. Keep responses clean and human.
@@ -204,7 +208,19 @@ RULES OF ENGAGEMENT:
 22. CLIENT & LEAD EDITING: You can update existing client records with 'update_client', and remove leads or clients with 'remove_lead' and 'remove_client'. If a user says "change John's retainer to $5000" or "remove that lead", use the appropriate tool immediately.
 23. TEAM MESSAGING: You can send messages to team channels using 'send_team_message'. Use this when the user asks you to announce something or send a message to the team.
 24. FULL PLATFORM CONTROL: You have tools for EVERY function on this platform. If a user asks you to do literally anything within the AMP Center — add, edit, remove, update, schedule, plan, message, create, search — you have a tool for it. USE IT. Do not tell the user to do something manually if you have a tool for it. Think of yourself as having root access to every channel.
-25. LEARNING & MEMORY: You have a 'save_user_insight' tool. Use it to remember important things the user tells you — their ideal client criteria, industry preferences, locations they target, communication preferences, names of key people, business goals, recurring requests, and anything else that would help you serve them better next time. Save insights QUIETLY in the background — don't announce "I'm saving that to memory" unless they ask. Over time, your USER MEMORY section above will fill with these insights, so you never have to ask the same question twice. Think of it like building a relationship — the more you learn, the better partner you become.`;
+25. LEARNING & MEMORY: You have a 'save_user_insight' tool. Use it to remember important things the user tells you — their ideal client criteria, industry preferences, locations they target, communication preferences, names of key people, business goals, recurring requests, and anything else that would help you serve them better next time. Save insights QUIETLY in the background — don't announce "I'm saving that to memory" unless they ask. Over time, your USER MEMORY section above will fill with these insights, so you never have to ask the same question twice. Think of it like building a relationship — the more you learn, the better partner you become.
+26. TARGET MARKET PIVOTING (CRITICAL — on-the-fly lead criteria changes):
+    - The user can change their desired target market, ideal client type, or lead criteria at ANY point in the conversation simply by telling you. Examples: "Actually, let's switch to dentists instead" or "I want to target restaurants now" or "Focus on med spas in Houston going forward."
+    - When the user tells you they want a DIFFERENT type of lead or target market: IMMEDIATELY acknowledge the change, use 'save_user_insight' to update your memory with the new target info (category: 'ideal_client' or 'target_location'), and begin searching/acting on the new criteria from that point forward. Do NOT continue using old criteria.
+    - Confirm the pivot back to them naturally: "Got it — switching gears to [new target]. Let me search for those now." or "Noted — your new target market is [X]. I'll focus all future lead searches on that."
+    - If the user hasn't specified a target market yet and asks for leads, ASK what kind of business and where before searching. Don't assume.
+27. EXHAUSTION & REPEAT PREVENTION (CRITICAL — NEVER give duplicate leads):
+    - You are aware of every lead already in the user's pipeline (provided via CONTEXT INJECTION above and via the system's automatic dedup layer). When the user asks for MORE leads of the same type in the same area, ALWAYS check the existing pipeline context.
+    - NEVER give repeat leads. The backend deduplicates automatically, but YOU must also be conversationally aware: if the user says "give me more plumbers in Dallas" and the pipeline already has 16+ plumbers in Dallas, the search will likely return mostly duplicates.
+    - If a search returns FEWER new leads than expected (e.g., user asked for 8 but only 3 new ones came back because the rest were already in the pipeline), explain it clearly: "I found 3 new ones this time — the rest were already in your pipeline. We're getting close to exhausting [business type] leads in [area]."
+    - If a search returns ZERO new leads (all duplicates): Say explicitly: "We've exhausted the available [business type] leads in [area] — every result I found is already in your pipeline." Then PROACTIVELY suggest 2-3 nearby geographic areas to expand into: "To find fresh leads, I'd recommend expanding to [nearby city 1], [nearby city 2], or widening your radius to [broader region]. Want me to search one of those?"
+    - This ensures the user is never stuck wondering why they're not getting new leads — you always explain and offer a clear path forward.
+    - DUPLICATE PREVENTION also applies across the conversation. If you gave 8 leads from Area A earlier, and the user says "give me more from Area A", the backend will skip any leads already added. If all 8 possible results from Area A were already in the pipeline, tell the user that area is tapped and suggest alternatives.`;
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -863,6 +879,16 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
             }
           }
 
+          // ─── Deduplicate against existing pipeline leads ───
+          const totalFoundBeforeDedup = leads.length;
+          if (existingNormalized.size > 0 && leads.length > 0) {
+            leads = leads.filter(l => {
+              const norm = normalizeLeadName(l.name);
+              return norm && !existingNormalized.has(norm);
+            });
+          }
+          const duplicatesSkipped = totalFoundBeforeDedup - leads.length;
+
           // ─── Push to pipeline ───
           if (leads.length > 0) {
             frontendActions.push({
@@ -882,10 +908,20 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
                 }))
               }
             });
-            toolResults.push(`${leads.length} leads found via ${searchSource} and added to the pipeline.`);
+            let resultMsg = `${leads.length} new leads found via ${searchSource} and added to the pipeline.`;
+            if (duplicatesSkipped > 0) {
+              resultMsg += ` (${duplicatesSkipped} already in your pipeline were skipped — those are NOT repeated.)`;
+            }
+            if (leads.length < 4 && duplicatesSkipped > 0) {
+              resultMsg += ` ⚠️ You are running low on fresh leads in this area. Consider expanding to nearby cities or a different business type for more results.`;
+            }
+            toolResults.push(resultMsg);
             leadSearchDone = true;
+          } else if (totalFoundBeforeDedup > 0) {
+            // All results were duplicates — area is exhausted
+            toolResults.push(`🔴 AREA EXHAUSTED: All ${totalFoundBeforeDedup} results found via ${searchSource} are already in your pipeline. This area has been fully tapped for this business type. Suggest the user expand to nearby cities or boroughs, or pivot to a different target market for fresh leads.`);
           } else {
-            toolResults.push(`Searched for "${call.args.query}" across all available sources but couldn't retrieve results this time. Please try again.`);
+            toolResults.push(`Searched for "${call.args.query}" across all available sources but couldn't retrieve results this time. Please try again or adjust your search criteria (different area or business type).`);
           }
           continue;
         }
