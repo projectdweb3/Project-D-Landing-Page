@@ -9,10 +9,13 @@
   directory = "netlify/functions"
 
 [functions."agent"]
-  timeout = 26
+  timeout = 60
 
 [functions."content"]
   timeout = 60
+
+[functions."outreach"]
+  timeout = 30
 
 # ──────────────────────────────────────────────────────────────
 # EDGE CACHING & CDN HEADERS

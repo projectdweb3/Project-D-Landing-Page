@@ -65,6 +65,7 @@ exports.handler = async function (event, context) {
     const userProfile = body.userProfile;
     const attachment = body.attachment; // { data: base64, mimeType: string }
     const existingLeadNames = Array.isArray(body.existing_lead_names) ? body.existing_lead_names : [];
+    const pipelineContacts = Array.isArray(body.pipeline_contacts) ? body.pipeline_contacts : [];
     // Normalize existing lead names for fuzzy dedup (lowercase, stripped)
     const normalizeLeadName = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
     const existingNormalized = new Set(existingLeadNames.map(normalizeLeadName).filter(Boolean));
@@ -130,6 +131,7 @@ MOST IMPORTANT RULE: You are a CONVERSATIONAL AI FIRST. You can talk about liter
 Current Business Context:
 ${businessContext}
 ${memoryContext}
+${pipelineContacts.length > 0 ? `\nPIPELINE CONTACTS (leads currently in the user's pipeline — use this to know who has email addresses for outreach):\n${pipelineContacts.map(c => `- ${c.name}${c.email ? ` | email: ${c.email}` : ' | NO EMAIL'}${c.phone ? ` | phone: ${c.phone}` : ''}${c.stage ? ` | stage: ${c.stage}` : ''}`).join('\n')}\n` : ''}
 
 PERSONALITY:
 - Talk like a sharp, friendly business partner. Keep it simple and natural.
@@ -221,7 +223,23 @@ RULES OF ENGAGEMENT:
     - If a search returns FEWER new leads than expected (e.g., user asked for 8 but only 3 new ones came back because the rest were already in the pipeline), explain it clearly: "I found 3 new ones this time — the rest were already in your pipeline. We're getting close to exhausting [business type] leads in [area]."
     - If a search returns ZERO new leads (all duplicates): Say explicitly: "We've exhausted the available [business type] leads in [area] — every result I found is already in your pipeline." Then PROACTIVELY suggest 2-3 nearby geographic areas to expand into: "To find fresh leads, I'd recommend expanding to [nearby city 1], [nearby city 2], or widening your radius to [broader region]. Want me to search one of those?"
     - This ensures the user is never stuck wondering why they're not getting new leads — you always explain and offer a clear path forward.
-    - DUPLICATE PREVENTION also applies across the conversation. If you gave 8 leads from Area A earlier, and the user says "give me more from Area A", the backend will skip any leads already added. If all 8 possible results from Area A were already in the pipeline, tell the user that area is tapped and suggest alternatives.`;
+    - DUPLICATE PREVENTION also applies across the conversation. If you gave 8 leads from Area A earlier, and the user says "give me more from Area A", the backend will skip any leads already added. If all 8 possible results from Area A were already in the pipeline, tell the user that area is tapped and suggest alternatives.
+28. EMAIL OUTREACH (CRITICAL — you can now send REAL emails):
+    - You have a 'send_outreach' tool that sends REAL emails through Gmail. These actually arrive in the recipient's inbox. This is not a simulation.
+    - BEFORE sending any email, you MUST verify the recipient has an email address. Check the lead data passed in the conversation or pipeline. If no email exists, ask the user for it.
+    - FIRST-TIME OUTREACH: If the user says "start outreach" or "email my leads" or "begin a campaign" without specifying what to say, DO NOT immediately send. Instead, guide them through an Outreach Plan:
+      1. Ask about the goal (book a discovery call? offer services? introduce the brand?)
+      2. Ask about the tone (friendly/casual, professional, direct/bold)
+      3. Draft a sample message with {{name}} personalization and show it for approval
+      4. Offer to create 2-3 variants for different lead types
+      5. Only send after explicit approval ("looks good", "send it", "go ahead")
+    - DRAFT vs SEND: Use send_mode='draft' to show the email for review. Only use send_mode='send' when the user has explicitly approved the content.
+    - PERSONALIZATION: Always use {{name}} in the message body. It auto-replaces with each recipient's business name. Never send generic "Dear Business Owner" emails.
+    - BULK CAMPAIGNS: When the user wants to email multiple leads, include all recipients in a single send_outreach call. Each gets their own personalized copy.
+    - FOLLOW-UP SEQUENCES: If the user wants a multi-touch campaign, use store_plan to create an executable outreach plan with scheduled steps (e.g., Day 1: intro email, Day 3: value-add follow-up, Day 7: final touch with CTA).
+    - POST-SEND REPORTING: After emails are sent, always report: how many delivered, how many failed (and why), and which leads had no email address. Be specific.
+    - NEVER send an email the user hasn't seen or approved. When in doubt, draft first.`;
+
 
     const modelId = "gemini-2.5-flash";
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -637,16 +655,27 @@ RULES OF ENGAGEMENT:
             },
             {
               name: "send_outreach",
-              description: "Sends or drafts an outreach email/message to one or more leads in the pipeline. Use this when the user asks to reach out, message, email, or contact leads. If sending to multiple leads, include all their names in the lead_names array. Always show the user the message content before confirming it was 'sent'.",
+              description: "Sends REAL emails to leads or clients via Gmail. This is NOT a draft — it actually delivers to their inbox. CRITICAL RULES:\n\n1. REQUIRE EMAIL: You MUST have the recipient's email address before sending. If the lead has no email, tell the user: 'I don't have an email address for [Name]. Can you provide one, or would you like me to draft the message for you to send manually?'\n\n2. FIRST-TIME OUTREACH FLOW: If the user says 'start outreach', 'reach out to my leads', 'begin emailing', or anything suggesting they want to start a campaign but haven't specified details yet, you MUST guide them through an Outreach Planning conversation BEFORE sending anything:\n   - Ask: What kind of businesses are you reaching out to? (or reference your memory)\n   - Ask: What's the goal? (book a call, offer a service, introduce yourself, etc.)\n   - Ask: What tone? (casual/friendly, professional/formal, direct/bold)\n   - Then DRAFT the message and show it to them for approval before sending.\n   - Offer to create 2-3 message variants for A/B testing.\n   - Suggest a follow-up sequence (Day 1 intro, Day 3 follow-up, Day 7 final touch).\n\n3. PERSONALIZATION: Use {{name}} in the message body — it auto-replaces with each recipient's business name. Always personalize.\n\n4. BULK SENDING: When sending to multiple leads, provide ALL of their emails in the recipients array. Each gets their own personalized copy.\n\n5. AFTER SENDING: Report exactly how many were sent, failed, or skipped. If any failed, explain why. If leads had no email, list them separately.\n\n6. OUTREACH PLANNING via store_plan: If the user wants a multi-day outreach campaign, use store_plan to create an executable plan with scheduled send_outreach steps. Each step should have the message content, subject, and target leads.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  lead_names: { type: "ARRAY", items: { type: "STRING" }, description: "Names of leads to contact. For bulk outreach, include all lead names." },
-                  subject: { type: "STRING", description: "Email subject line." },
-                  message: { type: "STRING", description: "The outreach message body. Make it personalized and relevant." },
-                  send_mode: { type: "STRING", description: "'single' for one lead, 'bulk' for multiple leads at once." }
+                  recipients: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        name: { type: "STRING", description: "Business or contact name" },
+                        email: { type: "STRING", description: "Email address to send to" }
+                      },
+                      required: ["name", "email"]
+                    },
+                    description: "Array of recipients with name and email. Every recipient MUST have a valid email address."
+                  },
+                  subject: { type: "STRING", description: "Email subject line. Keep it compelling and under 60 chars." },
+                  message: { type: "STRING", description: "Email body. Use {{name}} for per-recipient personalization. Write in plain text with line breaks — it will be formatted as clean HTML automatically." },
+                  send_mode: { type: "STRING", description: "'send' to deliver immediately, 'draft' to show the user for approval first." }
                 },
-                required: ["lead_names", "subject", "message"],
+                required: ["recipients", "subject", "message"],
               },
             },
             {
@@ -1000,10 +1029,69 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
             }
           }
           else if (call.name === "send_outreach") {
-            frontendActions.push({ type: 'send_outreach', payload: call.args });
-            const names = (call.args.lead_names || []).join(', ');
-            const mode = call.args.send_mode === 'bulk' ? 'Bulk outreach' : 'Outreach';
-            toolResults.push(`${mode} prepared for: ${names}. Subject: "${call.args.subject}". Email shortcuts opened for each lead.`);
+            const outreachArgs = call.args;
+            
+            // Draft mode — just show the message for approval, don't send
+            if (outreachArgs.send_mode === 'draft') {
+              frontendActions.push({ type: 'send_outreach', payload: { ...outreachArgs, status: 'draft' } });
+              const recipientNames = (outreachArgs.recipients || []).map(r => r.name).join(', ');
+              toolResults.push(`📝 **Draft prepared** for: ${recipientNames}\nSubject: "${outreachArgs.subject}"\n\nPlease review the message above. Say **"send it"** to deliver, or tell me what to change.`);
+            } else {
+              // Send mode — actually deliver via Gmail
+              try {
+                const senderName = userProfile?.company_name || 'AMP Center';
+                const outreachPayload = {
+                  recipients: outreachArgs.recipients || [],
+                  subject: outreachArgs.subject,
+                  message: outreachArgs.message,
+                  sender_name: senderName
+                };
+
+                // Call the outreach function
+                const outreachUrl = `https://${event.headers.host || event.headers.Host || 'localhost'}/.netlify/functions/outreach`;
+                const outreachRes = await fetch(outreachUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(outreachPayload)
+                });
+
+                if (outreachRes.ok) {
+                  const outreachData = await outreachRes.json();
+                  const { summary, results: emailResults } = outreachData;
+                  
+                  // Build detailed status report for the agent
+                  let statusReport = '';
+                  if (summary.sent > 0) {
+                    const sentNames = emailResults.filter(r => r.status === 'sent').map(r => r.name).join(', ');
+                    statusReport += `✅ **${summary.sent} email${summary.sent > 1 ? 's' : ''} delivered** to: ${sentNames}\n`;
+                  }
+                  if (summary.failed > 0) {
+                    const failedDetails = emailResults.filter(r => r.status === 'failed').map(r => `${r.name} (${r.reason})`).join(', ');
+                    statusReport += `❌ **${summary.failed} failed**: ${failedDetails}\n`;
+                  }
+                  if (summary.skipped > 0) {
+                    const skippedNames = emailResults.filter(r => r.status === 'skipped').map(r => `${r.name} (${r.reason})`).join(', ');
+                    statusReport += `⏭️ **${summary.skipped} skipped**: ${skippedNames}\n`;
+                  }
+                  statusReport += `\nSubject: "${outreachArgs.subject}"`;
+                  
+                  frontendActions.push({ 
+                    type: 'send_outreach', 
+                    payload: { ...outreachArgs, status: 'sent', deliveryResults: outreachData } 
+                  });
+                  toolResults.push(statusReport);
+                } else {
+                  const errText = await outreachRes.text();
+                  console.error('[Agent] Outreach function error:', errText);
+                  frontendActions.push({ type: 'send_outreach', payload: { ...outreachArgs, status: 'error' } });
+                  toolResults.push(`❌ Email delivery failed: ${errText}. The Gmail integration may need to be reconfigured in Netlify environment variables.`);
+                }
+              } catch (outreachErr) {
+                console.error('[Agent] Outreach call failed:', outreachErr.message);
+                frontendActions.push({ type: 'send_outreach', payload: { ...outreachArgs, status: 'error' } });
+                toolResults.push(`❌ Could not reach the email server: ${outreachErr.message}`);
+              }
+            }
           }
           else if (call.name === "update_lead") {
             frontendActions.push({ type: 'update_lead', payload: call.args });
