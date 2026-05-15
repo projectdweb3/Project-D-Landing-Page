@@ -320,6 +320,24 @@
       animation: capacityPulse 2s ease-in-out infinite;
     }
 
+    /* ── ONBOARDING TUTORIAL ── */
+    @keyframes onb-fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes onb-slideup {
+      from { opacity: 0; transform: translateY(40px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes onb-content {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes onb-icon-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,242,234,0.3); }
+      50% { transform: scale(1.06); box-shadow: 0 0 35px rgba(0,242,234,0.5); }
+    }
+
     /* ── SCROLLBARS ── */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -1787,6 +1805,11 @@
                       </svg>
                       Connect Gmail Account
                     </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Agent Workforce Tree */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto shadow-xl relative">
               <div className="absolute inset-0 bg-gradient-to-tl from-pd-teal/5 to-transparent pointer-events-none"></div>
@@ -2168,6 +2191,7 @@
       const [triggerPrompt, setTriggerPrompt] = useState(null);
       const [unreadCounts, setUnreadCounts] = useState({ 'all': 0 });
       const [totalUnreadTeam, setTotalUnreadTeam] = useState(0);
+      const [onboardingStep, setOnboardingStep] = useState(-1);
 
       const fetchAccountUsers = async () => {
         if (supabaseClient && session?.user?.id) {
@@ -2681,6 +2705,13 @@
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         setActiveModule('neural-chat');
+
+        // Trigger onboarding tutorial on first-ever profile save
+        if (!localStorage.getItem('amp_onboarding_complete')) {
+          setTimeout(() => {
+            setOnboardingStep(0);
+          }, 3000); // Give the welcome message time to render
+        }
       };
 
       useEffect(() => {
@@ -3096,6 +3127,9 @@
               </div>
             </div>
           </aside>
+
+          {/* Onboarding Tutorial Overlay */}
+          {onboardingStep >= 0 && <OnboardingOverlay step={onboardingStep} setStep={setOnboardingStep} setActiveModule={setActiveModule} />}
         </div>
       );
     };
@@ -3111,6 +3145,163 @@
       'Systems Architect': { icon: 'solar:server-minimalistic-bold', color: 'purple-500', gradient: 'from-purple-500 to-violet-400', label: 'Systems' },
     };
     const getAgentMeta = (name) => agentMeta[name] || agentMeta['CEO'];
+
+    // === ONBOARDING TUTORIAL OVERLAY ===
+    const OnboardingOverlay = ({ step, setStep, setActiveModule }) => {
+      const steps = [
+        {
+          icon: 'solar:hand-shake-bold-duotone',
+          gradient: 'from-pd-teal to-cyan-400',
+          title: 'Welcome to the AMP Center',
+          body: 'Your AI-powered business command center is ready. Let\u2019s take a quick tour so you know exactly what each channel does and how your agent workforce can help you.',
+          cta: 'Start Tour',
+          module: null, // stays where they are
+        },
+        {
+          icon: 'solar:command-linear',
+          gradient: 'from-pd-teal to-cyan-400',
+          title: 'Neural Chat',
+          body: 'This is your direct line to the CEO agent. Ask it anything \u2014 generate leads, create marketing plans, draft documents, manage tasks. It delegates work to the CMO, CTO, and Creative agents automatically. Think of it as your AI co-pilot.',
+          cta: 'Next',
+          module: 'neural-chat',
+        },
+        {
+          icon: 'solar:filter-linear',
+          gradient: 'from-blue-500 to-indigo-400',
+          title: 'Lead Pipeline',
+          body: 'Every potential customer or prospect lives here. Add leads manually, import CSVs, or ask Neural Chat to find real businesses via Google. Track them through stages from Inbound to Closed. You can also email them directly from their cards.',
+          cta: 'Next',
+          module: 'lead-pipeline',
+        },
+        {
+          icon: 'solar:folder-with-files-linear',
+          gradient: 'from-purple-500 to-fuchsia-400',
+          title: 'Client Ledger',
+          body: 'Once a lead converts, they become a client here. Track retainers, lifetime value, assigned agents, and next tasks. This is your revenue engine \u2014 every client relationship in one place.',
+          cta: 'Next',
+          module: 'client-ledger',
+        },
+        {
+          icon: 'solar:chart-square-linear',
+          gradient: 'from-pd-orange to-amber-400',
+          title: 'Marketing Pipeline',
+          body: 'Plan and track marketing campaigns across channels. Create campaigns manually or ask the agent to draft and execute full outreach sequences. Monitor performance and ROI from a single dashboard.',
+          cta: 'Next',
+          module: 'marketing-pipeline',
+        },
+        {
+          icon: 'solar:palette-linear',
+          gradient: 'from-pink-500 to-rose-400',
+          title: 'Content Factory',
+          body: 'Generate AI-powered images, social media posts, and visual assets. Upload brand references for consistent styling. The Creative agent works here to produce content that matches your brand identity.',
+          cta: 'Next',
+          module: 'content-factory',
+        },
+        {
+          icon: 'solar:calendar-linear',
+          gradient: 'from-emerald-500 to-green-400',
+          title: 'Tactical Calendar',
+          body: 'Every action your agents take is logged here as a timeline event. Schedule meetings, track task completions, and see the full delegation history \u2014 which agent did what, when, and why.',
+          cta: 'Next',
+          module: 'tactical-calendar',
+        },
+        {
+          icon: 'solar:rocket-2-bold-duotone',
+          gradient: 'from-pd-teal to-pd-orange',
+          title: 'You\u2019re All Set!',
+          body: 'Your AMP Center is fully configured. Head to Neural Chat and start giving your agent team commands. They\u2019re standing by and ready to execute. Welcome aboard, operator.',
+          cta: 'Launch AMP Center',
+          module: 'neural-chat',
+        },
+      ];
+
+      const current = steps[step];
+      if (!current) return null;
+
+      const totalSteps = steps.length;
+      const progress = ((step + 1) / totalSteps) * 100;
+
+      const handleNext = () => {
+        if (step >= totalSteps - 1) {
+          // Complete onboarding
+          localStorage.setItem('amp_onboarding_complete', 'true');
+          setStep(-1);
+          setActiveModule('neural-chat');
+          return;
+        }
+        const nextStep = step + 1;
+        if (steps[nextStep]?.module) {
+          setActiveModule(steps[nextStep].module);
+        }
+        setStep(nextStep);
+      };
+
+      const handleSkip = () => {
+        localStorage.setItem('amp_onboarding_complete', 'true');
+        setStep(-1);
+      };
+
+      return (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ animation: 'onb-fadein 0.4s ease-out' }}>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+
+          {/* Card */}
+          <div className="relative w-full max-w-lg" style={{ animation: 'onb-slideup 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            {/* Ambient glow */}
+            <div className="absolute -inset-4 rounded-[3rem] opacity-30 blur-2xl" style={{ background: 'linear-gradient(135deg, #00F2EA 0%, #FF5F00 100%)' }}></div>
+
+            <div className="relative bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-3xl border border-gray-200 dark:border-pd-glassBorder rounded-[2.5rem] overflow-hidden shadow-2xl">
+              {/* Progress bar */}
+              <div className="h-1 bg-black/5 dark:bg-white/10">
+                <div className="h-full bg-gradient-to-r from-pd-teal to-pd-orange transition-all duration-700 ease-out rounded-full" style={{ width: `${progress}%` }}></div>
+              </div>
+
+              {/* Step counter */}
+              <div className="px-8 pt-6 flex justify-between items-center">
+                <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Step {step + 1} of {totalSteps}</span>
+                {step < totalSteps - 1 && (
+                  <button onClick={handleSkip} className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors font-medium">
+                    Skip Tour
+                  </button>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="px-8 pt-6 pb-8" key={step} style={{ animation: 'onb-content 0.4s ease-out' }}>
+                {/* Icon */}
+                <div className="mb-6 flex justify-center">
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${current.gradient} flex items-center justify-center shadow-xl`} style={{ animation: 'onb-icon-pulse 2s ease-in-out infinite' }}>
+                    <iconify-icon icon={current.icon} width="36" className="text-white"></iconify-icon>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-3">{current.title}</h2>
+
+                {/* Body */}
+                <p className="text-sm text-center text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto">{current.body}</p>
+
+                {/* CTA */}
+                <button
+                  onClick={handleNext}
+                  className="w-full mt-8 py-4 bg-gradient-to-r from-pd-teal to-pd-orange hover:scale-[1.02] active:scale-[0.98] text-white rounded-2xl text-sm font-bold shadow-[0_0_30px_rgba(0,242,234,0.3)] hover:shadow-[0_0_40px_rgba(255,95,0,0.4)] transition-all"
+                >
+                  {current.cta}
+                </button>
+
+                {/* Step dots */}
+                <div className="flex justify-center gap-2 mt-6">
+                  {steps.map((_, i) => (
+                    <div key={i} className={`rounded-full transition-all duration-500 ${i === step ? 'w-6 h-2 bg-gradient-to-r from-pd-teal to-pd-orange' : i < step ? 'w-2 h-2 bg-pd-teal/60' : 'w-2 h-2 bg-gray-300 dark:bg-white/20'}`}></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
 
     const TaskCard = ({ agent, task, status, color, parentAgent, idx }) => {
       const meta = getAgentMeta(agent);
