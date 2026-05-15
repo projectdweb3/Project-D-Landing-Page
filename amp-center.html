@@ -162,7 +162,143 @@
         0 4px 16px rgba(0,0,0,0.35);
     }
 
+    /* ── DRAMATIC HOVER (For Pill Buttons) ── */
+    @keyframes floatHover {
+      0%, 100% {
+        transform: translateY(0) scale(1.02);
+        box-shadow: 0 0 20px rgba(255, 145, 70, 0.4), 0 0 30px rgba(70, 212, 198, 0.2);
+      }
+      50% {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 10px 30px rgba(255, 145, 70, 0.6), 0 15px 40px rgba(70, 212, 198, 0.4);
+      }
+    }
+
+    .dramatic-hover {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      will-change: transform, box-shadow;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .dramatic-hover:not(:disabled):hover {
+      animation: floatHover 2s ease-in-out infinite !important;
+      z-index: 50;
+    }
+
+    .dramatic-hover:not(:disabled):active {
+      transform: scale(0.95) !important;
+    }
+
     /* ── BUTTONS ── */
+
+    /* ── NEW GLOBAL BUTTON STYLES ── */
+    @keyframes conicSpin {
+      100% { transform: rotate(360deg); }
+    }
+    
+    .btn-conic-teal, .btn-conic-white {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      outline: none;
+    }
+    
+    .btn-conic-teal::before, .btn-conic-white::before {
+      content: '';
+      position: absolute;
+      width: 400%;
+      height: 400%;
+      top: -150%;
+      left: -150%;
+      background: conic-gradient(from 90deg at 50% 50%, transparent 0%, #ff9146 30%, #ffffff 50%, #46d4c6 70%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.5s;
+      animation: conicSpin 1.5s linear infinite;
+      z-index: -2;
+      pointer-events: none;
+    }
+    
+    .btn-conic-teal:hover::before, .btn-conic-white:hover::before {
+      opacity: 1;
+    }
+    
+    .btn-conic-teal::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: #14a689;
+      border-radius: 9999px;
+      transition: background-color 0.5s;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .btn-conic-teal:hover::after {
+      background: #108c73;
+    }
+    
+    .btn-conic-white::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 9999px;
+      transition: background-color 0.5s;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .dark .btn-conic-white::after {
+      background: rgba(31, 41, 55, 0.9);
+    }
+    
+    .btn-pill-teal {
+      background: rgba(0, 242, 234, 0.1);
+      color: #00F2EA;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 242, 234, 0.05);
+    }
+    .btn-pill-teal:hover {
+      background: rgba(0, 242, 234, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 242, 234, 0.2);
+    }
+    
+    .btn-pill-orange {
+      background: rgba(255, 145, 70, 0.1);
+      color: #ff9146;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 145, 70, 0.05);
+    }
+    .btn-pill-orange:hover {
+      background: rgba(255, 145, 70, 0.2);
+      box-shadow: 0 4px 15px rgba(255, 145, 70, 0.2);
+    }
+    
+    .btn-pill-red {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(239, 68, 68, 0.05);
+    }
+    .btn-pill-red:hover {
+      background: rgba(239, 68, 68, 0.2);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+    }
+    
     .amp-button {
       background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,245,255,0.55) 100%);
       backdrop-filter: blur(12px) saturate(130%);
@@ -888,7 +1024,7 @@
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
                 type="button"
-                className="w-full flex items-center justify-center gap-3 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 border border-gray-300 dark:border-white/20 rounded-xl py-3 px-4 text-gray-800 dark:text-white font-semibold text-sm transition-all shadow-sm disabled:opacity-60 mb-4"
+                className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full flex items-center justify-center gap-3 mb-4"
               >
                 {googleLoading ? (
                   <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
@@ -926,12 +1062,12 @@
                   className="w-full bg-white/50 dark:bg-pd-dark/50 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-pd-teal focus:border-transparent outline-none transition-all"
                 />
               </div>
-              <button type="submit" disabled={loading} className="w-full py-3 px-4 bg-gradient-to-r from-pd-orange to-pd-teal text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
+              <button type="submit" disabled={loading} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full">
                 {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Login')}
               </button>
             </form>
             <div className="mt-6 text-center space-y-4">
-              <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }} className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-pd-orange transition-colors outline-none">
+              <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white">
                 {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
               </button>
               
@@ -939,7 +1075,7 @@
                 <button onClick={() => {
                   localStorage.setItem('amp_local_session', 'true');
                   onLogin({ user: { id: 'local' } });
-                }} type="button" className="w-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-gray-900 dark:text-white rounded-xl py-3 text-sm font-semibold transition-all mt-4 border border-gray-200 dark:border-white/10 shadow-sm">
+                }} type="button" className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full mt-4">
                   <iconify-icon icon="solar:cpu-linear" className="mr-2"></iconify-icon>
                   Enter Local Mode (No Database)
                 </button>
@@ -991,7 +1127,7 @@
           title={lang === 'en' ? 'Traducir a Español' : 'Translate to English'}
         >
           <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
-          <span className="text-[10px] font-bold uppercase tracking-widest">
+          <span className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium">
             {lang === 'en' ? 'Español' : 'English'}
           </span>
         </button>
@@ -1011,7 +1147,7 @@
           <a href="index.html" className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
             <iconify-icon icon="solar:home-2-linear" width="20"></iconify-icon>
           </a>
-          <button onClick={toggle} className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder hover:scale-105 transition-all text-gray-600 dark:text-gray-400 hover:text-pd-teal shadow-sm">
+          <button onClick={toggle} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center">
             <iconify-icon icon={isDark ? "solar:sun-linear" : "solar:moon-linear"} width="20"></iconify-icon>
           </button>
         </div>
@@ -1154,7 +1290,7 @@
           <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl animate-fade-in">
              <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Confirm Removal</h3>
-                <button onClick={() => { setStep(1); setReason(''); onClose(); }} className="text-gray-400 hover:text-gray-600"><iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon></button>
+                <button onClick={() => { setStep(1); setReason(''); onClose(); }} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon></button>
              </div>
              
              {step === 1 ? (
@@ -1167,7 +1303,7 @@
                    rows="3" 
                    placeholder="e.g. Contract expired, Driver resigned, Refund issued..."
                  ></textarea>
-                 <button onClick={handleNext} className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-lg hover:scale-[1.02] transition-all">Proceed to Confirm</button>
+                 <button onClick={handleNext} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full">Proceed to Confirm</button>
                </>
              ) : (
                <>
@@ -1179,8 +1315,8 @@
                     </div>
                  </div>
                  <div className="flex gap-3">
-                   <button onClick={() => setStep(1)} className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-white/10 text-gray-500 font-bold text-sm hover:bg-black/5 transition-all">Back</button>
-                   <button onClick={handleConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Confirm Removal</button>
+                   <button onClick={() => setStep(1)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium flex-1">Back</button>
+                   <button onClick={handleConfirm} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex-1">Confirm Removal</button>
                  </div>
                </>
              )}
@@ -1367,7 +1503,7 @@
                   className="w-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl px-4 md:px-6 pr-14 md:pr-16 py-4 md:py-5 text-base md:text-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pd-teal/50 focus:ring-1 focus:ring-pd-teal/50 transition-all backdrop-blur-xl shadow-xl"
                   placeholder="e.g. A digital marketing agency focusing on Web3..."
                 />
-                <button type="button" onClick={handleSubmit} className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-10 md:w-12 h-10 md:h-12 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-pd-orange/20 border border-black/10 dark:border-white/10 hover:border-pd-orange/50 flex items-center justify-center transition-all text-gray-900 dark:text-white hover:text-pd-orange">
+                <button type="button" onClick={handleSubmit} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium absolute right-2 top-1/2 w-10 h-10 flex items-center justify-center">
                   <iconify-icon icon="solar:arrow-right-linear" width="20"></iconify-icon>
                 </button>
               </div>
@@ -1473,7 +1609,7 @@
                     </div>
                   </div>
                   <div className="mt-16 glass-reveal stagger-4 flex justify-center w-full">
-                    <button onClick={onComplete} className="amp-button primary px-8 py-3 text-sm font-medium tracking-wide shadow-[0_0_30px_rgba(255,95,0,0.2)]">
+                    <button onClick={onComplete} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white">
                       Enter Command Center <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
                     </button>
                   </div>
@@ -1678,12 +1814,12 @@
                     <span className="font-semibold text-sm text-gray-900 dark:text-white">{u.name} {activeUserId === u.id && <span className="text-xs text-pd-teal ml-2">(Active)</span>}</span>
                   </div>
                   <div className="flex gap-2">
-                     <button onClick={() => handleEditUser(u.id, u.name)} className="px-3 py-1.5 text-xs bg-pd-orange/10 text-pd-orange rounded-full hover:bg-pd-orange/20 transition-all font-medium">Edit</button>
+                     <button onClick={() => handleEditUser(u.id, u.name)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium">Edit</button>
                      {activeUserId !== u.id && (
-                       <button onClick={() => setActiveUserId(u.id)} className="px-3 py-1.5 text-xs bg-pd-orange/10 text-pd-orange rounded-full hover:bg-pd-orange/20 transition-all font-medium">Switch To</button>
+                       <button onClick={() => setActiveUserId(u.id)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium">Switch To</button>
                      )}
                      {accountUsers.length > 1 && (
-                       <button onClick={() => handleRemoveUser(u.id)} className="px-3 py-1.5 text-xs bg-red-500/10 text-red-500 rounded-full hover:bg-red-500/20 transition-all font-medium">Remove</button>
+                       <button onClick={() => handleRemoveUser(u.id)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium">Remove</button>
                      )}
                   </div>
                 </div>
@@ -1691,7 +1827,7 @@
               {accountUsers.length < 5 && (
                 <div className="flex items-center gap-2 mt-2">
                   <input type="text" id="newUserName" placeholder="New User Name" className="flex-1 bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
-                  <button onClick={handleAddUser} className="px-5 py-2 text-xs bg-pd-orange/10 text-pd-orange hover:bg-pd-orange/20 font-bold rounded-full transition-all whitespace-nowrap">Add User</button>
+                  <button onClick={handleAddUser} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium">Add User</button>
                 </div>
               )}
             </div>
@@ -1732,7 +1868,7 @@
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Bio</label>
                   <textarea value={userProfile?.bio || ''} onChange={e => setUserProfile({...userProfile, bio: e.target.value})} rows="4" className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-3xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm resize-none" placeholder="What does your business do?"></textarea>
                 </div>
-                <button onClick={handleSave} disabled={loading} className="w-full group inline-flex items-center justify-center gap-2 transition-all duration-500 text-sm font-medium text-white rounded-full px-8 py-3.5 relative overflow-hidden isolate dramatic-hover mt-2">
+                <button onClick={handleSave} disabled={loading} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full group items-center justify-center gap-2 relative isolate mt-2">
                   <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
                   <div className="absolute inset-[2px] rounded-full bg-[#14a689] group-hover:bg-[#108c73] transition-colors duration-500 pointer-events-none z-0"></div>
                   <span className="relative z-10 flex items-center gap-2">
@@ -1785,7 +1921,7 @@
                       </div>
                     </div>
                     <p className="text-[11px] text-gray-500">Outreach emails from Neural Chat and the Lead Pipeline will be sent from this Gmail account.</p>
-                    <button onClick={handleGmailDisconnect} className="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-2">
+                    <button onClick={handleGmailDisconnect} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium w-full flex items-center justify-center gap-2">
                       <iconify-icon icon="solar:unlink-linear" width="16"></iconify-icon> Disconnect Gmail
                     </button>
                   </div>
@@ -1801,7 +1937,7 @@
                       </div>
                     </div>
                     <p className="text-[11px] text-gray-500">Connect your Gmail account to send personalized outreach emails to leads and clients. Emails will appear in your Sent folder and any replies go to your inbox.</p>
-                    <button onClick={handleGmailConnect} className="w-full group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dramatic-hover dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full pt-3.5 pr-8 pb-3.5 pl-8 relative backdrop-blur-md items-center justify-center">
+                    <button onClick={handleGmailConnect} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full group gap-2 isolate relative items-center justify-center">
                       <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
                       <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
                       <span className="relative z-10 flex items-center gap-2">
@@ -1928,7 +2064,7 @@
             <div className="mt-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
               <h3 className="text-sm font-semibold text-red-500 mb-2">Danger Zone</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
-              <button onClick={() => setShowResetModal(true)} className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full text-sm font-semibold transition-all w-full sm:w-auto">Reboot Experience</button>
+              <button onClick={() => setShowResetModal(true)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium w-full">Reboot Experience</button>
             </div>
 
           </div>
@@ -1949,8 +2085,8 @@
                   className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-center mb-6 focus:border-red-500 outline-none text-gray-900 dark:text-white"
                 />
                 <div className="flex gap-3">
-                  <button onClick={() => { setShowResetModal(false); setConfirmText(''); }} className="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
-                  <button onClick={handleReset} disabled={confirmText.toLowerCase() !== 'confirm'} className="flex-1 px-4 py-3 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                  <button onClick={() => { setShowResetModal(false); setConfirmText(''); }} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex-1">Cancel</button>
+                  <button onClick={handleReset} disabled={confirmText.toLowerCase() !== 'confirm'} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex-1">
                     {loading ? 'Rebooting...' : 'Reset Now'}
                   </button>
                 </div>
@@ -1961,7 +2097,7 @@
           {/* User Logout Button (Moved to Bottom of Settings) */}
           {session && (
             <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10">
-              <button onClick={handleLogout} className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all">
+              <button onClick={handleLogout} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium w-full flex items-center justify-center gap-2">
                 <iconify-icon icon="solar:logout-2-linear" width="20"></iconify-icon> Log Out of AMP Center
               </button>
               <p className="text-center text-[10px] text-gray-500 mt-4 uppercase tracking-widest font-mono">End of Secure Session</p>
@@ -2073,7 +2209,7 @@
                     onClick={() => setActiveDriver(d)}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-colors group ${activeDriver?.id === d.id ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}
                   >
-                    <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex items-center gap-3">
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? (activeDriver?.id === d.id ? 'bg-pd-dark' : 'bg-pd-teal shadow-[0_0_5px_#00F2EA]') : 'bg-gray-300 dark:bg-white/10'}`}></div>
                       <span className="truncate">{d.name}</span>
                     </div>
@@ -2118,10 +2254,10 @@
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors border border-transparent hover:border-pd-teal/20">
+                    <button className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-9 h-9 flex items-center justify-center">
                       <iconify-icon icon="solar:phone-linear" width="18"></iconify-icon>
                     </button>
-                    <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-pd-teal transition-colors border border-transparent hover:border-pd-teal/20">
+                    <button className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-9 h-9 flex items-center justify-center">
                       <iconify-icon icon="solar:videocamera-record-linear" width="18"></iconify-icon>
                     </button>
                   </div>
@@ -2150,7 +2286,7 @@
                         placeholder={`Message ${activeDriver.name}...`} 
                         className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" 
                       />
-                      <button onClick={handleSend} className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all">
+                      <button onClick={handleSend} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium absolute right-2 top-2 w-10 h-10 flex items-center justify-center">
                         <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
                       </button>
                    </div>
@@ -2854,7 +2990,7 @@
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <button onClick={() => setIsStatsOpen(true)} className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder text-gray-600 dark:text-gray-400 relative hover:text-pd-teal hover:border-pd-teal/50 transition-all">
+              <button onClick={() => setIsStatsOpen(true)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center relative">
                 <iconify-icon icon="solar:chart-square-linear" width="20"></iconify-icon>
                 <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-pd-teal shadow-[0_0_5px_#00F2EA] animate-pulse"></span>
               </button>
@@ -2874,7 +3010,7 @@
               {navItems.map(item => (
                 <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
                   <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
-                  <span className="relative z-10">{item.label}</span>
+                  <span className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium relative">{item.label}</span>
                   {item.badge > 0 && <span className="absolute right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 animate-bounce">{item.badge}</span>}
                 </button>
               ))}
@@ -2894,7 +3030,7 @@
           <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-white/95 dark:bg-[#0b0f19]/95 border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl flex p-2 gap-1 overflow-x-auto z-40 shadow-2xl hide-scrollbar snap-x snap-mandatory">
             {navItems.map(item => (
               <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2 rounded-xl transition-all text-[10px] font-medium snap-center flex-shrink-0 relative ${activeModule === item.id ? 'bg-pd-teal/10 text-pd-teal shadow-inner' : 'text-gray-500 hover:bg-black/5 dark:hover:bg-white/5'}`}>
-                <iconify-icon icon={item.icon} width="22" className="mb-1"></iconify-icon>
+                <iconify-icon icon={item.icon} width="22" className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium mb-1"></iconify-icon>
                 <span className="truncate w-full text-center">{item.mobileLabel}</span>
                 {item.badge > 0 && <span className="absolute top-1 right-2 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full z-10 animate-bounce">{item.badge}</span>}
               </button>
@@ -2930,7 +3066,7 @@
                       </h2>
                       <p className="text-xs text-gray-500 mt-1">Real-time status of your autonomous AI agent team.</p>
                     </div>
-                    <button onClick={() => setIsAgentsModalOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <button onClick={() => setIsAgentsModalOpen(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center">
                       <iconify-icon icon="solar:close-circle-linear" width="24" className="text-gray-400"></iconify-icon>
                     </button>
                  </div>
@@ -3041,7 +3177,7 @@
 
           {/* Desktop Expand Tab */}
           {isRightSidebarCollapsed && (
-            <button onClick={() => setIsRightSidebarCollapsed(false)} className="hidden lg:flex absolute top-[10%] right-0 w-10 h-16 bg-white/60 dark:bg-white/10 border border-r-0 border-gray-200 dark:border-pd-glassBorder rounded-l-2xl items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.1)] backdrop-blur-2xl text-gray-600 dark:text-gray-400 hover:text-pd-teal hover:bg-white/80 dark:hover:bg-white/20 transition-all z-40 group cursor-pointer">
+            <button onClick={() => setIsRightSidebarCollapsed(false)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium absolute top-[10%] right-0 w-10 h-16 items-center justify-center group">
               <iconify-icon icon="solar:alt-arrow-left-linear" width="20" className="group-hover:-translate-x-1 transition-transform"></iconify-icon>
             </button>
           )}
@@ -3055,7 +3191,7 @@
             <div className="w-72 sm:w-80 lg:w-60 xl:w-80 p-4 xl:p-6 flex flex-col gap-6 h-full">
               <div className="flex justify-between items-center lg:hidden mb-2 border-b border-gray-200 dark:border-pd-glassBorder pb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><iconify-icon icon="solar:chart-square-linear" className="text-pd-teal"></iconify-icon> System Stats</h3>
-                <button onClick={() => setIsStatsOpen(false)} className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-600 dark:text-gray-400 transition-colors"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                <button onClick={() => setIsStatsOpen(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-8 h-8 flex items-center justify-center"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
               </div>
 
               {/* Agent Activity Feed Header */}
@@ -3074,7 +3210,7 @@
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-bold text-pd-teal/60 uppercase tracking-widest">Live</span>
-                  <button onClick={() => setIsRightSidebarCollapsed(true)} className="hidden lg:flex w-6 h-6 items-center justify-center bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-full text-gray-400 hover:text-pd-teal transition-colors"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
+                  <button onClick={() => setIsRightSidebarCollapsed(true)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-6 h-6 items-center justify-center"><iconify-icon icon="solar:alt-arrow-right-linear" width="14"></iconify-icon></button>
                 </div>
               </div>
 
@@ -3265,7 +3401,7 @@
               <div className="px-8 pt-6 flex justify-between items-center">
                 <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Step {step + 1} of {totalSteps}</span>
                 {step < totalSteps - 1 && (
-                  <button onClick={handleSkip} className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors font-medium">
+                  <button onClick={handleSkip} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium">
                     Skip Tour
                   </button>
                 )}
@@ -3289,7 +3425,7 @@
                 {/* CTA */}
                 <button
                   onClick={handleNext}
-                  className="w-full mt-8 py-4 bg-gradient-to-r from-pd-teal to-pd-orange hover:scale-[1.02] active:scale-[0.98] text-white rounded-2xl text-sm font-bold shadow-[0_0_30px_rgba(0,242,234,0.3)] hover:shadow-[0_0_40px_rgba(255,95,0,0.4)] transition-all"
+                  className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full mt-8"
                 >
                   {current.cta}
                 </button>
@@ -3494,13 +3630,13 @@
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Channels</h3>
                 <button onClick={() => setActiveChannel('all')} className={`text-left px-3 py-2 rounded-xl text-sm mb-2 transition-colors flex justify-between items-center ${activeChannel === 'all' ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}>
                   <span>Whole Team</span>
-                  {unreadCounts['all'] > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{unreadCounts['all']}</span>}
+                  {unreadCounts['all'] > 0 && <span className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium">{unreadCounts['all']}</span>}
                 </button>
                 <div className="text-xs text-gray-400 font-semibold mb-2 mt-4 uppercase">Direct Messages</div>
                 {accountUsers.filter(u => u.id !== activeUserId).map(u => (
                   <button key={u.id} onClick={() => setActiveChannel(u.id)} className={`text-left px-3 py-2 rounded-xl text-sm mb-1 transition-colors flex justify-between items-center ${activeChannel === u.id ? 'bg-pd-teal text-pd-dark font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10'}`}>
                     <span>{u.name}</span>
-                    {unreadCounts[u.id] > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{unreadCounts[u.id]}</span>}
+                    {unreadCounts[u.id] > 0 && <span className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium">{unreadCounts[u.id]}</span>}
                   </button>
                 ))}
              </div>
@@ -3537,7 +3673,7 @@
                 <div className="p-4 border-t border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-pd-glass backdrop-blur-md">
                    <form onSubmit={handleSend} className="relative">
                       <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder={`Message ${activeChannel === 'all' ? 'everyone' : accountUsers.find(u => u.id === activeChannel)?.name}...`} className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
-                      <button type="submit" className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all">
+                      <button type="submit" className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium absolute right-2 top-2 w-10 h-10 flex items-center justify-center">
                         <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
                       </button>
                    </form>
@@ -4411,7 +4547,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             
             <div className="flex items-center gap-2">
               {lastActionBatch && (
-                <button onClick={handleUndo} className="px-3 py-1.5 text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg flex items-center gap-1 transition-all">
+                <button onClick={handleUndo} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex items-center gap-1">
                   <iconify-icon icon="solar:undo-left-round-linear"></iconify-icon> Undo
                 </button>
               )}
@@ -4421,7 +4557,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <button onClick={() => setShowHistory(!showHistory)} className={`p-2 transition-all ${showHistory ? 'text-pd-teal' : 'text-gray-500 hover:text-pd-teal'}`}>
                 <iconify-icon icon="solar:history-linear" width="20"></iconify-icon>
               </button>
-              <button onClick={handleNewChat} className="px-3 py-1.5 text-xs font-semibold bg-pd-teal/10 hover:bg-pd-teal/20 text-pd-teal border border-pd-teal/30 rounded-lg flex items-center gap-1 transition-all">
+              <button onClick={handleNewChat} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex items-center gap-1">
                 <iconify-icon icon="solar:pen-new-square-linear"></iconify-icon> <span className="hidden sm:inline">New Chat</span>
               </button>
             </div>
@@ -4434,7 +4570,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 ) : (
                   <div className="space-y-2">
                     {documents.map(doc => (
-                      <button key={doc.id} onClick={() => { setActiveDocument(doc); setShowDocumentArchive(false); }} className="w-full text-left p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5 transition-all group flex gap-3">
+                      <button key={doc.id} onClick={() => { setActiveDocument(doc); setShowDocumentArchive(false); }} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full group flex gap-3">
                         <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
                           <iconify-icon icon="solar:document-text-bold"></iconify-icon>
                         </div>
@@ -4456,7 +4592,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   <p className="text-xs text-gray-500 px-2 pb-2">No history yet.</p>
                 ) : (
                   threads.map(t => (
-                    <button key={t.id} onClick={() => loadThread(t)} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg truncate transition-colors">
+                    <button key={t.id} onClick={() => loadThread(t)} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full">
                       <span className="block font-semibold mb-0.5 truncate">{t.title}...</span>
                       <span className="text-[9px] text-gray-500">{t.date}</span>
                     </button>
@@ -4483,7 +4619,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </div>
                   <div><FormatText text={m.text} /></div>
                   {m.actions && m.actions.map((act, idx) => act.type === 'draft_document' ? (
-                    <button key={idx} onClick={() => setActiveDocument(act.payload)} className="mt-4 w-full p-3 bg-white/80 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl flex items-center gap-3 hover:border-pd-teal/50 hover:bg-pd-teal/5 dark:hover:bg-pd-teal/10 transition-colors text-left group shadow-sm">
+                    <button key={idx} onClick={() => setActiveDocument(act.payload)} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full mt-4 flex items-center gap-3 group">
                       <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
                         <iconify-icon icon="solar:document-text-bold" width="24"></iconify-icon>
                       </div>
@@ -4512,17 +4648,17 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="flex items-center gap-2 bg-white dark:bg-black/40 w-max px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10">
                 <img src={attachment.preview} className="w-8 h-8 object-cover rounded" alt="Preview" />
                 <span className="text-xs text-gray-500">Image attached</span>
-                <button onClick={() => setAttachment(null)} className="ml-2 text-gray-400 hover:text-red-500"><iconify-icon icon="solar:close-circle-bold" width="16"></iconify-icon></button>
+                <button onClick={() => setAttachment(null)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium ml-2"><iconify-icon icon="solar:close-circle-bold" width="16"></iconify-icon></button>
               </div>
             )}
             <div className="relative flex items-center gap-2">
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-              <button onClick={() => fileInputRef.current?.click()} className="w-10 h-10 rounded-full bg-white dark:bg-black/40 border border-gray-200 dark:border-pd-glassBorder hover:bg-gray-50 dark:hover:bg-white/10 text-gray-500 flex items-center justify-center transition-all flex-shrink-0">
+              <button onClick={() => fileInputRef.current?.click()} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center flex-shrink-0">
                 <iconify-icon icon="solar:paperclip-linear" width="20"></iconify-icon>
               </button>
               <div className="relative flex-1">
                 <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleSend(e) }} onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)} placeholder="Instruct the CEO or attach a reference..." className="w-full bg-white dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
-                <button onClick={handleSend} className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 hover:bg-pd-orange hover:text-white text-pd-orange flex items-center justify-center transition-all"><iconify-icon icon="solar:plain-bold" width="18"></iconify-icon></button>
+                <button onClick={handleSend} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium absolute right-2 top-2 w-10 h-10 flex items-center justify-center"><iconify-icon icon="solar:plain-bold" width="18"></iconify-icon></button>
               </div>
             </div>
           </div>
@@ -4545,10 +4681,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(activeDocument.content));
                     el.setAttribute('download', activeDocument.title + '.txt');
                     el.click();
-                  }} className="p-2 md:px-4 md:py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-700 dark:text-white rounded-lg flex items-center gap-2 transition-all">
+                  }} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex items-center gap-2">
                     <iconify-icon icon="solar:download-minimalistic-bold"></iconify-icon> <span className="hidden md:inline">Download</span>
                   </button>
-                  <button onClick={() => setActiveDocument(null)} className="p-2 md:px-4 md:py-2 text-sm font-semibold bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-500 rounded-lg flex items-center gap-2 transition-all">
+                  <button onClick={() => setActiveDocument(null)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex items-center gap-2">
                     <iconify-icon icon="solar:close-circle-bold" width="20"></iconify-icon> <span className="hidden md:inline">Close</span>
                   </button>
                 </div>
@@ -4744,10 +4880,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
-              <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={onAddLead} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
               </button>
             </div>
@@ -4784,10 +4920,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <button onClick={() => { setFormData(lead); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
+                          <button onClick={() => { setFormData(lead); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium" title="Edit">
                               <iconify-icon icon="solar:pen-linear"></iconify-icon>
                           </button>
-                          <button onClick={() => { setItemToDelete(lead); setShowRemovalModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all" title="Delete">
+                          <button onClick={() => { setItemToDelete(lead); setShowRemovalModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium" title="Delete">
                             <iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon>
                           </button>
                         </div>
@@ -4840,7 +4976,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                         {(lead.email || lead.contact?.includes('@')) && (
                           <button
                             onClick={() => openEmailComposer({ ...lead, email: lead.email || lead.contact })}
-                            className="text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 px-2 py-1.5 rounded transition-colors flex items-center gap-1 font-semibold"
+                            className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex items-center gap-1"
                             title="Compose email"
                           >
                             <iconify-icon icon="solar:letter-bold"></iconify-icon> Email
@@ -4861,7 +4997,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">{formData.id ? `Edit ${entityLabel || 'Lead'}` : `Manual ${entityLabel || 'Lead'} Entry`}</h3>
-                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setShowModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-3">
                   <div>
@@ -4912,7 +5048,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <label className="block text-xs text-gray-500 mb-1">Notes</label>
                     <textarea value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none resize-none" rows="2" placeholder="Add notes..."></textarea>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-1">Save {entityLabel || 'Lead'}</button>
+                  <button onClick={handleSave} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full mt-1">Save {entityLabel || 'Lead'}</button>
                 </div>
               </div>
             </div>
@@ -4941,7 +5077,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <div className="text-[10px] text-purple-400 font-medium">{emailComposer.email}</div>
                     </div>
                   </div>
-                  <button onClick={() => setEmailComposer(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                  <button onClick={() => setEmailComposer(null)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium">
                     <iconify-icon icon="solar:close-circle-bold" width="20"></iconify-icon>
                   </button>
                 </div>
@@ -4975,13 +5111,13 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 </div>
                 {/* Footer */}
                 <div className="px-5 pb-5 flex gap-2">
-                  <button onClick={() => setEmailComposer(null)} className="flex-1 py-2.5 text-sm font-semibold bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 rounded-xl transition-colors">
+                  <button onClick={() => setEmailComposer(null)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex-1">
                     Cancel
                   </button>
                   <button
                     onClick={sendQuickEmail}
                     disabled={emailSending || !emailForm.subject.trim() || !emailForm.message.trim()}
-                    className="flex-2 flex-1 py-2.5 text-sm font-semibold bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex-2 flex-1 flex items-center justify-center gap-2"
                   >
                     {emailSending ? (
                       <><iconify-icon icon="solar:spinner-bold" className="animate-spin"></iconify-icon> Sending...</>
@@ -5153,10 +5289,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' }); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
-              <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={onAddClient} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
               </button>
             </div>
@@ -5211,10 +5347,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                             <iconify-icon icon={c.chat_platform === 'telegram' ? 'mdi:telegram' : 'mdi:whatsapp'} width="18"></iconify-icon>
                           </button>
                         )}
-                        <button onClick={() => { setFormData({...c, chat_platform: c.chat_platform || 'whatsapp'}); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors" title={`Edit ${isDispatcher ? 'Driver' : 'Member'}`}>
+                        <button onClick={() => { setFormData({...c, chat_platform: c.chat_platform || 'whatsapp'}); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium" title={`Edit ${isDispatcher ? 'Driver' : 'Member'}`}>
                           <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
                         </button>
-                        <button onClick={() => { setItemToDelete(c); setShowRemovalModal(true); }} className="text-gray-400 hover:text-red-500 transition-colors" title={`Remove ${isDispatcher ? 'Driver' : 'Member'}`}>
+                        <button onClick={() => { setItemToDelete(c); setShowRemovalModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium" title={`Remove ${isDispatcher ? 'Driver' : 'Member'}`}>
                           <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
                         </button>
                       </div>
@@ -5231,7 +5367,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">{formData.id ? `Edit ${entityLabel || (isEcomm ? 'Customer' : 'Client')}` : `Manual ${entityLabel || (isEcomm ? 'Customer' : 'Client')} Entry`}</h3>
-                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setShowModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -5273,28 +5409,28 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                           })}
                         </div>
                       ) : (
-                        <input type="text" value={isOrganizer ? formData.retainer : formData.ltv} onChange={e => setFormData({...formData, [isOrganizer ? 'retainer' : 'ltv']: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                        <input type="text" value={isOrganizer ? formData.retainer : formData.ltv} onChange={e => setFormData({...formData, [isOrganizer ? 'retainer' : 'ltv']: e.target.value})} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full" />
                       )}
                     </div>
                   </div>
                   {isOrganizer && (
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[3] || 'Active Role'}</label>
-                      <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                      <input type="text" value={formData.ltv} onChange={e => setFormData({...formData, ltv: e.target.value})} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full" />
                     </div>
                   )}
                   {(isDispatcher || isOrganizer) && (
                     <div className="flex gap-4">
                       <div className="w-1/3">
                         <label className="block text-xs text-gray-500 mb-1">Chat Platform</label>
-                        <select value={formData.chat_platform || 'whatsapp'} onChange={e => setFormData({...formData, chat_platform: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none">
+                        <select value={formData.chat_platform || 'whatsapp'} onChange={e => setFormData({...formData, chat_platform: e.target.value})} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full">
                           <option value="whatsapp">WhatsApp</option>
                           <option value="telegram">Telegram</option>
                         </select>
                       </div>
                       <div className="flex-1">
                         <label className="block text-xs text-gray-500 mb-1">Phone / Username</label>
-                        <input type="text" value={formData.chat_link || ''} onChange={e => setFormData({...formData, chat_link: e.target.value})} placeholder={formData.chat_platform === 'telegram' ? '@username' : '+1234567890'} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
+                        <input type="text" value={formData.chat_link || ''} onChange={e => setFormData({...formData, chat_link: e.target.value})} placeholder={formData.chat_platform === 'telegram' ? '@username' : '+1234567890'} className="dramatic-hover transition-all rounded-full btn-conic-white px-8 py-3.5 text-sm font-medium text-gray-900 dark:text-white w-full" />
                       </div>
                     </div>
                   )}
@@ -5308,7 +5444,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <label htmlFor="is_leader" className="text-sm text-gray-700 dark:text-gray-300">Mark as Leader</label>
                     </div>
                   )}
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save {entityLabel || (isEcomm ? 'Customer' : 'Client')}</button>
+                  <button onClick={handleSave} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full mt-2">Save {entityLabel || (isEcomm ? 'Customer' : 'Client')}</button>
                 </div>
               </div>
             </div>
@@ -5454,10 +5590,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
                 <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, product_name: '', sku_link: '', stock: '', price: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, product_name: '', sku_link: '', stock: '', price: '' }); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
-              <button onClick={onSync} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={onSync} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:refresh-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Sync
               </button>
             </div>
@@ -5483,10 +5619,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <td className="p-4 text-gray-600 dark:text-gray-300">{item.price || '$0.00'}</td>
                     <td className="p-4">{getAssignedAgent(item.product_name) || <span className="px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-[10px] text-green-600 dark:text-green-400">Synced</span>}</td>
                     <td className="p-4 text-right">
-                      <button onClick={() => { setFormData(item); setShowModal(true); }} className="text-gray-400 hover:text-pd-teal transition-colors">
+                      <button onClick={() => { setFormData(item); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium">
                         <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
                       </button>
-                      <button onClick={() => { setItemToDelete(item); setShowRemovalModal(true); }} className="text-gray-400 hover:text-red-500 transition-colors ml-3" title="Delete Product">
+                      <button onClick={() => { setItemToDelete(item); setShowRemovalModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium ml-3" title="Delete Product">
                         <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
                       </button>
                     </td>
@@ -5501,7 +5637,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">{formData.id ? 'Edit Product' : 'Manual Product Entry'}</h3>
-                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setShowModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -5522,7 +5658,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <input type="text" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                     </div>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Product</button>
+                  <button onClick={handleSave} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full mt-2">Save Product</button>
                 </div>
               </div>
             </div>
@@ -5680,10 +5816,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   <iconify-icon icon="solar:document-text-bold"></iconify-icon> {monthlyReport.month} Report Drafted
                 </div>
               )}
-              <button onClick={() => setShowManualAdd(!showManualAdd)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => setShowManualAdd(!showManualAdd)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium w-full flex items-center justify-center">
                 <iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {showManualAdd ? 'Cancel' : 'Manual Entry'}
               </button>
-              <button onClick={onLogExpense} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={onLogExpense} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Log
               </button>
             </div>
@@ -5721,7 +5857,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </select>
                   <input type="text" placeholder="Amount (e.g. 50.00)" value={newTx.amount} onChange={e => setNewTx({...newTx, amount: e.target.value})} className="flex-1 bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
                   <input type="text" placeholder="Description (e.g. Software Sub)" value={newTx.description} onChange={e => setNewTx({...newTx, description: e.target.value})} className="flex-[2] bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
-                  <button onClick={handleAddTx} className="bg-pd-teal hover:bg-pd-teal/80 text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-[0_0_15px_rgba(0,242,234,0.3)]">Save</button>
+                  <button onClick={handleAddTx} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white">Save</button>
                 </div>
               )}
 
@@ -5846,10 +5982,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Marketing Pipeline</h2><p className="text-xs text-gray-500">Campaign execution and team resource sharing.</p></div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => { setFormData({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => { setFormData({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' }); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
-              <button onClick={onAddCampaign} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={onAddCampaign} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
               </button>
             </div>
@@ -5864,7 +6000,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                         {campaign.name}
-                        <button onClick={() => { setFormData(campaign); setShowModal(true); }} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-pd-teal transition-all" title="Edit">
+                        <button onClick={() => { setFormData(campaign); setShowModal(true); }} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium" title="Edit">
                           <iconify-icon icon="solar:pen-linear"></iconify-icon>
                         </button>
                       </h4>
@@ -5877,7 +6013,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                         ))}
                       </div>
                       {col === 'Planning' && (
-                        <button onClick={() => handleActivate(campaign)} className="flex items-center gap-1 text-[10px] bg-pd-orange/10 hover:bg-pd-orange/20 text-pd-orange px-2 py-1 rounded transition-colors font-semibold shadow-sm">
+                        <button onClick={() => handleActivate(campaign)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium flex items-center gap-1">
                           <iconify-icon icon="solar:play-circle-bold"></iconify-icon> Activate
                         </button>
                       )}
@@ -5899,7 +6035,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">{formData.id ? 'Edit Campaign' : 'Manual Campaign Entry'}</h3>
-                  <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setShowModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -5924,7 +6060,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <input type="text" value={formData.agents_assigned} onChange={e => setFormData({...formData, agents_assigned: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" placeholder="CMO, Creative" />
                     </div>
                   </div>
-                  <button onClick={handleSave} className="w-full amp-button primary py-2 mt-2">Save Campaign</button>
+                  <button onClick={handleSave} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full mt-2">Save Campaign</button>
                 </div>
               </div>
             </div>
@@ -6024,7 +6160,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             {references.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-500">{references.length} references attached</span>
-                <button onClick={() => setReferences([])} className="text-xs text-red-500 hover:underline">Clear</button>
+                <button onClick={() => setReferences([])} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium">Clear</button>
               </div>
             )}
           </div>
@@ -6087,11 +6223,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <option value="4:3">4:3</option>
                       <option value="3:4">3:4</option>
                     </select>
-                    <button onClick={() => fileRef.current?.click()} className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-pd-teal/20 text-pd-teal flex items-center justify-center hover:bg-pd-teal hover:text-white transition-all group relative">
+                    <button onClick={() => fileRef.current?.click()} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-8 h-8 flex items-center justify-center group relative">
                       <iconify-icon icon="solar:paperclip-linear" width="18"></iconify-icon>
                       <span className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Attach Reference</span>
                     </button>
-                    <button onClick={handleGenerate} disabled={isGenerating} className="w-10 h-10 rounded-full bg-pd-orange/20 border border-pd-orange/50 text-pd-orange flex items-center justify-center hover:bg-pd-orange hover:text-white transition-all">
+                    <button onClick={handleGenerate} disabled={isGenerating} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center">
                       <iconify-icon icon="solar:plain-bold" width="18"></iconify-icon>
                     </button>
                   </div>
@@ -6305,10 +6441,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <p className="text-xs text-gray-500">Stored architectural and marketing plans generated by the CEO.</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => setIsAdding(!isAdding)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => setIsAdding(!isAdding)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium w-full flex items-center justify-center">
                 <iconify-icon icon={isAdding ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {isAdding ? 'Cancel' : 'Manual Entry'}
               </button>
-              <button onClick={handleAskCEO} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={handleAskCEO} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Create
               </button>
             </div>
@@ -6320,7 +6456,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white">Add Manual Plan</h3>
                 <input type="text" placeholder="Plan Title" value={newPlan.title} onChange={e => setNewPlan({...newPlan, title: e.target.value})} className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 mb-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
                 <textarea placeholder="Plan Details..." value={newPlan.content} onChange={e => setNewPlan({...newPlan, content: e.target.value})} rows="4" className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 mb-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal resize-none"></textarea>
-                <button onClick={handleSaveManual} className="px-6 py-2 bg-pd-teal text-pd-dark rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">Save Plan</button>
+                <button onClick={handleSaveManual} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white">Save Plan</button>
               </div>
             )}
             
@@ -6339,7 +6475,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                        <span className="inline-block mt-1 px-2 py-0.5 bg-pd-teal/10 text-pd-teal text-[10px] uppercase font-bold tracking-widest border border-pd-teal/30 rounded-full">{plan.agent || 'CEO'}</span>
                      </div>
                      <div className="flex gap-2 flex-shrink-0">
-                       <button onClick={(e) => { e.stopPropagation(); executePlan(plan); }} className="w-8 h-8 bg-pd-teal text-pd-dark rounded-full shadow-[0_0_15px_rgba(0,242,234,0.3)] hover:scale-110 transition-all flex items-center justify-center" title="Execute Plan">
+                       <button onClick={(e) => { e.stopPropagation(); executePlan(plan); }} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-8 h-8 flex items-center justify-center" title="Execute Plan">
                          <iconify-icon icon="solar:play-circle-bold" width="18"></iconify-icon>
                        </button>
                      </div>
@@ -6374,19 +6510,19 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </div>
                   <div className="flex gap-2 items-center">
                     {!isEditing && (
-                      <button onClick={handleStartEdit} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors" title="Edit Plan">
+                      <button onClick={handleStartEdit} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center" title="Edit Plan">
                         <iconify-icon icon="solar:pen-2-linear" width="20"></iconify-icon>
                       </button>
                     )}
                     {!isEditing && (
-                      <button onClick={() => handleExportPDF(enlargedPlan)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors" title="Export to PDF">
+                      <button onClick={() => handleExportPDF(enlargedPlan)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center" title="Export to PDF">
                         <iconify-icon icon="solar:download-minimalistic-linear" width="20"></iconify-icon>
                       </button>
                     )}
-                    <button onClick={() => { executePlan(enlargedPlan); setEnlargedPlan(null); setIsEditing(false); }} className="amp-button primary px-4 py-2 text-xs font-medium flex items-center shadow-[0_0_15px_rgba(0,242,234,0.3)]">
+                    <button onClick={() => { executePlan(enlargedPlan); setEnlargedPlan(null); setIsEditing(false); }} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium flex items-center">
                       <iconify-icon icon="solar:play-circle-bold" className="mr-2"></iconify-icon> <span className="hidden sm:inline">Execute Plan</span>
                     </button>
-                    <button onClick={() => { setEnlargedPlan(null); setIsEditing(false); }} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors">
+                    <button onClick={() => { setEnlargedPlan(null); setIsEditing(false); }} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium w-10 h-10 flex items-center justify-center">
                       <iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon>
                     </button>
                   </div>
@@ -6406,8 +6542,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 </div>
                 {isEditing && (
                   <div className="p-4 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3 bg-gray-50 dark:bg-black/20">
-                    <button onClick={() => setIsEditing(false)} className="px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancel</button>
-                    <button onClick={handleSaveEdit} className="px-6 py-2 bg-pd-teal text-pd-dark rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all">Save Adaptations</button>
+                    <button onClick={() => setIsEditing(false)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium">Cancel</button>
+                    <button onClick={handleSaveEdit} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white">Save Adaptations</button>
                   </div>
                 )}
               </div>
@@ -6589,10 +6725,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <p className="text-xs text-gray-500">{isDispatcher ? "Manage daily driver shifts and routes for the week." : "Autonomous scheduling and daily activity timeline."}</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => setShowAddModal(true)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={() => setShowAddModal(true)} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
               </button>
-              <button onClick={handleAskCEO} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
+              <button onClick={handleAskCEO} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full flex items-center justify-center">
                 <iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Schedule
               </button>
             </div>
@@ -6609,7 +6745,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   onClick={() => setSelectedDate(d)}
                   className={`flex flex-col items-center justify-center min-w-[70px] p-3 rounded-2xl border transition-all ${isSelected ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent shadow-lg' : 'bg-white/50 dark:bg-[#0b0f19]/50 text-gray-500 border-gray-200 dark:border-white/10 hover:border-pd-teal/50'}`}
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                  <span className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                   <span className={`text-xl font-semibold ${isToday && !isSelected ? 'text-pd-orange' : ''}`}>{d.getDate()}</span>
                 </button>
               );
@@ -6632,7 +6768,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             </button>
           </div>
 
-          <div className="flex-1 flex flex-col 2xl:flex-row gap-6 min-h-0">
+          <div className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium flex-1 flex flex-col gap-6">
             {/* Timeline Pane */}
             <div className={`w-full 2xl:w-1/2 flex flex-col bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 shadow-sm min-h-[250px] overflow-hidden ${activeTab !== 'timeline' ? 'hidden 2xl:flex' : 'flex'}`}>
               <h3 className="text-sm font-semibold mb-6 flex items-center gap-2 text-gray-900 dark:text-white flex-shrink-0">
@@ -6737,7 +6873,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                             <div className="flex gap-2 text-xs pt-1">
                               <button 
                                 onClick={() => updateTaskLocal(task.id, { status: 'in_progress' })}
-                                className="flex-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 py-1.5 rounded hover:bg-blue-500/20 transition-colors"
+                                className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex-1"
                               >
                                 In Progress
                               </button>
@@ -6746,7 +6882,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                                   updateTaskLocal(task.id, { status: 'done' });
                                   setExpandedTaskId(null);
                                 }}
-                                className="flex-1 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 py-1.5 rounded hover:bg-green-500/20 transition-colors"
+                                className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex-1"
                               >
                                 Mark Done
                               </button>
@@ -6768,7 +6904,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{isDispatcher ? 'Schedule Driver' : 'Manual Event Entry'}</h3>
-                  <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setShowAddModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-orange px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -6810,8 +6946,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                    </div>
                 </div>
                 <div className="flex gap-2 mt-6">
-                  <button onClick={() => setShowAddModal(false)} className="flex-1 amp-button secondary py-2">Cancel</button>
-                  <button onClick={handleAddManualEvent} className="flex-1 amp-button primary py-2">Schedule</button>
+                  <button onClick={() => setShowAddModal(false)} className="dramatic-hover transition-all rounded-full btn-pill-red px-4 py-2 text-xs font-medium flex-1">Cancel</button>
+                  <button onClick={handleAddManualEvent} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium flex-1">Schedule</button>
                 </div>
               </div>
             </div>
@@ -6828,14 +6964,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       {new Date(selectedEvent.date_time).toLocaleString()} • {selectedEvent.agent_role || 'User'}
                     </p>
                   </div>
-                  <button onClick={() => setSelectedEvent(null)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                  <button onClick={() => setSelectedEvent(null)} className="dramatic-hover transition-all rounded-full btn-pill-teal px-4 py-2 text-xs font-medium"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
                 <div className="text-sm text-gray-700 dark:text-gray-300">
                   {selectedEvent.participants && <p className="mb-2"><strong>{isDispatcher ? 'Route/Location:' : 'Participants:'}</strong> {selectedEvent.participants}</p>}
                   <p className="capitalize mb-2"><strong>{isDispatcher ? 'Status:' : 'Type:'}</strong> {selectedEvent.event_type?.replace('_', ' ')}</p>
                   {selectedEvent.notes && <div className="mt-4 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5"><strong>Notes:</strong><p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{selectedEvent.notes}</p></div>}
                 </div>
-                <button onClick={() => setSelectedEvent(null)} className="w-full amp-button primary py-2 mt-6">Close Details</button>
+                <button onClick={() => setSelectedEvent(null)} className="dramatic-hover transition-all rounded-full btn-conic-teal px-8 py-3.5 text-sm font-medium text-white w-full mt-6">Close Details</button>
               </div>
             </div>
           )}
