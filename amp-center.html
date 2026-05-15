@@ -6273,15 +6273,50 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       // Filter tasks to get creative agent generated assets
       const archiveItems = activeTasks ? activeTasks.filter(t => t.agent === 'Creative' && t.status === 'done' && t.notes) : [];
 
-      const handleFile = (e) => {
-        const file = e.target.files[0];
-        if (file) {
+      const processOneFile = (file) => {
+        // Resize + compress to avoid 400 payload-too-large errors
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        img.onload = () => {
+          const MAX_DIM = 768;
+          let w = img.width, h = img.height;
+          if (w > MAX_DIM || h > MAX_DIM) {
+            const scale = MAX_DIM / Math.max(w, h);
+            w = Math.round(w * scale);
+            h = Math.round(h * scale);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressed = canvas.toDataURL('image/jpeg', 0.7);
+          const base64 = compressed.split(',')[1];
+          setReferences(prev => [...prev, { data: base64, mimeType: 'image/jpeg', preview: compressed, name: file.name }]);
+          URL.revokeObjectURL(objectUrl);
+        };
+        img.onerror = () => {
+          // Fallback: read as-is
           const reader = new FileReader();
           reader.onload = (ev) => {
-            setReferences(prev => [...prev, { data: ev.target.result.split(',')[1], mimeType: file.type, preview: ev.target.result }]);
+            setReferences(prev => [...prev, { data: ev.target.result.split(',')[1], mimeType: file.type, preview: ev.target.result, name: file.name }]);
           };
           reader.readAsDataURL(file);
-        }
+          URL.revokeObjectURL(objectUrl);
+        };
+        img.src = objectUrl;
+      };
+
+      const handleFile = (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        files.forEach(processOneFile);
+        // Reset input so same files can be re-attached
+        e.target.value = '';
+      };
+
+      const handleRemoveReference = (index) => {
+        setReferences(prev => prev.filter((_, i) => i !== index));
       };
 
       const handleGenerate = async () => {
@@ -6293,16 +6328,20 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           if (depleteBudget) depleteBudget('Creative', 5); // Deplete 5% per generation
           const res = await fetch('/.netlify/functions/content', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               prompt,
               aspectRatio,
-              referenceImages: references.map(r => ({ data: r.data, mimeType: r.mimeType })),
+              // Flux 1.1 Pro supports one image_prompt — send only the first ref to keep payload small
+              referenceImages: references.length > 0 ? [{ data: references[0].data, mimeType: references[0].mimeType }] : [],
               userId: session?.user?.id
             })
           });
           
           if (!res.ok) {
-            throw new Error(`Server returned ${res.status}: Payload too large or backend error.`);
+            let errMsg = `Server returned ${res.status}`;
+            try { const errBody = await res.json(); if (errBody.error) errMsg = errBody.error; } catch(_) {}
+            throw new Error(errMsg);
           }
           
           const data = await res.json();
@@ -6366,9 +6405,18 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               </div>
 
               {references.length > 0 && (
-                <div className="absolute top-4 right-4 flex gap-2 z-10">
+                <div className="absolute top-4 right-4 flex gap-2 z-10 flex-wrap justify-end max-w-[200px]">
                   {references.map((r, i) => (
-                    <img key={i} src={r.preview} className="w-10 h-10 md:w-14 md:h-14 object-cover rounded-lg border border-gray-200 dark:border-white/20 shadow-sm" alt="Ref" />
+                    <div key={i} className="relative group/ref">
+                      <img src={r.preview} className="w-10 h-10 md:w-14 md:h-14 object-cover rounded-lg border border-gray-200 dark:border-white/20 shadow-sm" alt={r.name || 'Ref'} />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleRemoveReference(i); }}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold opacity-0 group-hover/ref:opacity-100 transition-opacity duration-200 shadow-md hover:bg-red-600 cursor-pointer"
+                        title="Remove this reference"
+                      >
+                        &times;
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -6405,7 +6453,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
               <div className="w-full max-w-xl px-2 md:px-4 z-10 mt-auto pt-4 mb-4 md:mb-6">
                 <div className="relative">
-                  <input type="file" ref={fileRef} onChange={handleFile} accept="image/*" className="hidden" />
+                  <input type="file" ref={fileRef} onChange={handleFile} accept="image/*" multiple className="hidden" />
                   <input type="text" value={prompt} onChange={e => setPrompt(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleGenerate()} onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)} placeholder={references.length === 0 ? "Upload brand materials first, then type prompt..." : "Prompt (e.g. 'Generate a new logo')..."} className="w-full bg-white/90 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-4 md:pl-6 pr-24 md:pr-28 py-3 md:py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-2xl backdrop-blur-xl" />
                   
                   <div className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 md:gap-2">
@@ -6442,7 +6490,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                  {archiveItems.map((item, idx) => (
                    <div key={idx} className="bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl p-2 flex flex-col items-center justify-between shadow-sm cursor-pointer hover:shadow-md hover:border-pd-orange/50 transition-all group">
                      <div className="w-full h-20 mb-2 bg-black/5 dark:bg-white/5 rounded-lg flex items-center justify-center overflow-hidden">
-                       {(item.notes && item.notes.startsWith('data:image')) ? (
+                       {(item.notes && (item.notes.startsWith('data:image') || item.notes.startsWith('http'))) ? (
                          <img src={item.notes} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                        ) : (
                          <iconify-icon icon="solar:document-text-linear" width="24" className="text-gray-400"></iconify-icon>
