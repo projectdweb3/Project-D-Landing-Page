@@ -77,7 +77,7 @@
       color: #f3f4f6;
     }
 
-    /* ── LIQUID GLASS CARDS ── */
+    /* â”€â”€ LIQUID GLASS CARDS â”€â”€ */
     .amp-card {
       background: linear-gradient(
         145deg,
@@ -131,7 +131,7 @@
         0 0 0 1px rgba(0,242,234,0.12);
     }
 
-    /* ── LIQUID GLASS PANELS (sidebar + main) ── */
+    /* â”€â”€ LIQUID GLASS PANELS (sidebar + main) â”€â”€ */
     .glass-panel {
       background: linear-gradient(
         160deg,
@@ -162,7 +162,7 @@
         0 4px 16px rgba(0,0,0,0.35);
     }
 
-    /* ── DRAMATIC HOVER (Pill Button Pop Effect) ── */
+    /* â”€â”€ DRAMATIC HOVER (Pill Button Pop Effect) â”€â”€ */
     @keyframes floatHover {
       0%, 100% {
         transform: translateY(0) scale(1.02);
@@ -184,7 +184,7 @@
       transform: scale(0.95) !important;
     }
 
-    /* ── BUTTONS ── */
+    /* â”€â”€ BUTTONS â”€â”€ */
     .amp-button {
       background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,245,255,0.55) 100%);
       backdrop-filter: blur(12px) saturate(130%);
@@ -276,7 +276,7 @@
 
     .dark .amp-button.primary:hover { color: #fff; }
 
-    /* ── ANIMATIONS ── */
+    /* â”€â”€ ANIMATIONS â”€â”€ */
     .glass-reveal {
       animation: glassReveal 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
       opacity: 0;
@@ -292,7 +292,7 @@
     .stagger-3 { animation-delay: 0.3s; }
     .stagger-4 { animation-delay: 0.4s; }
 
-    /* ── AGENT DELEGATION ANIMATIONS ── */
+    /* â”€â”€ AGENT DELEGATION ANIMATIONS â”€â”€ */
     @keyframes taskSlideIn {
       from { opacity: 0; transform: translateX(30px) scale(0.95); }
       to { opacity: 1; transform: translateX(0) scale(1); }
@@ -342,7 +342,7 @@
       animation: capacityPulse 2s ease-in-out infinite;
     }
 
-    /* ── ONBOARDING TUTORIAL ── */
+    /* â”€â”€ ONBOARDING TUTORIAL â”€â”€ */
     @keyframes onb-fadein {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -360,7 +360,7 @@
       50% { transform: scale(1.06); box-shadow: 0 0 35px rgba(0,242,234,0.5); }
     }
 
-    /* ── SCROLLBARS ── */
+    /* â”€â”€ SCROLLBARS â”€â”€ */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
@@ -704,7 +704,7 @@
               localStorage.setItem(row.data_key, row.data_value);
             }
           });
-          console.log(`☁️ Loaded ${data.length} data keys from cloud`);
+          console.log(`â˜ï¸ Loaded ${data.length} data keys from cloud`);
         }
       } catch (e) {
         console.warn('Cloud sync load error:', e.message);
@@ -732,7 +732,7 @@
       }
     };
 
-    // Debounced sync — saves at most once every 5 seconds after data changes
+    // Debounced sync â€” saves at most once every 5 seconds after data changes
     let syncTimeout = null;
     const debouncedSync = (userId, stage) => {
       if (syncTimeout) clearTimeout(syncTimeout);
@@ -744,7 +744,7 @@
     // (leads added, tasks created, etc), all other open sessions receive it
     // instantly via WebSocket and update their localStorage + React state.
     //
-    // SETUP REQUIRED: In Supabase Dashboard → Database → Replication,
+    // SETUP REQUIRED: In Supabase Dashboard â†’ Database â†’ Replication,
     // toggle ON the `user_workspace` table to enable Realtime on it.
     let realtimeChannel = null;
     const subscribeToRealtimeWorkspace = (userId, onDataChanged) => {
@@ -796,7 +796,7 @@
         )
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
-            console.log(`🔴 Realtime active — live sync enabled for account ${userId.slice(0, 8)}...`);
+            console.log(`ðŸ”´ Realtime active â€” live sync enabled for account ${userId.slice(0, 8)}...`);
           }
         });
       realtimeChannel = channel;
@@ -869,7 +869,7 @@
             }
           });
           if (error) throw error;
-          // Page will redirect to Google — no further action needed here.
+          // Page will redirect to Google â€” no further action needed here.
           // When the user returns, onAuthStateChange in App will fire and set the session.
         } catch (err) {
           setError(err.message);
@@ -1010,11 +1010,11 @@
           disabled={isSwitching} 
           translate="no"
           className={`px-4 py-2 rounded-xl flex items-center gap-2 bg-gray-200/50 dark:bg-pd-glass border border-gray-300 dark:border-pd-glassBorder transition-all text-gray-600 dark:text-gray-400 shadow-sm ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:text-pd-teal'}`}
-          title={lang === 'en' ? 'Traducir a Español' : 'Translate to English'}
+          title={lang === 'en' ? 'Traducir a EspaÃ±ol' : 'Translate to English'}
         >
           <iconify-icon icon="solar:global-linear" width="16"></iconify-icon>
           <span className="text-[10px] font-bold uppercase tracking-widest">
-            {lang === 'en' ? 'Español' : 'English'}
+            {lang === 'en' ? 'EspaÃ±ol' : 'English'}
           </span>
         </button>
       );
@@ -1512,6 +1512,10 @@
       const [showResetModal, setShowResetModal] = useState(false);
       const [confirmText, setConfirmText] = useState('');
       const [gmailStatus, setGmailStatus] = useState({ connected: false, email: '', loading: true });
+      const [newUserNameInput, setNewUserNameInput] = useState('');
+      const [editingUserId, setEditingUserId] = useState(null);
+      const [editingUserName, setEditingUserName] = useState('');
+
 
       // Check Gmail connection status on mount
       useEffect(() => {
@@ -1631,9 +1635,8 @@
       const ctoTask = activeTasks?.find(t => t.agent === 'CTO' && t.status !== 'done');
 
       const handleAddUser = async () => {
-        const input = document.getElementById('newUserName');
-        if (!input.value.trim()) return;
-        const newUser = { id: Date.now().toString(), name: input.value.trim() };
+        if (!newUserNameInput.trim()) return;
+        const newUser = { id: Date.now().toString(), name: newUserNameInput.trim() };
         
         // Update local state immediately
         const updated = [...accountUsers, newUser];
@@ -1643,7 +1646,7 @@
         if (supabaseClient && session?.user?.id) {
            await supabaseClient.from('account_users').insert([{ ...newUser, user_id: session.user.id }]);
         }
-        input.value = '';
+        setNewUserNameInput('');
       };
 
       const handleRemoveUser = async (idToRemove) => {
@@ -1657,24 +1660,24 @@
         }
       };
 
-      const handleEditUser = async (userId, currentName) => {
-        const newName = prompt("Enter new name for this user:", currentName);
-        if (newName && newName.trim() && newName !== currentName) {
-          const updatedName = newName.trim();
-          
-          // Update local state immediately for responsiveness
-          const updated = accountUsers.map(u => u.id === userId ? { ...u, name: updatedName } : u);
-          setAccountUsers(updated);
-          localStorage.setItem('amp_account_users', JSON.stringify(updated));
+      const handleEditUser = (userId, currentName) => {
+        setEditingUserId(userId);
+        setEditingUserName(currentName);
+      };
 
-          if (supabaseClient && session?.user?.id) {
-             try {
-               await supabaseClient.from('account_users').update({ name: updatedName }).eq('id', userId).eq('user_id', session.user.id);
-             } catch (e) {
-               console.error("Failed to update user in Supabase", e);
-             }
-          }
+      const handleSaveEditUser = async () => {
+        if (!editingUserName.trim() || !editingUserId) return;
+        const updatedName = editingUserName.trim();
+        const updated = accountUsers.map(u => u.id === editingUserId ? { ...u, name: updatedName } : u);
+        setAccountUsers(updated);
+        localStorage.setItem('amp_account_users', JSON.stringify(updated));
+        if (supabaseClient && session?.user?.id) {
+          try {
+            await supabaseClient.from('account_users').update({ name: updatedName }).eq('id', editingUserId).eq('user_id', session.user.id);
+          } catch (e) { console.error('Failed to update user', e); }
         }
+        setEditingUserId(null);
+        setEditingUserName('');
       };
 
       return (
@@ -1692,32 +1695,57 @@
           <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden mb-8">
             <div className="absolute inset-0 bg-gradient-to-br from-pd-teal/5 to-transparent pointer-events-none"></div>
             <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:users-group-two-rounded-bold" className="text-pd-teal"></iconify-icon> User Management (Max 5)</h3>
-            <div className="flex flex-col gap-4 relative z-10">
+            <div className="flex flex-col gap-3 relative z-10">
               {accountUsers.map(u => (
-                <div key={u.id} className="flex items-center justify-between p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
-                  <div className="flex items-center gap-3">
-                    <iconify-icon icon="solar:user-circle-linear" width="24" className="text-pd-teal"></iconify-icon>
-                    <span className="font-semibold text-sm text-gray-900 dark:text-white">{u.name} {activeUserId === u.id && <span className="text-xs text-pd-teal ml-2">(Active)</span>}</span>
-                  </div>
-                  <div className="flex gap-2">
-                     <button onClick={() => handleEditUser(u.id, u.name)} className="px-3 py-1.5 text-xs bg-pd-orange/10 text-pd-orange rounded-full hover:bg-pd-orange/20 backdrop-blur-sm transition-all font-medium">Edit</button>
-                     {activeUserId !== u.id && (
-                       <button onClick={() => setActiveUserId(u.id)} className="px-3 py-1.5 text-xs bg-pd-teal/10 text-pd-teal rounded-full hover:bg-pd-teal/20 backdrop-blur-sm transition-all font-medium">Switch To</button>
-                     )}
-                     {accountUsers.length > 1 && (
-                       <button onClick={() => handleRemoveUser(u.id)} className="px-3 py-1.5 text-xs bg-red-500/10 text-red-500 rounded-full hover:bg-red-500/20 backdrop-blur-sm transition-all font-medium">Remove</button>
-                     )}
-                  </div>
+                <div key={u.id} className="flex flex-col gap-2 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
+                  {editingUserId === u.id ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        autoFocus
+                        type="text"
+                        value={editingUserName}
+                        onChange={e => setEditingUserName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveEditUser(); if (e.key === 'Escape') { setEditingUserId(null); setEditingUserName(''); } }}
+                        className="flex-1 bg-white/80 dark:bg-black/40 border border-pd-teal/50 rounded-xl px-3 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal"
+                      />
+                      <button onClick={handleSaveEditUser} className="px-3 py-1.5 text-xs bg-pd-teal/20 text-pd-teal rounded-full hover:bg-pd-teal/30 transition-all font-bold">Save</button>
+                      <button onClick={() => { setEditingUserId(null); setEditingUserName(''); }} className="px-3 py-1.5 text-xs bg-gray-500/10 text-gray-500 rounded-full hover:bg-gray-500/20 transition-all font-medium">✕</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <iconify-icon icon="solar:user-circle-linear" width="24" className="text-pd-teal"></iconify-icon>
+                        <span className="font-semibold text-sm text-gray-900 dark:text-white">{u.name} {activeUserId === u.id && <span className="text-xs text-pd-teal ml-2">(Active)</span>}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleEditUser(u.id, u.name)} className="px-3 py-1.5 text-xs bg-pd-orange/10 text-pd-orange rounded-full hover:bg-pd-orange/20 transition-all font-medium">Edit</button>
+                        {activeUserId !== u.id && (
+                          <button onClick={() => setActiveUserId(u.id)} className="px-3 py-1.5 text-xs bg-pd-teal/10 text-pd-teal rounded-full hover:bg-pd-teal/20 transition-all font-medium">Switch To</button>
+                        )}
+                        {accountUsers.length > 1 && (
+                          <button onClick={() => handleRemoveUser(u.id)} className="px-3 py-1.5 text-xs bg-red-500/10 text-red-500 rounded-full hover:bg-red-500/20 transition-all font-medium">Remove</button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {accountUsers.length < 5 && (
                 <div className="flex items-center gap-2 mt-2">
-                  <input type="text" id="newUserName" placeholder="New User Name" className="flex-1 bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal" />
-                  <button onClick={handleAddUser} className="px-5 py-2 text-xs bg-pd-teal/10 text-pd-teal hover:bg-pd-teal/20 font-bold rounded-full backdrop-blur-sm transition-all whitespace-nowrap">Add User</button>
+                  <input
+                    type="text"
+                    value={newUserNameInput}
+                    onChange={e => setNewUserNameInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAddUser(); }}
+                    placeholder="New User Name"
+                    className="flex-1 bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal"
+                  />
+                  <button onClick={handleAddUser} className="px-5 py-2 text-xs bg-pd-teal text-pd-dark font-bold rounded-full hover:bg-pd-teal/80 transition-all whitespace-nowrap shadow-sm">Add User</button>
                 </div>
               )}
             </div>
           </div>
+
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Profile Settings */}
@@ -1754,8 +1782,13 @@
                   <label className="block text-xs font-medium text-gray-500 mb-2 pl-2">Business Bio</label>
                   <textarea value={userProfile?.bio || ''} onChange={e => setUserProfile({...userProfile, bio: e.target.value})} rows="4" className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-3xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-teal transition-all shadow-sm resize-none" placeholder="What does your business do?"></textarea>
                 </div>
-                <button onClick={handleSave} disabled={loading} className="w-full py-3.5 mt-2 bg-gradient-to-r from-pd-teal to-pd-orange hover:scale-[1.02] active:scale-[0.98] text-white rounded-full text-sm font-bold shadow-[0_0_20px_rgba(0,242,234,0.3)] hover:shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all">
-                  {loading ? 'Saving...' : 'Save Profile'}
+                <button onClick={handleSave} disabled={loading} className="w-full group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full py-3.5 px-8 relative backdrop-blur-md items-center justify-center mt-2 shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed">
+                  <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                  <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loading ? 'Saving...' : 'Save Profile'}
+                    <iconify-icon icon={loading ? 'solar:spinner-linear' : 'solar:check-circle-linear'} width="18" className={loading ? 'animate-spin' : 'group-hover:translate-x-1 transition-transform'}></iconify-icon>
+                  </span>
                 </button>
               </div>
 
@@ -1818,7 +1851,7 @@
                       </div>
                     </div>
                     <p className="text-[11px] text-gray-500">Connect your Gmail account to send personalized outreach emails to leads and clients. Emails will appear in your Sent folder and any replies go to your inbox.</p>
-                    <button onClick={handleGmailConnect} className="w-full group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dramatic-hover dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full py-3.5 px-8 relative backdrop-blur-md items-center justify-center">
+                    <button onClick={handleGmailConnect} className="w-full group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dramatic-hover dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full py-3.5 px-8 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px]">
                       <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
                       <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
                       <span className="relative z-10 flex items-center gap-2">
@@ -2148,7 +2181,7 @@
                   <div className="text-center text-[10px] text-gray-400 font-medium uppercase tracking-widest my-6 py-1 px-4 border border-gray-100 dark:border-white/5 rounded-full self-center bg-gray-50/50 dark:bg-white/5">Start of encrypted conversation</div>
                   {(messages[activeDriver.id] || []).map(msg => (
                     <div key={msg.id} className={`flex flex-col max-w-[80%] ${msg.sender === 'me' ? 'ml-auto items-end' : 'mr-auto items-start'}`}>
-                      <div className="text-[10px] text-gray-500 mb-1">{msg.sender === 'me' ? 'You' : activeDriver.name} • {msg.time}</div>
+                      <div className="text-[10px] text-gray-500 mb-1">{msg.sender === 'me' ? 'You' : activeDriver.name} â€¢ {msg.time}</div>
                       <div className={`px-4 py-2.5 text-sm shadow-sm ${msg.sender === 'me' ? 'bg-pd-teal text-pd-dark rounded-2xl rounded-br-sm font-medium' : 'bg-white dark:bg-[#1a2133] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl rounded-bl-sm'}`}>
                         {msg.text}
                       </div>
@@ -2443,7 +2476,7 @@
           if (needsProfileSetup) {
             setTriggerPrompt({
               sender: 'ceo',
-              text: "Before I can launch a Marketing Campaign, I need your Business Profile to be complete. Head to Settings and save your profile — this tells me your target audience, location, and business goals so I can build the right campaign.",
+              text: "Before I can launch a Marketing Campaign, I need your Business Profile to be complete. Head to Settings and save your profile â€” this tells me your target audience, location, and business goals so I can build the right campaign.",
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           } else {
@@ -2462,13 +2495,13 @@
           if (needsProfileSetup) {
             setTriggerPrompt({
               sender: 'ceo',
-              text: "Before I can search for leads, I need your Business Profile set up. Head to Settings and fill in your business type, target market, and location — that's all I need to start finding you qualified prospects.",
+              text: "Before I can search for leads, I need your Business Profile set up. Head to Settings and fill in your business type, target market, and location â€” that's all I need to start finding you qualified prospects.",
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           } else {
             setTriggerPrompt({
               sender: 'user',
-              text: `Find me leads. My business is ${userProfile.company_name || 'my company'} — we target ${userProfile.target_market || 'businesses in our niche'} in ${userProfile.city || 'our area'}. Search for 8 qualified prospects and add them to the pipeline.`,
+              text: `Find me leads. My business is ${userProfile.company_name || 'my company'} â€” we target ${userProfile.target_market || 'businesses in our niche'} in ${userProfile.city || 'our area'}. Search for 8 qualified prospects and add them to the pipeline.`,
               time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           }
@@ -2478,7 +2511,7 @@
       const triggerLeadUpdatePrompt = (leadName) => {
         setActiveModule('neural-chat');
         setTimeout(() => {
-          setTriggerPrompt({ sender: 'user', text: `Update the lead "${leadName}" in my pipeline. I just [had a call / sent a proposal / met with them / received a response — edit this]. Move them to the right stage and log any follow-up tasks.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          setTriggerPrompt({ sender: 'user', text: `Update the lead "${leadName}" in my pipeline. I just [had a call / sent a proposal / met with them / received a response â€” edit this]. Move them to the right stage and log any follow-up tasks.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
         }, 150);
       };
 
@@ -2486,7 +2519,7 @@
         setActiveModule('neural-chat');
         setTimeout(() => {
           if (needsProfileSetup) {
-            setTriggerPrompt({ sender: 'ceo', text: "Before I can create content, I need your Business Profile set up. Go to Settings and save your profile — this lets my Creative Director understand your brand voice, colors, and goals." });
+            setTriggerPrompt({ sender: 'ceo', text: "Before I can create content, I need your Business Profile set up. Go to Settings and save your profile â€” this lets my Creative Director understand your brand voice, colors, and goals." });
           } else {
             setTriggerPrompt({ sender: 'user', text: `Generate a branded visual asset for ${userProfile.company_name || 'my business'}. We serve ${userProfile.target_market || 'our target audience'} and our brand style is modern and professional. Create something I can use for social media or marketing.` });
           }
@@ -2704,17 +2737,17 @@
         // Build tailored welcome recommendations based on business type
         let recommendations = '';
         if (savedStage === 'Dispatcher') {
-          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your drivers/fleet members so I can track assignments.\n- **Tactical Calendar:** Schedule route check-ins and team meetings.\n- **Neural Chat:** Ask me to "optimize routes for this week" or "draft a driver onboarding checklist."\n- **Marketing Pipeline:** Let me prospect new contracts or freight opportunities.\n\nThink of the AMP Center as your **dispatch command hub** — everything from driver management to client outreach, organized in one place. I can handle the tedious data entry, outreach emails, and research while you focus on operations.`;
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your drivers/fleet members so I can track assignments.\n- **Tactical Calendar:** Schedule route check-ins and team meetings.\n- **Neural Chat:** Ask me to "optimize routes for this week" or "draft a driver onboarding checklist."\n- **Marketing Pipeline:** Let me prospect new contracts or freight opportunities.\n\nThink of the AMP Center as your **dispatch command hub** â€” everything from driver management to client outreach, organized in one place. I can handle the tedious data entry, outreach emails, and research while you focus on operations.`;
         } else if (savedStage === 'Ecomm') {
-          recommendations = `**Here are some ways to get started:**\n- **Inventory Tracking:** Upload a screenshot of your store products and I will sync them instantly.\n- **Marketing Pipeline:** Ask me to "create a holiday promotion" or "analyze competitor pricing."\n- **Client Ledger:** Track your top customers and repeat buyers.\n- **Neural Chat:** Try "draft product descriptions for my new collection" or "plan a product launch."\n\nThink of the AMP Center as your **e-commerce headquarters** — inventory, marketing, customer data, and content creation all in one place. I handle the repetitive work like data entry, product research, and outreach so you can focus on growing your brand.`;
+          recommendations = `**Here are some ways to get started:**\n- **Inventory Tracking:** Upload a screenshot of your store products and I will sync them instantly.\n- **Marketing Pipeline:** Ask me to "create a holiday promotion" or "analyze competitor pricing."\n- **Client Ledger:** Track your top customers and repeat buyers.\n- **Neural Chat:** Try "draft product descriptions for my new collection" or "plan a product launch."\n\nThink of the AMP Center as your **e-commerce headquarters** â€” inventory, marketing, customer data, and content creation all in one place. I handle the repetitive work like data entry, product research, and outreach so you can focus on growing your brand.`;
         } else if (savedStage === 'Software') {
-          recommendations = `**Here are some ways to get started:**\n- **Strategic Planning:** Ask me to "draft an API spec" or "plan an agile sprint."\n- **Marketing Pipeline:** Let me research your target market or draft launch copy.\n- **Tactical Calendar:** Schedule standups, demos, and release milestones.\n- **Neural Chat:** Try "write onboarding documentation" or "create a technical roadmap."\n\nThink of the AMP Center as your **product operations hub** — sprint planning, go-to-market strategy, and team coordination all centralized. I can accelerate the mundane tasks like documentation, research, and outreach.`;
+          recommendations = `**Here are some ways to get started:**\n- **Strategic Planning:** Ask me to "draft an API spec" or "plan an agile sprint."\n- **Marketing Pipeline:** Let me research your target market or draft launch copy.\n- **Tactical Calendar:** Schedule standups, demos, and release milestones.\n- **Neural Chat:** Try "write onboarding documentation" or "create a technical roadmap."\n\nThink of the AMP Center as your **product operations hub** â€” sprint planning, go-to-market strategy, and team coordination all centralized. I can accelerate the mundane tasks like documentation, research, and outreach.`;
         } else if (savedStage === 'Organizer') {
-          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your members, volunteers, or organizers.\n- **Marketing Pipeline:** Ask me to "draft a fundraising email" or "plan a community event."\n- **Tactical Calendar:** Schedule rallies, meetings, and outreach campaigns.\n- **Neural Chat:** Try "create a volunteer sign-up campaign" or "research local grant opportunities."\n\nThink of the AMP Center as your **organizing command center** — membership tracking, event planning, and communications all unified. I handle the research, outreach drafting, and data management so you can focus on the mission.`;
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your members, volunteers, or organizers.\n- **Marketing Pipeline:** Ask me to "draft a fundraising email" or "plan a community event."\n- **Tactical Calendar:** Schedule rallies, meetings, and outreach campaigns.\n- **Neural Chat:** Try "create a volunteer sign-up campaign" or "research local grant opportunities."\n\nThink of the AMP Center as your **organizing command center** â€” membership tracking, event planning, and communications all unified. I handle the research, outreach drafting, and data management so you can focus on the mission.`;
         } else if (savedStage === 'Local Service') {
-          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your existing clients so I can help manage relationships.\n- **Marketing Pipeline:** Ask me to "find 10 potential clients in my area" or "draft a follow-up email."\n- **Tactical Calendar:** Schedule appointments, jobs, and follow-ups.\n- **Neural Chat:** Try "create a Facebook ad for my services" or "draft an invoice template."\n\nThink of the AMP Center as your **business hub** — client management, scheduling, marketing, and invoicing all in one place. I handle the data entry, cold outreach research, and content creation so you can focus on delivering great service.`;
+          recommendations = `**Here are some ways to get started:**\n- **Client Ledger:** Add your existing clients so I can help manage relationships.\n- **Marketing Pipeline:** Ask me to "find 10 potential clients in my area" or "draft a follow-up email."\n- **Tactical Calendar:** Schedule appointments, jobs, and follow-ups.\n- **Neural Chat:** Try "create a Facebook ad for my services" or "draft an invoice template."\n\nThink of the AMP Center as your **business hub** â€” client management, scheduling, marketing, and invoicing all in one place. I handle the data entry, cold outreach research, and content creation so you can focus on delivering great service.`;
         } else {
-          recommendations = `**Here are some ways to get started:**\n- **Marketing Pipeline:** Ask me to "find potential leads" or "create a content strategy."\n- **Strategic Planning:** Let me draft business plans, proposals, or competitive analyses.\n- **Tactical Calendar:** Schedule meetings, deadlines, and milestones.\n- **Neural Chat:** Try "analyze my target audience" or "draft a cold outreach sequence."\n\nThink of the AMP Center as the **hub of your business** — everything from lead management to content creation to scheduling, organized in one place. I handle the repetitive tasks like data entry, outreach, and research so you can focus on what matters.`;
+          recommendations = `**Here are some ways to get started:**\n- **Marketing Pipeline:** Ask me to "find potential leads" or "create a content strategy."\n- **Strategic Planning:** Let me draft business plans, proposals, or competitive analyses.\n- **Tactical Calendar:** Schedule meetings, deadlines, and milestones.\n- **Neural Chat:** Try "analyze my target audience" or "draft a cold outreach sequence."\n\nThink of the AMP Center as the **hub of your business** â€” everything from lead management to content creation to scheduling, organized in one place. I handle the repetitive tasks like data entry, outreach, and research so you can focus on what matters.`;
         }
 
         const welcomeText = `Profile locked in. Welcome aboard${savedName ? ', **' + savedName + '**' : ''}.\n\nYour ${savedStage} workspace is fully configured and your team of specialized agents is standing by.\n\n${recommendations}`;
@@ -3095,14 +3128,14 @@
                 </div>
               </div>
 
-              {/* Task Feed — Live Only */}
+              {/* Task Feed â€” Live Only */}
               <div className="space-y-3">
                 {displayTasks.filter(t => t.status !== 'done').length > 0 ? displayTasks.filter(t => t.status !== 'done').slice(0, 8).map((task, idx) => (
                   <TaskCard 
                     key={task.id || idx} 
                     agent={task.agent || 'CEO'} 
                     parentAgent={task.parentAgent}
-                    task={task.title + (task.scheduled_time && task.status !== 'done' ? ' ⏳' : '')} 
+                    task={task.title + (task.scheduled_time && task.status !== 'done' ? ' â³' : '')} 
                     status={task.status === 'done' ? 'done' : 'running'} 
                     color={(task.parentAgent === 'Creative' || task.agent === 'Creative') ? 'pd-purple' : (task.parentAgent === 'CTO' || task.agent === 'CTO') ? 'pd-orange' : 'pd-teal'}
                     idx={idx}
@@ -3348,7 +3381,7 @@
             {/* Agent header with delegation chain */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                {/* Delegation chain: CEO → CMO */}
+                {/* Delegation chain: CEO â†’ CMO */}
                 {parentMeta && (
                   <div className="flex items-center gap-1">
                     <div className={`w-5 h-5 rounded-md bg-gradient-to-br ${parentMeta.gradient} flex items-center justify-center shadow-sm`}>
@@ -3542,7 +3575,7 @@
                   ) : (
                     filteredMessages.map(m => (
                       <div key={m.id} className={`flex flex-col max-w-[80%] ${m.sender_id === activeUserId ? 'ml-auto items-end' : 'mr-auto items-start'}`}>
-                        <div className="text-[10px] text-gray-500 mb-1">{m.sender_name} • {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div className="text-[10px] text-gray-500 mb-1">{m.sender_name} â€¢ {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         <div className={`px-4 py-2 text-sm shadow-sm ${m.sender_id === activeUserId ? 'bg-pd-teal text-pd-dark rounded-2xl rounded-br-sm' : 'bg-white dark:bg-[#1a2133] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl rounded-bl-sm'}`}>
                           {m.text}
                         </div>
@@ -3831,7 +3864,7 @@
         const leadNames = localLeads.map(l => l.name).join(', ') || 'None';
         const clientNames = localClients.map(c => c.name).join(', ') || 'None';
 
-        // Derive exact channel names based on business stage — must match what the UI actually shows
+        // Derive exact channel names based on business stage â€” must match what the UI actually shows
         const stageChannelNames = {
           'Ecomm':         { lead: 'Sales Pipeline',      client: 'Customer Ledger',    leadSingular: 'customer/prospect',   clientSingular: 'customer'   },
           'Software':      { lead: 'User Pipeline',       client: 'Subscriber Ledger',  leadSingular: 'user/trial signup',   clientSingular: 'subscriber' },
@@ -3841,27 +3874,27 @@
         };
         const channelNames = stageChannelNames[userProfile?.stage] || { lead: 'Lead Pipeline', client: 'Client Ledger', leadSingular: 'lead', clientSingular: 'client' };
 
-        const systemPromptAddon = `\n\n[SYSTEM INSTRUCTION: You are an autonomous AI agent integrated directly into the AMP Center platform — a centralized business hub where the user manages everything in one place.
+        const systemPromptAddon = `\n\n[SYSTEM INSTRUCTION: You are an autonomous AI agent integrated directly into the AMP Center platform â€” a centralized business hub where the user manages everything in one place.
 
 PERSONALITY & COMMUNICATION STYLE (CRITICAL):
-- Talk like a sharp, friendly business partner — NOT a robot. Keep it simple. If a 12-year-old wouldn't understand your sentence, rewrite it.
-- When explaining anything technical, USE ANALOGIES. Example: Instead of "I'll upsert a lead record into your CRM pipeline," say "Think of your ${channelNames.lead} like a fishing net — I'll add this person to it so they don't slip through the cracks."
+- Talk like a sharp, friendly business partner â€” NOT a robot. Keep it simple. If a 12-year-old wouldn't understand your sentence, rewrite it.
+- When explaining anything technical, USE ANALOGIES. Example: Instead of "I'll upsert a lead record into your CRM pipeline," say "Think of your ${channelNames.lead} like a fishing net â€” I'll add this person to it so they don't slip through the cracks."
 - Be concise. Get to the point. No walls of text unless the user asks for detail.
 - Use bold (**like this**) to highlight key actions you took or key info, so the user can scan quickly.
-- When you take actions, summarize what you did in plain English: "Done — I added Sarah to your client list and scheduled a follow-up for Thursday."
+- When you take actions, summarize what you did in plain English: "Done â€” I added Sarah to your client list and scheduled a follow-up for Thursday."
 
 PROACTIVE INTELLIGENCE & DIRECT ACTION (CRITICAL):
 - You are not just a command-taker. You are a proactive, intelligent partner. You listen to the WHOLE conversation and spot opportunities to be useful.
-- DIRECT REQUESTS = IMMEDIATE EXECUTION: When the user says "add a user named Jakob", "create a lead for Sarah", "schedule a meeting Thursday", etc. — you MUST call the corresponding tool IMMEDIATELY. NO menus, NO "we could do A or B" — just DO IT.
+- DIRECT REQUESTS = IMMEDIATE EXECUTION: When the user says "add a user named Jakob", "create a lead for Sarah", "schedule a meeting Thursday", etc. â€” you MUST call the corresponding tool IMMEDIATELY. NO menus, NO "we could do A or B" â€” just DO IT.
 - MISSING INFO PROTOCOL: If a direct request is missing a required field, ask for ONLY the missing piece in one short question. When they respond, execute immediately. Never ask more than one round of follow-up.
-PROACTIVE OFFERS (THIS IS KEY): As you converse with the user, whenever you notice something you COULD do for them — OFFER. Keep it natural and brief:
+PROACTIVE OFFERS (THIS IS KEY): As you converse with the user, whenever you notice something you COULD do for them â€” OFFER. Keep it natural and brief:
   * "By the way, I can go ahead and add that to your ${channelNames.lead} right now if you want."
-  * "I can put that on your calendar — should I?"
-  * "Sounds like those could be solid leads — want me to search Google and pull some real ones into your ${channelNames.lead}?"
-  * "I noticed your ${channelNames.client} is still empty — want to start adding your current ${channelNames.clientSingular}s?"
-  * "That sounds like a plan worth documenting — want me to save it in Strategic Planning so we can track it?"
+  * "I can put that on your calendar â€” should I?"
+  * "Sounds like those could be solid leads â€” want me to search Google and pull some real ones into your ${channelNames.lead}?"
+  * "I noticed your ${channelNames.client} is still empty â€” want to start adding your current ${channelNames.clientSingular}s?"
+  * "That sounds like a plan worth documenting â€” want me to save it in Strategic Planning so we can track it?"
   You're like a brilliant assistant who's always thinking one step ahead, but never acts without asking. This makes you feel alive and useful, not robotic.
-- NEVER take proactive action silently. Always ask first. But DO ask — don't just wait to be told.
+- NEVER take proactive action silently. Always ask first. But DO ask â€” don't just wait to be told.
 - If the user gives you a vague request, ask ONE clarifying question max, then act. Don't interrogate them.
 - PLAN EXECUTION: When the user asks you to create a plan or strategy, use 'store_plan' to save it. Within that plan, identify every actionable step and use 'create_task' for each one. When the user says "execute the plan" or clicks Execute, move tasks to in_progress and begin executing any tool-based steps immediately. For steps that require human action (meetings, phone calls, in-person tasks), create them as tasks and tell the user what you need them to handle in person.
 
@@ -3871,18 +3904,18 @@ CURRENT BUSINESS PROFILE (CRITICAL CONTEXT):
 - Bio/Details: ${userProfile?.bio || 'None'}
 If the user tells you they have completed their profile, DO NOT ask them to do it again. Acknowledge their business type and ask how you can assist them today.
 
-CHANNEL NAMES — CRITICAL (USE THESE EXACT NAMES IN YOUR RESPONSES):
+CHANNEL NAMES â€” CRITICAL (USE THESE EXACT NAMES IN YOUR RESPONSES):
 This user's business type is: ${userProfile?.stage || 'Solo'}
-- Their lead/prospect tracking channel is called: **${channelNames.lead}** (NOT "Marketing Pipeline", NOT "CRM", NOT "pipeline" — use the exact name)
+- Their lead/prospect tracking channel is called: **${channelNames.lead}** (NOT "Marketing Pipeline", NOT "CRM", NOT "pipeline" â€” use the exact name)
 - Their client/customer tracking channel is called: **${channelNames.client}**
 - When referring to a single lead/prospect, call them a "${channelNames.leadSingular}"
 - When referring to a single client, call them a "${channelNames.clientSingular}"
-- ALWAYS use these exact names when talking about where data goes. Example: "I'll add them to your **${channelNames.lead}**" — never "I'll add them to your Marketing Pipeline" unless that IS the correct name.
+- ALWAYS use these exact names when talking about where data goes. Example: "I'll add them to your **${channelNames.lead}**" â€” never "I'll add them to your Marketing Pipeline" unless that IS the correct name.
 
 FRAMING THE PLATFORM:
-- The AMP Center is the user's business command center — like a cockpit for their entire operation. Everything lives here: leads, clients, tasks, calendar, inventory, marketing, and strategic plans.
-- Your job is to help them USE every channel. If a channel is empty, look for natural moments in conversation to suggest populating it. Example: If they mention clients but their Client Ledger is empty, say "I notice your client list is empty — want to start adding your current clients so we can track everything in one place?"
-- Position the AI agents (yourself and the sub-agents) as a team that handles the boring stuff — data entry, drafting outreach, research, organizing info — so the user can focus on the work that actually makes them money.
+- The AMP Center is the user's business command center â€” like a cockpit for their entire operation. Everything lives here: leads, clients, tasks, calendar, inventory, marketing, and strategic plans.
+- Your job is to help them USE every channel. If a channel is empty, look for natural moments in conversation to suggest populating it. Example: If they mention clients but their Client Ledger is empty, say "I notice your client list is empty â€” want to start adding your current clients so we can track everything in one place?"
+- Position the AI agents (yourself and the sub-agents) as a team that handles the boring stuff â€” data entry, drafting outreach, research, organizing info â€” so the user can focus on the work that actually makes them money.
 
 Available Tools & Channels (you have FULL CONTROL over every single one):
 1. 'send_team_message' -> Populates the 'Team Chat' channel. Payload: { agent_name: 'Your Name', message: '...', channel: 'all' }.
@@ -3907,7 +3940,7 @@ Available Tools & Channels (you have FULL CONTROL over every single one):
 20. 'create_agent' -> Hires a new AI sub-agent (only when explicitly asked).
 21. 'search_for_leads' -> Searches Google in real-time to find REAL businesses. Call this when you know what kind of business and where. Payload: { query: 'plumbers in Dallas TX', context: 'small businesses that need websites' }. The backend executes the search and adds results directly to the Qualifying pipeline.
 22. 'update_business_profile' -> Saves new business details mentioned in conversation.
-23. 'save_user_insight' -> Silently saves a learned fact about the user to memory. Use whenever you learn something important (ideal client type, target location, preferences, key contacts, business goals). The user won't see this action — it runs in the background. Over time, this builds your knowledge of the user so you never ask the same question twice.
+23. 'save_user_insight' -> Silently saves a learned fact about the user to memory. Use whenever you learn something important (ideal client type, target location, preferences, key contacts, business goals). The user won't see this action â€” it runs in the background. Over time, this builds your knowledge of the user so you never ask the same question twice.
 
 CONTEXT INJECTION:
 Current Known Leads/Prospects: ${leadNames}
@@ -3919,16 +3952,16 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 3. Assigning IRL Human Tasks: For IRL tasks, you MUST use the 'create_task' tool to add it to "Today's Tasks". IMPORTANT: Do NOT include a 'scheduled_time' in the payload for human tasks. Leaving 'scheduled_time' empty is how the system knows it is a human task that should wait for the user to manually complete it.
 4. "Team" vs "Clients": When the user refers to the "team" (e.g., "team meeting"), they are referring to the human management staff operating this platform, NOT the drivers, members, or clients. Do not assign team meetings to drivers/clients.
 5. Recurring Human Tasks: If the user mentions a recurring schedule (e.g., "every morning at 9am" or "every Wednesday"), use 'create_task' for the immediate next occurrence, and clarify in your response that it has been added to Today's Tasks. You may also use 'add_calendar_event' to document the recurring nature if needed.
-6. Multi-tool capability: You are capable of returning multiple action tools in a single response to accomplish complex workflows. Think of it like a chef prepping multiple dishes at once — if the user needs a lead added, a meeting scheduled, AND a task created, do all three in one go.
+6. Multi-tool capability: You are capable of returning multiple action tools in a single response to accomplish complex workflows. Think of it like a chef prepping multiple dishes at once â€” if the user needs a lead added, a meeting scheduled, AND a task created, do all three in one go.
 7. Image Analysis & Universal Data Extraction: ALWAYS carefully analyze any new images provided. You are capable of extracting data from Shopify, Etsy, Amazon, or any online store listing, as well as spreadsheets, CRM screenshots, PDF exports, and handwritten tables. You must recognize which channel the data belongs to (e.g. Leads, Clients/Members, Inventory, or Tasks) and use the corresponding tool (add_lead, create_client, add_inventory_item, or create_task). This applies to ALL business stages/types. Do not assume images contain the same data as previous ones. Extract exactly what is in the new image. If multiple items/rows are present, use the relevant tool for EACH item found.
-8. HONESTY Rule: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools, say so plainly — like "I can draft the strategy and schedule the meetings, but I can't actually send emails from here yet. Want me to add a reminder to your tasks instead?"
-9. GOOGLE SEARCH & LEAD RESEARCH: You have the 'search_for_leads' tool. Use it when the user wants to find leads, prospects, or businesses. Have a natural conversation to understand what they need — what type of businesses, what location. When you have enough info, call 'search_for_leads' with a clear query. The backend does the Google Search and adds leads to the pipeline automatically. NEVER fabricate businesses.
+8. HONESTY Rule: DO NOT pretend to do things you cannot do. If a user asks you to execute a plan or task, you MUST use the provided action tools to actually populate the platform's channels. If a step in a plan cannot be executed via the available tools, say so plainly â€” like "I can draft the strategy and schedule the meetings, but I can't actually send emails from here yet. Want me to add a reminder to your tasks instead?"
+9. GOOGLE SEARCH & LEAD RESEARCH: You have the 'search_for_leads' tool. Use it when the user wants to find leads, prospects, or businesses. Have a natural conversation to understand what they need â€” what type of businesses, what location. When you have enough info, call 'search_for_leads' with a clear query. The backend does the Google Search and adds leads to the pipeline automatically. NEVER fabricate businesses.
 10. PIPELINE STAGE CLASSIFICATION: Inbound = came to us first (rare, don't use for searched leads). Qualifying = we found/researched them (DEFAULT for search results). Negotiation = actively discussing pricing.
-11. PLAN EXECUTION: When the user creates or asks you to execute a plan, break it into tasks using 'create_task', save the overall plan with 'store_plan', and begin working through tool-executable steps immediately. For human-required steps, create tasks and tell the user what they need to handle. You're a full execution engine — not just a planner.
-12. LEARNING & MEMORY: Use 'save_user_insight' whenever you learn something important about this user — silently, in the background. Target audience, preferred locations, business goals, communication preferences, key people. Don't announce it. Just remember it. Next time they chat, those insights will be loaded automatically so you already know them.
-13. TARGET MARKET PIVOTING: The user can change their desired target market, ideal client type, or lead criteria at ANY point in the conversation simply by telling you. When they say something like "actually, let's switch to dentists" or "I want to target restaurants now" or "focus on med spas in Houston going forward" — IMMEDIATELY acknowledge the change, use 'save_user_insight' to persist the new target (category: 'ideal_client' or 'target_location'), and begin acting on the new criteria. Do NOT continue using old criteria. Confirm naturally: "Got it — switching gears to [new target]. Let me search for those now."
-14. DUPLICATE / REPEAT PREVENTION: NEVER give the user repeat leads. The backend deduplicates search results against the user's CURRENT pipeline leads AND current clients — so a business that's already in the pipeline or has become a client won't be re-added. IMPORTANT: this dedup is based on current state only. If a lead was deleted and did NOT become a client, it is no longer excluded and can appear in future searches — this is intentional. Be conversationally aware: if the pipeline already has many leads of the same type in the same area, the search will return mostly duplicates. Explain clearly: "I found [X] new ones — the rest were already in your pipeline."
-15. AREA EXHAUSTION & EXPANSION: When an area is exhausted (all search results are already in the pipeline), you MUST proactively suggest 2-3 nearby geographic areas to expand into. Example: "To find fresh leads, I'd recommend expanding to [nearby city 1], [nearby city 2], or widening your search radius to [broader region]. Want me to search one of those?" The user should NEVER be left wondering why they're not getting new leads — always explain and offer a clear path forward.]`;
+11. PLAN EXECUTION: When the user creates or asks you to execute a plan, break it into tasks using 'create_task', save the overall plan with 'store_plan', and begin working through tool-executable steps immediately. For human-required steps, create tasks and tell the user what they need to handle. You're a full execution engine â€” not just a planner.
+12. LEARNING & MEMORY: Use 'save_user_insight' whenever you learn something important about this user â€” silently, in the background. Target audience, preferred locations, business goals, communication preferences, key people. Don't announce it. Just remember it. Next time they chat, those insights will be loaded automatically so you already know them.
+13. TARGET MARKET PIVOTING: The user can change their desired target market, ideal client type, or lead criteria at ANY point in the conversation simply by telling you. When they say something like "actually, let's switch to dentists" or "I want to target restaurants now" or "focus on med spas in Houston going forward" â€” IMMEDIATELY acknowledge the change, use 'save_user_insight' to persist the new target (category: 'ideal_client' or 'target_location'), and begin acting on the new criteria. Do NOT continue using old criteria. Confirm naturally: "Got it â€” switching gears to [new target]. Let me search for those now."
+14. DUPLICATE / REPEAT PREVENTION: NEVER give the user repeat leads. The backend deduplicates search results against the user's CURRENT pipeline leads AND current clients â€” so a business that's already in the pipeline or has become a client won't be re-added. IMPORTANT: this dedup is based on current state only. If a lead was deleted and did NOT become a client, it is no longer excluded and can appear in future searches â€” this is intentional. Be conversationally aware: if the pipeline already has many leads of the same type in the same area, the search will return mostly duplicates. Explain clearly: "I found [X] new ones â€” the rest were already in your pipeline."
+15. AREA EXHAUSTION & EXPANSION: When an area is exhausted (all search results are already in the pipeline), you MUST proactively suggest 2-3 nearby geographic areas to expand into. Example: "To find fresh leads, I'd recommend expanding to [nearby city 1], [nearby city 2], or widening your search radius to [broader region]. Want me to search one of those?" The user should NEVER be left wondering why they're not getting new leads â€” always explain and offer a clear path forward.]`;
 
         const currentLanguage = localStorage.getItem('amp_language') || 'en';
         const langRule = currentLanguage === 'es' ? '\n\n[CRITICAL LANGUAGE RULE: The user has selected Spanish (ES) as their preferred language. You MUST reply to them entirely in Spanish from now on. However, when using tools (like create_task, add_lead), you must keep the ENUM values (like stage names) in English, but you may translate the task titles and descriptions into Spanish.]' : '';
@@ -3936,7 +3969,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         // Collect existing lead + client names to prevent duplicate search results.
         // Dedup is based on the CURRENT state of the pipeline and client ledger only.
         // If a lead was deleted (and didn't convert to a client), it will NOT appear here
-        // and can be re-suggested freely on the next search — this is by design.
+        // and can be re-suggested freely on the next search â€” this is by design.
         let existingLeadNames = [];
         let pipelineLeadContacts = []; // Send lead contact info so agent knows who has emails
         try {
@@ -3944,14 +3977,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           // Current pipeline leads (not yet clients)
           const existingLeads = JSON.parse(localStorage.getItem(`amp_leads_${currentStage}`) || '[]');
           const leadNames = existingLeads.map(l => l.name).filter(Boolean);
-          // Build contact summary for outreach — agent needs to know who has emails
+          // Build contact summary for outreach â€” agent needs to know who has emails
           pipelineLeadContacts = existingLeads.map(l => ({
             name: l.name,
             email: l.email || '',
             phone: l.phone || '',
             stage: l.stage || ''
           })).filter(l => l.name);
-          // Existing clients (graduated from leads — should never be re-surfaced as a lead)
+          // Existing clients (graduated from leads â€” should never be re-surfaced as a lead)
           const existingClients = JSON.parse(localStorage.getItem(`amp_clients_${currentStage}`) || '[]');
           const clientNames = existingClients.map(c => c.name).filter(Boolean);
           existingLeadNames = [...leadNames, ...clientNames];
@@ -3966,7 +3999,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               return { status: res.status, data: JSON.parse(text) };
             } catch (e) {
               // Netlify returned non-JSON (timeout, crash, HTML error page)
-              return { status: res.status, data: { error: `Server returned non-JSON response (HTTP ${res.status}). This usually means the request timed out — try again.`, content: null } };
+              return { status: res.status, data: { error: `Server returned non-JSON response (HTTP ${res.status}). This usually means the request timed out â€” try again.`, content: null } };
             }
           }))
           .then(({ status, data }) => {
@@ -4068,7 +4101,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   detailsLog = `Document: ${action.payload.title}`;
                 } else if (action.type === 'send_outreach') {
                   agentForLog = 'CMO'; taskNameLog = 'Outreach Sent';
-                  detailsLog = `Subject: ${action.payload.subject} — ${action.payload.recipients?.length || 0} recipients`;
+                  detailsLog = `Subject: ${action.payload.subject} â€” ${action.payload.recipients?.length || 0} recipients`;
                 } else if (action.type === 'create_campaign') {
                   agentForLog = 'CMO'; taskNameLog = 'Created Campaign';
                   detailsLog = `Campaign: ${action.payload.name}`;
@@ -4078,7 +4111,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 const localCal = JSON.parse(localStorage.getItem('amp_calendar_events') || '[]');
                 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                 const dayOfWeek = days[new Date().getDay()];
-                // Build delegation chain: CEO → CMO → Subagent
+                // Build delegation chain: CEO â†’ CMO â†’ Subagent
                 const delegationChain = ['CEO'];
                 if (agentForLog !== 'CEO') delegationChain.push(agentForLog);
                 const histPayload = { 
@@ -4087,7 +4120,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   agent_role: agentForLog, 
                   task_name: taskNameLog,
                   details: detailsLog,
-                  delegation_chain: delegationChain.join(' → '),
+                  delegation_chain: delegationChain.join(' â†’ '),
                   triggered_by: msgText.slice(0, 120),
                   is_historical: true,
                   created_at: new Date().toISOString() 
@@ -4285,7 +4318,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       localStorage.setItem('amp_account_users', JSON.stringify(users));
                       window.dispatchEvent(new StorageEvent('storage', { key: 'amp_account_users', newValue: JSON.stringify(users) }));
                       if (supabaseClient && session?.user?.id) { supabaseClient.from('account_users').update({ name: action.payload.new_name }).eq('id', users[idx].id).eq('user_id', session.user.id).then(); }
-                      logAction(`Renamed User: ${action.payload.current_name} → ${action.payload.new_name}`, 'CEO');
+                      logAction(`Renamed User: ${action.payload.current_name} â†’ ${action.payload.new_name}`, 'CEO');
                     }
                   } else if (action.type === 'remove_user') {
                     const users = JSON.parse(localStorage.getItem('amp_account_users') || '[{"id":"1","name":"Primary User"}]');
@@ -4346,11 +4379,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     const recipientCount = p.recipients?.length || 0;
                     if (p.status === 'sent' && p.deliveryResults) {
                       const s = p.deliveryResults.summary;
-                      logAction(`📧 Outreach: ${s.sent} sent, ${s.failed} failed, ${s.skipped} skipped — "${p.subject}"`, 'CMO');
+                      logAction(`ðŸ“§ Outreach: ${s.sent} sent, ${s.failed} failed, ${s.skipped} skipped â€” "${p.subject}"`, 'CMO');
                     } else if (p.status === 'draft') {
-                      logAction(`📝 Outreach draft prepared for ${recipientCount} recipient${recipientCount !== 1 ? 's' : ''} — "${p.subject}"`, 'CMO');
+                      logAction(`ðŸ“ Outreach draft prepared for ${recipientCount} recipient${recipientCount !== 1 ? 's' : ''} â€” "${p.subject}"`, 'CMO');
                     } else if (p.status === 'error') {
-                      logAction(`❌ Outreach failed — "${p.subject}"`, 'CMO');
+                      logAction(`âŒ Outreach failed â€” "${p.subject}"`, 'CMO');
                     }
                   }
                 } catch (e) { console.error("Parse error", e); }
@@ -4367,9 +4400,9 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           })
           .catch(err => {
             console.error('Agent fetch error:', err);
-            // Never blame the user's query — the more detail they give, the better.
+            // Never blame the user's query â€” the more detail they give, the better.
             // This catch only fires on network errors or genuine server crashes.
-            const responseText = `⚠️ The server didn't respond in time. Just send your message again — I have your context and will pick up right where we left off.`;
+            const responseText = `âš ï¸ The server didn't respond in time. Just send your message again â€” I have your context and will pick up right where we left off.`;
             appendMessage({ sender: 'ceo', text: responseText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             setIsTyping(false);
           });
@@ -4457,7 +4490,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                         </div>
                         <div className="min-w-0">
                           <div className="font-medium text-sm text-gray-900 dark:text-white truncate">{doc.title}</div>
-                          <div className="text-[10px] text-gray-500 mt-0.5">{doc.document_type} • {new Date(doc.created_at).toLocaleDateString()}</div>
+                          <div className="text-[10px] text-gray-500 mt-0.5">{doc.document_type} â€¢ {new Date(doc.created_at).toLocaleDateString()}</div>
                         </div>
                       </button>
                     ))}
@@ -4553,7 +4586,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </div>
                   <div>
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white">{activeDocument.title}</h3>
-                    <p className="text-xs font-semibold text-indigo-500 tracking-wider uppercase mt-1">{activeDocument.document_type} • {new Date(activeDocument.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs font-semibold text-indigo-500 tracking-wider uppercase mt-1">{activeDocument.document_type} â€¢ {new Date(activeDocument.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -4632,14 +4665,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           });
           const data = await res.json();
           if (res.ok && data.summary?.sent > 0) {
-            setEmailResult({ status: 'sent', text: `✅ Email delivered to ${emailComposer.email}` });
+            setEmailResult({ status: 'sent', text: `âœ… Email delivered to ${emailComposer.email}` });
             setTimeout(() => { setEmailComposer(null); setEmailResult(null); }, 2500);
           } else {
             const reason = data.results?.[0]?.reason || data.error || 'Unknown error';
-            setEmailResult({ status: 'error', text: `❌ Failed: ${reason}` });
+            setEmailResult({ status: 'error', text: `âŒ Failed: ${reason}` });
           }
         } catch (err) {
-          setEmailResult({ status: 'error', text: `❌ Network error: ${err.message}` });
+          setEmailResult({ status: 'error', text: `âŒ Network error: ${err.message}` });
         } finally {
           setEmailSending(false);
         }
@@ -4757,16 +4790,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || (isEcomm ? 'Sales Pipeline' : 'Lead Pipeline')}</h2><p className="text-xs text-gray-500">{subtitle || (isEcomm ? 'Track customer interest and abandoned carts.' : 'Manage prospects and activate AI sequences.')}</p></div>
             <div className="flex gap-2 w-full md:w-auto">
-              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
-                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
-                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              <label className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto cursor-pointer shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV</span><input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
-              </button>
-              <button onClick={onAddLead} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
-              </button>
+              <button onClick={() => { setFormData({ id: null, name: '', contact: '', phone: '', email: '', website: '', address: '', value: '$0', stage: stages[0] }); setShowModal(true); }} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </span></button>
+              <button onClick={onAddLead} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
+              </span></button>
             </div>
           </div>
           <div className="md:hidden w-full mb-4 flex-shrink-0">
@@ -5166,16 +5195,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 <option value="alpha">Sort: A-Z</option>
                 {isDispatcher && <option value="active">Sort: Active Today</option>}
               </select>
-              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
-                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
-                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              <label className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto cursor-pointer shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV</span><input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
-              </button>
-              <button onClick={onAddClient} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
-              </button>
+              <button onClick={() => { setFormData({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' }); setShowModal(true); }} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </span></button>
+              <button onClick={onAddClient} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
+              </span></button>
             </div>
           </div>
           <div className="bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder rounded-2xl overflow-x-auto flex-1 shadow-sm">
@@ -5467,16 +5492,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <p className="text-xs text-gray-500">Manage your product catalog and sync with your store.</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <label className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto cursor-pointer flex items-center justify-center">
-                <iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV
-                <input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
+              <label className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto cursor-pointer shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:import-linear" className="mr-2"></iconify-icon> Import CSV</span><input type="file" accept=".csv" className="hidden" onChange={onImportCsv} />
               </label>
-              <button onClick={() => { setFormData({ id: null, product_name: '', sku_link: '', stock: '', price: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
-              </button>
-              <button onClick={onSync} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:refresh-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Sync
-              </button>
+              <button onClick={() => { setFormData({ id: null, product_name: '', sku_link: '', stock: '', price: '' }); setShowModal(true); }} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </span></button>
+              <button onClick={onSync} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:refresh-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Sync
+              </span></button>
             </div>
           </div>
           
@@ -5697,12 +5718,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   <iconify-icon icon="solar:document-text-bold"></iconify-icon> {monthlyReport.month} Report Drafted
                 </div>
               )}
-              <button onClick={() => setShowManualAdd(!showManualAdd)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {showManualAdd ? 'Cancel' : 'Manual Entry'}
-              </button>
-              <button onClick={onLogExpense} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Log
-              </button>
+              <button onClick={() => setShowManualAdd(!showManualAdd)} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {showManualAdd ? 'Cancel' : 'Manual Entry'}
+              </span></button>
+              <button onClick={onLogExpense} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Log
+              </span></button>
             </div>
           </div>
 
@@ -5863,12 +5882,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
             <div><h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">Marketing Pipeline</h2><p className="text-xs text-gray-500">Campaign execution and team resource sharing.</p></div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => { setFormData({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' }); setShowModal(true); }} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
-              </button>
-              <button onClick={onAddCampaign} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
-              </button>
+              <button onClick={() => { setFormData({ id: null, name: '', description: '', stage: 'Planning', agents_assigned: '' }); setShowModal(true); }} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </span></button>
+              <button onClick={onAddCampaign} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Add
+              </span></button>
             </div>
           </div>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 flex-1 snap-x snap-mandatory">
@@ -6322,12 +6339,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <p className="text-xs text-gray-500">Stored architectural and marketing plans generated by the CEO.</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => setIsAdding(!isAdding)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon={isAdding ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {isAdding ? 'Cancel' : 'Manual Entry'}
-              </button>
-              <button onClick={handleAskCEO} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Create
-              </button>
+              <button onClick={() => setIsAdding(!isAdding)} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon={isAdding ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {isAdding ? 'Cancel' : 'Manual Entry'}
+              </span></button>
+              <button onClick={handleAskCEO} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Create
+              </span></button>
             </div>
           </div>
           
@@ -6606,12 +6621,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               <p className="text-xs text-gray-500">{isDispatcher ? "Manage daily driver shifts and routes for the week." : "Autonomous scheduling and daily activity timeline."}</p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={() => setShowAddModal(true)} className="amp-button secondary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
-              </button>
-              <button onClick={handleAskCEO} className="amp-button primary px-4 py-2 text-xs font-medium w-full md:w-auto flex items-center justify-center">
-                <iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Schedule
-              </button>
+              <button onClick={() => setShowAddModal(true)} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:pen-linear" className="mr-2"></iconify-icon> Manual Entry
+              </span></button>
+              <button onClick={handleAskCEO} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,242,234,0.25),0_2px_8px_rgba(0,242,234,0.15)] hover:shadow-[0_6px_32px_rgba(0,242,234,0.45),0_4px_16px_rgba(0,242,234,0.3)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#00c9c2_30%,#ffffff_50%,#00F2EA_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:magic-stick-3-linear" className="mr-2"></iconify-icon> Ask CEO to Schedule
+              </span></button>
             </div>
           </div>
 
@@ -6842,7 +6855,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{selectedEvent.task_name}</h3>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(selectedEvent.date_time).toLocaleString()} • {selectedEvent.agent_role || 'User'}
+                      {new Date(selectedEvent.date_time).toLocaleString()} â€¢ {selectedEvent.agent_role || 'User'}
                     </p>
                   </div>
                   <button onClick={() => setSelectedEvent(null)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
@@ -6889,7 +6902,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         if (bulletMatch) {
           return (
             <div key={idx} className="flex gap-2 my-0.5">
-              <span className="text-pd-teal mt-0.5 shrink-0">•</span>
+              <span className="text-pd-teal mt-0.5 shrink-0">â€¢</span>
               <span>{renderInline(bulletMatch[2], `${idx}`)}</span>
             </div>
           );
@@ -6996,6 +7009,11 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 </body>
 
 </html>
+
+
+
+
+
 
 
 
