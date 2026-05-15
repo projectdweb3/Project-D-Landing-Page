@@ -2200,10 +2200,10 @@
                         placeholder={`Message ${activeDriver.name}...`} 
                         className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" 
                       />
-                      <button onClick={handleSend} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center flex-shrink-0 dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.25)]">
+                      <button onClick={handleSend} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center flex-shrink-0 dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.15)]">
                         <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#ff5f00_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                        <div className="absolute inset-[2px] rounded-full bg-pd-orange/20 border border-pd-orange/50 group-hover:bg-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
-                        <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-pd-orange group-hover:text-white transition-colors duration-300"></iconify-icon>
+                        <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:bg-pd-orange group-hover:border-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
+                        <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
                       </button>
                    </div>
                 </div>
@@ -3595,8 +3595,8 @@
                       <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder={`Message ${activeChannel === 'all' ? 'everyone' : accountUsers.find(u => u.id === activeChannel)?.name}...`} className="w-full bg-white/90 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
                       <button type="submit" className="group absolute right-2 top-2 w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.25)]">
                         <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#ff5f00_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                        <div className="absolute inset-[2px] rounded-full bg-pd-orange/20 border border-pd-orange/50 group-hover:bg-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
-                        <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-pd-orange group-hover:text-white transition-colors duration-300"></iconify-icon>
+                        <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:border-pd-orange group-hover:bg-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
+                        <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
                       </button>
                    </form>
                 </div>
@@ -4574,17 +4574,17 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             )}
             <div className="relative flex items-center gap-2">
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-              <button onClick={() => fileInputRef.current?.click()} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center flex-shrink-0 dramatic-hover shadow-[0_4px_20px_rgba(70,212,198,0.2)]">
+              <button onClick={() => fileInputRef.current?.click()} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center flex-shrink-0 dramatic-hover shadow-[0_4px_20px_rgba(70,212,198,0.15)]">
                 <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                <div className="absolute inset-[2px] rounded-full bg-white dark:bg-black/40 border border-gray-200 dark:border-pd-glassBorder group-hover:bg-pd-teal/20 dark:group-hover:bg-pd-teal/20 transition-colors duration-300 pointer-events-none z-0"></div>
-                <iconify-icon icon="solar:paperclip-linear" width="20" className="relative z-10 text-gray-500 group-hover:text-pd-teal transition-colors duration-300"></iconify-icon>
+                <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:bg-pd-teal group-hover:border-pd-teal transition-colors duration-300 pointer-events-none z-0"></div>
+                <iconify-icon icon="solar:paperclip-linear" width="20" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
               </button>
               <div className="relative flex-1">
                 <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleSend(e) }} onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)} placeholder="Instruct the CEO or attach a reference..." className="w-full bg-white dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-full pl-6 pr-14 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-pd-orange/50 shadow-inner" />
-                <button onClick={handleSend} className="group absolute right-2 top-2 w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.25)]">
+                <button onClick={handleSend} className="group absolute right-2 top-2 w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.15)]">
                   <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#ff5f00_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                  <div className="absolute inset-[2px] rounded-full bg-pd-orange/20 border border-pd-orange/50 group-hover:bg-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
-                  <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-pd-orange group-hover:text-white transition-colors duration-300"></iconify-icon>
+                  <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:bg-pd-orange group-hover:border-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
+                  <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
                 </button>
               </div>
             </div>
@@ -6416,16 +6416,16 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       <option value="4:3">4:3</option>
                       <option value="3:4">3:4</option>
                     </select>
-                    <button onClick={() => fileRef.current?.click()} className="group relative w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(70,212,198,0.2)]">
+                    <button onClick={() => fileRef.current?.click()} className="group relative w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(70,212,198,0.15)]">
                       <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                      <div className="absolute inset-[2px] rounded-full bg-pd-teal/20 border border-pd-teal/50 group-hover:bg-pd-teal transition-colors duration-300 pointer-events-none z-0"></div>
-                      <iconify-icon icon="solar:paperclip-linear" width="18" className="relative z-10 text-pd-teal group-hover:text-white transition-colors duration-300"></iconify-icon>
+                      <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:bg-pd-teal group-hover:border-pd-teal transition-colors duration-300 pointer-events-none z-0"></div>
+                      <iconify-icon icon="solar:paperclip-linear" width="18" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
                       <span className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity hidden md:block">Attach Reference</span>
                     </button>
-                    <button onClick={handleGenerate} disabled={isGenerating} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.25)] disabled:opacity-50 disabled:pointer-events-none">
+                    <button onClick={handleGenerate} disabled={isGenerating} className="group relative w-10 h-10 rounded-full overflow-hidden isolate flex items-center justify-center dramatic-hover shadow-[0_4px_20px_rgba(255,95,0,0.15)] disabled:opacity-50 disabled:pointer-events-none">
                       <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#ff5f00_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                      <div className="absolute inset-[2px] rounded-full bg-pd-orange/20 border border-pd-orange/50 group-hover:bg-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
-                      <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-pd-orange group-hover:text-white transition-colors duration-300"></iconify-icon>
+                      <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 group-hover:bg-pd-orange group-hover:border-pd-orange transition-colors duration-300 pointer-events-none z-0"></div>
+                      <iconify-icon icon="solar:plain-bold" width="18" className="relative z-10 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300"></iconify-icon>
                     </button>
                   </div>
                 </div>
