@@ -17,6 +17,9 @@
 [functions."outreach"]
   timeout = 30
 
+[functions."gmail-connect"]
+  timeout = 10
+
 # ──────────────────────────────────────────────────────────────
 # EDGE CACHING & CDN HEADERS
 # Netlify IS your edge/CDN layer (like Cloudflare in Corbin's video).

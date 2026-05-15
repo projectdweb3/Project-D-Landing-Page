@@ -1,14 +1,17 @@
 /**
- * Outreach Engine — Gmail API Email Sender
+ * Outreach Engine — Gmail API Email Sender (Multi-User)
  *
- * Sends real emails via the user's Gmail account using OAuth 2.0.
+ * Sends real emails via each user's own Gmail account using OAuth 2.0.
  * Supports single and bulk sends with per-recipient personalization.
  *
+ * Token resolution order:
+ *   1. Per-user: Fetch refresh_token from Supabase gmail_tokens table (multi-tenant)
+ *   2. Fallback: Use GMAIL_REFRESH_TOKEN + GMAIL_SENDER_EMAIL env vars (single-tenant / admin)
+ *
  * Required env vars:
- *   GMAIL_CLIENT_ID
- *   GMAIL_CLIENT_SECRET
- *   GMAIL_REFRESH_TOKEN
- *   GMAIL_SENDER_EMAIL
+ *   GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET
+ *   SUPABASE_URL, SUPABASE_SERVICE_KEY  (for per-user tokens)
+ *   GMAIL_REFRESH_TOKEN, GMAIL_SENDER_EMAIL  (optional fallback)
  */
 
 exports.handler = async function (event, context) {
@@ -19,19 +22,13 @@ exports.handler = async function (event, context) {
   try {
     const clientId = process.env.GMAIL_CLIENT_ID;
     const clientSecret = process.env.GMAIL_CLIENT_SECRET;
-    const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
-    const senderEmail = process.env.GMAIL_SENDER_EMAIL;
 
-    if (!clientId || !clientSecret || !refreshToken || !senderEmail) {
-      throw new Error(
-        "Gmail OAuth credentials are not fully configured. " +
-        "Required: GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_SENDER_EMAIL"
-      );
+    if (!clientId || !clientSecret) {
+      throw new Error("Gmail OAuth app credentials are not configured (GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET).");
     }
 
     const body = JSON.parse(event.body);
-    const { recipients, subject, message, sender_name } = body;
-    // recipients: [{ name: "Biz Name", email: "a@b.com" }, ...]
+    const { recipients, subject, message, sender_name, userId } = body;
 
     if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
       throw new Error("No recipients provided.");
@@ -41,6 +38,50 @@ exports.handler = async function (event, context) {
     }
     if (!message || !message.trim()) {
       throw new Error("No message body provided.");
+    }
+
+    // ── Resolve Gmail credentials (per-user or fallback) ──
+    let refreshToken = null;
+    let senderEmail = null;
+
+    // Try per-user token from Supabase first
+    if (userId && userId !== "local") {
+      const SUPABASE_URL = process.env.SUPABASE_URL;
+      const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+      if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
+        try {
+          const res = await fetch(
+            `${SUPABASE_URL}/rest/v1/gmail_tokens?user_id=eq.${userId}&select=email,refresh_token`,
+            {
+              headers: {
+                apikey: SUPABASE_SERVICE_KEY,
+                Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+              },
+            }
+          );
+          const data = await res.json();
+          if (data && data.length > 0) {
+            refreshToken = data[0].refresh_token;
+            senderEmail = data[0].email;
+            console.log(`[Outreach] Using per-user Gmail: ${senderEmail}`);
+          }
+        } catch (e) {
+          console.warn("[Outreach] Failed to fetch per-user token:", e.message);
+        }
+      }
+    }
+
+    // Fallback to env vars (single-tenant / admin mode)
+    if (!refreshToken) {
+      refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+      senderEmail = process.env.GMAIL_SENDER_EMAIL;
+    }
+
+    if (!refreshToken || !senderEmail) {
+      throw new Error(
+        "Gmail is not connected. Go to Settings → Connect Gmail to link your account."
+      );
     }
 
     // ── Step 1: Exchange refresh token for a fresh access token ──
@@ -138,7 +179,7 @@ ${htmlBody}
         if (sendRes.ok) {
           const sendData = await sendRes.json();
           console.log(
-            `[Outreach] ✅ Sent to ${recipient.email} (msgId: ${sendData.id})`
+            `[Outreach] ✅ Sent to ${recipient.email} from ${senderEmail} (msgId: ${sendData.id})`
           );
           results.push({
             name: recipient.name || recipient.email,
@@ -178,7 +219,7 @@ ${htmlBody}
     const skipped = results.filter((r) => r.status === "skipped").length;
 
     console.log(
-      `[Outreach] Complete: ${sent} sent, ${failed} failed, ${skipped} skipped`
+      `[Outreach] Complete: ${sent} sent, ${failed} failed, ${skipped} skipped (via ${senderEmail})`
     );
 
     return {
@@ -186,6 +227,7 @@ ${htmlBody}
       body: JSON.stringify({
         summary: { sent, failed, skipped, total: recipients.length },
         results,
+        sentFrom: senderEmail,
       }),
     };
   } catch (error) {

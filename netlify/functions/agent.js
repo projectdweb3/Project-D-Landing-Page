@@ -1044,7 +1044,8 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
                   recipients: outreachArgs.recipients || [],
                   subject: outreachArgs.subject,
                   message: outreachArgs.message,
-                  sender_name: senderName
+                  sender_name: senderName,
+                  userId: userId
                 };
 
                 // Call the outreach function
