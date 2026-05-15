@@ -11,6 +11,9 @@
 [functions."agent"]
   timeout = 26
 
+[functions."content"]
+  timeout = 60
+
 # ──────────────────────────────────────────────────────────────
 # EDGE CACHING & CDN HEADERS
 # Netlify IS your edge/CDN layer (like Cloudflare in Corbin's video).
