@@ -662,9 +662,6 @@ RULES OF ENGAGEMENT:
               },
             }
           ]
-        },
-        {
-          google_search: {}
         }
       ],
       // CRITICAL: Disable thinking mode. gemini-2.5-flash thinks silently by default,
