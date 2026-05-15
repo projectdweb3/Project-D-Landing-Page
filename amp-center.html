@@ -821,6 +821,7 @@
               // After Google auth, redirect back to this exact page.
               // Supabase automatically exchanges the code for a session.
               redirectTo: window.location.origin + window.location.pathname,
+              scopes: 'https://www.googleapis.com/auth/gmail.send email profile',
               queryParams: {
                 access_type: 'offline',
                 prompt: 'consent', // Always show account picker
@@ -1648,9 +1649,10 @@
           
 
 
-          <div className="mb-8 p-6 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">User Management (Max 5)</h3>
-            <div className="flex flex-col gap-4">
+          <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden mb-8">
+            <div className="absolute inset-0 bg-gradient-to-br from-pd-teal/5 to-transparent pointer-events-none"></div>
+            <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:users-group-two-rounded-bold" className="text-pd-teal"></iconify-icon> User Management (Max 5)</h3>
+            <div className="flex flex-col gap-4 relative z-10">
               {accountUsers.map(u => (
                 <div key={u.id} className="flex items-center justify-between p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
                   <div className="flex items-center gap-3">
@@ -1785,78 +1787,6 @@
                       </svg>
                       Connect Gmail Account
                     </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Integrations Hub */}}
-            <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 shadow-xl relative overflow-hidden flex flex-col">
-              <div className="absolute inset-0 bg-gradient-to-tr from-pd-teal/5 to-transparent pointer-events-none"></div>
-              <h3 className="text-sm font-semibold mb-6 text-gray-900 dark:text-white relative z-10 flex items-center gap-2"><iconify-icon icon="solar:link-circle-bold" className="text-pd-teal"></iconify-icon> Linktree Integrations Hub</h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10 flex-1">
-                {[
-                  { id: 'google', name: 'Google Business', icon: 'simple-icons:google', color: '#4285F4', text: 'text-[#4285F4]', bg: 'bg-[#4285F4]/10' },
-                  { id: 'facebook', name: 'Facebook', icon: 'simple-icons:facebook', color: '#1877F2', text: 'text-[#1877F2]', bg: 'bg-[#1877F2]/10' },
-                  { id: 'instagram', name: 'Instagram', icon: 'simple-icons:instagram', color: '#E4405F', text: 'text-[#E4405F]', bg: 'bg-[#E4405F]/10' },
-                  { id: 'tiktok', name: 'TikTok', icon: 'simple-icons:tiktok', color: '#000000', text: 'text-gray-900 dark:text-white', bg: 'bg-black/10 dark:bg-white/10' },
-                  { id: 'shopify', name: 'Shopify', icon: 'simple-icons:shopify', color: '#96bf48', text: 'text-[#96bf48]', bg: 'bg-[#96bf48]/10' },
-                  { id: 'etsy', name: 'Etsy', icon: 'simple-icons:etsy', color: '#F1641E', text: 'text-[#F1641E]', bg: 'bg-[#F1641E]/10' },
-                  { id: 'whatsapp', name: 'WhatsApp', icon: 'simple-icons:whatsapp', color: '#25D366', text: 'text-[#25D366]', bg: 'bg-[#25D366]/10' },
-                  { id: 'telegram', name: 'Telegram', icon: 'simple-icons:telegram', color: '#26A5E4', text: 'text-[#26A5E4]', bg: 'bg-[#26A5E4]/10' },
-                ].map(platform => {
-                  const isConnected = userProfile?.integrations?.[platform.id];
-                  return (
-                    <div key={platform.id} className="p-4 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/60 dark:bg-black/20 flex flex-col gap-3 shadow-sm transition-all hover:shadow-md">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl ${platform.bg} flex items-center justify-center ${platform.text} text-xl shadow-inner`}>
-                          <iconify-icon icon={platform.icon}></iconify-icon>
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white">{platform.name}</div>
-                          <div className="text-[10px] text-gray-500 flex items-center gap-1">
-                            {isConnected ? <><span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_#22c55e]"></span> Connected</> : <><span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span> Requires Pairing</>}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {isConnected ? (
-                        <div className="flex gap-2 mt-auto">
-                          <a href={typeof isConnected === 'string' ? isConnected : '#'} target="_blank" rel="noreferrer" className="flex-1 py-1.5 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 rounded-lg text-xs font-semibold text-center transition-colors text-gray-700 dark:text-gray-300 flex items-center justify-center gap-1"><iconify-icon icon="solar:square-top-down-linear"></iconify-icon> Visit Page</a>
-                          <button onClick={() => {
-                            const newInts = { ...userProfile?.integrations };
-                            delete newInts[platform.id];
-                            setUserProfile({ ...userProfile, integrations: newInts });
-                          }} className="w-8 flex items-center justify-center bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>
-                        </div>
-                      ) : (
-                        <button onClick={() => {
-                          if (platform.id === 'whatsapp' || platform.id === 'telegram') {
-                            // Simulated plug-and-play OAuth Flow
-                            alert(`[OAUTH SIMULATION]\nRedirecting to ${platform.name} secure login...`);
-                            setTimeout(() => {
-                              if (window.confirm(`${platform.name} wants to access your AMP Center account to send and receive messages on your behalf. Allow?`)) {
-                                setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: 'oauth_connected_token' } });
-                                alert(`Successfully linked ${platform.name}!`);
-                              }
-                            }, 500);
-                          } else {
-                            const url = prompt(`[SIMULATED OAUTH]\nEnter your ${platform.name} URL to pair this account.\n(Real OAuth backend requires your developer API keys)`);
-                            if (url) {
-                              setUserProfile({ ...userProfile, integrations: { ...(userProfile?.integrations || {}), [platform.id]: url } });
-                            }
-                          }
-                        }} className="w-full py-1.5 mt-auto bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-xs font-semibold shadow-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-1">
-                          <iconify-icon icon="solar:link-linear"></iconify-icon> Pair Account
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            
             {/* Agent Workforce Tree */}
             <div className="bg-white/40 dark:bg-pd-glass backdrop-blur-2xl border border-gray-200 dark:border-pd-glassBorder rounded-[2rem] p-6 lg:p-8 flex flex-col col-span-1 lg:col-span-2 overflow-x-auto shadow-xl relative">
               <div className="absolute inset-0 bg-gradient-to-tl from-pd-teal/5 to-transparent pointer-events-none"></div>
@@ -6790,6 +6720,21 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
           const checkUserGenesis = async (sess) => {
             if (!sess) return;
+            
+            // If user signed in with Google, auto-save their Gmail connection token
+            if (sess.provider_token && sess.provider_refresh_token && sess.user) {
+               try {
+                 await supabaseClient.from('gmail_tokens').upsert({
+                   user_id: sess.user.id,
+                   email: sess.user.email,
+                   refresh_token: sess.provider_refresh_token,
+                   connected_at: new Date().toISOString()
+                 }, { onConflict: 'user_id' });
+               } catch(e) {
+                 console.warn("Failed to auto-save gmail token", e);
+               }
+            }
+
             if (localStorage.getItem('amp_genesis_complete') === 'true') {
               setCurrentScreen('dashboard');
               return;
