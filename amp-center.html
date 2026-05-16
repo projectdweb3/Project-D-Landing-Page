@@ -6799,22 +6799,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   {archiveItems.length > 0 && <span className="text-[10px] bg-pd-teal/10 text-pd-teal px-2 py-0.5 rounded-full font-bold">{archiveItems.length} assets</span>}
                 </h3>
               </div>
-              {archiveItems.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 pb-4">
-                  {archiveItems.map((item, idx) => (
-                    <a key={idx} href={item.notes} target="_blank" rel="noopener" className="block bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-2xl p-2 flex flex-col items-center shadow-sm hover:shadow-lg hover:border-pd-teal/40 transition-all duration-300 group">
-                      <div className="w-full aspect-square mb-2 bg-black/5 dark:bg-white/5 rounded-xl flex items-center justify-center overflow-hidden">
-                        {(item.notes && (item.notes.startsWith('data:image') || item.notes.startsWith('http'))) ? (
-                          <img src={item.notes} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" />
-                        ) : (
-                          <iconify-icon icon="solar:document-text-linear" width="24" class="text-gray-400"></iconify-icon>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate w-full text-center leading-tight" title={item.title}>{item.title}</p>
-                    </a>
-                  ))}
-                </div>
-              ) : (
+              {archiveItems.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center gap-3 min-h-[300px]">
                   <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
                     <iconify-icon icon="solar:box-linear" width="32" class="text-gray-400"></iconify-icon>
@@ -6831,7 +6816,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col flex-1 min-h-0">
                   {/* Folder sidebar + grid */}
                   <div className="flex gap-4 h-full min-h-0">
                     {/* Folder list */}
