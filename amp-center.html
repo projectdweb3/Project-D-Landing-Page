@@ -6431,6 +6431,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const [result, setResult] = useState(null);
       const [resultRatio, setResultRatio] = useState('1:1');
       const [error, setError] = useState(null);
+      const [activeTab, setActiveTab] = useState('create');
       const fileRef = useRef(null);
 
       // Content type presets — icon, label, aspect ratio
@@ -6553,14 +6554,31 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 </h2>
                 <p className="text-xs text-gray-500">Pick a format, describe your vision, and generate brand-ready marketing assets.</p>
               </div>
-              <button onClick={() => setShowBrandStyle(s => !s)} className={`flex-shrink-0 amp-button text-xs px-3 py-1.5 ${showBrandStyle ? 'primary' : ''}`}>
-                <iconify-icon icon="solar:palette-linear" width="14"></iconify-icon>
-                Brand Style
+              <button onClick={() => setShowBrandStyle(s => !s)} className="group flex-shrink-0 inline-flex items-center gap-1.5 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-1.5 px-3 relative backdrop-blur-md shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]">
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:palette-linear" width="14"></iconify-icon>
+                  Brand Style
+                </span>
+              </button>
+            </div>
+
+            {/* Tab bar: Create / Archive */}
+            <div className="flex items-center gap-1 p-1 bg-black/5 dark:bg-white/5 rounded-2xl w-fit mb-3">
+              <button onClick={() => setActiveTab('create')} className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${activeTab === 'create' ? 'bg-white dark:bg-pd-glass shadow-sm text-pd-orange' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>
+                <iconify-icon icon="solar:magic-stick-3-linear" width="13" className="mr-1"></iconify-icon>
+                Create
+              </button>
+              <button onClick={() => setActiveTab('archive')} className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${activeTab === 'archive' ? 'bg-white dark:bg-pd-glass shadow-sm text-pd-teal' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>
+                <iconify-icon icon="solar:history-linear" width="13"></iconify-icon>
+                Archive
+                {archiveItems.length > 0 && <span className="bg-pd-teal/20 text-pd-teal text-[10px] font-bold px-1.5 py-0.5 rounded-full">{archiveItems.length}</span>}
               </button>
             </div>
 
             {/* Brand style context field */}
-            {showBrandStyle && (
+            {showBrandStyle && activeTab === 'create' && (
               <div className="mb-3 relative z-10">
                 <textarea
                   value={brandStyle}
@@ -6572,28 +6590,30 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               </div>
             )}
 
-            {/* Content type pills */}
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-              {CONTENT_TYPES.map(type => (
-                <button
-                  key={type.id}
-                  onClick={() => setContentType(type.id)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${
-                    contentType === type.id
-                      ? 'bg-pd-orange/10 border-pd-orange/50 text-pd-orange shadow-sm'
-                      : 'bg-white/60 dark:bg-black/20 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-gray-400'
-                  }`}
-                >
-                  <iconify-icon icon={type.icon} width="13"></iconify-icon>
-                  {type.label}
-                  <span className={`text-[10px] opacity-60`}>{type.ratio}</span>
-                </button>
-              ))}
-            </div>
+            {/* Content type pills — only on Create tab */}
+            {activeTab === 'create' && (
+              <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+                {CONTENT_TYPES.map(type => (
+                  <button
+                    key={type.id}
+                    onClick={() => setContentType(type.id)}
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${
+                      contentType === type.id
+                        ? 'bg-pd-orange/10 border-pd-orange/50 text-pd-orange shadow-sm'
+                        : 'bg-white/60 dark:bg-black/20 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-gray-400'
+                    }`}
+                  >
+                    <iconify-icon icon={type.icon} width="13"></iconify-icon>
+                    {type.label}
+                    <span className="text-[10px] opacity-60">{type.ratio}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Canvas area */}
-          <div className="flex-1 flex flex-col relative z-10 min-h-0">
+          {/* Canvas area — Create tab */}
+          {activeTab === 'create' && <div className="flex-1 flex flex-col relative z-10 min-h-0">
             <div className="flex-1 border-2 border-dashed border-gray-300 dark:border-pd-glassBorder rounded-2xl md:rounded-3xl flex flex-col items-center justify-center relative bg-white/40 dark:bg-black/20 backdrop-blur-md shadow-inner overflow-hidden min-h-[280px]">
 
               {/* Model badge */}
@@ -6714,36 +6734,47 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
 
-          {/* Asset Archive */}
-          <div className="mt-5 border-t border-gray-200 dark:border-pd-glassBorder pt-5 w-full z-10 relative">
-            <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-              <iconify-icon icon="solar:history-linear" class="text-pd-orange"></iconify-icon>
-              Asset Archive
-            </h3>
-            {archiveItems.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 overflow-y-auto max-h-44 hide-scrollbar">
-                {archiveItems.map((item, idx) => (
-                  <a key={idx} href={item.notes} target="_blank" rel="noopener" className="block bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl p-1.5 flex flex-col items-center shadow-sm hover:shadow-md hover:border-pd-orange/50 transition-all group">
-                    <div className="w-full aspect-square mb-1.5 bg-black/5 dark:bg-white/5 rounded-lg flex items-center justify-center overflow-hidden">
-                      {(item.notes && (item.notes.startsWith('data:image') || item.notes.startsWith('http'))) ? (
-                        <img src={item.notes} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <iconify-icon icon="solar:document-text-linear" width="20" class="text-gray-400"></iconify-icon>
-                      )}
-                    </div>
-                    <p className="text-[9px] text-gray-500 dark:text-gray-500 truncate w-full text-center" title={item.title}>{item.title}</p>
-                  </a>
-                ))}
+          {/* Archive tab */}
+          {activeTab === 'archive' && (
+            <div className="flex-1 flex flex-col relative z-10 min-h-0 overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <iconify-icon icon="solar:history-linear" class="text-pd-teal"></iconify-icon>
+                  Asset Archive
+                  {archiveItems.length > 0 && <span className="text-[10px] bg-pd-teal/10 text-pd-teal px-2 py-0.5 rounded-full font-bold">{archiveItems.length} assets</span>}
+                </h3>
               </div>
-            ) : (
-              <div className="w-full h-20 bg-black/5 dark:bg-white/5 rounded-2xl flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-white/10">
-                <iconify-icon icon="solar:box-linear" width="22" class="text-gray-400 mb-1"></iconify-icon>
-                <p className="text-xs text-gray-500">Archive is empty. Generate content to populate.</p>
-              </div>
-            )}
-          </div>
+              {archiveItems.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 pb-4">
+                  {archiveItems.map((item, idx) => (
+                    <a key={idx} href={item.notes} target="_blank" rel="noopener" className="block bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-2xl p-2 flex flex-col items-center shadow-sm hover:shadow-lg hover:border-pd-teal/40 transition-all duration-300 group">
+                      <div className="w-full aspect-square mb-2 bg-black/5 dark:bg-white/5 rounded-xl flex items-center justify-center overflow-hidden">
+                        {(item.notes && (item.notes.startsWith('data:image') || item.notes.startsWith('http'))) ? (
+                          <img src={item.notes} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" />
+                        ) : (
+                          <iconify-icon icon="solar:document-text-linear" width="24" class="text-gray-400"></iconify-icon>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate w-full text-center leading-tight" title={item.title}>{item.title}</p>
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center gap-3 min-h-[300px]">
+                  <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                    <iconify-icon icon="solar:box-linear" width="32" class="text-gray-400"></iconify-icon>
+                  </div>
+                  <p className="text-sm font-medium text-gray-500">Archive is empty</p>
+                  <p className="text-xs text-gray-400 text-center max-w-xs">Generate content on the Create tab and it will appear here automatically.</p>
+                  <button onClick={() => setActiveTab('create')} className="mt-2 px-4 py-2 bg-pd-orange/10 text-pd-orange text-xs font-semibold rounded-full hover:bg-pd-orange/20 transition-all">
+                    Start Creating →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     };
