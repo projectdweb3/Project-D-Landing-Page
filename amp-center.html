@@ -2009,65 +2009,68 @@
               </div>
             </div>
 
-            {/* Bottom row: Log Out + Danger Zone side by side */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          </div>
 
-              {/* Log Out Card */}
-              {session && (
-                <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 flex flex-col justify-between gap-4 relative overflow-hidden">
+          {/* Bottom row: Session + Danger Zone — inside main grid for full symmetry */}
+          {session && (
+            <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between gap-6 relative overflow-hidden shadow-xl">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                    <iconify-icon icon="solar:logout-2-linear" width="20" class="text-red-500"></iconify-icon>
+                  </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
-                        <iconify-icon icon="solar:logout-2-linear" width="16" class="text-red-500"></iconify-icon>
-                      </div>
-                      <h3 className="text-sm font-semibold text-red-500">Session</h3>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">End your current secure session and return to the login screen.</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={handleLogout}
-                      className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
-                    >
-                      <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                      <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
-                      <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
-                        <iconify-icon icon="solar:logout-2-linear" width="15"></iconify-icon>
-                        Log Out
-                      </span>
-                    </button>
-                    <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Secure session</span>
+                    <h3 className="text-sm font-semibold text-red-500">Session</h3>
+                    <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-0.5">Secure session</p>
                   </div>
                 </div>
-              )}
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">End your current secure session and return to the login screen.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleLogout}
+                  className="group relative flex items-center gap-2 px-6 py-3 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
+                >
+                  <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                  <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
+                  <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
+                    <iconify-icon icon="solar:logout-2-linear" width="16"></iconify-icon>
+                    Log Out
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
 
-              {/* Danger Zone Card */}
-              <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 flex flex-col justify-between gap-4 relative overflow-hidden">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
-                      <iconify-icon icon="solar:danger-triangle-linear" width="16" class="text-red-500"></iconify-icon>
-                    </div>
-                    <h3 className="text-sm font-semibold text-red-500">Danger Zone</h3>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
+          {/* Danger Zone Card */}
+          <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between gap-6 relative overflow-hidden shadow-xl">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <iconify-icon icon="solar:danger-triangle-linear" width="20" class="text-red-500"></iconify-icon>
                 </div>
                 <div>
-                  <button
-                    onClick={() => setShowResetModal(true)}
-                    className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
-                  >
-                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                    <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
-                    <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
-                      <iconify-icon icon="solar:restart-bold" width="15"></iconify-icon>
-                      Reboot Experience
-                    </span>
-                  </button>
+                  <h3 className="text-sm font-semibold text-red-500">Danger Zone</h3>
+                  <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-0.5">Irreversible action</p>
                 </div>
               </div>
-
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
             </div>
+            <div>
+              <button
+                onClick={() => setShowResetModal(true)}
+                className="group relative flex items-center gap-2 px-6 py-3 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
+              >
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
+                <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
+                  <iconify-icon icon="solar:restart-bold" width="16"></iconify-icon>
+                  Reboot Experience
+                </span>
+              </button>
+            </div>
+          </div>
+
         </div>
         </div>
 
