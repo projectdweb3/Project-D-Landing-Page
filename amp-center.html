@@ -1711,6 +1711,7 @@
       };
 
       return (
+        <>
         <div className="p-4 md:p-8 h-full flex flex-col overflow-y-auto">
           <div className="mb-6 md:mb-8 flex justify-between items-start">
             <div>
@@ -2089,6 +2090,7 @@
               </div>
             </div>
           )}
+        </>
       );
     };
 
@@ -3922,10 +3924,10 @@
 
           const agentNames = `${labels?.agents?.ceo?.name || 'CEO'}, ${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, and ${labels?.agents?.creative?.name || 'Creative'}`;
 
-          const baseGreeting = `Hey \u2014 welcome to AMP Center. I\'m your ${labels?.agents?.ceo?.name || 'CEO Agent'}, and I run a team of AI agents behind the scenes: **${agentNames}**.\n\n**What are AI agents?** Think of them as specialized digital employees. Each one has a role \u2014 marketing, tech, creative, and more. When you ask me something, I automatically delegate to the right agent. You just talk to me; the team handles the rest.\n\n**This is your all-in-one hub.** Email, CRM, content creation, scheduling, finances \u2014 it all lives here. No more switching between apps.\n\nTry asking me: **${prompts}**\n\nFirst step: hit **Settings** on the left and save your Business Profile. That unlocks everything.`;
+          const baseGreeting = `Hey \u2014 welcome to AMP Center. I'm your ${labels?.agents?.ceo?.name || 'CEO Agent'}, and I run a team of AI agents behind the scenes: **${agentNames}**.\n\n**What are AI agents?** Think of them as specialized digital employees. Each one has a role \u2014 marketing, tech, creative, and more. When you ask me something, I automatically delegate to the right agent. You just talk to me; the team handles the rest.\n\n**This is your all-in-one hub.** Email, CRM, content creation, scheduling, finances \u2014 it all lives here. No more switching between apps.\n\nTry asking me: **${prompts}**\n\nFirst step: hit **Settings** on the left and save your Business Profile. That unlocks everything.`;
           
           const greetingText = genesisInput 
-            ? `Hey \u2014 I\'ve set things up based on: "${genesisInput}".\n\n` + baseGreeting.replace('Hey \u2014 welcome to AMP Center. ', '')
+            ? `Hey \u2014 I've set things up based on: "${genesisInput}".\n\n` + baseGreeting.replace('Hey \u2014 welcome to AMP Center. ', '')
             : baseGreeting;
           
           setMessages([
