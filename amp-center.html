@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="">
 
 <head>
@@ -1974,14 +1974,66 @@
               </div>
             </div>
 
-            {/* Danger Zone */}
-            <div className="mt-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-              <h3 className="text-sm font-semibold text-red-500 mb-2">Danger Zone</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
-              <button onClick={() => setShowResetModal(true)} className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full text-sm font-semibold backdrop-blur-sm transition-all">Reboot Experience</button>
-            </div>
+            {/* Bottom row: Log Out + Danger Zone side by side */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          </div>
+              {/* Log Out Card */}
+              {session && (
+                <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 flex flex-col justify-between gap-4 relative overflow-hidden">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                        <iconify-icon icon="solar:logout-2-linear" width="16" class="text-red-500"></iconify-icon>
+                      </div>
+                      <h3 className="text-sm font-semibold text-red-500">Session</h3>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">End your current secure session and return to the login screen.</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleLogout}
+                      className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
+                    >
+                      <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                      <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
+                      <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
+                        <iconify-icon icon="solar:logout-2-linear" width="15"></iconify-icon>
+                        Log Out
+                      </span>
+                    </button>
+                    <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Secure session</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Danger Zone Card */}
+              <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-6 flex flex-col justify-between gap-4 relative overflow-hidden">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <iconify-icon icon="solar:danger-triangle-linear" width="16" class="text-red-500"></iconify-icon>
+                    </div>
+                    <h3 className="text-sm font-semibold text-red-500">Danger Zone</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Permanently delete all your business profile, clients, tasks, and chat history to start completely fresh. This cannot be undone.</p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => setShowResetModal(true)}
+                    className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full overflow-hidden isolate dramatic-hover text-sm font-semibold shadow-[0_4px_20px_rgba(239,68,68,0.2)]"
+                  >
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#fca5a5_30%,#ffffff_50%,#ef4444_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-white dark:bg-gray-900 border border-red-200 dark:border-red-500/30 group-hover:bg-red-500 group-hover:border-red-500 transition-colors duration-300 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2 text-red-500 group-hover:text-white transition-colors duration-300">
+                      <iconify-icon icon="solar:restart-bold" width="15"></iconify-icon>
+                      Reboot Experience
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+        </div>
 
           {showResetModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -1991,8 +2043,8 @@
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white text-center mb-2">Wipe All Data?</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This will permanently delete your settings, AI chat logs, clients, and inventory. To proceed, type <strong>Confirm</strong> below.</p>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={confirmText}
                   onChange={e => setConfirmText(e.target.value)}
                   placeholder="Type Confirm"
@@ -2007,17 +2059,6 @@
               </div>
             </div>
           )}
-
-          {/* User Logout Button (Moved to Bottom of Settings) */}
-          {session && (
-            <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10">
-              <button onClick={handleLogout} className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all">
-                <iconify-icon icon="solar:logout-2-linear" width="20"></iconify-icon> Log Out of AMP Center
-              </button>
-              <p className="text-center text-[10px] text-gray-500 mt-4 uppercase tracking-widest font-mono">End of Secure Session</p>
-            </div>
-          )}
-        </div>
       );
     };
 
