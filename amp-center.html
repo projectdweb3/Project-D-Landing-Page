@@ -342,25 +342,55 @@
       animation: capacityPulse 2s ease-in-out infinite;
     }
 
-    /* â”€â”€ ONBOARDING TUTORIAL â”€â”€ */
+    /* ── ONBOARDING SPOTLIGHT TUTORIAL ── */
     @keyframes onb-fadein {
       from { opacity: 0; }
       to { opacity: 1; }
     }
     @keyframes onb-slideup {
-      from { opacity: 0; transform: translateY(40px) scale(0.95); }
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     @keyframes onb-content {
-      from { opacity: 0; transform: translateX(20px); }
+      from { opacity: 0; transform: translateX(12px); }
       to { opacity: 1; transform: translateX(0); }
     }
     @keyframes onb-icon-pulse {
       0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(70,212,198,0.3); }
       50% { transform: scale(1.06); box-shadow: 0 0 35px rgba(70,212,198,0.5); }
     }
+    @keyframes spotlight-ring {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(70,212,198,0.3), 0 0 20px rgba(70,212,198,0.15); }
+      50% { box-shadow: 0 0 0 6px rgba(70,212,198,0.5), 0 0 40px rgba(70,212,198,0.25); }
+    }
+    .tour-spotlight-target {
+      position: relative;
+      z-index: 210 !important;
+      border-radius: 1rem;
+      animation: spotlight-ring 2s ease-in-out infinite;
+    }
+    .tour-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0);
+      backdrop-filter: blur(0px);
+      transition: background 0.6s ease, backdrop-filter 0.6s ease;
+      pointer-events: all;
+    }
+    .tour-backdrop.active {
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+    }
+    .tour-popover {
+      position: fixed;
+      z-index: 220;
+      max-width: 380px;
+      width: calc(100vw - 2rem);
+      animation: onb-slideup 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-    /* â”€â”€ SCROLLBARS â”€â”€ */
+    /* ── SCROLLBARS ── */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
@@ -2782,17 +2812,17 @@
         // Build tailored welcome recommendations based on business type
         let recommendations = '';
         if (savedStage === 'Dispatcher') {
-          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your drivers or team members so we can keep track of everyone.\n- **Tactical Calendar:** Set up route check-ins, shift schedules, and meetings.\n- **Gmail Command Center:** Connect your Gmail and manage all email outreach without leaving.\n- **Neural Chat:** Just tell me things like "optimize routes for this week" or "create a checklist for new drivers."\n\nThe beauty of the AMP Center is that **everything lives in one place** — driver management, client outreach, scheduling, and communications. And the best part? I handle the repetitive stuff automatically, so you can focus on running your operation.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your drivers or team members so we can keep track of everyone.\n- **Tactical Calendar:** Set up route check-ins, shift schedules, and meetings.\n- **Gmail Center:** Connect your Gmail and manage all email outreach without leaving.\n- **Neural Chat:** Just tell me things like "optimize routes for this week" or "create a checklist for new drivers."\n\nThe beauty of the AMP Center is that **everything lives in one place** — driver management, client outreach, scheduling, and communications. And the best part? I handle the repetitive stuff automatically, so you can focus on running your operation.`;
         } else if (savedStage === 'Ecomm') {
-          recommendations = `**Here are some things I can help with right away:**\n- **Inventory Tracking:** Take a screenshot of your store products and I'll add them all for you automatically.\n- **Gmail Command Center:** Connect your Gmail to send outreach and respond to customers right here.\n- **Client Ledger:** Keep track of your best customers and repeat buyers.\n- **Neural Chat:** Try asking me to "write product descriptions for my new collection."\n\nThe beauty of the AMP Center is that **everything lives in one place** — your inventory, emails, customer data, and content creation. I take care of the tedious work like data entry, product research, and outreach emails so you can focus on growing your brand.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Inventory Tracking:** Take a screenshot of your store products and I'll add them all for you automatically.\n- **Gmail Center:** Connect your Gmail to send outreach and respond to customers right here.\n- **Client Ledger:** Keep track of your best customers and repeat buyers.\n- **Neural Chat:** Try asking me to "write product descriptions for my new collection."\n\nThe beauty of the AMP Center is that **everything lives in one place** — your inventory, emails, customer data, and content creation. I take care of the tedious work like data entry, product research, and outreach emails so you can focus on growing your brand.`;
         } else if (savedStage === 'Software') {
-          recommendations = `**Here are some things I can help with right away:**\n- **Strategic Planning:** Ask me to "draft a product roadmap" or "plan a sprint."\n- **Gmail Command Center:** Connect your Gmail to manage investor outreach and team emails in one place.\n- **Tactical Calendar:** Set up standups, demo days, and release deadlines.\n- **Neural Chat:** Try "write onboarding docs for new users" or "create a technical spec."\n\nThe beauty of the AMP Center is that **everything lives in one place** — planning, go-to-market strategy, scheduling, and team coordination. I handle the time-consuming parts like documentation, research, and outreach so you can focus on building your product.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Strategic Planning:** Ask me to "draft a product roadmap" or "plan a sprint."\n- **Gmail Center:** Connect your Gmail to manage investor outreach and team emails in one place.\n- **Tactical Calendar:** Set up standups, demo days, and release deadlines.\n- **Neural Chat:** Try "write onboarding docs for new users" or "create a technical spec."\n\nThe beauty of the AMP Center is that **everything lives in one place** — planning, go-to-market strategy, scheduling, and team coordination. I handle the time-consuming parts like documentation, research, and outreach so you can focus on building your product.`;
         } else if (savedStage === 'Organizer') {
-          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your members, volunteers, or organizers so everyone is tracked.\n- **Gmail Command Center:** Connect your Gmail to draft fundraising emails and respond to inquiries.\n- **Tactical Calendar:** Schedule meetings, rallies, and outreach campaigns.\n- **Neural Chat:** Try "create a volunteer sign-up campaign" or "research local grant opportunities."\n\nThe beauty of the AMP Center is that **everything lives in one place** — membership tracking, event planning, and communications. I handle the research, email drafting, and data management so you can focus on the mission.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your members, volunteers, or organizers so everyone is tracked.\n- **Gmail Center:** Connect your Gmail to draft fundraising emails and respond to inquiries.\n- **Tactical Calendar:** Schedule meetings, rallies, and outreach campaigns.\n- **Neural Chat:** Try "create a volunteer sign-up campaign" or "research local grant opportunities."\n\nThe beauty of the AMP Center is that **everything lives in one place** — membership tracking, event planning, and communications. I handle the research, email drafting, and data management so you can focus on the mission.`;
         } else if (savedStage === 'Local Service') {
-          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your existing clients so I can help you stay organized.\n- **Gmail Command Center:** Connect your Gmail to send follow-ups and respond to leads without leaving.\n- **Tactical Calendar:** Schedule appointments, jobs, and follow-ups.\n- **Neural Chat:** Try asking me to "find 10 potential clients in my area."\n\nThe beauty of the AMP Center is that **everything lives in one place** — your clients, your schedule, your emails, and your outreach. I handle the busy work like finding new leads, writing emails, and keeping your data organized so you can focus on delivering great service.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Client Ledger:** Add your existing clients so I can help you stay organized.\n- **Gmail Center:** Connect your Gmail to send follow-ups and respond to leads without leaving.\n- **Tactical Calendar:** Schedule appointments, jobs, and follow-ups.\n- **Neural Chat:** Try asking me to "find 10 potential clients in my area."\n\nThe beauty of the AMP Center is that **everything lives in one place** — your clients, your schedule, your emails, and your outreach. I handle the busy work like finding new leads, writing emails, and keeping your data organized so you can focus on delivering great service.`;
         } else {
-          recommendations = `**Here are some things I can help with right away:**\n- **Gmail Command Center:** Connect your Gmail to manage all outreach and correspondence in one place.\n- **Strategic Planning:** I can draft business plans, proposals, or competitive analyses for you.\n- **Tactical Calendar:** Set up meetings, deadlines, and milestones.\n- **Neural Chat:** Try "analyze my target audience" or "draft a cold outreach email."\n\nThe beauty of the AMP Center is that **everything lives in one place** — lead management, email, content creation, scheduling, and communications. I handle the repetitive tasks like data entry, outreach, and research automatically so you can focus on what actually moves the needle.`;
+          recommendations = `**Here are some things I can help with right away:**\n- **Gmail Center:** Connect your Gmail to manage all outreach and correspondence in one place.\n- **Strategic Planning:** I can draft business plans, proposals, or competitive analyses for you.\n- **Tactical Calendar:** Set up meetings, deadlines, and milestones.\n- **Neural Chat:** Try "analyze my target audience" or "draft a cold outreach email."\n\nThe beauty of the AMP Center is that **everything lives in one place** — lead management, email, content creation, scheduling, and communications. I handle the repetitive tasks like data entry, outreach, and research automatically so you can focus on what actually moves the needle.`;
         }
 
         const welcomeText = `Great — you’re all set up${savedName ? ', **' + savedName + '**' : ''}! Your ${savedStage} workspace is ready to go.\n\n${recommendations}`;
@@ -2957,7 +2987,7 @@
           </div>
 
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:flex lg:w-48 xl:w-64 flex-col bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-3xl overflow-hidden shadow-xl flex-shrink-0">
+          <aside id="amp-sidebar" className="hidden lg:flex lg:w-48 xl:w-64 flex-col bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-3xl overflow-hidden shadow-xl flex-shrink-0">
             <div className="p-6 border-b border-gray-200 dark:border-pd-glassBorder flex justify-between items-center bg-white/50 dark:bg-transparent">
               <div className="flex items-center gap-3">
                 <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_800w.png" className="w-8 h-8 rounded object-cover shadow-[0_0_15px_rgba(70,212,198,0.3)]" alt="Project D Logo" />
@@ -2967,7 +2997,7 @@
             </div>
             <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
               {navItems.map(item => (
-                <button key={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
+                <button key={item.id} data-tour-id={item.id} onClick={() => setActiveModule(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium relative overflow-hidden ${activeModule === item.id ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'}`}>
                   <iconify-icon icon={item.icon} width="20" className={activeModule === item.id ? 'text-pd-teal relative z-10' : 'relative z-10'}></iconify-icon>
                   <span className="relative z-10">{item.label}</span>
                   {item.badge > 0 && <span className="absolute right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 animate-bounce">{item.badge}</span>}
@@ -3000,7 +3030,7 @@
             ))}
           </nav>
 
-          <main className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
+          <main id="amp-main-content" className="flex-1 bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-2xl rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl relative flex flex-col min-h-0 mb-[80px] lg:mb-0">
             <div className={`h-full flex flex-col ${activeModule === 'neural-chat' ? '' : 'hidden'}`}>
               <NeuralChat session={session} needsProfileSetup={needsProfileSetup} depleteBudget={depleteBudget} userProfile={userProfile} triggerPrompt={triggerPrompt} setTriggerPrompt={setTriggerPrompt} setTempTasks={setTempProcessingTasks} activeUserName={activeUserName} customAgents={customAgents} labels={labels} />
             </div>
@@ -3249,160 +3279,228 @@
     };
     const getAgentMeta = (name) => agentMeta[name] || agentMeta['CEO'];
 
-    // === ONBOARDING TUTORIAL OVERLAY ===
+    // === ONBOARDING SPOTLIGHT TUTORIAL ===
     const OnboardingOverlay = ({ step, setStep, setActiveModule }) => {
+      const [backdropActive, setBackdropActive] = useState(false);
+      const [popoverPos, setPopoverPos] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
+
       const steps = [
         {
           icon: 'solar:hand-shake-bold-duotone',
           gradient: 'from-pd-teal to-cyan-400',
-          title: 'Welcome to the AMP Center',
-          body: 'Think of this as your business headquarters \u2014 everything you need to run and grow your business, all in one place. No switching between apps. No juggling spreadsheets. Let\u2019s do a quick walkthrough so you feel right at home.',
+          title: 'Welcome to AMP Center',
+          body: 'Your all-in-one command center. Every tool you need \u2014 AI chat, email, CRM, content, scheduling \u2014 lives right here. Let\u2019s take a 60-second tour.',
           cta: 'Show Me Around',
+          target: null,    // No spotlight target — centered welcome card
           module: null,
         },
         {
           icon: 'solar:command-linear',
           gradient: 'from-pd-teal to-cyan-400',
-          title: 'Neural Chat',
-          body: 'This is your personal assistant. Just type what you need in plain English \u2014 "find me potential customers in Miami," "draft an email to my leads," or even "what should I focus on today?" It understands your business and takes action for you, so you can skip the busy work.',
+          title: 'Neural Chat \u2014 Your AI Team',
+          body: 'Just type what you need. Behind the scenes, a team of AI agents (marketing, tech, creative) works together to execute your requests. Think of it as texting your entire staff at once.',
           cta: 'Next',
+          target: 'neural-chat',
           module: 'neural-chat',
         },
         {
           icon: 'solar:filter-linear',
           gradient: 'from-blue-500 to-indigo-400',
           title: 'Lead Pipeline',
-          body: 'This is where you keep track of people who might become customers. You can add them yourself, upload a list, or just ask your assistant to search for real businesses near you. Watch them move through stages as the relationship grows \u2014 and send emails right from here.',
+          body: 'Track potential customers from first contact to closed deal. Add them manually, import a CSV, or ask your AI to find real businesses in your area.',
           cta: 'Next',
+          target: 'lead-pipeline',
           module: 'lead-pipeline',
         },
         {
           icon: 'solar:folder-with-files-linear',
           gradient: 'from-purple-500 to-fuchsia-400',
           title: 'Client Ledger',
-          body: 'Once someone becomes a paying customer (or a team member, driver, or subscriber), they live here. Track what they\u2019re worth to your business, what\u2019s next for them, and keep every relationship organized without sticky notes or spreadsheets.',
+          body: 'Your paying customers, team members, or subscribers live here. Track their value, status, and what\u2019s next \u2014 all in one organized view.',
           cta: 'Next',
+          target: 'client-ledger',
           module: 'client-ledger',
         },
         {
-          icon: 'solar:mailbox-bold-duotone',
+          icon: 'solar:letter-linear',
           gradient: 'from-pd-orange to-amber-400',
-          title: 'Gmail Command Center',
-          body: 'Your actual Gmail inbox, right here \u2014 no more switching tabs. Read, reply, and compose emails without leaving the AMP Center. The best part? You can ask your assistant to draft replies for you with one click, and it automatically flags contacts that are already in your pipeline.',
+          title: 'Gmail Center',
+          body: 'Your real Gmail inbox, embedded right here. Read, reply, compose \u2014 and let your AI draft responses with one click. No more tab switching.',
           cta: 'Next',
+          target: 'gmail-inbox',
           module: 'gmail-inbox',
-        },
-        {
-          icon: 'solar:palette-linear',
-          gradient: 'from-pink-500 to-rose-400',
-          title: 'Content Factory',
-          body: 'Need a social media graphic, a product image, or a flyer? Just describe what you want and it gets created for you instantly. No design skills needed \u2014 upload your brand colors and logo, and everything stays on-brand.',
-          cta: 'Next',
-          module: 'content-factory',
         },
         {
           icon: 'solar:calendar-linear',
           gradient: 'from-emerald-500 to-green-400',
           title: 'Tactical Calendar',
-          body: 'Your schedule, meetings, and to-dos all live here. Everything that happens in the AMP Center \u2014 emails sent, leads added, tasks completed \u2014 shows up on your calendar automatically, so you always know what\u2019s going on without checking five different apps.',
+          body: 'Meetings, deadlines, and events all in one place. Actions taken across the AMP Center automatically populate your schedule.',
           cta: 'Next',
+          target: 'tactical-calendar',
           module: 'tactical-calendar',
+        },
+        {
+          icon: 'solar:palette-linear',
+          gradient: 'from-pink-500 to-rose-400',
+          title: 'Content Factory',
+          body: 'Describe what you want \u2014 an Instagram story, a promo banner, a flyer \u2014 and AI generates it instantly. Upload brand references to keep everything on-brand.',
+          cta: 'Next',
+          target: 'content-factory',
+          module: 'content-factory',
+        },
+        {
+          icon: 'solar:document-text-linear',
+          gradient: 'from-sky-500 to-blue-400',
+          title: 'Strategic Planning',
+          body: 'Store business plans, strategies, and roadmaps. Ask your AI to draft them for you, then refine and save them here for your team.',
+          cta: 'Next',
+          target: 'strategic-planning',
+          module: 'strategic-planning',
+        },
+        {
+          icon: 'solar:wallet-money-linear',
+          gradient: 'from-green-500 to-emerald-400',
+          title: 'Finance Tracker',
+          body: 'Log revenue, expenses, and track monthly recurring revenue. Stay on top of your finances without a separate spreadsheet.',
+          cta: 'Next',
+          target: 'financial-tracker',
+          module: 'financial-tracker',
         },
         {
           icon: 'solar:rocket-2-bold-duotone',
           gradient: 'from-pd-teal to-pd-orange',
           title: 'You\u2019re All Set!',
-          body: 'Your AMP Center is ready to go. Head over to Neural Chat and just tell it what you need \u2014 it\u2019ll handle the rest. The whole point is that you focus on your business while the busy work gets done for you. Welcome aboard!',
+          body: 'Head to Neural Chat and just tell it what you need. Your AI agents handle the rest. Welcome aboard.',
           cta: 'Let\u2019s Go!',
+          target: null,
           module: 'neural-chat',
         },
       ];
 
       const current = steps[step];
-      if (!current) return null;
-
       const totalSteps = steps.length;
       const progress = ((step + 1) / totalSteps) * 100;
 
+      // Apply spotlight to target element & position popover
+      useEffect(() => {
+        // Activate backdrop with slight delay for smooth transition
+        const fadeTimer = setTimeout(() => setBackdropActive(true), 50);
+
+        // Clean up previous spotlight
+        document.querySelectorAll('.tour-spotlight-target').forEach(el => el.classList.remove('tour-spotlight-target'));
+
+        if (!current) return;
+
+        if (current.target) {
+          // Find the sidebar button with data-tour-id
+          const targetEl = document.querySelector(`[data-tour-id="${current.target}"]`);
+          if (targetEl) {
+            targetEl.classList.add('tour-spotlight-target');
+            // Position popover next to the target
+            const rect = targetEl.getBoundingClientRect();
+            const vpW = window.innerWidth;
+            const vpH = window.innerHeight;
+            // Place the popover to the right of the sidebar
+            const sidebarRight = rect.right + 16;
+            const top = Math.min(Math.max(rect.top - 20, 16), vpH - 360);
+            if (sidebarRight + 400 < vpW) {
+              setPopoverPos({ top: `${top}px`, left: `${sidebarRight}px`, transform: 'none' });
+            } else {
+              // Fallback: center horizontally, below target
+              setPopoverPos({ top: `${rect.bottom + 16}px`, left: '50%', transform: 'translateX(-50%)' });
+            }
+          } else {
+            // Target not found — center
+            setPopoverPos({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
+          }
+        } else {
+          // No target — centered welcome/completion card
+          setPopoverPos({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
+        }
+
+        return () => {
+          clearTimeout(fadeTimer);
+          document.querySelectorAll('.tour-spotlight-target').forEach(el => el.classList.remove('tour-spotlight-target'));
+        };
+      }, [step, current]);
+
+      if (!current) return null;
+
       const handleNext = () => {
         if (step >= totalSteps - 1) {
-          // Complete onboarding
           localStorage.setItem('amp_onboarding_complete', 'true');
+          document.querySelectorAll('.tour-spotlight-target').forEach(el => el.classList.remove('tour-spotlight-target'));
           setStep(-1);
           setActiveModule('neural-chat');
           return;
         }
         const nextStep = step + 1;
-        if (steps[nextStep]?.module) {
-          setActiveModule(steps[nextStep].module);
-        }
+        if (steps[nextStep]?.module) setActiveModule(steps[nextStep].module);
         setStep(nextStep);
       };
 
       const handleSkip = () => {
         localStorage.setItem('amp_onboarding_complete', 'true');
+        document.querySelectorAll('.tour-spotlight-target').forEach(el => el.classList.remove('tour-spotlight-target'));
         setStep(-1);
       };
 
       return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ animation: 'onb-fadein 0.4s ease-out' }}>
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+        <>
+          {/* Backdrop — dims everything except spotlighted element */}
+          <div className={`tour-backdrop ${backdropActive ? 'active' : ''}`} onClick={handleSkip}></div>
 
-          {/* Card */}
-          <div className="relative w-full max-w-lg" style={{ animation: 'onb-slideup 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          {/* Popover card */}
+          <div className="tour-popover" key={step} style={popoverPos}>
             {/* Ambient glow */}
-            <div className="absolute -inset-4 rounded-[3rem] opacity-30 blur-2xl" style={{ background: 'linear-gradient(135deg, #46d4c6 0%, #FF5F00 100%)' }}></div>
+            <div className="absolute -inset-3 rounded-[2rem] opacity-20 blur-xl pointer-events-none" style={{ background: 'linear-gradient(135deg, #46d4c6, #FF5F00)' }}></div>
 
-            <div className="relative bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-3xl border border-gray-200 dark:border-pd-glassBorder rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="relative bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-3xl border border-gray-200 dark:border-pd-glassBorder rounded-[1.75rem] overflow-hidden shadow-2xl">
               {/* Progress bar */}
               <div className="h-1 bg-black/5 dark:bg-white/10">
                 <div className="h-full bg-gradient-to-r from-pd-teal to-pd-orange transition-all duration-700 ease-out rounded-full" style={{ width: `${progress}%` }}></div>
               </div>
 
-              {/* Step counter */}
-              <div className="px-8 pt-6 flex justify-between items-center">
-                <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Step {step + 1} of {totalSteps}</span>
-                {step < totalSteps - 1 && (
-                  <button onClick={handleSkip} className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors font-medium">
-                    Skip Tour
-                  </button>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="px-8 pt-6 pb-8" key={step} style={{ animation: 'onb-content 0.4s ease-out' }}>
-                {/* Icon */}
-                <div className="mb-6 flex justify-center">
-                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${current.gradient} flex items-center justify-center shadow-xl`} style={{ animation: 'onb-icon-pulse 2s ease-in-out infinite' }}>
-                    <iconify-icon icon={current.icon} width="36" className="text-white"></iconify-icon>
+              <div className="px-6 pt-5 pb-6" style={{ animation: 'onb-content 0.35s ease-out' }}>
+                {/* Header row */}
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${current.gradient} flex items-center justify-center shadow-lg`} style={{ animation: 'onb-icon-pulse 2s ease-in-out infinite' }}>
+                      <iconify-icon icon={current.icon} width="20" class="text-white"></iconify-icon>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">{current.title}</h3>
+                      <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Step {step + 1} of {totalSteps}</span>
+                    </div>
                   </div>
+                  {step < totalSteps - 1 && (
+                    <button onClick={handleSkip} className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors font-medium px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+                      Skip
+                    </button>
+                  )}
                 </div>
 
-                {/* Title */}
-                <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-3">{current.title}</h2>
-
                 {/* Body */}
-                <p className="text-sm text-center text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto">{current.body}</p>
+                <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed mb-5">{current.body}</p>
 
-                {/* CTA */}
-                <button
-                  onClick={handleNext}
-                  className="w-full mt-8 py-4 bg-gradient-to-r from-pd-teal to-pd-orange hover:scale-[1.02] active:scale-[0.98] text-white rounded-2xl text-sm font-bold shadow-[0_0_30px_rgba(70,212,198,0.3)] hover:shadow-[0_0_40px_rgba(255,95,0,0.4)] transition-all"
-                >
-                  {current.cta}
-                </button>
-
-                {/* Step dots */}
-                <div className="flex justify-center gap-2 mt-6">
-                  {steps.map((_, i) => (
-                    <div key={i} className={`rounded-full transition-all duration-500 ${i === step ? 'w-6 h-2 bg-gradient-to-r from-pd-teal to-pd-orange' : i < step ? 'w-2 h-2 bg-pd-teal/60' : 'w-2 h-2 bg-gray-300 dark:bg-white/20'}`}></div>
-                  ))}
+                {/* CTA + dots row */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex gap-1.5">
+                    {steps.map((_, i) => (
+                      <div key={i} className={`rounded-full transition-all duration-500 ${i === step ? 'w-5 h-1.5 bg-gradient-to-r from-pd-teal to-pd-orange' : i < step ? 'w-1.5 h-1.5 bg-pd-teal/50' : 'w-1.5 h-1.5 bg-gray-300 dark:bg-white/20'}`}></div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleNext}
+                    className="px-5 py-2.5 bg-gradient-to-r from-pd-teal to-pd-orange hover:scale-[1.03] active:scale-[0.97] text-white rounded-xl text-xs font-bold shadow-[0_0_20px_rgba(70,212,198,0.3)] hover:shadow-[0_0_30px_rgba(255,95,0,0.4)] transition-all flex-shrink-0"
+                  >
+                    {current.cta}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       );
     };
 
@@ -3659,7 +3757,7 @@
           console.error("Failed to load chat history", e);
         }
         return [
-          { sender: 'ceo', text: "Systems online. The team is awaiting your command. How should we proceed?", time: "09:00 AM" }
+          { sender: 'ceo', text: "Hey there \u2014 welcome to AMP Center, your all-in-one business hub. Everything you need is right here. Just tell me what you\u2019re working on and I\u2019ll handle it.", time: "09:00 AM" }
         ];
       });
       const [input, setInput] = useState('');
@@ -3815,17 +3913,19 @@
         if (needsProfileSetup && messages.length === 1) {
           const genesisInput = typeof localStorage !== 'undefined' ? localStorage.getItem('amp_genesis_input') : null;
           
-          let prompts = '"Analyze my target audience", "Create a marketing strategy", or "Log a new client lead"';
-          if (userProfile?.stage === 'Dispatcher') prompts = '"Optimize my drivers\' routes", "Find new candidates", or "Log a maintenance issue"';
-          if (userProfile?.stage === 'Software') prompts = '"Draft a new API spec", "Plan an agile sprint", or "Write launch copy"';
-          if (userProfile?.stage === 'Ecomm') prompts = '"Audit my inventory limits", "Create a holiday promo", or "Analyze my store traffic"';
-          if (userProfile?.stage === 'Organizer') prompts = '"Draft a fundraising email", "Organize a union rally", or "Log a new volunteer"';
-          if (userProfile?.stage === 'Local Service') prompts = '"Draft an invoice", "Schedule a home repair", or "Create a Facebook ad"';
+          let prompts = '"Find me 10 leads in my area", "Draft a cold email", or "Create an Instagram post"';
+          if (userProfile?.stage === 'Dispatcher') prompts = '"Optimize routes for this week", "Find new driver candidates", or "Schedule a team check-in"';
+          if (userProfile?.stage === 'Software') prompts = '"Draft a product roadmap", "Plan an agile sprint", or "Write launch copy"';
+          if (userProfile?.stage === 'Ecomm') prompts = '"Create a holiday promo", "Write product descriptions", or "Analyze store traffic"';
+          if (userProfile?.stage === 'Organizer') prompts = '"Draft a fundraising email", "Plan a rally", or "Create a volunteer signup"';
+          if (userProfile?.stage === 'Local Service') prompts = '"Draft an invoice", "Schedule a job", or "Create a Facebook ad"';
 
-          const baseGreeting = `Systems online. I am your custom ${labels?.agents?.ceo?.name || 'CEO Agent'}. I orchestrate a team of specialized AI agents (${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, ${labels?.agents?.creative?.name || 'Creative'}) to handle your daily operations autonomously.\n\n**Important Note on Business Types:**\nSelecting a different business type in Settings will fundamentally change the entire experience, from the names of your agents to the tools they use. Choose the one that fits best and stick with it.\n\n**Here is how to get the most out of our platform:**\n- **Chat with me** directly here in Neural Chat to assign tasks, ask questions, or request content.\n- Try prompting me: **${prompts}**.\n- I will automatically delegate your requests down the chain of command to the exact subagents equipped for the task.\n\nTo begin assembling your workforce, please click the **Settings** button on the bottom left and complete your Business Profile. Be sure to lock in your business profile by saving it. Once configured, your team will be ready to execute.`;
+          const agentNames = `${labels?.agents?.ceo?.name || 'CEO'}, ${labels?.agents?.cmo?.name || 'CMO'}, ${labels?.agents?.cto?.name || 'CTO'}, and ${labels?.agents?.creative?.name || 'Creative'}`;
+
+          const baseGreeting = `Hey \u2014 welcome to AMP Center. I\'m your ${labels?.agents?.ceo?.name || 'CEO Agent'}, and I run a team of AI agents behind the scenes: **${agentNames}**.\n\n**What are AI agents?** Think of them as specialized digital employees. Each one has a role \u2014 marketing, tech, creative, and more. When you ask me something, I automatically delegate to the right agent. You just talk to me; the team handles the rest.\n\n**This is your all-in-one hub.** Email, CRM, content creation, scheduling, finances \u2014 it all lives here. No more switching between apps.\n\nTry asking me: **${prompts}**\n\nFirst step: hit **Settings** on the left and save your Business Profile. That unlocks everything.`;
           
           const greetingText = genesisInput 
-            ? `Systems online. I have analyzed your digital kingdom parameters for: "${genesisInput}".\n\n` + baseGreeting.replace('Systems online. ', '')
+            ? `Hey \u2014 I\'ve set things up based on: "${genesisInput}".\n\n` + baseGreeting.replace('Hey \u2014 welcome to AMP Center. ', '')
             : baseGreeting;
           
           setMessages([
@@ -5855,7 +5955,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       );
     };
 
-    // ─── GMAIL COMMAND CENTER ───
+    // ─── GMAIL CENTER ───
     const GmailInbox = ({ session, setActiveModule, setTriggerPrompt, leads }) => {
       const [messages, setMessages] = useState([]);
       const [loading, setLoading] = useState(true);
