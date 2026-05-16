@@ -2887,11 +2887,11 @@
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: labels.lead, mobileLabel: labels.leadMob },
         { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: labels.client, mobileLabel: labels.clientMob },
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
-        { id: 'gmail-inbox', icon: 'solar:mailbox-bold-duotone', label: 'Gmail Command Center', mobileLabel: 'Gmail' },
-        { id: 'financial-tracker', icon: 'solar:wallet-money-linear', label: labels.finance, mobileLabel: labels.financeMob },
+        { id: 'gmail-inbox', icon: 'solar:letter-linear', label: 'Gmail Center', mobileLabel: 'Gmail' },
         { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
         { id: 'content-factory', icon: 'solar:palette-linear', label: 'Content Factory', mobileLabel: 'Content' },
         { id: 'strategic-planning', icon: 'solar:document-text-linear', label: 'Strategic Planning', mobileLabel: 'Planning' },
+        { id: 'financial-tracker', icon: 'solar:wallet-money-linear', label: labels.finance, mobileLabel: labels.financeMob },
         { id: 'settings', icon: 'solar:settings-linear', label: 'Settings', mobileLabel: 'Settings' }
       ];
 
@@ -5964,7 +5964,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:p-6 gap-3 flex-shrink-0 border-b border-gray-200 dark:border-pd-glassBorder">
             <div>
               <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                <iconify-icon icon="solar:mailbox-bold-duotone" className="text-pd-teal"></iconify-icon> Gmail Command Center
+                <iconify-icon icon="solar:letter-linear" className="text-pd-teal"></iconify-icon> Gmail Center
               </h2>
               <p className="text-xs text-gray-500">{connectedEmail ? `Connected: ${connectedEmail}` : 'Your inbox, powered by your assistant'} {unreadCount > 0 && <span className="ml-2 bg-pd-teal/10 text-pd-teal px-2 py-0.5 rounded-full font-bold">{unreadCount} unread</span>}</p>
             </div>
