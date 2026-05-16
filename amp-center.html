@@ -6434,6 +6434,54 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const [activeTab, setActiveTab] = useState('create');
       const fileRef = useRef(null);
 
+      // ── Archive state ─────────────────────────────────────────────────────────
+      const ARCHIVE_KEY = `amp_asset_archive_${userProfile?.stage || 'Default'}`;
+      const loadArchive = () => { try { return JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]'); } catch(e) { return []; } };
+      const [archiveItems, setArchiveItems] = useState(loadArchive);
+      const [archiveFolders, setArchiveFolders] = useState(() => { try { return JSON.parse(localStorage.getItem(ARCHIVE_KEY + '_folders') || '["Uncategorized"]'); } catch(e) { return ['Uncategorized']; } });
+      const [activeFolder, setActiveFolder] = useState('Uncategorized');
+      const [renamingId, setRenamingId] = useState(null);
+      const [renameVal, setRenameVal] = useState('');
+      const [newFolderInput, setNewFolderInput] = useState('');
+      const [showNewFolder, setShowNewFolder] = useState(false);
+      const [movingId, setMovingId] = useState(null);
+
+      const saveArchive = (items) => { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items)); setArchiveItems(items); };
+      const saveFolders = (folders) => { localStorage.setItem(ARCHIVE_KEY + '_folders', JSON.stringify(folders)); setArchiveFolders(folders); };
+
+      const handleRenameAsset = (id) => {
+        const updated = archiveItems.map(a => a.id === id ? { ...a, name: renameVal.trim() || a.name } : a);
+        saveArchive(updated);
+        setRenamingId(null); setRenameVal('');
+      };
+
+      const handleDeleteAsset = (id) => {
+        if (!window.confirm('Remove this asset from the archive?')) return;
+        saveArchive(archiveItems.filter(a => a.id !== id));
+      };
+
+      const handleMoveAsset = (id, folder) => {
+        const updated = archiveItems.map(a => a.id === id ? { ...a, folder } : a);
+        saveArchive(updated);
+        setMovingId(null);
+      };
+
+      const handleAddFolder = () => {
+        const name = newFolderInput.trim();
+        if (!name || archiveFolders.includes(name)) return;
+        saveFolders([...archiveFolders, name]);
+        setNewFolderInput(''); setShowNewFolder(false);
+      };
+
+      const handleDeleteFolder = (folder) => {
+        if (folder === 'Uncategorized') return;
+        if (!window.confirm(`Delete folder "${folder}"? Assets will move to Uncategorized.`)) return;
+        const updated = archiveItems.map(a => a.folder === folder ? { ...a, folder: 'Uncategorized' } : a);
+        saveArchive(updated);
+        saveFolders(archiveFolders.filter(f => f !== folder));
+        if (activeFolder === folder) setActiveFolder('Uncategorized');
+      };
+
       // Content type presets — icon, label, aspect ratio
       const CONTENT_TYPES = [
         { id: 'instagram-post',   icon: 'solar:square-academic-cap-linear',  label: 'IG Post',      ratio: '1:1',  color: 'from-pink-500 to-rose-500' },
@@ -6451,8 +6499,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const activeType = CONTENT_TYPES.find(t => t.id === contentType) || CONTENT_TYPES[0];
       const aspectRatio = activeType.ratio;
 
-      // Filter tasks to get creative agent generated assets
-      const archiveItems = activeTasks ? activeTasks.filter(t => t.agent === 'Creative' && t.status === 'done' && t.notes) : [];
+      const folderItems = archiveItems.filter(a => (a.folder || 'Uncategorized') === activeFolder);
 
       const processOneFile = (file) => {
         const img = new Image();
@@ -6521,6 +6568,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           if (typeof supabaseClient !== 'undefined' && supabaseClient && session?.user?.id) {
             supabaseClient.from('tasks').insert([taskPayload]).then();
           }
+          // Save to dedicated archive
+          const archiveId = Date.now().toString();
+          const newAsset = { id: archiveId, name: label, url: imageUrl, type: activeType.label, ratio: aspectRatio, folder: 'Uncategorized', created_at: new Date().toISOString() };
+          const currentArchive = loadArchive();
+          const updatedArchive = [newAsset, ...currentArchive];
+          saveArchive(updatedArchive);
         } catch (e) {
           console.error(e);
           setError(e.message);
@@ -6768,9 +6821,118 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                   </div>
                   <p className="text-sm font-medium text-gray-500">Archive is empty</p>
                   <p className="text-xs text-gray-400 text-center max-w-xs">Generate content on the Create tab and it will appear here automatically.</p>
-                  <button onClick={() => setActiveTab('create')} className="mt-2 px-4 py-2 bg-pd-orange/10 text-pd-orange text-xs font-semibold rounded-full hover:bg-pd-orange/20 transition-all">
-                    Start Creating →
+                  <button onClick={() => setActiveTab('create')} className="group mt-2 inline-flex items-center gap-2 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-medium bg-pd-teal rounded-full py-2 px-5 relative backdrop-blur-md shadow-[0_4px_24px_rgba(70,212,198,0.18)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.32)] hover:-translate-y-[1px] active:scale-[0.98]">
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      <iconify-icon icon="solar:magic-stick-3-linear" width="14"></iconify-icon>
+                      Start Creating
+                    </span>
                   </button>
+                </div>
+              ) : (
+                <div className="flex flex-col h-full">
+                  {/* Folder sidebar + grid */}
+                  <div className="flex gap-4 h-full min-h-0">
+                    {/* Folder list */}
+                    <div className="flex-shrink-0 w-36 sm:w-44 flex flex-col gap-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Folders</span>
+                        <button onClick={() => setShowNewFolder(s => !s)} title="New folder" className="w-6 h-6 rounded-full bg-pd-teal/10 text-pd-teal hover:bg-pd-teal/20 flex items-center justify-center transition-all">
+                          <iconify-icon icon="solar:add-folder-linear" width="14"></iconify-icon>
+                        </button>
+                      </div>
+                      {showNewFolder && (
+                        <div className="flex gap-1 mb-2">
+                          <input autoFocus value={newFolderInput} onChange={e => setNewFolderInput(e.target.value)} onKeyDown={e => { if(e.key==='Enter') handleAddFolder(); if(e.key==='Escape'){setShowNewFolder(false);setNewFolderInput('');} }} placeholder="Folder name" className="flex-1 min-w-0 bg-white/60 dark:bg-black/30 border border-pd-teal/40 rounded-lg px-2 py-1 text-xs text-gray-900 dark:text-white focus:outline-none" />
+                          <button onClick={handleAddFolder} className="w-6 h-6 rounded-full bg-pd-teal text-white flex items-center justify-center flex-shrink-0">
+                            <iconify-icon icon="solar:check-circle-linear" width="12"></iconify-icon>
+                          </button>
+                        </div>
+                      )}
+                      {archiveFolders.map(folder => {
+                        const count = archiveItems.filter(a => (a.folder || 'Uncategorized') === folder).length;
+                        return (
+                          <div key={folder} className={`group/folder flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-all text-xs font-medium ${activeFolder === folder ? 'bg-pd-teal/15 text-pd-teal border border-pd-teal/30' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`} onClick={() => setActiveFolder(folder)}>
+                            <span className="flex items-center gap-1.5 truncate">
+                              <iconify-icon icon="solar:folder-linear" width="13"></iconify-icon>
+                              <span className="truncate">{folder}</span>
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] opacity-60">{count}</span>
+                              {folder !== 'Uncategorized' && (
+                                <button onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder); }} className="opacity-0 group-hover/folder:opacity-100 w-4 h-4 rounded flex items-center justify-center text-red-400 hover:text-red-600 transition-all">
+                                  <iconify-icon icon="solar:trash-bin-minimalistic-linear" width="11"></iconify-icon>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Asset grid */}
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                      {folderItems.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full gap-2 opacity-60">
+                          <iconify-icon icon="solar:folder-open-linear" width="32" class="text-gray-400"></iconify-icon>
+                          <p className="text-xs text-gray-500">This folder is empty</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-4">
+                          {folderItems.map((item) => (
+                            <div key={item.id} className="group/asset relative bg-white/40 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-2xl p-2 flex flex-col items-center shadow-sm hover:shadow-lg hover:border-pd-teal/40 transition-all duration-300">
+                              {/* Image */}
+                              <a href={item.url} target="_blank" rel="noopener" className="block w-full aspect-square mb-2 bg-black/5 dark:bg-white/5 rounded-xl overflow-hidden">
+                                <img src={item.url} alt={item.name} className="w-full h-full object-cover group-hover/asset:scale-105 transition-transform duration-500 rounded-xl" />
+                              </a>
+
+                              {/* Name / rename */}
+                              {renamingId === item.id ? (
+                                <div className="w-full flex gap-1">
+                                  <input autoFocus value={renameVal} onChange={e => setRenameVal(e.target.value)} onKeyDown={e => { if(e.key==='Enter') handleRenameAsset(item.id); if(e.key==='Escape'){setRenamingId(null);setRenameVal('');} }} className="flex-1 min-w-0 bg-white/60 dark:bg-black/30 border border-pd-teal/50 rounded-lg px-2 py-0.5 text-[10px] text-gray-900 dark:text-white focus:outline-none" />
+                                  <button onClick={() => handleRenameAsset(item.id)} className="w-5 h-5 rounded bg-pd-teal text-white flex items-center justify-center flex-shrink-0">
+                                    <iconify-icon icon="solar:check-circle-linear" width="11"></iconify-icon>
+                                  </button>
+                                </div>
+                              ) : (
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate w-full text-center leading-tight cursor-pointer hover:text-pd-teal transition-colors" title={item.name} onClick={() => { setRenamingId(item.id); setRenameVal(item.name); }}>{item.name}</p>
+                              )}
+
+                              {/* Action overlay */}
+                              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/asset:opacity-100 transition-opacity">
+                                <div className="relative">
+                                  <button onClick={() => setMovingId(movingId === item.id ? null : item.id)} title="Move to folder" className="w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-pd-teal transition-all backdrop-blur">
+                                    <iconify-icon icon="solar:folder-with-files-linear" width="12"></iconify-icon>
+                                  </button>
+                                  {movingId === item.id && (
+                                    <div className="absolute top-7 right-0 z-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-xl shadow-xl p-1 min-w-[130px]">
+                                      {archiveFolders.filter(f => f !== (item.folder || 'Uncategorized')).map(f => (
+                                        <button key={f} onClick={() => handleMoveAsset(item.id, f)} className="w-full text-left px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-pd-teal/10 hover:text-pd-teal rounded-lg transition-all flex items-center gap-1.5">
+                                          <iconify-icon icon="solar:folder-linear" width="12"></iconify-icon>{f}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <button onClick={() => { setRenamingId(item.id); setRenameVal(item.name); }} title="Rename" className="w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-pd-orange transition-all backdrop-blur">
+                                  <iconify-icon icon="solar:pen-linear" width="12"></iconify-icon>
+                                </button>
+                                <button onClick={() => handleDeleteAsset(item.id)} title="Remove" className="w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500 transition-all backdrop-blur">
+                                  <iconify-icon icon="solar:trash-bin-minimalistic-linear" width="12"></iconify-icon>
+                                </button>
+                              </div>
+
+                              {/* Type badge */}
+                              <div className="absolute bottom-10 left-2 opacity-0 group-hover/asset:opacity-100 transition-opacity">
+                                <span className="text-[9px] bg-black/50 text-white px-1.5 py-0.5 rounded-full backdrop-blur">{item.type} · {item.ratio}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
