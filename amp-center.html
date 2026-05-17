@@ -1422,7 +1422,7 @@
               <div className="relative rounded-[2rem] p-[1px] bg-gradient-to-b from-gray-200 dark:from-gray-700 via-transparent to-transparent w-full overflow-hidden shadow-xl">
                 <div className="absolute inset-[1px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-[calc(2rem-1px)] z-0"></div>
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(70,212,198,0.05),transparent_50%)] rounded-[2rem] pointer-events-none"></div>
-                <div className="relative z-10 p-8 md:p-12 flex flex-col items-center">
+                <div className="relative z-10 p-6 sm:p-8 md:p-12 flex flex-col items-center">
                   <div className="w-14 h-14 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 backdrop-blur-md shadow-lg flex items-center justify-center mb-8 group">
                     <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite] pointer-events-none z-0"></div>
                     <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
@@ -1435,8 +1435,8 @@
                   <div className="w-full relative">
                     <input
                       autoFocus type="text" value={input} onChange={handleType} onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(e); }}
-                      className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-6 md:px-8 pr-16 md:pr-18 py-4 md:py-5 text-base md:text-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pd-teal/50 focus:ring-1 focus:ring-pd-teal/50 transition-all backdrop-blur-xl shadow-lg"
-                      placeholder="e.g. A digital marketing agency focusing on Web3..."
+                      className="w-full bg-white/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full px-5 sm:px-6 md:px-8 pr-14 sm:pr-16 py-3.5 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pd-teal/50 focus:ring-1 focus:ring-pd-teal/50 transition-all backdrop-blur-xl shadow-lg"
+                      placeholder="e.g. A digital marketing agency..."
                     />
                     <button type="button" onClick={handleSubmit} className="group absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-11 md:w-12 h-11 md:h-12 rounded-full relative overflow-hidden isolate dramatic-hover bg-white/60 dark:bg-gray-800/60 backdrop-blur-md shadow-lg flex items-center justify-center transition-all duration-500">
                       <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
@@ -1981,8 +1981,10 @@
                 {/* CEO */}
                 <div className="flex flex-col items-center w-full relative">
                   <div className="amp-card p-4 flex items-center gap-4 w-64 justify-center z-10 border-pd-orange/20 shadow-[0_0_15px_rgba(255,95,0,0.1)] bg-white/80 dark:bg-[#0b0f19]">
-                    <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center">
-                      <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange"></iconify-icon>
+                    <div className="w-9 h-9 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 backdrop-blur-md flex items-center justify-center flex-shrink-0">
+                      <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-50 animate-[spin_2s_linear_infinite] pointer-events-none z-0"></div>
+                      <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                      <iconify-icon icon="solar:crown-minimalistic-linear" width="16" className="text-pd-orange relative z-10"></iconify-icon>
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.ceo?.name || 'CEO'}</div>
@@ -2008,8 +2010,10 @@
                     {/* CMO */}
                     <div className="flex flex-col items-center gap-0 w-[45%] sm:w-40">
                       <div className={`amp-card rounded-2xl p-4 flex flex-col items-center gap-2 w-full text-center ${cmoTask ? 'border-pd-teal/50 shadow-[0_0_15px_rgba(70,212,198,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
-                        <div className={`w-10 h-10 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center shadow-sm ${cmoTask ? 'text-pd-teal' : 'text-gray-400'}`}>
-                          <iconify-icon icon="solar:global-linear" width="18"></iconify-icon>
+                        <div className="w-10 h-10 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                          <div className={`absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#46d4c6_30%,#ffffff_50%,#ff9146_70%,transparent_100%)] ${cmoTask ? 'opacity-50' : 'opacity-20'} animate-[spin_3s_linear_infinite] pointer-events-none z-0`}></div>
+                          <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                          <iconify-icon icon="solar:global-linear" width="18" className={`relative z-10 ${cmoTask ? 'text-pd-teal' : 'text-gray-400'}`}></iconify-icon>
                         </div>
                         <div>
                           <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.cmo?.name || 'CMO Agent'}</div>
@@ -2031,8 +2035,10 @@
                     {/* CTO */}
                     <div className="flex flex-col items-center gap-0 w-[45%] sm:w-40">
                       <div className={`amp-card rounded-2xl p-4 flex flex-col items-center gap-2 w-full text-center ${ctoTask ? 'border-pd-orange/50 shadow-[0_0_15px_rgba(255,95,0,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
-                        <div className={`w-10 h-10 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center shadow-sm ${ctoTask ? 'text-pd-orange' : 'text-gray-400'}`}>
-                          <iconify-icon icon="solar:code-circle-linear" width="18"></iconify-icon>
+                        <div className="w-10 h-10 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                          <div className={`absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] ${ctoTask ? 'opacity-50' : 'opacity-20'} animate-[spin_3s_linear_infinite] pointer-events-none z-0`}></div>
+                          <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                          <iconify-icon icon="solar:code-circle-linear" width="18" className={`relative z-10 ${ctoTask ? 'text-pd-orange' : 'text-gray-400'}`}></iconify-icon>
                         </div>
                         <div>
                           <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.cto?.name || 'CTO Agent'}</div>
@@ -2054,8 +2060,10 @@
                     {/* Creative */}
                     <div className="flex flex-col items-center gap-0 w-[45%] sm:w-40">
                       <div className={`amp-card rounded-2xl p-4 flex flex-col items-center gap-2 w-full text-center ${creativeTask ? 'border-pd-purple/50 shadow-[0_0_15px_rgba(139,92,246,0.1)] bg-white/80 dark:bg-[#0b0f19]' : 'opacity-70 grayscale-[50%]'}`}>
-                        <div className={`w-10 h-10 rounded-full bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center shadow-sm ${creativeTask ? 'text-pd-purple' : 'text-gray-400'}`}>
-                          <iconify-icon icon="solar:palette-linear" width="18"></iconify-icon>
+                        <div className="w-10 h-10 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                          <div className={`absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] ${creativeTask ? 'opacity-50' : 'opacity-20'} animate-[spin_3s_linear_infinite] pointer-events-none z-0`}></div>
+                          <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                          <iconify-icon icon="solar:palette-linear" width="18" className={`relative z-10 ${creativeTask ? 'text-purple-500' : 'text-gray-400'}`}></iconify-icon>
                         </div>
                         <div>
                           <div className="text-sm font-semibold text-gray-900 dark:text-white">{labels?.agents?.creative?.name || 'Creative Agent'}</div>
@@ -3223,8 +3231,10 @@
                          <div key={idx} className="bg-black/5 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group">
                            <div className="flex items-center justify-between relative z-10">
                              <div className="flex items-center gap-3">
-                               <div className="w-10 h-10 rounded-xl bg-pd-teal/10 flex items-center justify-center text-pd-teal">
-                                 <iconify-icon icon={idx < 4 ? "solar:shield-user-bold" : "solar:user-circle-bold"} width="20"></iconify-icon>
+                               <div className="w-10 h-10 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center flex-shrink-0">
+                                  <div className={`absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,${idx === 0 ? '#ff9146' : idx === 1 ? '#46d4c6' : idx === 2 ? '#a855f7' : '#46d4c6'}_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] ${isActive ? 'opacity-60' : 'opacity-30'} animate-[spin_3s_linear_infinite] pointer-events-none z-0`}></div>
+                                  <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                                  <iconify-icon icon={idx < 4 ? "solar:shield-user-bold" : "solar:user-circle-bold"} width="18" className="relative z-10 text-pd-teal"></iconify-icon>
                                </div>
                                <div>
                                  <h4 className="font-bold text-sm text-gray-900 dark:text-white leading-none">{agent.name}</h4>
@@ -3663,8 +3673,10 @@
       return (
         <div className={`flex items-center gap-3 p-2.5 rounded-xl transition-all duration-300 ${isActive ? 'bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-pd-glassBorder shadow-sm' : 'opacity-60 hover:opacity-80'}`}>
           {/* Agent avatar */}
-          <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shadow-sm flex-shrink-0 ${isActive ? 'agent-active-glow' : ''}`}>
-            <iconify-icon icon={icon} width="14" className="text-white"></iconify-icon>
+          <div className="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm flex-shrink-0">
+            <div className={`absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,${gradient.includes('pd-teal') ? '#46d4c6' : gradient.includes('orange') ? '#ff9146' : gradient.includes('purple') ? '#a855f7' : gradient.includes('blue') ? '#3b82f6' : '#46d4c6'}_30%,#ffffff_50%,${gradient.includes('pd-teal') ? '#ff9146' : gradient.includes('orange') ? '#46d4c6' : gradient.includes('purple') ? '#46d4c6' : gradient.includes('blue') ? '#ff9146' : '#ff9146'}_70%,transparent_100%)] ${isActive ? 'opacity-60' : 'opacity-25'} animate-[spin_${isActive ? '2' : '4'}s_linear_infinite] pointer-events-none z-0`}></div>
+            <div className="absolute inset-[1.5px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+            <iconify-icon icon={icon} width="13" className={`relative z-10 ${gradient.includes('pd-teal') ? 'text-pd-teal' : gradient.includes('orange') ? 'text-pd-orange' : gradient.includes('purple') ? 'text-purple-500' : gradient.includes('blue') ? 'text-blue-500' : 'text-pd-teal'}`}></iconify-icon>
           </div>
           
           {/* Info + bar */}
@@ -4691,8 +4703,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         <div className="flex flex-col h-full w-full relative">
           <div className="p-4 md:p-6 border-b border-gray-200 dark:border-pd-glassBorder flex items-center justify-between gap-4 bg-white/50 dark:bg-white/5 relative z-20">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange shadow-sm">
-                <iconify-icon icon="solar:crown-minimalistic-bold" width="20"></iconify-icon>
+              <div className="w-10 h-10 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 backdrop-blur-md flex items-center justify-center shadow-sm">
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-50 animate-[spin_2s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                <iconify-icon icon="solar:crown-minimalistic-bold" width="20" className="text-pd-orange relative z-10"></iconify-icon>
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900 dark:text-white tracking-tight">CEO Agent</h2>
@@ -4768,8 +4782,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                 </div>
               ) : (
                 <div key={i} className="self-start max-w-lg bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm text-gray-800 dark:text-gray-200 shadow-sm relative break-words whitespace-pre-wrap">
-                  <div className="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder flex items-center justify-center text-pd-orange">
-                    <iconify-icon icon="solar:crown-minimalistic-bold" width="12"></iconify-icon>
+                  <div className="absolute -left-3 -top-3 w-7 h-7 rounded-full relative overflow-hidden isolate bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-50 animate-[spin_2.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[1.5px] rounded-full bg-white dark:bg-gray-800 pointer-events-none z-0"></div>
+                    <iconify-icon icon="solar:crown-minimalistic-bold" width="12" className="text-pd-orange relative z-10"></iconify-icon>
                   </div>
                   <div><FormatText text={m.text} /></div>
                   {m.actions && m.actions.map((act, idx) => act.type === 'draft_document' ? (
