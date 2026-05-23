@@ -1134,13 +1134,13 @@
           }
         };
         case 'Software': return { 
-          lead: 'User Pipeline', leadSub: 'Track trial signups and user acquisition.', leadMob: 'Users', 
-          client: 'Subscriber Ledger', clientSub: 'Manage active subscribers and churn.', clientMob: 'Subscribers', 
-          finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue and expenses.', financeMob: 'MRR',
-          clientCols: ['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions'],
-          clientInputs: ['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV'],
-          leadInputs: ['User Name', 'Email', 'Est. Value'],
-          clientAction: 'Subscriber',
+          lead: 'Lead Pipeline', leadSub: 'Track inbound leads and prospects.', leadMob: 'Leads', 
+          client: 'Client Ledger', clientSub: 'Manage active clients and retainers.', clientMob: 'Clients', 
+          finance: 'MRR Tracker', financeSub: 'Track monthly recurring revenue, client billing, and finances.', financeMob: 'MRR',
+          clientCols: ['Client', 'Retainer', 'LTV', 'Assigned Agents', 'Actions'],
+          clientInputs: ['Client Name', 'Retainer (Monthly)', 'Total LTV'],
+          leadInputs: ['Lead Name', 'Contact Info', 'Est. Value'],
+          clientAction: 'Client',
           agents: {
             ceo: { name: 'Product Manager', role: 'Product Strategy' },
             cmo: { name: 'Growth Lead', role: 'User Acquisition' },
@@ -3084,6 +3084,7 @@
         ...(stage === 'Organizer' ? [{ id: 'fleet-comms', icon: 'solar:chat-round-line-linear', label: 'Member Comms', mobileLabel: 'Comms' }] : []),
         { id: 'lead-pipeline', icon: 'solar:filter-linear', label: labels.lead, mobileLabel: labels.leadMob },
         { id: 'client-ledger', icon: 'solar:folder-with-files-linear', label: labels.client, mobileLabel: labels.clientMob },
+        ...(stage === 'Software' ? [{ id: 'subscriber-ledger', icon: 'solar:users-group-two-rounded-linear', label: 'Subscriber Ledger', mobileLabel: 'Subscribers' }] : []),
         ...(isEcomm ? [{ id: 'inventory-tracking', icon: 'solar:box-linear', label: 'Inventory Tracking', mobileLabel: 'Inventory' }] : []),
         { id: 'gmail-inbox', icon: 'solar:letter-linear', label: 'Gmail Center', mobileLabel: 'Gmail' },
         { id: 'tactical-calendar', icon: 'solar:calendar-linear', label: 'Tactical Calendar', mobileLabel: 'Calendar' },
@@ -3162,7 +3163,38 @@
             {activeModule === 'team-chat' && <TeamChat session={session} accountUsers={accountUsers} activeUserId={activeUserId} activeUserName={activeUserName} unreadCounts={unreadCounts} setUnreadCounts={setUnreadCounts} />}
             {activeModule === 'fleet-comms' && <FleetComms session={session} userProfile={userProfile} />}
             {activeModule === 'lead-pipeline' && <LeadPipeline session={session} activeTasks={displayTasks} userProfile={userProfile} onAddLead={triggerLeadPrompt} onUpdateLead={triggerLeadUpdatePrompt} onImportCsv={(e) => handleCsvImport(e, 'leads', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', contact: r.contact || '', stage: r.stage || 'Inbound', value: r.value || '$0', prob: r.prob || '10%', next_step: r.next_step || 'Contact' }))} title={labels.lead} subtitle={labels.leadSub} inputLabels={labels.leadInputs} entityLabel={labels.clientAction === 'Driver' ? 'Prospect' : (labels.clientAction === 'Customer' ? 'Lead' : (labels.clientAction === 'Member' ? 'Supporter' : (labels.clientAction === 'Subscriber' ? 'User' : 'Lead')))} />}
-            {activeModule === 'client-ledger' && <ClientLedger session={session} activeTasks={displayTasks} userProfile={userProfile} onAddClient={triggerClientPrompt} onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} title={labels.client} subtitle={labels.clientSub} tableCols={labels.clientCols} inputLabels={labels.clientInputs} entityLabel={labels.clientAction} />}
+             {activeModule === 'client-ledger' && (
+               <ClientLedger 
+                 session={session} 
+                 activeTasks={displayTasks} 
+                 userProfile={userProfile} 
+                 onAddClient={triggerClientPrompt} 
+                 onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} 
+                 title={labels.client} 
+                 subtitle={labels.clientSub} 
+                 tableCols={labels.clientCols} 
+                 inputLabels={labels.clientInputs} 
+                 entityLabel={labels.clientAction} 
+                 dbStageOverride={stage === 'Software' ? 'Software_Clients' : undefined}
+                 storageKeyOverride={stage === 'Software' ? 'amp_clients_Software_Clients' : undefined}
+               />
+             )}
+             {activeModule === 'subscriber-ledger' && (
+               <ClientLedger 
+                 session={session} 
+                 activeTasks={displayTasks} 
+                 userProfile={userProfile} 
+                 onAddClient={triggerClientPrompt} 
+                 onImportCsv={(e) => handleCsvImport(e, 'clients', (r, uid) => ({ user_id: uid, name: r.name || 'Unknown', retainer: r.retainer || '$0/mo', ltv: r.ltv || '$0', assigned_agents: r.assigned_agents || 'CEO', next_task: r.next_task || 'Onboarding' }))} 
+                 title="Subscriber Ledger" 
+                 subtitle="Manage active subscribers and churn." 
+                 tableCols={['Subscriber', 'MRR', 'LTV', 'Assigned Agents', 'Actions']} 
+                 inputLabels={['Subscriber Name', 'Monthly Recurring Revenue (MRR)', 'Total LTV']} 
+                 entityLabel="Subscriber" 
+                 dbStageOverride="Software"
+                 storageKeyOverride="amp_clients_Software"
+               />
+             )}
             {activeModule === 'inventory-tracking' && <InventoryTracker session={session} activeTasks={displayTasks} userProfile={userProfile} onSync={triggerInventoryPrompt} onImportCsv={(e) => handleCsvImport(e, 'inventory', (r, uid) => ({ user_id: uid, product_name: r.product_name || 'Unknown', sku_link: r.sku_link || '', stock: r.stock || '0', price: r.price || '$0' }))} />}
             {activeModule === 'financial-tracker' && <FinanceTracker session={session} userProfile={userProfile} onLogExpense={triggerFinancePrompt} activeUserName={activeUserName} title={labels.finance} subtitle={labels.financeSub} />}
             {activeModule === 'gmail-inbox' && <GmailInbox session={session} setActiveModule={setActiveModule} setTriggerPrompt={setTriggerPrompt} leads={[]} />}
@@ -4533,14 +4565,15 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     logAction(`Added Lead: ${action.payload.name}`, 'CMO');
                     revertActions.push({ type: 'delete', table: 'leads', id: payload.id, key: `amp_leads_${userProfile?.stage || 'Default'}` });
                   } else if (action.type === 'create_client') {
-                    const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
-                    const payload = { id: Date.now().toString(), ...action.payload, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() };
+                    const clientStage = action.payload.business_stage || userProfile?.stage || 'Default';
+                    const local = JSON.parse(localStorage.getItem(`amp_clients_${clientStage}`) || '[]');
+                    const payload = { id: Date.now().toString(), ...action.payload, business_stage: clientStage, created_at: new Date().toISOString() };
                     local.unshift(payload);
-                    localStorage.setItem(`amp_clients_${userProfile?.stage || 'Default'}`, JSON.stringify(local));
+                    localStorage.setItem(`amp_clients_${clientStage}`, JSON.stringify(local));
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').insert([{ ...payload, user_id: session.user.id }]).then(); }
                     window.dispatchEvent(new Event('amp-simulated-sale'));
                     logAction(`Added to Ledger: ${action.payload.name}`, 'CEO');
-                    revertActions.push({ type: 'delete', table: 'clients', id: payload.id, key: `amp_clients_${userProfile?.stage || 'Default'}` });
+                    revertActions.push({ type: 'delete', table: 'clients', id: payload.id, key: `amp_clients_${clientStage}` });
                   } else if (action.type === 'add_multiple_leads') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const newLeads = action.payload.leads.map((l, i) => ({ id: Date.now().toString() + i, ...l, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
@@ -4550,13 +4583,14 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     logAction(`Generated ${action.payload.leads.length} Leads`, 'CMO');
                     newLeads.forEach(l => revertActions.push({ type: 'delete', table: 'leads', id: l.id, key: `amp_leads_${userProfile?.stage || 'Default'}` }));
                   } else if (action.type === 'add_multiple_clients') {
-                    const local = JSON.parse(localStorage.getItem(`amp_clients_${userProfile?.stage || 'Default'}`) || '[]');
-                    const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, business_stage: userProfile?.stage || 'Default', created_at: new Date().toISOString() }));
-                    localStorage.setItem(`amp_clients_${userProfile?.stage || 'Default'}`, JSON.stringify([...newClients, ...local]));
+                    const clientStage = action.payload.business_stage || userProfile?.stage || 'Default';
+                    const local = JSON.parse(localStorage.getItem(`amp_clients_${clientStage}`) || '[]');
+                    const newClients = action.payload.clients.map((c, i) => ({ id: Date.now().toString() + i, ...c, business_stage: clientStage, created_at: new Date().toISOString() }));
+                    localStorage.setItem(`amp_clients_${clientStage}`, JSON.stringify([...newClients, ...local]));
                     if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').insert(newClients.map(c => ({...c, user_id: session.user.id}))).then(); }
                     window.dispatchEvent(new Event('amp-simulated-sale'));
                     logAction(`Imported ${action.payload.clients.length} Clients/Members`, 'CEO');
-                    newClients.forEach(c => revertActions.push({ type: 'delete', table: 'clients', id: c.id, key: `amp_clients_${userProfile?.stage || 'Default'}` }));
+                    newClients.forEach(c => revertActions.push({ type: 'delete', table: 'clients', id: c.id, key: `amp_clients_${clientStage}` }));
                   } else if (action.type === 'update_lead') {
                     const local = JSON.parse(localStorage.getItem(`amp_leads_${userProfile?.stage || 'Default'}`) || '[]');
                     const index = local.findIndex(l => l.name.toLowerCase() === action.payload.name.toLowerCase());
@@ -4638,35 +4672,42 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       logAction(`Removed User: ${action.payload.name}`, 'CEO');
                     }
                   } else if (action.type === 'update_client') {
-                    const clients = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+                    const clientStage = action.payload.business_stage || userProfile?.stage || 'Default';
+                    const storageKey = `amp_clients_${clientStage}`;
+                    const clients = JSON.parse(localStorage.getItem(storageKey) || '[]');
                     const ci = clients.findIndex(c => c.name && c.name.toLowerCase() === action.payload.name.toLowerCase());
                     if (ci !== -1) {
-                      revertActions.push({ type: 'restore', table: 'clients', key: 'amp_clients', data: JSON.parse(JSON.stringify(clients[ci])) });
+                      revertActions.push({ type: 'restore', table: 'clients', key: storageKey, data: JSON.parse(JSON.stringify(clients[ci])) });
                       if (action.payload.new_name) clients[ci].name = action.payload.new_name;
                       if (action.payload.retainer) clients[ci].retainer = action.payload.retainer;
                       if (action.payload.ltv) clients[ci].ltv = action.payload.ltv;
                       if (action.payload.assigned_agents) clients[ci].assigned_agents = action.payload.assigned_agents;
                       if (action.payload.next_task) clients[ci].next_task = action.payload.next_task;
-                      localStorage.setItem('amp_clients', JSON.stringify(clients));
+                      localStorage.setItem(storageKey, JSON.stringify(clients));
+                      if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').update(action.payload).eq('name', action.payload.name).eq('user_id', session.user.id).then(); }
                       logAction(`Updated Client: ${action.payload.name}`, 'CEO');
                     }
                   } else if (action.type === 'remove_lead') {
-                    const leads = JSON.parse(localStorage.getItem('amp_leads') || '[]');
+                    const leadStage = action.payload.business_stage || userProfile?.stage || 'Default';
+                    const storageKey = `amp_leads_${leadStage}`;
+                    const leads = JSON.parse(localStorage.getItem(storageKey) || '[]');
                     const li = leads.findIndex(l => l.name && l.name.toLowerCase() === action.payload.name.toLowerCase());
                     if (li !== -1) {
-                      revertActions.push({ type: 'restore', table: 'leads', key: 'amp_leads', data: JSON.parse(JSON.stringify(leads[li])) });
+                      revertActions.push({ type: 'restore', table: 'leads', key: storageKey, data: JSON.parse(JSON.stringify(leads[li])) });
                       leads.splice(li, 1);
-                      localStorage.setItem('amp_leads', JSON.stringify(leads));
+                      localStorage.setItem(storageKey, JSON.stringify(leads));
                       if (supabaseClient && session?.user?.id) { supabaseClient.from('leads').delete().eq('name', action.payload.name).eq('user_id', session.user.id).then(); }
                       logAction(`Removed Lead: ${action.payload.name}`, 'CEO');
                     }
                   } else if (action.type === 'remove_client') {
-                    const clients = JSON.parse(localStorage.getItem('amp_clients') || '[]');
+                    const clientStage = action.payload.business_stage || userProfile?.stage || 'Default';
+                    const storageKey = `amp_clients_${clientStage}`;
+                    const clients = JSON.parse(localStorage.getItem(storageKey) || '[]');
                     const ci2 = clients.findIndex(c => c.name && c.name.toLowerCase() === action.payload.name.toLowerCase());
                     if (ci2 !== -1) {
-                      revertActions.push({ type: 'restore', table: 'clients', key: 'amp_clients', data: JSON.parse(JSON.stringify(clients[ci2])) });
+                      revertActions.push({ type: 'restore', table: 'clients', key: storageKey, data: JSON.parse(JSON.stringify(clients[ci2])) });
                       clients.splice(ci2, 1);
-                      localStorage.setItem('amp_clients', JSON.stringify(clients));
+                      localStorage.setItem(storageKey, JSON.stringify(clients));
                       if (supabaseClient && session?.user?.id) { supabaseClient.from('clients').delete().eq('name', action.payload.name).eq('user_id', session.user.id).then(); }
                       logAction(`Removed Client: ${action.payload.name}`, 'CEO');
                     }
@@ -5363,7 +5404,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       );
     };
 
-    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle, tableCols, inputLabels, entityLabel }) => {
+    const ClientLedger = ({ session, activeTasks, userProfile, onAddClient, onImportCsv, title, subtitle, tableCols, inputLabels, entityLabel, storageKeyOverride, dbStageOverride }) => {
       const isEcomm = userProfile?.stage === 'Ecomm';
       const isOrganizer = userProfile?.stage === 'Organizer';
       const isDispatcher = userProfile?.stage === 'Dispatcher';
@@ -5375,8 +5416,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
       const [formData, setFormData] = useState({ id: null, name: '', retainer: '', ltv: '', notes: '', is_leader: false, rank: '1', chat_link: '', chat_platform: 'whatsapp' });
 
-      const currentStage = userProfile?.stage || 'Default';
-      const storageKey = `amp_clients_${currentStage}`;
+      const currentStage = dbStageOverride || userProfile?.stage || 'Default';
+      const storageKey = storageKeyOverride || `amp_clients_${currentStage}`;
 
       const deleteClient = async (reason) => {
         if (!itemToDelete) return;
@@ -5458,8 +5499,8 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         window.addEventListener('amp-simulated-sale', handleSync);
         
         if (supabaseClient) {
-          const channel = supabaseClient.channel('realtime:clients')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, fetchClients)
+          const channel = supabaseClient.channel(`realtime:clients:${storageKey}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'clients', filter: `business_stage=eq.${currentStage}` }, fetchClients)
             .subscribe();
           return () => { 
             supabaseClient.removeChannel(channel); 
@@ -5468,7 +5509,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         }
         
         return () => window.removeEventListener('amp-simulated-sale', handleSync);
-      }, [session, userProfile?.stage]);
+      }, [session, userProfile?.stage, storageKey, currentStage]);
 
       const getAssignedAgent = (clientName, dbAgent) => {
         if (!activeTasks || !clientName) return dbAgent || 'Support';
@@ -5897,48 +5938,122 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
     };
 
     const FinanceTracker = ({ session, userProfile, onLogExpense, title, subtitle }) => {
+      const [activeTab, setActiveTab] = useState('overview');
       const [clients, setClients] = useState([]);
       const [transactions, setTransactions] = useState([]);
-      const [autoIncome, setAutoIncome] = useState(0);
+      const [invoices, setInvoices] = useState([]);
+      const [stripeConnected, setStripeConnected] = useState(false);
+      const [stripeSyncing, setStripeSyncing] = useState(false);
       const [showManualAdd, setShowManualAdd] = useState(false);
-      const [newTx, setNewTx] = useState({ type: 'Expense', amount: '', description: '' });
-      const [monthlyReport, setMonthlyReport] = useState(null);
+      const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+      const [showBillingModal, setShowBillingModal] = useState(false);
+      const [selectedClient, setSelectedClient] = useState(null);
+      
+      // Stripe credentials fields
+      const [publishableKey, setPublishableKey] = useState('pk_test_51Nx...8z9a');
+      const [secretKey, setSecretKey] = useState('sk_test_51Nx...2g7y');
+      const [webhookSecret, setWebhookSecret] = useState('whsec_7d...4a8e');
+      const [showKeys, setShowKeys] = useState(false);
 
-      const isEcomm = userProfile?.stage === 'Ecomm';
+      // Webhook event logger
+      const [webhookEvents, setWebhookEvents] = useState([
+        { id: 'evt_1', type: 'charge.succeeded', time: new Date(Date.now() - 3600000).toLocaleTimeString(), amount: '$150.00', status: 'processed' },
+        { id: 'evt_2', type: 'customer.subscription.created', time: new Date(Date.now() - 7200000).toLocaleTimeString(), amount: 'Sub: Pro SaaS ($79/mo)', status: 'processed' }
+      ]);
+
+      // Form States
+      const [newTx, setNewTx] = useState({ type: 'Expense', amount: '', description: '', category: 'General', clientName: '' });
+      const [newInvoice, setNewInvoice] = useState({
+        id: '',
+        clientName: '',
+        dueDate: '',
+        items: [{ desc: '', qty: 1, rate: 0 }],
+        category: 'Monthly Recurring Revenue'
+      });
+      const [billingConfig, setBillingConfig] = useState({
+        type: 'recurring',
+        amount: ''
+      });
+
+      const isSoftware = userProfile?.stage === 'Software';
       const currentStage = userProfile?.stage || 'Default';
       const storageKey = `amp_finances_${currentStage}`;
+      const invoicesKey = `amp_invoices_${currentStage}`;
 
-      const fetchClients = async () => {
-        let currentLocal = [];
+      // Load client ledger and software subscriber list (if Software stage)
+      const fetchClientsAndSubscribers = async () => {
+        let allClients = [];
         try {
-          currentLocal = JSON.parse(localStorage.getItem(`amp_clients_${currentStage}`) || '[]');
-        } catch(e) {}
-        
-        let allClients = [...currentLocal];
-        if (supabaseClient && session?.user?.id) {
-           try {
-             const { data, error } = await supabaseClient.from('clients').select('*').eq('business_stage', currentStage);
-             if (!error && data) {
-                const remoteIds = new Set(data.map(d => d.id));
-                const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
-                allClients = [...data, ...localOnly];
-             }
-           } catch(e) {}
+          if (isSoftware) {
+            // Fetch traditional clients
+            const localClients = JSON.parse(localStorage.getItem('amp_clients_Software_Clients') || '[]');
+            const clientsWithMeta = localClients.map(c => ({ ...c, accountType: 'Client' }));
+            
+            // Fetch subscribers
+            const localSubs = JSON.parse(localStorage.getItem('amp_clients_Software') || '[]');
+            const subsWithMeta = localSubs.map(s => ({ ...s, accountType: 'Subscriber' }));
+            
+            allClients = [...clientsWithMeta, ...subsWithMeta];
+          } else {
+            const localClients = JSON.parse(localStorage.getItem(`amp_clients_${currentStage}`) || '[]');
+            allClients = localClients.map(c => ({ ...c, accountType: 'Client' }));
+          }
+        } catch (e) {
+          console.error("Error reading clients", e);
         }
-        setClients(allClients);
-        let total = 0;
-        allClients.forEach(c => {
-          const valStr = String(isEcomm ? (c.ltv || '0') : (c.retainer || '0'));
-          const val = parseFloat(valStr.replace(/[^0-9.]/g, '')) || 0;
-          total += val;
+        
+        // Fetch from Supabase if active
+        if (supabaseClient && session?.user?.id) {
+          try {
+            if (isSoftware) {
+              const { data: remoteClients } = await supabaseClient.from('clients').select('*').eq('business_stage', 'Software_Clients');
+              const { data: remoteSubs } = await supabaseClient.from('clients').select('*').eq('business_stage', 'Software');
+              
+              const mergedClients = remoteClients ? [...remoteClients.map(c => ({ ...c, accountType: 'Client' }))] : [];
+              const mergedSubs = remoteSubs ? [...remoteSubs.map(s => ({ ...s, accountType: 'Subscriber' }))] : [];
+              
+              // Filter out local duplicates
+              const remoteIds = new Set([...mergedClients, ...mergedSubs].map(d => d.id));
+              const localOnly = allClients.filter(l => !remoteIds.has(l.id));
+              allClients = [...mergedClients, ...mergedSubs, ...localOnly];
+            } else {
+              const { data: remote } = await supabaseClient.from('clients').select('*').eq('business_stage', currentStage);
+              if (remote) {
+                const remoteIds = new Set(remote.map(d => d.id));
+                const localOnly = allClients.filter(l => !remoteIds.has(l.id));
+                allClients = [...remote.map(c => ({ ...c, accountType: 'Client' })), ...localOnly];
+              }
+            }
+          } catch(e) {}
+        }
+
+        // Initialize missing billing parameters automatically
+        const clientsWithBilling = allClients.map(c => {
+          // If no billing configuration is set, try parsing retainer field
+          if (!c.billing_type) {
+            const retainerVal = String(c.retainer || '0');
+            const cleanRetainer = parseFloat(retainerVal.replace(/[^0-9.]/g, '')) || 0;
+            const isRecurring = retainerVal.toLowerCase().includes('mo') || cleanRetainer > 0;
+            
+            return {
+              ...c,
+              billing_type: isRecurring ? 'recurring' : 'one_time',
+              mrr_amount: isRecurring ? cleanRetainer : 0,
+              one_time_amount: isRecurring ? 0 : cleanRetainer
+            };
+          }
+          return c;
         });
-        setAutoIncome(total);
+
+        setClients(clientsWithBilling);
       };
 
       const fetchFinances = async () => {
         let currentLocal = [];
+        let localInvoices = [];
         try {
           currentLocal = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          localInvoices = JSON.parse(localStorage.getItem(invoicesKey) || '[]');
         } catch(e) {}
 
         if (supabaseClient && session?.user?.id) {
@@ -5948,66 +6063,74 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
               const remoteIds = new Set(data.map(d => d.id));
               const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
               setTransactions([...data, ...localOnly]);
-              return;
+            } else {
+              setTransactions(currentLocal);
             }
           } catch (e) {
-             console.warn("Finances table likely missing.");
+            setTransactions(currentLocal);
           }
+        } else {
+          setTransactions(currentLocal);
         }
-        setTransactions(currentLocal);
+
+        // Initialize mockup invoices if empty
+        if (localInvoices.length === 0) {
+          localInvoices = [
+            { id: 'INV-2026-001', clientName: 'Stripe SaaS Payout', issueDate: new Date(Date.now() - 86400000 * 3).toLocaleDateString(), dueDate: new Date(Date.now() + 86400000 * 10).toLocaleDateString(), items: [{ desc: 'Pro Subscription Package', qty: 1, rate: 150 }], amount: 150, status: 'Paid', category: 'Monthly Recurring Revenue' },
+            { id: 'INV-2026-002', clientName: 'Enterprise Consulting', issueDate: new Date(Date.now() - 86400000 * 5).toLocaleDateString(), dueDate: new Date(Date.now() - 86400000 * 1).toLocaleDateString(), items: [{ desc: 'Custom Cloud Architecture Setup', qty: 1, rate: 2500 }], amount: 2500, status: 'Sent', category: 'One-Time Payment' }
+          ];
+          localStorage.setItem(invoicesKey, JSON.stringify(localInvoices));
+        }
+        setInvoices(localInvoices);
       };
 
       useEffect(() => {
-        fetchClients();
+        fetchClientsAndSubscribers();
         fetchFinances();
         
         const handleSync = () => {
-          fetchClients();
+          fetchClientsAndSubscribers();
           fetchFinances();
         };
         window.addEventListener('amp-simulated-sale', handleSync);
+        window.addEventListener('amp-leads-updated', handleSync);
+        window.addEventListener('amp-clients-updated', handleSync);
         
-        return () => window.removeEventListener('amp-simulated-sale', handleSync);
+        return () => {
+          window.removeEventListener('amp-simulated-sale', handleSync);
+          window.removeEventListener('amp-leads-updated', handleSync);
+          window.removeEventListener('amp-clients-updated', handleSync);
+        };
       }, [userProfile?.stage, session]);
 
-      const manualIncome = transactions.filter(t => t.type === 'Income').reduce((acc, t) => acc + t.amount, 0);
-      const manualExpenses = transactions.filter(t => t.type === 'Expense').reduce((acc, t) => acc + t.amount, 0);
-      
-      const totalIncome = autoIncome + manualIncome;
+      // Financial Calculation Engine
+      const autoIncome = clients.reduce((acc, c) => {
+        if (c.billing_type === 'recurring') {
+          return acc + (parseFloat(c.mrr_amount) || 0);
+        }
+        return acc;
+      }, 0);
+
+      const manualIncome = transactions.filter(t => t.type === 'Income').reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
+      const manualExpenses = transactions.filter(t => t.type === 'Expense').reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
+      const paidInvoicesIncome = invoices.filter(inv => inv.status === 'Paid' && !transactions.some(t => t.description.includes(inv.id))).reduce((acc, inv) => acc + (parseFloat(inv.amount) || 0), 0);
+
+      const totalIncome = autoIncome + manualIncome + paidInvoicesIncome;
       const netProfit = totalIncome - manualExpenses;
 
-      useEffect(() => {
-        const today = new Date();
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        
-        if (today.getDate() === lastDayOfMonth) {
-          const reportKey = `amp_report_${currentStage}_${today.getFullYear()}_${today.getMonth()}`;
-          const saved = localStorage.getItem(reportKey);
-          if (saved) {
-            setMonthlyReport(JSON.parse(saved));
-          } else if (totalIncome > 0 || manualExpenses > 0) {
-            const report = {
-              date: today.toLocaleDateString(),
-              revenue: totalIncome,
-              expenses: manualExpenses,
-              profit: netProfit,
-              month: today.toLocaleString('default', { month: 'long' })
-            };
-            localStorage.setItem(reportKey, JSON.stringify(report));
-            setMonthlyReport(report);
-          }
-        }
-      }, [totalIncome, manualExpenses, netProfit, currentStage]);
-
+      // Log Transaction Handler
       const handleAddTx = async () => {
         if (!newTx.amount || !newTx.description) return;
         const amountNum = parseFloat(newTx.amount.replace(/[^0-9.]/g, ''));
         const payload = {
+          id: Date.now().toString(),
           user_id: session?.user?.id || 'local',
           business_stage: currentStage,
           type: newTx.type,
           amount: amountNum,
           description: newTx.description,
+          category: newTx.category,
+          client_name: newTx.clientName || null,
           created_at: new Date().toISOString()
         };
 
@@ -6020,85 +6143,1060 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         const newTxs = [payload, ...transactions];
         setTransactions(newTxs);
         localStorage.setItem(storageKey, JSON.stringify(newTxs));
+
+        // If client is selected, update their LTV in ledger
+        if (newTx.clientName && newTx.type === 'Income') {
+          updateClientLTV(newTx.clientName, amountNum);
+        }
         
-        setNewTx({ type: 'Expense', amount: '', description: '' });
+        setNewTx({ type: 'Expense', amount: '', description: '', category: 'General', clientName: '' });
         setShowManualAdd(false);
+      };
+
+      // Helper to update client LTV in storage
+      const updateClientLTV = (name, amount) => {
+        const clientObj = clients.find(c => c.name === name);
+        if (!clientObj) return;
+
+        const targetStage = clientObj.business_stage || (clientObj.accountType === 'Subscriber' ? 'Software' : 'Software_Clients');
+        const cKey = `amp_clients_${targetStage}`;
+        const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
+        
+        const updated = currentLocal.map(c => {
+          if (c.name === name) {
+            const currentLtvVal = parseFloat(String(c.ltv || '0').replace(/[^0-9.]/g, '')) || 0;
+            const newLtv = currentLtvVal + amount;
+            return { ...c, ltv: `$${newLtv.toLocaleString()}` };
+          }
+          return c;
+        });
+
+        localStorage.setItem(cKey, JSON.stringify(updated));
+        fetchClientsAndSubscribers();
+      };
+
+      // Save Client Billing Config Handler
+      const handleSaveBilling = () => {
+        if (!selectedClient) return;
+
+        const targetStage = selectedClient.business_stage || (selectedClient.accountType === 'Subscriber' ? 'Software' : 'Software_Clients');
+        const cKey = `amp_clients_${targetStage}`;
+        const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
+        
+        const amountNum = parseFloat(billingConfig.amount) || 0;
+        const updated = currentLocal.map(c => {
+          if (c.name === selectedClient.name) {
+            return { 
+              ...c, 
+              billing_type: billingConfig.type,
+              mrr_amount: billingConfig.type === 'recurring' ? amountNum : 0,
+              one_time_amount: billingConfig.type === 'one_time' ? amountNum : 0,
+              retainer: billingConfig.type === 'recurring' ? `$${amountNum}/mo` : `$${amountNum} One-time`
+            };
+          }
+          return c;
+        });
+
+        localStorage.setItem(cKey, JSON.stringify(updated));
+        setShowBillingModal(false);
+        fetchClientsAndSubscribers();
+      };
+
+      // Save Invoice Handler
+      const handleCreateInvoice = () => {
+        if (!newInvoice.clientName) {
+          alert('Please select a client.');
+          return;
+        }
+
+        const totalAmt = newInvoice.items.reduce((sum, item) => sum + (item.qty * item.rate), 0);
+        const invoicePayload = {
+          id: `INV-2026-${String(invoices.length + 1).padStart(3, '0')}`,
+          clientName: newInvoice.clientName,
+          issueDate: new Date().toLocaleDateString(),
+          dueDate: newInvoice.dueDate || new Date(Date.now() + 86400000 * 14).toLocaleDateString(),
+          items: newInvoice.items,
+          amount: totalAmt,
+          status: 'Draft',
+          category: newInvoice.category
+        };
+
+        const updatedInvs = [invoicePayload, ...invoices];
+        setInvoices(updatedInvs);
+        localStorage.setItem(invoicesKey, JSON.stringify(updatedInvs));
+        setShowInvoiceModal(false);
+        setNewInvoice({ id: '', clientName: '', dueDate: '', items: [{ desc: '', qty: 1, rate: 0 }], category: 'Monthly Recurring Revenue' });
+      };
+
+      // Send Invoice simulation
+      const handleSendInvoice = (inv) => {
+        const updated = invoices.map(i => {
+          if (i.id === inv.id) {
+            return { ...i, status: 'Sent' };
+          }
+          return i;
+        });
+        setInvoices(updated);
+        localStorage.setItem(invoicesKey, JSON.stringify(updated));
+
+        // Create outreach log in Team Chat/Logs
+        const msgText = `[Invoice System] Invoice ${inv.id} for $${inv.amount.toLocaleString()} was successfully drafted and sent to client "${inv.clientName}". Due Date: ${inv.dueDate}`;
+        
+        // Dispatch custom events to log outreach
+        window.dispatchEvent(new CustomEvent('amp-log-action', { 
+          detail: { message: `Sent Invoice ${inv.id} to ${inv.clientName}`, agent: 'CEO' }
+        }));
+        
+        alert(`Invoice ${inv.id} sent to ${inv.clientName}!`);
+      };
+
+      // Mark Invoice Paid simulation
+      const handleMarkPaid = (inv) => {
+        const updated = invoices.map(i => {
+          if (i.id === inv.id) {
+            return { ...i, status: 'Paid' };
+          }
+          return i;
+        });
+        setInvoices(updated);
+        localStorage.setItem(invoicesKey, JSON.stringify(updated));
+
+        // Automatically log as income transaction
+        const payload = {
+          id: Date.now().toString(),
+          user_id: session?.user?.id || 'local',
+          business_stage: currentStage,
+          type: 'Income',
+          amount: inv.amount,
+          description: `Invoice Payment: ${inv.id} - ${inv.clientName}`,
+          category: inv.category === 'Monthly Recurring Revenue' ? 'Monthly Recurring Revenue' : 'One-Time Payment',
+          client_name: inv.clientName,
+          created_at: new Date().toISOString()
+        };
+
+        if (supabaseClient && session?.user?.id) {
+          supabaseClient.from('finances').insert([payload]).then();
+        }
+
+        const newTxs = [payload, ...transactions];
+        setTransactions(newTxs);
+        localStorage.setItem(storageKey, JSON.stringify(newTxs));
+        
+        updateClientLTV(inv.clientName, inv.amount);
+        alert(`Invoice ${inv.id} marked as PAID. Income logged in ledger.`);
+      };
+
+      // Mock Stripe sync handler
+      const handleStripeSync = () => {
+        setStripeSyncing(true);
+        setTimeout(() => {
+          setStripeSyncing(false);
+          setStripeConnected(true);
+          
+          // Generate 3 simulated webhook transactions
+          const t1 = {
+            id: 'st_tx_' + Date.now() + '1',
+            user_id: session?.user?.id || 'local',
+            business_stage: currentStage,
+            type: 'Income',
+            amount: 150.00,
+            description: 'Stripe Webhook: subscription_payment (John Doe SaaS)',
+            category: 'Monthly Recurring Revenue',
+            client_name: 'John Doe',
+            created_at: new Date().toISOString()
+          };
+          const t2 = {
+            id: 'st_tx_' + Date.now() + '2',
+            user_id: session?.user?.id || 'local',
+            business_stage: currentStage,
+            type: 'Income',
+            amount: 450.00,
+            description: 'Stripe Webhook: payment_intent_succeeded (Acme Corp Consulting)',
+            category: 'One-Time Payment',
+            client_name: 'Acme Corp',
+            created_at: new Date().toISOString()
+          };
+          const t3 = {
+            id: 'st_tx_' + Date.now() + '3',
+            user_id: session?.user?.id || 'local',
+            business_stage: currentStage,
+            type: 'Expense',
+            amount: 15.00,
+            description: 'Stripe Fee Deduction (Transaction processing)',
+            category: 'Merchant Fees',
+            client_name: null,
+            created_at: new Date().toISOString()
+          };
+
+          const newTxs = [t1, t2, t3, ...transactions];
+          setTransactions(newTxs);
+          localStorage.setItem(storageKey, JSON.stringify(newTxs));
+
+          // Log webhooks
+          setWebhookEvents([
+            { id: 'evt_' + Date.now() + '1', type: 'invoice.payment_succeeded', time: new Date().toLocaleTimeString(), amount: '$150.00', status: 'processed' },
+            { id: 'evt_' + Date.now() + '2', type: 'charge.succeeded', time: new Date().toLocaleTimeString(), amount: '$450.00', status: 'processed' },
+            { id: 'evt_' + Date.now() + '3', type: 'customer.subscription.created', time: new Date().toLocaleTimeString(), amount: 'Sub: Premium ($150/mo)', status: 'processed' },
+            ...webhookEvents
+          ]);
+
+          alert('Stripe Account Synced! Factorized recurring subscribers and invoice events into revenue.');
+        }, 1500);
+      };
+
+      // PDF Revenue Report Generation
+      const handleGeneratePDFReport = () => {
+        const today = new Date();
+        const monthName = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+        
+        // Compile report Markdown
+        const reportContent = `
+# Executive Financial Overview: ${monthName}
+Generated autonomously by custom CEO/Product Agent.
+
+## Core Financial Metrics
+- **Total Revenue (MTD)**: $${totalIncome.toLocaleString()}
+- **Monthly Recurring Revenue (MRR)**: $${autoIncome.toLocaleString()}
+- **Total Expenses (MTD)**: $${manualExpenses.toLocaleString()}
+- **Net Operating Profit**: $${netProfit.toLocaleString()}
+- **Profit Margin**: ${totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) + '%' : '0%'}
+
+## Client Revenue Contribution Details
+${clients.map(c => `
+- **${c.name}** (${c.accountType})
+  - Billing Type: ${c.billing_type === 'recurring' ? 'Recurring Monthly' : 'One-Time Sale'}
+  - Current Monthly/One-time Value: $${(c.mrr_amount || c.one_time_amount || 0).toLocaleString()}
+  - Total Lifetime Value (LTV): ${c.ltv || '$0'}
+`).join('')}
+
+## Invoice Status Breakdown
+- Outstanding Invoices: ${invoices.filter(i => i.status !== 'Paid').length} ($${invoices.filter(i => i.status !== 'Paid').reduce((s, i) => s + i.amount, 0).toLocaleString()} pending)
+- Cleared Invoices: ${invoices.filter(i => i.status === 'Paid').length}
+
+## Stripe Webhook Sync Status
+- Sync Mode: Active Webhook Webhook Listener
+- Stripe Integration Status: ${stripeConnected ? 'CONNECTED' : 'DISCONNECTED / MOCKED'}
+- Recent API Handshakes: Successful
+
+## Month-End Transactions Log
+${transactions.slice(0, 15).map(t => `
+- [${new Date(t.created_at).toLocaleDateString()}] ${t.description} (${t.type}): ${t.type === 'Income' ? '+' : '-'}$${t.amount.toLocaleString()}
+`).join('')}
+`;
+
+        // Save report to Documents Archive (amp_documents)
+        const docPayload = {
+          id: 'DOC-FIN-' + Date.now(),
+          title: `Monthly Revenue Report - ${monthName}`,
+          content: reportContent,
+          document_type: 'Financial Report',
+          created_at: new Date().toISOString()
+        };
+
+        const localDocs = JSON.parse(localStorage.getItem('amp_documents') || '[]');
+        localDocs.unshift(docPayload);
+        localStorage.setItem('amp_documents', JSON.stringify(localDocs));
+        window.dispatchEvent(new Event('amp-documents-updated'));
+
+        // Print Report Popup Window
+        const printWindow = window.open('', '_blank');
+        const formattedContent = reportContent
+          .replace(/# (.*?)\n/g, '<h1>$1</h1>')
+          .replace(/## (.*?)\n/g, '<h2>$1</h2>')
+          .replace(/- \*\*(.*?)\*\*/g, '<li><strong>$1</strong>')
+          .replace(/- (.*?)\n/g, '<li>$1</li>')
+          .replace(/\n/g, '<br/>');
+
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Financial Report - ${monthName}</title>
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+              <style>
+                body { 
+                  font-family: 'Inter', -apple-system, sans-serif; 
+                  padding: 40px; 
+                  color: #1a1a1a; 
+                  line-height: 1.6; 
+                  max-width: 850px;
+                  margin: 0 auto;
+                }
+                .header-block {
+                  border-bottom: 3px solid #46d4c6;
+                  margin-bottom: 40px;
+                  padding-bottom: 20px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-end;
+                }
+                .title-area h1 { 
+                  font-size: 26px;
+                  font-weight: 700;
+                  margin: 0 0 5px 0;
+                  color: #0b0f19;
+                }
+                .title-area .meta { 
+                  color: #666; 
+                  font-size: 12px; 
+                  font-family: monospace;
+                }
+                .logo-mockup {
+                  font-weight: 800;
+                  font-size: 20px;
+                  color: #ff9146;
+                  letter-spacing: -0.5px;
+                }
+                h2 {
+                  font-size: 18px;
+                  font-weight: 600;
+                  color: #0b0f19;
+                  margin-top: 30px;
+                  border-bottom: 1px solid #eee;
+                  padding-bottom: 8px;
+                }
+                .kpis {
+                  display: grid;
+                  grid-template-cols: repeat(4, 1fr);
+                  gap: 15px;
+                  margin: 20px 0;
+                }
+                .kpi-card {
+                  background: #f8fafc;
+                  border: 1px solid #e2e8f0;
+                  border-radius: 12px;
+                  padding: 15px;
+                  text-align: center;
+                }
+                .kpi-val {
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: #0f172a;
+                }
+                .kpi-label {
+                  font-size: 11px;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  margin-top: 4px;
+                }
+                .content { 
+                  font-size: 14px; 
+                  color: #334155;
+                }
+                li { margin-bottom: 8px; }
+                strong { font-weight: 600; color: #0f172a; }
+                @media print {
+                  body { padding: 0; }
+                  @page { margin: 1.5cm; }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="header-block">
+                <div class="title-area">
+                  <h1>Monthly Financial Report</h1>
+                  <div class="meta">PERIOD: ${monthName} / GENERATED BY AMP CENTER AI / DATE: ${today.toLocaleDateString()}</div>
+                </div>
+                <div class="logo-mockup">PROJECT D</div>
+              </div>
+              <div class="kpis">
+                <div class="kpi-card">
+                  <div class="kpi-val">$${totalIncome.toLocaleString()}</div>
+                  <div class="kpi-label">Revenue MTD</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-val">$${autoIncome.toLocaleString()}</div>
+                  <div class="kpi-label">MRR Baseline</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-val">$${manualExpenses.toLocaleString()}</div>
+                  <div class="kpi-label">Expenses</div>
+                </div>
+                <div class="kpi-card" style="background: #e6fcf5; border-color: #c3fae8;">
+                  <div class="kpi-val" style="color: #0ca678;">$${netProfit.toLocaleString()}</div>
+                  <div class="kpi-label" style="color: #0ca678;">Net Profit</div>
+                </div>
+              </div>
+              <div class="content">${formattedContent}</div>
+              <script>
+                window.onload = () => {
+                  setTimeout(() => {
+                    window.print();
+                    window.close();
+                  }, 600);
+                };
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        // Notify chat/activity log
+        alert('Financial report generated and saved to Documents Archive successfully!');
       };
 
       return (
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="p-4 md:p-8 flex-shrink-0 flex flex-col md:flex-row justify-between items-start border-b border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-white/5 gap-4">
+          {/* Advanced Header & Tab Selector */}
+          <div className="p-4 md:p-6 flex-shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-pd-glassBorder bg-white/50 dark:bg-white/5 gap-4">
             <div>
-              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">{title || 'Financial Tracker'}</h2>
-              <p className="text-xs text-gray-500">{subtitle || 'Autonomous revenue tracking & expense logging.'}</p>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white mb-1">
+                {isSoftware ? 'MRR & Finance Command' : (title || 'Financial Tracker')}
+              </h2>
+              <p className="text-xs text-gray-500">
+                {isSoftware ? 'Autonomous SaaS recurring revenue calculations & client balance logs.' : (subtitle || 'Autonomous revenue tracking & expense logging.')}
+              </p>
             </div>
-            <div className="flex gap-2 w-full md:w-auto items-center">
-              {monthlyReport && (
-                <div className="px-3 py-1.5 rounded-lg bg-pd-teal/10 border border-pd-teal/30 text-pd-teal text-xs flex items-center gap-2 cursor-help hidden md:flex" title={`Monthly Report for ${monthlyReport.month}: Revenue: $${monthlyReport.revenue}, Expenses: $${monthlyReport.expenses}, Profit: $${monthlyReport.profit}`}>
-                  <iconify-icon icon="solar:document-text-bold"></iconify-icon> {monthlyReport.month} Report Drafted
-                </div>
-              )}
-              <button onClick={() => setShowManualAdd(!showManualAdd)} className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} className="mr-2"></iconify-icon> {showManualAdd ? 'Cancel' : 'Manual Entry'}
-              </span></button>
-              <button onClick={onLogExpense} className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"><div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div><div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div><span className="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:add-circle-linear" className="mr-2"></iconify-icon> Ask CEO to Log
-              </span></button>
+            
+            {/* Action Buttons with Premium Spin Effects */}
+            <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+              <button 
+                onClick={handleGeneratePDFReport}
+                className="group inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate bg-pd-orange rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(255,145,70,0.18)] hover:shadow-[0_6px_32px_rgba(255,145,70,0.28)] hover:-translate-y-[1px] active:scale-[0.98]"
+              >
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-pd-orange transition-colors duration-500 pointer-events-none z-0"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <iconify-icon icon="solar:document-text-bold" width="16"></iconify-icon>
+                  Generate Report PDF
+                </span>
+              </button>
+
+              <button 
+                onClick={() => setShowManualAdd(!showManualAdd)} 
+                className="group inline-flex gap-1.5 transition-all duration-500 text-gray-900 dark:text-white overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] active:scale-[0.98]"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} width="16"></iconify-icon>
+                  {showManualAdd ? 'Cancel' : 'Log Transaction'}
+                </span>
+              </button>
             </div>
           </div>
 
+          {/* Premium Sub-Navigation Tabs */}
+          <div className="flex bg-gray-200/50 dark:bg-black/20 p-1 border-b border-gray-200 dark:border-pd-glassBorder overflow-x-auto snap-x flex-shrink-0">
+            {[
+              { id: 'overview', label: 'Financial Overview', icon: 'solar:chart-square-linear' },
+              { id: 'billing', label: 'Accounts Billing Config', icon: 'solar:settings-bold-duotone' },
+              { id: 'invoices', label: 'Invoices Hub', icon: 'solar:document-text-linear' },
+              { id: 'stripe', label: 'Stripe Sync Settings', icon: 'solar:card-send-bold' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold transition-all shrink-0 snap-center ${activeTab === tab.id ? 'bg-white dark:bg-[#0f172a] text-pd-teal shadow-sm border-b-2 border-pd-teal' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/10'}`}
+              >
+                <iconify-icon icon={tab.icon} width="16"></iconify-icon>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm">
-                <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Revenue <iconify-icon icon="solar:wallet-money-bold" className="text-green-500"></iconify-icon></div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">${totalIncome.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-400 mt-2">Autonomous: ${autoIncome.toLocaleString()} {isEcomm ? '(LTV)' : '(Retainers)'}</div>
+
+            {/* TAB 1: FINANCIAL OVERVIEW */}
+            {activeTab === 'overview' && (
+              <>
+                {/* Dashboard Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-pd-teal/5 rounded-full filter blur-xl"></div>
+                    <div className="text-gray-500 text-xs mb-1 flex justify-between">Monthly Recurring Revenue (MRR) <iconify-icon icon="solar:wallet-money-bold" className="text-pd-teal"></iconify-icon></div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">${autoIncome.toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-400 mt-2">Baseline from active contracts/subs</div>
+                  </div>
+                  
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300">
+                    <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Revenue (MTD) <iconify-icon icon="solar:round-arrow-right-up-bold" className="text-green-500"></iconify-icon></div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">${totalIncome.toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-400 mt-2">MRR + one-time + invoices + stripe</div>
+                  </div>
+
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300">
+                    <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Expenses (MTD) <iconify-icon icon="solar:card-send-bold" className="text-red-500"></iconify-icon></div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">${manualExpenses.toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-400 mt-2">Logged manually or by agents</div>
+                  </div>
+
+                  <div className={`border rounded-2xl p-5 shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ${netProfit >= 0 ? 'bg-pd-teal/10 border-pd-teal/30' : 'bg-red-500/10 border-red-500/30'}`}>
+                    <div className="text-gray-500 dark:text-gray-400 text-xs mb-1 flex justify-between">Net Profit <iconify-icon icon="solar:chart-square-bold" className={netProfit >= 0 ? "text-pd-teal" : "text-red-500"}></iconify-icon></div>
+                    <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-pd-teal' : 'text-red-500'}`}>${netProfit.toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">Operating profit margin</div>
+                  </div>
+                </div>
+
+                {/* Manual Log Inputs */}
+                {showManualAdd && (
+                  <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-lg animate-fade-in space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      <iconify-icon icon="solar:pen-bold" className="text-pd-teal"></iconify-icon>
+                      Log Manual Transaction
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-gray-500 mb-1">Type</label>
+                        <select value={newTx.type} onChange={e => setNewTx({...newTx, type: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none">
+                          <option value="Expense">Expense</option>
+                          <option value="Income">Income</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase text-gray-500 mb-1">Amount ($)</label>
+                        <input type="text" placeholder="Amount (e.g. 150.00)" value={newTx.amount} onChange={e => setNewTx({...newTx, amount: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase text-gray-500 mb-1">Description</label>
+                        <input type="text" placeholder="Description (e.g. Server hosting)" value={newTx.description} onChange={e => setNewTx({...newTx, description: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase text-gray-500 mb-1">Category</label>
+                        <select value={newTx.category} onChange={e => setNewTx({...newTx, category: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none">
+                          <option value="General">General</option>
+                          <option value="Monthly Recurring Revenue">Monthly Recurring Revenue</option>
+                          <option value="One-Time Payment">One-Time Payment</option>
+                          <option value="Software Cost">Software Cost</option>
+                          <option value="Merchant Fees">Merchant Fees</option>
+                          <option value="Marketing Expense">Marketing Expense</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase text-gray-500 mb-1">Associate Client</label>
+                        <select value={newTx.clientName} onChange={e => setNewTx({...newTx, clientName: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none">
+                          <option value="">-- None --</option>
+                          {clients.map(c => <option key={c.id} value={c.name}>{c.name} ({c.accountType})</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => setShowManualAdd(false)} className="px-4 py-2 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
+                      <button onClick={handleAddTx} className="bg-pd-teal text-black font-semibold rounded-xl px-4 py-2 text-xs transition-colors shadow-lg shadow-pd-teal/20">Add Ledger Entry</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Transaction Ledger Table */}
+                <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Transaction Ledger</h3>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[500px]">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-pd-glassBorder text-xs text-gray-500 uppercase tracking-wider">
+                          <th className="pb-3 font-medium">Date</th>
+                          <th className="pb-3 font-medium">Description</th>
+                          <th className="pb-3 font-medium">Category</th>
+                          <th className="pb-3 font-medium">Client Associated</th>
+                          <th className="pb-3 font-medium text-right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {transactions.length === 0 ? (
+                          <tr><td colSpan="5" className="py-8 text-center text-xs text-gray-500 italic">No manual or Stripe transactions logged yet.</td></tr>
+                        ) : transactions.map((t, i) => (
+                          <tr key={i} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <td className="py-3 text-sm text-gray-500">{new Date(t.created_at).toLocaleDateString()}</td>
+                            <td className="py-3 text-sm text-gray-900 dark:text-white font-medium">{t.description}</td>
+                            <td className="py-3 text-sm">
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-semibold uppercase ${t.type === 'Income' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{t.category || t.type}</span>
+                            </td>
+                            <td className="py-3 text-sm text-gray-500 italic">{t.client_name || '-'}</td>
+                            <td className={`py-3 text-sm text-right font-semibold ${t.type === 'Income' ? 'text-green-500' : 'text-gray-900 dark:text-white'}`}>
+                              {t.type === 'Income' ? '+' : '-'}${parseFloat(t.amount || 0).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* TAB 2: CLIENT BILLING CONFIGURATION */}
+            {activeTab === 'billing' && (
+              <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Accounts Billing Configurations</h3>
+                  <p className="text-xs text-gray-400">Map and configure recurring MRR profiles for clients and software users in your ledgers.</p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-pd-glassBorder text-xs text-gray-500 uppercase tracking-wider">
+                        <th className="pb-3 font-medium">Account Name</th>
+                        <th className="pb-3 font-medium">Ledger Type</th>
+                        <th className="pb-3 font-medium">Billing Model</th>
+                        <th className="pb-3 font-medium">Monthly Revenue</th>
+                        <th className="pb-3 font-medium">All-time LTV</th>
+                        <th className="pb-3 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {clients.length === 0 ? (
+                        <tr><td colSpan="6" className="py-8 text-center text-xs text-gray-500 italic">No clients or subscribers found. Add them in the ledger first.</td></tr>
+                      ) : clients.map((c, i) => (
+                        <tr key={i} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                          <td className="py-3.5 text-sm text-gray-900 dark:text-white font-medium">{c.name}</td>
+                          <td className="py-3.5 text-sm">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${c.accountType === 'Subscriber' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-pd-teal/10 text-pd-teal border border-pd-teal/20'}`}>{c.accountType}</span>
+                          </td>
+                          <td className="py-3.5 text-sm">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${c.billing_type === 'recurring' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-400'}`}>
+                              {c.billing_type === 'recurring' ? 'Monthly MRR' : 'One-Time Purchaser'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 text-sm font-mono text-gray-900 dark:text-white">
+                            ${c.billing_type === 'recurring' ? (parseFloat(c.mrr_amount || 0).toLocaleString()) : '0'} /mo
+                          </td>
+                          <td className="py-3.5 text-sm font-semibold text-gray-900 dark:text-white">{c.ltv || '$0'}</td>
+                          <td className="py-3.5 text-sm text-right">
+                            <button 
+                              onClick={() => { setSelectedClient(c); setBillingConfig({ type: c.billing_type || 'recurring', amount: String(c.billing_type === 'recurring' ? c.mrr_amount : (c.one_time_amount || 0)) }); setShowBillingModal(true); }}
+                              className="px-3 py-1 bg-black/5 dark:bg-white/10 hover:bg-pd-teal hover:text-black rounded-lg text-xs font-semibold transition-colors"
+                            >
+                              Configure Billing
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm">
-                <div className="text-gray-500 text-xs mb-1 flex justify-between">Total Expenses <iconify-icon icon="solar:card-send-bold" className="text-red-500"></iconify-icon></div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">${manualExpenses.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-400 mt-2">Logged manually or by CEO</div>
+            )}
+
+            {/* TAB 3: INVOICES HUB */}
+            {activeTab === 'invoices' && (
+              <div className="space-y-6">
+                {/* Stats row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-xl p-4 text-center">
+                    <div className="text-gray-500 text-xs mb-1">Total Outstanding</div>
+                    <div className="text-xl font-bold">${invoices.filter(i => i.status !== 'Paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}</div>
+                  </div>
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-xl p-4 text-center">
+                    <div className="text-gray-500 text-xs mb-1">Drafts</div>
+                    <div className="text-xl font-bold text-gray-400">{invoices.filter(i => i.status === 'Draft').length}</div>
+                  </div>
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-xl p-4 text-center">
+                    <div className="text-gray-500 text-xs mb-1">Sent / Pending</div>
+                    <div className="text-xl font-bold text-pd-orange">{invoices.filter(i => i.status === 'Sent').length}</div>
+                  </div>
+                  <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-xl p-4 text-center">
+                    <div className="text-gray-500 text-xs mb-1">Cleared Invoices</div>
+                    <div className="text-xl font-bold text-pd-teal">{invoices.filter(i => i.status === 'Paid').length}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Active Invoices Command</h3>
+                      <p className="text-xs text-gray-400">Generate, send out, and clear customer invoices manually.</p>
+                    </div>
+                    <button 
+                      onClick={() => setShowInvoiceModal(true)} 
+                      className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center text-xs font-semibold shadow-lg shadow-pd-teal/20"
+                    >
+                      <iconify-icon icon="solar:add-circle-linear" className="mr-2" width="16"></iconify-icon>
+                      Create Invoice
+                    </button>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[600px]">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-pd-glassBorder text-xs text-gray-500 uppercase tracking-wider">
+                          <th className="pb-3 font-medium">Invoice ID</th>
+                          <th className="pb-3 font-medium">Client</th>
+                          <th className="pb-3 font-medium">Due Date</th>
+                          <th className="pb-3 font-medium">Status</th>
+                          <th className="pb-3 font-medium">Amount</th>
+                          <th className="pb-3 font-medium text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoices.map((inv, idx) => (
+                          <tr key={idx} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <td className="py-3 text-sm text-gray-900 dark:text-white font-mono">{inv.id}</td>
+                            <td className="py-3 text-sm text-gray-900 dark:text-white font-medium">{inv.clientName}</td>
+                            <td className="py-3 text-sm text-gray-500">{inv.dueDate}</td>
+                            <td className="py-3 text-sm">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${inv.status === 'Paid' ? 'bg-green-500/10 text-green-500' : (inv.status === 'Sent' ? 'bg-pd-orange/10 text-pd-orange' : 'bg-gray-500/10 text-gray-400')}`}>{inv.status}</span>
+                            </td>
+                            <td className="py-3 text-sm font-semibold text-gray-900 dark:text-white">${inv.amount.toLocaleString()}</td>
+                            <td className="py-3 text-sm text-right space-x-2">
+                              {inv.status === 'Draft' && (
+                                <button onClick={() => handleSendInvoice(inv)} className="px-2 py-1 bg-pd-teal/10 text-pd-teal hover:bg-pd-teal hover:text-black rounded text-xs font-semibold transition-colors">Send Invoice</button>
+                              )}
+                              {inv.status === 'Sent' && (
+                                <button onClick={() => handleMarkPaid(inv)} className="px-2 py-1 bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white rounded text-xs font-semibold transition-colors">Mark Paid</button>
+                              )}
+                              <button onClick={() => {
+                                const printWin = window.open('', '_blank');
+                                printWin.document.write(`
+                                  <html>
+                                    <head>
+                                      <title>Invoice ${inv.id}</title>
+                                      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+                                      <style>
+                                        body { font-family: 'Inter', sans-serif; padding: 50px; color: #334155; }
+                                        .container { max-width: 700px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 40px; border-radius: 12px; }
+                                        .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+                                        .invoice-title { font-size: 24px; font-weight: 700; color: #0b0f19; }
+                                        .meta { text-align: right; font-size: 13px; }
+                                        .section { margin: 30px 0; }
+                                        .bill-to { font-weight: 600; margin-bottom: 5px; color: #0b0f19; }
+                                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                                        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+                                        th { background: #f8fafc; font-weight: 600; }
+                                        .total-row { font-size: 16px; font-weight: 700; color: #0b0f19; text-align: right; padding-top: 20px; }
+                                      </style>
+                                    </head>
+                                    <body>
+                                      <div class="container">
+                                        <div class="inv-header">
+                                          <div>
+                                            <div class="invoice-title">INVOICE</div>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">Project D Software Suite</div>
+                                          </div>
+                                          <div class="meta">
+                                            <div><strong>Invoice ID:</strong> ${inv.id}</div>
+                                            <div><strong>Issued:</strong> ${inv.issueDate}</div>
+                                            <div><strong>Due Date:</strong> ${inv.dueDate}</div>
+                                            <div><strong>Status:</strong> ${inv.status}</div>
+                                          </div>
+                                        </div>
+                                        <div class="section">
+                                          <div class="bill-to">Bill To:</div>
+                                          <div>${inv.clientName}</div>
+                                        </div>
+                                        <table>
+                                          <thead>
+                                            <tr>
+                                              <th>Description</th>
+                                              <th>Qty</th>
+                                              <th>Unit Rate</th>
+                                              <th style="text-align: right;">Total</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            ${inv.items.map(item => `
+                                              <tr>
+                                                <td>${item.desc}</td>
+                                                <td>${item.qty}</td>
+                                                <td>$${parseFloat(item.rate).toLocaleString()}</td>
+                                                <td style="text-align: right;">$${(item.qty * item.rate).toLocaleString()}</td>
+                                              </tr>
+                                            `).join('')}
+                                          </tbody>
+                                        </table>
+                                        <div class="total-row">
+                                          Total Due: $${inv.amount.toLocaleString()}
+                                        </div>
+                                      </div>
+                                      <script>window.onload = () => { window.print(); };</script>
+                                    </body>
+                                  </html>
+                                `);
+                                printWin.document.close();
+                              }} className="px-2 py-1 bg-black/5 dark:bg-white/10 hover:bg-white/20 rounded text-xs text-gray-500 dark:text-gray-400 transition-colors">Print PDF</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-              <div className={`border rounded-2xl p-5 shadow-sm ${netProfit >= 0 ? 'bg-pd-teal/10 border-pd-teal/30' : 'bg-red-500/10 border-red-500/30'}`}>
-                <div className="text-gray-500 dark:text-gray-400 text-xs mb-1 flex justify-between">Net Profit <iconify-icon icon="solar:chart-square-bold" className={netProfit >= 0 ? "text-pd-teal" : "text-red-500"}></iconify-icon></div>
-                <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-pd-teal' : 'text-red-500'}`}>${netProfit.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">All-time tracked</div>
+            )}
+
+            {/* TAB 4: STRIPE INTEGRATION MOCKUP */}
+            {activeTab === 'stripe' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Left pane: Credentials Form */}
+                <div className="lg:col-span-2 space-y-6">
+                  <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm space-y-6">
+                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-white/5 pb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#635BFF] to-[#8079FF] flex items-center justify-center text-white text-xl shadow-lg shadow-[#635bff]/20">
+                        <iconify-icon icon="logos:stripe" width="28"></iconify-icon>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Stripe API Bridge Configuration</h3>
+                        <p className="text-[11px] text-gray-500">Configure public webhooks to process payments from your SaaS checkout into AMP.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Live Publishable Key</label>
+                        <div className="relative">
+                          <input 
+                            type={showKeys ? 'text' : 'password'} 
+                            value={publishableKey} 
+                            onChange={e => setPublishableKey(e.target.value)} 
+                            className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none font-mono" 
+                          />
+                          <button onClick={() => setShowKeys(!showKeys)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                            <iconify-icon icon={showKeys ? "solar:eye-closed-linear" : "solar:eye-linear"} width="18"></iconify-icon>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Live Secret Key</label>
+                        <div className="relative">
+                          <input 
+                            type={showKeys ? 'text' : 'password'} 
+                            value={secretKey} 
+                            onChange={e => setSecretKey(e.target.value)} 
+                            className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none font-mono" 
+                          />
+                          <button onClick={() => setShowKeys(!showKeys)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                            <iconify-icon icon={showKeys ? "solar:eye-closed-linear" : "solar:eye-linear"} width="18"></iconify-icon>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Webhook Signing Secret</label>
+                        <div className="relative">
+                          <input 
+                            type={showKeys ? 'text' : 'password'} 
+                            value={webhookSecret} 
+                            onChange={e => setWebhookSecret(e.target.value)} 
+                            className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none font-mono" 
+                          />
+                          <button onClick={() => setShowKeys(!showKeys)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                            <iconify-icon icon={showKeys ? "solar:eye-closed-linear" : "solar:eye-linear"} width="18"></iconify-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button 
+                        onClick={handleStripeSync} 
+                        disabled={stripeSyncing}
+                        className="group flex-1 inline-flex gap-1.5 transition-all duration-500 text-black font-bold overflow-hidden bg-pd-teal rounded-xl py-3 px-4 relative backdrop-blur-md items-center justify-center shadow-lg shadow-pd-teal/20 disabled:opacity-50"
+                      >
+                        {stripeSyncing ? (
+                          <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                        ) : (
+                          <iconify-icon icon="solar:round-transfer-horizontal-bold" width="18"></iconify-icon>
+                        )}
+                        <span className="relative z-10">
+                          {stripeSyncing ? 'Authenticating API...' : (stripeConnected ? 'Sync Latest Webhooks' : 'Connect Stripe Account')}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right pane: Listening console logs */}
+                <div className="space-y-6">
+                  <div className="bg-[#070b13] border border-white/5 rounded-2xl p-6 shadow-sm h-full flex flex-col min-h-[350px]">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]"></div>
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Listening Console</h4>
+                      </div>
+                      <span className="text-[10px] text-gray-500 font-mono">PORT 8849</span>
+                    </div>
+
+                    <div className="flex-1 font-mono text-[11px] text-green-400 overflow-y-auto space-y-3 p-2 bg-black/40 rounded-xl border border-white/5 max-h-72">
+                      <div className="text-gray-500">[2026-05-23 19:49:37] Listener daemon online.</div>
+                      {stripeConnected && <div className="text-pd-teal">[INFO] OAuth exchange completed successfully. Connection established.</div>}
+                      {webhookEvents.map(evt => (
+                        <div key={evt.id} className="border-l border-green-500/20 pl-2 py-1">
+                          <div className="text-white font-bold">{evt.type}</div>
+                          <div className="flex justify-between text-gray-500 text-[10px] mt-0.5">
+                            <span>Time: {evt.time}</span>
+                            <span className="text-pd-orange">Val: {evt.amount}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
+          {/* Configuration Billing Modal */}
+          {showBillingModal && selectedClient && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl animate-fade-in">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Configure Billing: {selectedClient.name}</h3>
+                  <button onClick={() => setShowBillingModal(false)} className="text-gray-500 hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-2">Billing Model Type</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => setBillingConfig({...billingConfig, type: 'recurring'})}
+                        className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all ${billingConfig.type === 'recurring' ? 'bg-pd-teal/15 border-pd-teal text-pd-teal' : 'bg-black/5 dark:bg-white/5 border-transparent text-gray-500 hover:bg-black/10'}`}
+                      >
+                        Monthly Recurring (MRR)
+                      </button>
+                      <button 
+                        onClick={() => setBillingConfig({...billingConfig, type: 'one_time'})}
+                        className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all ${billingConfig.type === 'one_time' ? 'bg-pd-orange/15 border-pd-orange text-pd-orange' : 'bg-black/5 dark:bg-white/5 border-transparent text-gray-500 hover:bg-black/10'}`}
+                      >
+                        One-Time Purchaser
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      {billingConfig.type === 'recurring' ? 'Monthly Contract Value ($ / month)' : 'One-Time Payment Amount ($)'}
+                    </label>
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 500" 
+                      value={billingConfig.amount} 
+                      onChange={e => setBillingConfig({...billingConfig, amount: e.target.value})} 
+                      className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" 
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setShowBillingModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
+                  <button onClick={handleSaveBilling} className="flex-1 py-2.5 bg-pd-teal text-black rounded-xl text-xs font-semibold shadow-lg shadow-pd-teal/20 transition-all hover:scale-[1.02]">Save Billing Config</button>
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="bg-white/60 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-6 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Transaction Ledger</h3>
-              </div>
-
-              {showManualAdd && (
-                <div className="flex flex-col md:flex-row gap-3 mb-6 p-4 bg-black/5 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-pd-glassBorder">
-                  <select value={newTx.type} onChange={e => setNewTx({...newTx, type: e.target.value})} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none appearance-none">
-                    <option value="Expense">Expense</option>
-                    <option value="Income">Income</option>
-                  </select>
-                  <input type="text" placeholder="Amount (e.g. 50.00)" value={newTx.amount} onChange={e => setNewTx({...newTx, amount: e.target.value})} className="flex-1 bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
-                  <input type="text" placeholder="Description (e.g. Software Sub)" value={newTx.description} onChange={e => setNewTx({...newTx, description: e.target.value})} className="flex-[2] bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-pd-teal outline-none" />
-                  <button onClick={handleAddTx} className="bg-pd-teal hover:bg-pd-teal/80 text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-[0_0_15px_rgba(70,212,198,0.3)]">Save</button>
+          {/* Create Invoice Modal */}
+          {showInvoiceModal && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-lg p-6 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Create New Customer Invoice</h3>
+                  <button onClick={() => setShowInvoiceModal(false)} className="text-gray-500 hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
                 </div>
-              )}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Select Account Name</label>
+                    <select 
+                      value={newInvoice.clientName} 
+                      onChange={e => setNewInvoice({...newInvoice, clientName: e.target.value})} 
+                      className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none"
+                    >
+                      <option value="">-- Choose Client or Subscriber --</option>
+                      {clients.map(c => <option key={c.id} value={c.name}>{c.name} ({c.accountType})</option>)}
+                    </select>
+                  </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-pd-glassBorder text-xs text-gray-500 uppercase tracking-wider">
-                      <th className="pb-3 font-medium">Date</th>
-                      <th className="pb-3 font-medium">Description</th>
-                      <th className="pb-3 font-medium">Type</th>
-                      <th className="pb-3 font-medium text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.length === 0 ? (
-                      <tr><td colSpan="4" className="py-8 text-center text-xs text-gray-500 italic">No manual transactions logged yet.</td></tr>
-                    ) : transactions.map((t, i) => (
-                      <tr key={i} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                        <td className="py-3 text-sm text-gray-500">{new Date(t.created_at).toLocaleDateString()}</td>
-                        <td className="py-3 text-sm text-gray-900 dark:text-white">{t.description}</td>
-                        <td className="py-3 text-sm"><span className={`px-2 py-0.5 rounded text-[10px] ${t.type === 'Income' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>{t.type}</span></td>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Invoice Due Date</label>
+                      <input 
+                        type="date" 
+                        value={newInvoice.dueDate} 
+                        onChange={e => setNewInvoice({...newInvoice, dueDate: e.target.value})} 
+                        className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Invoice Category</label>
+                      <select 
+                        value={newInvoice.category} 
+                        onChange={e => setNewInvoice({...newInvoice, category: e.target.value})} 
+                        className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-pd-teal outline-none"
+                      >
+                        <option value="Monthly Recurring Revenue">Monthly Recurring Revenue</option>
+                        <option value="One-Time Payment">One-Time Payment</option>
+                        <option value="Service Retainer">Service Retainer</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1 font-bold">Line Items</label>
+                    {newInvoice.items.map((item, idx) => (
+                      <div key={idx} className="flex gap-2 mb-2 items-center">
+                        <input 
+                          type="text" 
+                          placeholder="Description (e.g. Pro Suite SaaS)" 
+                          value={item.desc} 
+                          onChange={e => {
+                            const items = [...newInvoice.items];
+                            items[idx].desc = e.target.value;
+                            setNewInvoice({...newInvoice, items});
+                          }} 
+                          className="flex-[2] bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-gray-900 dark:text-white outline-none" 
+                        />
+                        <input 
+                          type="number" 
+                          placeholder="Qty" 
+                          value={item.qty} 
+                          onChange={e => {
+                            const items = [...newInvoice.items];
+                            items[idx].qty = parseInt(e.target.value) || 1;
+                            setNewInvoice({...newInvoice, items});
+                          }} 
+                          className="w-16 bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-gray-900 dark:text-white outline-none text-center" 
+                        />
+                        <input 
+                          type="number" 
+                          placeholder="Rate" 
+                          value={item.rate} 
+                          onChange={e => {
+                            const items = [...newInvoice.items];
+                            items[idx].rate = parseFloat(e.target.value) || 0;
+                            setNewInvoice({...newInvoice, items});
+                          }} 
+                          className="w-24 bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-gray-900 dark:text-white outline-none" 
+                        />
+                        {newInvoice.items.length > 1 && (
+                          <button 
+                            onClick={() => {
+                              const items = newInvoice.items.filter((_, i) => i !== idx);
+                              setNewInvoice({...newInvoice, items});
+                            }} 
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button 
+                      onClick={() => {
+                        const items = [...newInvoice.items, { desc: '', qty: 1, rate: 0 }];
+                        setNewInvoice({...newInvoice, items});
+                      }} 
+                      className="text-pd-teal hover:underline text-xs flex items-center gap-1 mt-1 font-semibold"
+                    >
+                      <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Add Line Item
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setShowInvoiceModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
+                  <button onClick={handleCreateInvoice} className="flex-1 py-2.5 bg-pd-teal text-black rounded-xl text-xs font-semibold shadow-lg shadow-pd-teal/20 transition-all hover:scale-[1.02]">Create Draft Invoice</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    };ext-green-500' : 'bg-red-500/10 text-red-500'}`}>{t.type}</span></td>
                         <td className={`py-3 text-sm text-right font-medium ${t.type === 'Income' ? 'text-green-500' : 'text-gray-900 dark:text-white'}`}>
                           {t.type === 'Income' ? '+' : '-'}${t.amount.toLocaleString()}
                         </td>
