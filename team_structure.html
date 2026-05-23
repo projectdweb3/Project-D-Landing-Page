@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project D | Organizational Structure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script>
+    try {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <div class="glow-bg glow-1"></div>
+  <div class="glow-bg glow-2"></div>
+
+  <div class="doc-container">
+    <div class="doc-header">
+      <div class="doc-badge"><span></span>Organizational Blueprint</div>
+      <h1>Project D <span class="gradient-text">Team Structure v6.0</span></h1>
+      <div class="doc-meta">
+        <span><iconify-icon icon="solar:document-bold"></iconify-icon> Version 6.0</span>
+        <span><iconify-icon icon="solar:calendar-bold"></iconify-icon> May 2026</span>
+        <span><iconify-icon icon="solar:shield-keyhole-bold"></iconify-icon> Confidential Internal Blueprint</span>
+      </div>
+    </div>
+
+    <!-- Dedicated Agent Banner -->
+    <div class="agent-banner">
+      <div class="agent-icon">
+        <iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon>
+      </div>
+      <div class="agent-details">
+        <h4>Dedicated Agent: Operations & Capacity Agent (Ops-Agent)</h4>
+        <p>Monitors task lists and delivery speeds. When a lead is moved to <strong>Closed Won</strong> on our own CRM board, the Ops-Agent automatically spins up a new client sandbox database and opens a shared communications channel.</p>
+      </div>
+    </div>
+
+    <!-- LEVEL 01 -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:crown-bold-duotone"></iconify-icon> Level 01: Executive Leadership</h2>
+      
+      <div class="grid-2">
+        <div class="card highlight">
+          <h3>Founder & CEO</h3>
+          <p style="font-size: 12px; color: var(--color-accent-orange); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Visionary Architect. Leads corporate strategy, secures high-value partnerships, and closes Enterprise contracts by selling the power of our agentic CRM.</p>
+          <ul class="bullet-list">
+            <li><strong>CRM Sandbox Demo:</strong> Opens the AMP Center live demo and walks prospects through simulated workflows to demonstrate live visual organization.</li>
+            <li><strong>Lead Dossiers:</strong> Reviews prospects' detailed interaction logs, compiled automatically by outreach agents in the lead files.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> Simulator Console (runs live automation scripts to demo client workflows to close deals).
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Chief Operating Officer (COO)</h3>
+          <p style="font-size: 12px; color: var(--color-accent-teal); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Integrator. Coordinates internal operations and manages Tech and Creative resource allocations via our agentic pipelines.</p>
+          <ul class="bullet-list">
+            <li><strong>Stats Tracking:</strong> Audits dashboard Stats Cards (Total Active Leads, Saved Hours, active routes) to gauge agency capacity.</li>
+            <li><strong>Logs Review:</strong> Monitors the AMP Center system log panel to track team completion times and identify bottlenecks.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> System Logs & Stats Panel (monitors team velocity metrics and agent execution logs).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 02 -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:palette-bold-duotone"></iconify-icon> Level 02: Creative Production</h2>
+      
+      <div class="card">
+        <h3>Creative Production Lead</h3>
+        <p style="font-size: 12px; color: var(--color-accent-orange); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+        <p>The Visual Architect. Creates 3D visuals, logos, CGI campaigns, and conversion-centric website wireframes, managing assets directly in the database.</p>
+        <ul class="bullet-list">
+          <li><strong>Asset Integration:</strong> Syncs design assets to the Media Agent inside the AMP Center to automatically scale image delivery.</li>
+          <li><strong>SMS Template Assets:</strong> Links visual elements directly to outbound campaign cards inside the CRM UI.</li>
+        </ul>
+        <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+          <strong>AMP Center Integration:</strong> Media Library & File Manager (syncs visual assets directly to booking pages and marketing slots).
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 03 -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:code-bold-duotone"></iconify-icon> Level 03: Technology & Engineering</h2>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>Lead App & Web Developer</h3>
+          <p style="font-size: 12px; color: var(--color-accent-teal); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Technical Backbone. Builds CRM database schema, web hooks, APIs, and manages the AMP Center server environments.</p>
+          <ul class="bullet-list">
+            <li><strong>Webhook & Agent Configuration:</strong> Uses the AMP Center sandbox developer environment to configure response triggers and link specialized agents.</li>
+            <li><strong>Workflow Engineering:</strong> Codes modular actions that allow the CRM UI to properly organize and direct agent activities.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> API Manager & Webhook Triggers (manages pipeline logic and custom integrations).
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Jr. App & Web Developer</h3>
+          <p style="font-size: 12px; color: var(--color-text-muted); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Implementation Engine. Supports the Lead Developer in setting up client databases, configuring forms, and testing agent connection routes.</p>
+          <ul class="bullet-list">
+            <li><strong>Widget Setup:</strong> Embeds booking calendars and review sliders into client web domains linked to active CRM boards.</li>
+            <li><strong>Kanban Cards Formatting:</strong> Configures Kanban stages, lead tags, and audits database security tokens.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> Client Database Manager (provisions customer pipelines and assigns agent slots).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 04 -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:graph-up-bold-duotone"></iconify-icon> Level 04: Growth & Success</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="font-size:15px;">Sales Development Rep (SDR)</h3>
+          <p style="font-size: 11px; color: var(--color-text-muted); margin-bottom: 8px; font-weight:600;">2 Headcount</p>
+          <p style="font-size:13px; margin-bottom:8px;">Processes leads, schedules calls, and moves candidates through the pipeline, relying on AMP's auto-outreach.</p>
+          <ul class="bullet-list" style="font-size:12px; padding-left:14px; margin-bottom:0;">
+            <li>Uses **Leads Board** to monitor automated text/email conversations organized by the outreach agent.</li>
+            <li>Reviews **Lead Details Drawer** logs to check engagement histories before jumping on calls.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Client Success Manager</h3>
+          <p style="font-size: 11px; color: var(--color-text-muted); margin-bottom: 8px; font-weight:600;">2 Headcount</p>
+          <p style="font-size:13px; margin-bottom:8px;">Manages client lifecycles, checks system usage, and coordinates onboarding transitions.</p>
+          <ul class="bullet-list" style="font-size:12px; padding-left:14px; margin-bottom:0;">
+            <li>Monitors active campaigns and client usage metrics via the CRM dashboard.</li>
+            <li>Intervenes when the **Sentiment Agent** flags a Google review score drop below 3 stars, triggering an alert.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Head of Paid Media</h3>
+          <p style="font-size: 11px; color: var(--color-text-muted); margin-bottom: 8px; font-weight:600;">1 Headcount</p>
+          <p style="font-size:13px; margin-bottom:8px;">Designs ad strategies and tracks campaign lead-flow volumes directly into the CRM.</p>
+          <ul class="bullet-list" style="font-size:12px; padding-left:14px; margin-bottom:0;">
+            <li>Wires web inquiry lead forms to the AMP Center's lead creation webhook.</li>
+            <li>Audits lead-source stats cards to calculate acquisition cost and ROI automatically.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 05 -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:medal-bold-duotone"></iconify-icon> Level 05: Coaching & Support</h2>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>AI Staff Trainer</h3>
+          <p style="font-size: 12px; color: var(--color-accent-orange); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Onboarding Coach. Leads workshops to ensure client teams master their dashboard capabilities and agent configurations.</p>
+          <ul class="bullet-list">
+            <li><strong>Simulator Training:</strong> Uses the AI Automations Simulator to show client staff how texts trigger automations in their CRM UI.</li>
+            <li><strong>Adoption Metrics:</strong> Verifies staff log-in counts inside the database log history to prevent churn.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> AI Automations Simulator Console & Logs (reviews workflow simulation results).
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Ops & Finance Coordinator</h3>
+          <p style="font-size: 12px; color: var(--color-accent-teal); margin-bottom: 12px; font-weight:600;">1 Headcount</p>
+          <p>The Backend Backbone. Oversees contract signings, invoicing, and vendor payouts, utilizing automated triggers.</p>
+          <ul class="bullet-list">
+            <li><strong>Payment Triggers:</strong> Audits transactions processed via checkout hooks and logged in the Finance ledger.</li>
+            <li><strong>Contract Validation:</strong> Verifies digital signature completions inside the Lead Drawer.</li>
+          </ul>
+          <div style="margin-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size:12px; color:var(--color-text-secondary);">
+            <strong>AMP Center Integration:</strong> Finance Module & Transaction Ledger (logs accounts receivable/payable).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project D | Pricing Strategy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script>
+    try {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <div class="glow-bg glow-1"></div>
+  <div class="glow-bg glow-2"></div>
+
+  <div class="doc-container">
+    <div class="doc-header">
+      <div class="doc-badge"><span></span>Financial Strategy</div>
+      <h1>Dual-Stream <span class="gradient-text">Pricing System</span></h1>
+      <div class="doc-meta">
+        <span><iconify-icon icon="solar:document-bold"></iconify-icon> Version 2.0</span>
+        <span><iconify-icon icon="solar:calendar-bold"></iconify-icon> May 2026</span>
+        <span><iconify-icon icon="solar:shield-keyhole-bold"></iconify-icon> Confidential Strategy Paper</span>
+      </div>
+    </div>
+
+    <!-- Dedicated Agent Banner -->
+    <div class="agent-banner">
+      <div class="agent-icon">
+        <iconify-icon icon="solar:card-search-bold-duotone"></iconify-icon>
+      </div>
+      <div class="agent-details">
+        <h4>Dedicated Agent: Financial Operations Agent (Finance-Agent)</h4>
+        <p>Utilizes the AMP Center Finance Module to process subscription payments. When a checkout or subscription invoice is processed, the Finance-Agent updates client transaction logs and verifies active database tokens against their specific pricing tiers.</p>
+      </div>
+    </div>
+
+    <!-- Section 1: Strategic Overview -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:chart-bold-duotone"></iconify-icon> Strategic Monetization Blueprint</h2>
+      <p>Project D has structured its monetization engine to capture value from two separate market segments: self-serve users globally who need automated assistant workforces (Hands-Off SaaS Tiers), and high-growth businesses who need custom agentic workflow engineering integrated with visual organizational tools (High-Touch Enterprise Tiers). Our core value proposition is that we provide a fully organized CRM UI wrapper around complex agentic behaviors—something standard LLM chat interfaces cannot match.</p>
+    </div>
+
+    <!-- Section 2: Personal SaaS Model -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:user-bold-duotone"></iconify-icon> 1. Personal SaaS Tiers (Self-Serve AMP Center)</h2>
+      <p>A self-serve subscription system. Users connect their own Twilio/email gateways and use the standard AMP Center interface to organize contacts, trigger workflows, and manage their automated agentic assistants.</p>
+      
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Tier Name</th>
+              <th>Price</th>
+              <th>Target Audience</th>
+              <th>AMP Center Features & Agent Slots</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AMP Lite</strong></td>
+              <td>$29 / mo</td>
+              <td>Freelancers & Solo Creators</td>
+              <td>Access to 1 <strong>Leads Board</strong> (Kanban Columns), standard lead-capture forms, <strong>1 Active Agent Slot</strong> (runs basic auto-response templates), and up to 1,000 active contacts.</td>
+            </tr>
+            <tr>
+              <td><strong>AMP Pro</strong></td>
+              <td>$79 / mo</td>
+              <td>Active Solopreneurs & Teams</td>
+              <td>Everything in Lite + <strong>3 Active Agent Slots</strong> (includes Outreach, Calendar, and Sentiment agents), <strong>60-Second Web Lead Response</strong> workflow, integrated calendar booking system, and up to 10,000 active contacts.</td>
+            </tr>
+            <tr>
+              <td><strong>AMP Builder</strong></td>
+              <td>$149 / mo</td>
+              <td>Power Users & Tech Creators</td>
+              <td>Everything in Pro + <strong>5 Active Agent Slots</strong>, access to the visual <strong>AI Automations Workflow Builder</strong> canvas. Create custom text trigger words, map webhook payloads, issue API keys, and manage unlimited contacts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Enterprise Integration Model -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:case-bold-duotone"></iconify-icon> 2. Enterprise Integration Tiers (Hands-on Delivery)</h2>
+      <p>For established businesses seeking custom-engineered agentic integrations. We handle the design, scripting, and employee training to ensure high adoption rates.</p>
+      
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Tier Name</th>
+              <th>Price</th>
+              <th>Target Audience</th>
+              <th>AMP Center Features & Specialized Agents</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Enterprise Growth</strong></td>
+              <td>$599 / mo</td>
+              <td>Local Service Businesses & Med Spas</td>
+              <td>Full CRM UI, <strong>5 Custom Agent Slots</strong>, <strong>Botox Day-90 Reactivation</strong> and <strong>Google Review Booster</strong> pre-built campaigns, automated low-rating alerts to Managers, custom branding design tokens, and 2 hours/mo of staff training.</td>
+            </tr>
+            <tr>
+              <td><strong>Enterprise Max</strong></td>
+              <td>$1,499 / mo</td>
+              <td>Amazon DSPs, Logistics, & Multi-Location</td>
+              <td>Unlimited Users, <strong>Unlimited Agent Slots</strong>, Custom API integrations with client databases (e.g. Amazon Dispatch portal), <strong>6 AM Standby Broadcast</strong> workflow, <strong>Fleet Damage QR ticketing</strong> with automatic mechanic alerts, <strong>New Hire Candidate Nurture</strong> with license OCR verification, dedicated Operations Co-Engineer, and 6 hours/mo of hands-on staff training.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 4: High-Margin Upsell Services -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:tuning-square-bold-duotone"></iconify-icon> 3. High-Margin Upsells</h2>
+      <p>SaaS recurring revenue is accelerated by one-time service packages sold to Enterprise clients during onboarding:</p>
+      
+      <div class="grid-3">
+        <div class="card">
+          <h3 style="margin-top:0;">AI Workflow Engineering</h3>
+          <p style="font-size: 20px; font-weight:700; color:var(--color-accent-teal); margin-bottom: 12px;">$1,000 - $3,000</p>
+          <p style="font-size:12px; margin-bottom:0;">One-time fee to script and test custom webhook triggers and API mappings inside the client's database, configuring the CRM UI for optimal organization.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">Web Makeovers</h3>
+          <p style="font-size: 20px; font-weight:700; color:var(--color-accent-teal); margin-bottom: 12px;">$1,500 - $3,500</p>
+          <p style="font-size:12px; margin-bottom:0;">Full design of high-conversion landing pages, embedded with the AMP Center lead capture scripts and calendars.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">3D Brand Assets</h3>
+          <p style="font-size: 20px; font-weight:700; color:var(--color-accent-teal); margin-bottom: 12px;">$250 - $750</p>
+          <p style="font-size:12px; margin-bottom:0;">Premium custom-rendered animations and CGI models for social media campaigns, linked to lead funnel trackers.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p>"By splitting our pricing, we establish a stable, passive, self-serve baseline via Personal SaaS, freeing our engineering and success resources to focus on high-ticket, high-touch Enterprise clients."</p>
+    </div>
+  </div>
+
+</body>
+</html>

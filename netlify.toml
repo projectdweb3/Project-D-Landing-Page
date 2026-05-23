@@ -52,7 +52,7 @@
 
 # Landing page — short edge cache with stale-while-revalidate for speed
 [[headers]]
-  for = "/index.html"
+  for = "/home.html"
   [headers.values]
     Cache-Control = "public, max-age=300, stale-while-revalidate=86400"
 

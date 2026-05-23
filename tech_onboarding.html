@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project D | Tech & Engineering Onboarding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script>
+    try {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <div class="glow-bg glow-1"></div>
+  <div class="glow-bg glow-2"></div>
+
+  <div class="doc-container">
+    <div class="doc-header">
+      <div class="doc-badge"><span></span>Technology Academy</div>
+      <h1>AI-First <span class="gradient-text">Engineering Guide</span></h1>
+      <div class="doc-meta">
+        <span><iconify-icon icon="solar:document-bold"></iconify-icon> Version 2.0</span>
+        <span><iconify-icon icon="solar:user-bold"></iconify-icon> Developer Training Guide</span>
+        <span><iconify-icon icon="solar:shield-keyhole-bold"></iconify-icon> Confidential Operations Manual</span>
+      </div>
+    </div>
+
+    <!-- Dedicated Agent Banner -->
+    <div class="agent-banner">
+      <div class="agent-icon">
+        <iconify-icon icon="solar:programming-bold-duotone"></iconify-icon>
+      </div>
+      <div class="agent-details">
+        <h4>Dedicated Agent: Architecture Generator Agent (Dev-Agent)</h4>
+        <p>Generates webhook handlers, configures static directories, automatically tests endpoint connectivity (APIs/Webhooks), and monitors server uptimes of all deployed client sandboxes.</p>
+      </div>
+    </div>
+
+    <!-- Section 1: The Modern Stack -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:layers-bold-duotone"></iconify-icon> 1. The AI-First Developer & The AMP Center</h2>
+      <p>At Project D, we do not code line-by-line in isolated terminal windows. We **orchestrate architectures** directly within the **AMP Center** platform. The AMP Center is our primary **assistant agentic workforce**—replacing standalone coding tools (like Antigravity or Claude Code) by combining complex agentic pipelines with an organized, visual CRM UI. As a developer, your job is to build custom agent sandboxes and map API gateways using our integrated workspace:</p>
+      
+      <div class="grid-2" style="margin-bottom: 24px;">
+        <div class="card" style="padding: 20px;">
+          <h3 style="margin-top:0; color:var(--color-accent-teal);">CRM-Integrated Agent Workspace</h3>
+          <p style="font-size:12px; margin-bottom:0;">The AMP Center acts as the central coordinator. Rather than managing raw agent outputs via CLIs, developers deploy specialized agents straight to client Kanban boards, where users see, track, and manage their executions visually.</p>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <h3 style="margin-top:0; color:var(--color-accent-orange);">Custom Agent Sandboxes</h3>
+          <p style="font-size:12px; margin-bottom:0;">We co-engineer custom CRM views, database schema, and webhook configurations for each enterprise customer, wrapping raw agentic power inside a structured, user-friendly control center.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p><strong>Technical Standard:</strong> If a task takes you more than 15 minutes of manual script writing, you aren't leveraging the AMP Center's developer-agent capabilities. Your role is to configure hooks, test pathways, and design workflows that keep the agentic workforce organized and efficient.</p>
+      </div>
+    </div>
+
+    <!-- Section 2: Discovery Blueprint Workflow -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:programming-bold-duotone"></iconify-icon> 2. The Lead Dev's Secret Weapon</h2>
+      <p>The Lead App & Web Developer sits in on Discovery calls to perform what we call **"Real-Time Architecture"**:</p>
+      
+      <div class="card">
+        <h3>The "Wow" Moment Execution</h3>
+        <ul class="bullet-list">
+          <li><strong>01. Listen:</strong> During the first 15 minutes of the call, identify the prospect's visual taste, colors, and operational bottlenecks (e.g. driver callouts or slow lead responder times).</li>
+          <li><strong>02. Build Live:</strong> While they are talking, use the AMP Center sandbox environment to quickly provision a fresh database instance and scaffold a high-end landing page configured with their brand colors and logo.</li>
+          <li><strong>03. The Reveal:</strong> Share your screen. Showcase the live landing page and the CRM Leads Board containing their brand information. Demonstrate that we can build in 15 minutes what other agencies pitch in 3 weeks, proving the visual organizational power of our CRM UI.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 3: Core Product Engineering -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:cpu-bold-duotone"></iconify-icon> 3. Customizing the AMP Center CRM</h2>
+      <p>Developers are responsible for scripting webhook triggers and gateway endpoints inside the client's sandbox code:</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Webhook Scripting</h3>
+          <p>Configure script listeners to process incoming payload variables (like SMS text messages or form submissions):</p>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li>Script conditional statements to parse text keywords (e.g. `BOOK`, `TIRE`, `GLASS`).</li>
+            <li>Connect API responses to execute database state updates (e.g., changing lead stages to **Closed Won** or **Demo Scheduled**).</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>2. Workflow Connections</h3>
+          <p>Link automated triggers to transactional events, allowing agents to coordinate tasks:</p>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li><strong>Sick Callout Webhook:</strong> Triggers SMS blasts to standby driver arrays.</li>
+            <li><strong>OCR Background Check:</strong> Parses driver licenses and logs database validations automatically.</li>
+            <li><strong>POS Integration:</strong> Listens for checkout payloads to execute Review Booster texts.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Jr Developer Training -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:square-academic-cap-bold-duotone"></iconify-icon> 4. Junior Developer Training</h2>
+      <p>As a Junior Developer, you manage the **Rapid Implementation** phase (Phase 03) to deliver client dashboard custom configurations:</p>
+      
+      <div class="card">
+        <ul class="bullet-list">
+          <li><strong>CRM Integration:</strong> Master the Twilio and Email SMTP gateway setup process. You are responsible for ensuring the AMP Center connects perfectly on every client domain.</li>
+          <li><strong>Widget Configuration:</strong> Embed reservation calendars and review sliders into client web domains linked to their new agents.</li>
+          <li><strong>Database Setup:</strong> Populate the initial contacts lists and configure user access controls.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p>"Building the infrastructure of the future, one automated workflow at a time."</p>
+    </div>
+  </div>
+
+</body>
+</html>

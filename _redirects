@@ -1,5 +1,14 @@
-/index.html   /             301
-/home         /             301
-/amp-center   /amp-center.html  200
-/privacy      /privacy.html     200
-/terms        /terms.html       200
+# Default root to /home
+/               /home           302!
+
+# Serve landing page at /home
+/home           /home.html      200
+
+# Serve internal docs hub at /index
+/index          /index.html     200
+/index.html     /index.html     200
+
+# Serve AMP Center and static links
+/amp-center     /amp-center.html  200
+/privacy        /privacy.html     200
+/terms          /terms.html       200

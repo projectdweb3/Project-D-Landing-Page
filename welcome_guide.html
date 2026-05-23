@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project D | Client Welcome Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script>
+    try {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <div class="glow-bg glow-1"></div>
+  <div class="glow-bg glow-2"></div>
+
+  <div class="doc-container">
+    <div class="doc-header">
+      <div class="doc-badge"><span></span>Client Onboarding</div>
+      <h1>Welcome to the <span class="gradient-text">AMP Program</span></h1>
+      <div class="doc-meta">
+        <span><iconify-icon icon="solar:document-bold"></iconify-icon> Roadmap v5.0</span>
+        <span><iconify-icon icon="solar:user-bold"></iconify-icon> Client Onboarding Manual</span>
+        <span><iconify-icon icon="solar:star-bold"></iconify-icon> Operational Dominance</span>
+      </div>
+    </div>
+
+    <!-- Dedicated Agent Banner -->
+    <div class="agent-banner">
+      <div class="agent-icon">
+        <iconify-icon icon="solar:chat-line-bold-duotone"></iconify-icon>
+      </div>
+      <div class="agent-details">
+        <h4>Dedicated Agent: Client Concierge Agent (Welcome-Agent)</h4>
+        <p>Coordinates digital sign-offs. Once the agreement is signed, the Welcome-Agent automatically provisions your private AMP Center sandbox, registers database API tokens, and alerts the Tech team.</p>
+      </div>
+    </div>
+
+    <!-- Section 1: Welcome -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:hand-stars-bold-duotone"></iconify-icon> Welcome to the Future of Your Business</h2>
+      <p>You have seen the Blueprint. Now, we build it. The AMP Program is designed to be the "Operational Home Base" for your company—integrating high-end 3D visual dominance, custom application infrastructures, and your own dedicated AI-powered assistant workforce into one seamless growth ecosystem, all running inside your custom **AMP Center Dashboard**.</p>
+      <p>Our platform combines powerful agentic workflows with a structured CRM UI, giving your team the visual organization and control that standard AI tools (like raw chat windows or code terminals) fail to offer. Your new AI agents will work directly alongside your staff, managing leads, tracking tasks, and handling client interactions on autopilot.</p>
+    </div>
+
+    <!-- Section 2: Deployment Roadmap -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:list-arrow-down-bold-duotone"></iconify-icon> Your 4-Step Deployment Roadmap</h2>
+      <p>Once you sign on, our teams proceed along this timeline to deploy your custom agentic database sandbox:</p>
+      
+      <div class="timeline">
+        <div class="timeline-item active">
+          <div class="timeline-meta">Step 01</div>
+          <div class="timeline-title">Formalize the Partnership</div>
+          <p>We execute a digital signature on the engagement agreement. Upon signing, your private AMP Center database is automatically provisioned and populated with pre-configured agent templates (e.g. Botox Reactivation or Onboarding Portal).</p>
+          <div style="font-size:12px; color:var(--color-accent-orange); font-weight:600; margin-top:4px;">
+            Action Required: Sign the AMP Program Engagement Agreement sent to your email.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-meta">Step 02</div>
+          <div class="timeline-title">Infrastructure Integration</div>
+          <p>Our Technology team configures your Twilio SMS gateway, connects email endpoints, maps web inquiry hooks, and installs booking calendars on your domains. This links your public channels directly to the CRM **Leads Board**, allowing your new agents to start logging and categorizing conversations.</p>
+          <div style="font-size:12px; color:var(--color-accent-teal); font-weight:600; margin-top:4px;">
+            Outcome: A live, functional CRM database sandbox linked to your website and phone lines.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-meta">Step 03</div>
+          <div class="timeline-title">Creative & Growth Dominance</div>
+          <p>While technology is being wired up, our Creative Lead uploads your custom 3D animations and brand assets to the AMP file manager. Simultaneously, our Paid Media head wires lead-capture forms to your lead creation webhooks.</p>
+          <div style="font-size:12px; color:var(--color-accent-teal); font-weight:600; margin-top:4px;">
+            Outcome: Ad campaigns driving leads directly into your **New Leads** Kanban column, triggering automatic agent nurtures.
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-meta">Step 04</div>
+          <div class="timeline-title">Staff Proficiency Training</div>
+          <p>Our AI Staff Trainer hosts an interactive workshop with your team, using the **AI Automations Simulator** to test keyword response messages, review booster triggers, and certify staff members on how to manage their new agentic workforce.</p>
+          <div style="font-size:12px; color:var(--color-accent-orange); font-weight:600; margin-top:4px;">
+            Action Required: Book your first 60-minute staff training session via our scheduling calendar.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Meet the Team -->
+    <div class="section">
+      <h2><iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon> Meet Your Deployment Team</h2>
+      <p>You have access to a dedicated squad of specialists co-managing your integration, all leveraging the AMP Center to coordinate our development efforts:</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>Client Success Manager</h3>
+          <p style="font-size:12px; color:var(--color-accent-teal); margin-bottom:8px; font-weight:600;">Your Strategic Partner & Main Contact</p>
+          <p style="font-size:13px; margin:0;">Monitors active leads in the Kanban, reviews customer review scores, and coordinates feedback briefs.</p>
+        </div>
+        
+        <div class="card">
+          <h3>Lead App & Web Developer</h3>
+          <p style="font-size:12px; color:var(--color-accent-teal); margin-bottom:8px; font-weight:600;">Your Infrastructure Architect</p>
+          <p style="font-size:13px; margin:0;">Sets up custom sandboxes, scripts webhooks, manages database structures, and maps API endpoints.</p>
+        </div>
+        
+        <div class="card">
+          <h3>Creative Production Lead</h3>
+          <p style="font-size:12px; color:var(--color-accent-teal); margin-bottom:8px; font-weight:600;">Your Visual Dominance Expert</p>
+          <p style="font-size:13px; margin:0;">Designs website wireframes and uploads 3D animations directly to your AMP media library.</p>
+        </div>
+        
+        <div class="card">
+          <h3>AI Staff Trainer</h3>
+          <p style="font-size:12px; color:var(--color-accent-teal); margin-bottom:8px; font-weight:600;">Your Implementation Coach</p>
+          <p style="font-size:13px; margin:0;">Conducts live simulation training, audits log activities, and certifies your staff on automated workflows.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Checklist -->
+    <div class="card highlight">
+      <h3 style="margin-top:0; color:var(--color-bg-base);">Next Steps Check-In</h3>
+      <p style="color:var(--color-bg-base); font-size:14px; margin-bottom:16px;">Complete these three actions to begin the onboarding process:</p>
+      <ul class="bullet-list" style="color:var(--color-bg-base); font-size:14px;">
+        <li style="color:var(--color-bg-base);"><strong style="color:var(--color-bg-base);">1. Sign Engagement Agreement</strong> - Complete the email link.</li>
+        <li style="color:var(--color-bg-base);"><strong style="color:var(--color-bg-base);">2. Upload Brand Assets</strong> - Send logos, hex codes, and typography files to the portal.</li>
+        <li style="color:var(--color-bg-base);"><strong style="color:var(--color-bg-base);">3. Book Launch Session</strong> - Set a date on the calendar interface.</li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>
