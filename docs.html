@@ -213,27 +213,7 @@
       gap: 12px;
     }
 
-    .btn-header {
-      background: var(--color-bg-sidebar);
-      border: 1px solid var(--color-border);
-      color: var(--color-text-primary);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s;
-    }
-
-    .btn-header:hover {
-      border-color: var(--color-accent-teal);
-    }
-
-    /* Conic Spin Buttons - Glassmorphic */
+    /* Conic Spin Buttons - Glassmorphic & Dramatic Hover */
     .conic-btn {
       position: relative;
       display: inline-flex;
@@ -245,16 +225,17 @@
       border: none;
       padding: 8px 18px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--color-text-primary);
       text-decoration: none;
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
       z-index: 1;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 6px -1px var(--color-shadow);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      will-change: transform, box-shadow;
     }
 
     .conic-spin-bg {
@@ -277,11 +258,6 @@
       pointer-events: none;
     }
 
-    .conic-btn:hover {
-      box-shadow: 0 10px 30px var(--color-shadow);
-      transform: translateY(-2px);
-    }
-
     .conic-btn:hover .conic-spin-bg {
       opacity: 1;
       animation: conic-spin-anim 1.5s linear infinite;
@@ -301,12 +277,27 @@
       background: var(--color-accent-teal);
     }
 
-    .conic-btn.primary:hover {
-      color: #070a13;
-      box-shadow: 0 6px 24px rgba(70, 212, 198, 0.4);
+    /* Dramatic Hover Floating effect matching homepage & AMP Center */
+    @keyframes floatHover {
+      0%, 100% {
+        transform: translateY(0) scale(1.02);
+        box-shadow: 0 0 20px rgba(255, 145, 70, 0.4), 0 0 30px rgba(70, 212, 198, 0.2);
+      }
+      50% {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 10px 30px rgba(255, 145, 70, 0.6), 0 15px 40px rgba(70, 212, 198, 0.4);
+      }
     }
 
-    /* Theme Toggle */
+    .dramatic-hover:hover {
+      animation: floatHover 2s ease-in-out infinite !important;
+    }
+
+    .dramatic-hover:active {
+      transform: scale(0.95) !important;
+    }
+
+    /* Theme Toggle with Custom CSS visibility */
     .btn-theme-toggle {
       width: 36px;
       height: 36px;
@@ -324,6 +315,22 @@
     .btn-theme-toggle:hover {
       border-color: var(--color-accent-teal);
       transform: scale(1.05);
+    }
+
+    .btn-theme-toggle .sun-icon {
+      display: block;
+    }
+    
+    .btn-theme-toggle .moon-icon {
+      display: none;
+    }
+
+    .dark .btn-theme-toggle .sun-icon {
+      display: none;
+    }
+
+    .dark .btn-theme-toggle .moon-icon {
+      display: block;
     }
 
     /* Content Area Frame */
@@ -393,13 +400,13 @@
           <a href="#"><iconify-icon icon="solar:palette-bold-duotone"></iconify-icon> Creative Production</a>
         </li>
         <li class="nav-item" data-src="coaching_onboarding.html" data-title="Coaching & Support Guide">
-          <a href="#"><iconify-icon icon="solar:medal-bold-duotone"></iconify-icon> Coaching & Support</a>
+          <a href="#"><iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon> Coaching & Support</a>
         </li>
       </ul>
     </nav>
 
     <div class="sidebar-footer">
-      <a href="./amp-center.html" class="conic-btn" style="width: 100%;">
+      <a href="./amp-center.html" class="conic-btn dramatic-hover" style="width: 100%;">
         <div class="conic-spin-bg"></div>
         <div class="conic-btn-mask"></div>
         <span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold">
@@ -417,19 +424,27 @@
       <div class="header-actions">
         <!-- Dark Mode Toggle -->
         <button onclick="toggleTheme()" class="btn-theme-toggle" title="Toggle Theme">
-          <iconify-icon icon="solar:sun-2-bold-duotone" width="20" class="block dark:hidden text-[#ff9146]" height="20" style="color: rgb(255, 145, 70)"></iconify-icon>
-          <iconify-icon icon="solar:moon-stars-bold-duotone" width="18" class="hidden dark:block text-[#46d4c6]"></iconify-icon>
+          <iconify-icon icon="solar:sun-2-bold-duotone" class="sun-icon" width="20" height="20" style="color: rgb(255, 145, 70)"></iconify-icon>
+          <iconify-icon icon="solar:moon-stars-bold-duotone" class="moon-icon" width="18" height="18" style="color: rgb(70, 212, 198)"></iconify-icon>
         </button>
 
-        <a href="/home" class="btn-header">
-          <iconify-icon icon="solar:home-2-linear"></iconify-icon> Home
+        <a href="/home" class="conic-btn dramatic-hover">
+          <div class="conic-spin-bg"></div>
+          <div class="conic-btn-mask"></div>
+          <span class="relative z-10 flex items-center gap-1.5">
+            <iconify-icon icon="solar:home-2-linear"></iconify-icon> Home
+          </span>
         </a>
 
-        <a href="mission.html" target="_blank" id="btn-new-tab" class="btn-header">
-          <iconify-icon icon="solar:arrow-right-up-bold"></iconify-icon> Open in New Tab
+        <a href="mission.html" target="_blank" id="btn-new-tab" class="conic-btn dramatic-hover">
+          <div class="conic-spin-bg"></div>
+          <div class="conic-btn-mask"></div>
+          <span class="relative z-10 flex items-center gap-1.5">
+            <iconify-icon icon="solar:arrow-right-up-bold"></iconify-icon> Open in New Tab
+          </span>
         </a>
 
-        <button onclick="printIframe()" class="conic-btn primary">
+        <button onclick="printIframe()" class="conic-btn primary dramatic-hover">
           <div class="conic-spin-bg"></div>
           <div class="conic-btn-mask"></div>
           <span class="relative z-10 flex items-center gap-1.5">
