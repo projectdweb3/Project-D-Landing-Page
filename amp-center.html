@@ -6518,14 +6518,14 @@ ${transactions.slice(0, 15).map(t => `
                 </div>
               </div>
               <div class="content">${formattedContent}</div>
-              <script>
+              <\script>
                 window.onload = () => {
                   setTimeout(() => {
                     window.print();
                     window.close();
                   }, 600);
                 };
-              </script>
+              <\/script>
             </body>
           </html>
         `);
@@ -6899,7 +6899,7 @@ ${transactions.slice(0, 15).map(t => `
                                           Total Due: $${inv.amount.toLocaleString()}
                                         </div>
                                       </div>
-                                      <script>window.onload = () => { window.print(); };</script>
+                                      <\script>window.onload = () => { window.print(); };<\/script>
                                     </body>
                                   </html>
                                 `);
