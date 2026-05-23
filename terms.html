@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service | Project D</title>
+  <meta name="description" content="Project D Terms of Service for the AMP Center platform." />
+  <link rel="icon" type="image/png" href="https://projectd.io/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    html.dark body { background-color: #0b0f19 !important; }
+    .glass-card { background: rgba(255,255,255,0.4); backdrop-filter: blur(40px) saturate(1.6); border: 1px solid rgba(0,0,0,0.06); }
+    html.dark .glass-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+    .section-heading { background: linear-gradient(135deg, #ff9146, #46d4c6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  </style>
+</head>
+<body class="relative min-h-screen overflow-x-hidden bg-[#f4f5f7] dark:bg-[#0b0f19]">
+
+  <!-- Nav -->
+  <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 hover:scale-[1.02]">
+    <div class="flex transition-all hover:bg-white/10 hover:border-white/20 duration-300 bg-white/5 border-white/10 border rounded-full pt-1.5 pr-1.5 pb-1.5 pl-1.5 shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] backdrop-blur-2xl gap-x-1.5 gap-y-1.5 items-center">
+      <a href="/" class="flex items-center justify-center transition-transform hover:scale-110 w-9 h-9 bg-[url(https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_320w.png)] bg-cover rounded-full"></a>
+      <div class="flex items-center gap-1 sm:gap-2 px-1 sm:px-2">
+        <a href="/" class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full py-1.5 px-3.5">Home</a>
+        <a href="/amp-center" class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full py-1.5 px-3.5">AMP Center</a>
+      </div>
+      <div class="w-px h-4 bg-white/60 mix-blend-difference mx-1.5"></div>
+      <button onclick="document.documentElement.classList.toggle('dark');localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all active:scale-90">
+        <iconify-icon icon="solar:sun-2-bold-duotone" width="20" class="block dark:hidden text-[#ff9146]"></iconify-icon>
+        <iconify-icon icon="solar:moon-stars-bold-duotone" width="18" class="hidden dark:block text-[#46d4c6]"></iconify-icon>
+      </button>
+    </div>
+  </nav>
+
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#46d4c6]/10 to-transparent blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#ff9146]/10 to-transparent blur-[120px]"></div>
+  </div>
+
+  <main class="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-24">
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff9146]/10 border border-[#ff9146]/20 text-[#ff9146] text-xs font-bold uppercase tracking-widest mb-6">
+        <iconify-icon icon="solar:document-text-bold" width="16"></iconify-icon> Legal
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+        Terms of <span class="section-heading">Service</span>
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Last updated: May 23, 2026</p>
+    </div>
+
+    <div class="space-y-8">
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:check-circle-linear" class="text-[#46d4c6]" width="22"></iconify-icon> Acceptance of Terms</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">By accessing or using the Project D website (projectd.io) and the AMP Center platform, you agree to be bound by these Terms of Service. If you do not agree, do not use our services.</p>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:cpu-linear" class="text-[#ff9146]" width="22"></iconify-icon> Description of Service</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">The AMP Center is an AI-powered business management platform that provides lead tracking, task management, email integration, content creation, and autonomous agent workflows. Features may change as we improve the platform.</p>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:user-linear" class="text-[#46d4c6]" width="22"></iconify-icon> User Accounts</h2>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5">&#8226;</span> You are responsible for maintaining the security of your account credentials.</li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5">&#8226;</span> You may create an account using email/password or Google OAuth.</li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5">&#8226;</span> You must provide accurate information and keep it up to date.</li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5">&#8226;</span> You may not share your account with unauthorized users.</li>
+        </ul>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:letter-linear" class="text-[#ff9146]" width="22"></iconify-icon> Gmail Integration</h2>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5">&#8226;</span> Gmail integration is optional. You choose whether to grant access.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5">&#8226;</span> We access Gmail only to display your inbox, send emails you compose, and manage labels/read status.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5">&#8226;</span> You can disconnect Gmail at any time from Settings.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5">&#8226;</span> Our use of Gmail data complies with the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" class="text-[#46d4c6] underline hover:text-[#ff9146]">Google API Services User Data Policy</a>.</li>
+        </ul>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:shield-warning-linear" class="text-[#46d4c6]" width="22"></iconify-icon> Limitation of Liability</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">Project D is provided "as is" without warranties of any kind. We are not liable for any damages arising from your use of the platform, including but not limited to data loss, email delivery issues, or AI-generated content inaccuracies.</p>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2"><iconify-icon icon="solar:letter-linear" class="text-[#ff9146]" width="22"></iconify-icon> Contact</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">For questions about these terms, contact us at <a href="mailto:projectdweb3@gmail.com" class="text-[#46d4c6] underline hover:text-[#ff9146]">projectdweb3@gmail.com</a>.</p>
+      </section>
+    </div>
+
+    <div class="mt-16 text-center text-xs text-gray-400 dark:text-gray-500 space-y-2">
+      <p>&copy; 2026 Project D. All rights reserved.</p>
+      <div class="flex items-center justify-center gap-4">
+        <a href="/privacy" class="hover:text-[#46d4c6] transition-colors">Privacy Policy</a>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
+        <a href="/terms" class="text-[#46d4c6] hover:text-[#ff9146] transition-colors font-medium">Terms of Service</a>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
+        <a href="/" class="hover:text-[#46d4c6] transition-colors">Home</a>
+      </div>
+    </div>
+  </main>
+
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>
+</body>
+</html>

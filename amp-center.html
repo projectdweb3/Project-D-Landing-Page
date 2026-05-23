@@ -1618,8 +1618,8 @@
       const [editingUserName, setEditingUserName] = useState('');
 
 
-      // Check Gmail connection status on mount
-      useEffect(() => {
+      // Check Gmail connection status on mount + listen for auto-link events
+      const recheckGmailStatus = () => {
         if (session?.user?.id && session.user.id !== 'local') {
           fetch(`/.netlify/functions/gmail-connect?action=status&userId=${session.user.id}`)
             .then(r => r.json())
@@ -1628,20 +1628,27 @@
         } else {
           setGmailStatus({ connected: false, email: '', loading: false });
         }
+      };
+
+      useEffect(() => {
+        recheckGmailStatus();
+
         // Check for gmail_connected query param (returned from OAuth)
         const params = new URLSearchParams(window.location.search);
         if (params.get('gmail_connected') === 'true') {
           setGmailStatus({ connected: true, email: 'Refreshing...', loading: true });
-          // Re-fetch to get the actual email
-          if (session?.user?.id) {
-            fetch(`/.netlify/functions/gmail-connect?action=status&userId=${session.user.id}`)
-              .then(r => r.json())
-              .then(data => setGmailStatus({ ...data, loading: false }))
-              .catch(() => setGmailStatus({ connected: false, email: '', loading: false }));
-          }
+          recheckGmailStatus();
           // Clean URL
           window.history.replaceState({}, '', window.location.pathname);
         }
+
+        // Listen for auto-link event from Google OAuth sign-in
+        const handleGmailChanged = () => {
+          setGmailStatus({ connected: false, email: '', loading: true });
+          recheckGmailStatus();
+        };
+        window.addEventListener('amp-gmail-status-changed', handleGmailChanged);
+        return () => window.removeEventListener('amp-gmail-status-changed', handleGmailChanged);
       }, [session?.user?.id]);
 
       const handleGmailConnect = () => {
@@ -6128,18 +6135,37 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const userId = session?.user?.id;
       const isLocal = !userId || userId === 'local';
 
-      // Check Gmail connection
+      // Check Gmail connection — with retry for Google-signed-in users
+      // When a user signs in with Google OAuth, the token upsert may still be in-flight
+      // so we retry once after a short delay if the first check comes back disconnected.
       useEffect(() => {
         if (isLocal) { setLoading(false); return; }
-        fetch(`/.netlify/functions/gmail-connect?action=status&userId=${userId}`)
-          .then(r => r.json())
-          .then(data => {
-            setConnected(data.connected);
-            setConnectedEmail(data.email || '');
-            if (data.connected) fetchInbox();
-            else setLoading(false);
-          })
-          .catch(() => setLoading(false));
+        const isGoogleUser = localStorage.getItem('amp_gmail_oauth_linked') === 'true';
+
+        const checkStatus = (retryCount) => {
+          fetch(`/.netlify/functions/gmail-connect?action=status&userId=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.connected) {
+                setConnected(true);
+                setConnectedEmail(data.email || '');
+                fetchInbox();
+              } else if (isGoogleUser && retryCount < 2) {
+                // Token upsert may be in-flight — retry after a delay
+                setTimeout(() => checkStatus(retryCount + 1), 2000);
+              } else {
+                setConnected(false);
+                setLoading(false);
+              }
+            })
+            .catch(() => { setConnected(false); setLoading(false); });
+        };
+        checkStatus(0);
+
+        // Listen for gmail-status-changed events (fired after OAuth token save)
+        const handleGmailChanged = () => checkStatus(0);
+        window.addEventListener('amp-gmail-status-changed', handleGmailChanged);
+        return () => window.removeEventListener('amp-gmail-status-changed', handleGmailChanged);
       }, [userId]);
 
       const fetchInbox = async (query) => {
@@ -7854,21 +7880,62 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             localStorage.setItem('amp_last_user_id', sess.user.id);
           };
 
+          // Save Gmail token from Google OAuth sign-in.
+          // CRITICAL: Supabase only provides provider_refresh_token ONCE — on the initial
+          // SIGNED_IN event. On subsequent getSession() calls or page reloads, it's null.
+          // We must capture it immediately and store it.
+          const saveGmailTokenFromOAuth = async (sess) => {
+            if (!sess?.provider_refresh_token || !sess?.user) return;
+            console.log('[Gmail] Capturing provider_refresh_token from Google OAuth sign-in');
+            try {
+              // Use the Netlify function to save (avoids RLS permission issues with anon key)
+              const res = await fetch('/.netlify/functions/gmail-connect?action=status&userId=' + sess.user.id);
+              const status = await res.json();
+              
+              // Only upsert if not already connected (avoid overwriting a valid token)
+              if (!status.connected) {
+                await supabaseClient.from('gmail_tokens').upsert({
+                  user_id: sess.user.id,
+                  email: sess.user.email,
+                  refresh_token: sess.provider_refresh_token,
+                  connected_at: new Date().toISOString()
+                }, { onConflict: 'user_id' });
+                console.log('[Gmail] Auto-linked Gmail for Google OAuth user:', sess.user.email);
+              }
+              
+              // Mark locally so GmailInbox knows to retry if needed
+              localStorage.setItem('amp_gmail_oauth_linked', 'true');
+              // Notify any open GmailInbox or Settings to re-check
+              window.dispatchEvent(new Event('amp-gmail-status-changed'));
+            } catch(e) {
+              console.warn('[Gmail] Failed to auto-save gmail token:', e.message);
+              // Fallback: try direct upsert as last resort
+              try {
+                await supabaseClient.from('gmail_tokens').upsert({
+                  user_id: sess.user.id,
+                  email: sess.user.email,
+                  refresh_token: sess.provider_refresh_token,
+                  connected_at: new Date().toISOString()
+                }, { onConflict: 'user_id' });
+                localStorage.setItem('amp_gmail_oauth_linked', 'true');
+                window.dispatchEvent(new Event('amp-gmail-status-changed'));
+              } catch(e2) {
+                console.error('[Gmail] Fallback upsert also failed:', e2.message);
+              }
+            }
+          };
+
           const checkUserGenesis = async (sess) => {
             if (!sess) return;
-            
-            // If user signed in with Google, auto-save their Gmail connection token
-            if (sess.provider_token && sess.provider_refresh_token && sess.user) {
-               try {
-                 await supabaseClient.from('gmail_tokens').upsert({
-                   user_id: sess.user.id,
-                   email: sess.user.email,
-                   refresh_token: sess.provider_refresh_token,
-                   connected_at: new Date().toISOString()
-                 }, { onConflict: 'user_id' });
-               } catch(e) {
-                 console.warn("Failed to auto-save gmail token", e);
-               }
+
+            // Load cloud data for cross-device sync
+            if (sess.user?.id && sess.user.id !== 'local') {
+              try {
+                const profile = JSON.parse(localStorage.getItem('amp_business_profile') || '{}');
+                await loadFromCloud(sess.user.id, profile?.stage);
+              } catch(e) {
+                console.warn('[Sync] Cloud load failed:', e.message);
+              }
             }
 
             if (localStorage.getItem('amp_genesis_complete') === 'true') {
@@ -7889,9 +7956,16 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             setSession(session);
             checkUserGenesis(session);
           });
-          supabaseClient.auth.onAuthStateChange((_event, session) => {
+
+          supabaseClient.auth.onAuthStateChange((event, session) => {
             handleUserSwitch(session);
             setSession(session);
+            
+            // Capture Gmail token ONLY on initial sign-in (the only time provider_refresh_token exists)
+            if (event === 'SIGNED_IN' && session?.provider_refresh_token) {
+              saveGmailTokenFromOAuth(session);
+            }
+            
             checkUserGenesis(session);
           });
         }

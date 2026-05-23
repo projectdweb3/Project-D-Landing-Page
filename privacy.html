@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy | Project D</title>
+  <meta name="description" content="Project D Privacy Policy — how we collect, use, and protect your data including Google OAuth and Gmail integration." />
+  <link rel="icon" type="image/png" href="https://projectd.io/logo.png" />
+  <link rel="apple-touch-icon" href="https://projectd.io/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    html.dark body { background-color: #0b0f19 !important; }
+    @keyframes floatHover {
+      0%, 100% { transform: translateY(0) scale(1.08); box-shadow: 0 0 20px rgba(255,145,70,0.4), 0 0 30px rgba(70,212,198,0.2); }
+      50% { transform: translateY(-8px) scale(1.08); box-shadow: 0 10px 30px rgba(255,145,70,0.6), 0 15px 40px rgba(70,212,198,0.4); }
+    }
+    .dramatic-hover { transition: all 0.5s cubic-bezier(0.4,0,0.2,1) !important; }
+    .dramatic-hover:not(:disabled):hover { animation: floatHover 2s ease-in-out infinite !important; }
+    .glass-card {
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(40px) saturate(1.6);
+      -webkit-backdrop-filter: blur(40px) saturate(1.6);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    html.dark .glass-card {
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.06);
+    }
+    .section-heading {
+      background: linear-gradient(135deg, #ff9146, #46d4c6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body class="relative min-h-screen overflow-x-hidden bg-[#f4f5f7] dark:bg-[#0b0f19] selection:bg-[#ff9146]/20 selection:text-[#ff9146]">
+
+  <!-- Nav -->
+  <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 hover:scale-[1.02]">
+    <div class="flex transition-all hover:bg-white/10 hover:border-white/20 duration-300 bg-white/5 border-white/10 border rounded-full pt-1.5 pr-1.5 pb-1.5 pl-1.5 shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] backdrop-blur-2xl gap-x-1.5 gap-y-1.5 items-center">
+      <a href="/" class="flex items-center justify-center transition-transform hover:scale-110 group bg-center w-9 h-9 bg-[url(https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_320w.png)] bg-cover rounded-full"></a>
+      <div class="flex items-center gap-1 sm:gap-2 px-1 sm:px-2">
+        <a href="/" class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full pt-1.5 pr-3.5 pb-1.5 pl-3.5">Home</a>
+        <a href="/amp-center" class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full pt-1.5 pr-3.5 pb-1.5 pl-3.5">AMP Center</a>
+      </div>
+      <div class="w-px h-4 bg-white/60 mix-blend-difference mx-1.5"></div>
+      <button onclick="document.documentElement.classList.toggle('dark');localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all active:scale-90">
+        <iconify-icon icon="solar:sun-2-bold-duotone" width="20" class="block dark:hidden text-[#ff9146]"></iconify-icon>
+        <iconify-icon icon="solar:moon-stars-bold-duotone" width="18" class="hidden dark:block text-[#46d4c6]"></iconify-icon>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Background effects -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#46d4c6]/10 to-transparent blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#ff9146]/10 to-transparent blur-[120px]"></div>
+  </div>
+
+  <main class="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-24">
+
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#46d4c6]/10 border border-[#46d4c6]/20 text-[#46d4c6] text-xs font-bold uppercase tracking-widest mb-6">
+        <iconify-icon icon="solar:shield-check-bold" width="16"></iconify-icon> Legal
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+        Privacy <span class="section-heading">Policy</span>
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Last updated: May 23, 2026</p>
+    </div>
+
+    <!-- Content -->
+    <div class="space-y-8">
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6]">
+            <iconify-icon icon="solar:eye-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Overview</h2>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">Project D ("we," "us," or "our") operates the website <strong>projectd.io</strong> and the <strong>AMP Center</strong> platform. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services, including our Google OAuth integration and Gmail features.</p>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#ff9146]/10 flex items-center justify-center text-[#ff9146]">
+            <iconify-icon icon="solar:database-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Information We Collect</h2>
+        </div>
+        <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Account Information</h3>
+            <p>When you create an account or sign in with Google, we collect your name, email address, and profile picture as provided by your identity provider.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Google OAuth Data</h3>
+            <p>If you sign in with Google, we receive an OAuth token that allows you to authenticate. We store a refresh token securely in our database to maintain your session and, if you grant Gmail access, to access your Gmail on your behalf.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Gmail Data</h3>
+            <p>When you connect your Gmail account (either through Google sign-in or the Settings page), we request access to read, send, and manage your emails (<code class="text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">gmail.readonly</code>, <code class="text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">gmail.send</code>, <code class="text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">gmail.modify</code>). Your email content is fetched in real-time when you use the Gmail Center and is <strong>never stored on our servers</strong>. We only store your OAuth refresh token and connected email address.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Business Data</h3>
+            <p>Information you enter in the AMP Center (business profile, leads, clients, tasks, calendar events, inventory) is stored in your account to provide the service and sync across your devices.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6]">
+            <iconify-icon icon="solar:settings-minimalistic-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">How We Use Your Information</h2>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <span><strong>Authentication:</strong> To create and manage your account, verify your identity, and maintain your session across devices.</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <span><strong>Gmail Integration:</strong> To display your inbox, send emails on your behalf, and allow AI-assisted email drafting — only when you actively use the Gmail Center feature.</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <span><strong>Cross-Device Sync:</strong> To synchronize your business data (leads, tasks, calendar, etc.) across all your devices.</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <span><strong>Service Improvement:</strong> To monitor platform performance and improve the user experience.</span></li>
+        </ul>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#ff9146]/10 flex items-center justify-center text-[#ff9146]">
+            <iconify-icon icon="solar:lock-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Data Security & Storage</h2>
+        </div>
+        <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p>We use industry-standard security measures to protect your data:</p>
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> All data is transmitted over <strong>HTTPS/TLS encryption</strong>.</li>
+            <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> OAuth tokens are stored securely in our <strong>Supabase</strong> database with row-level security policies.</li>
+            <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> Email content is <strong>never cached or stored</strong> — it is fetched from Gmail's API in real-time and displayed only in your browser.</li>
+            <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> We do not sell, rent, or share your personal data with third parties for marketing purposes.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6]">
+            <iconify-icon icon="solar:share-circle-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Third-Party Services</h2>
+        </div>
+        <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p>We integrate with the following third-party services:</p>
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <strong>Google OAuth / Gmail API:</strong> For authentication and email features. Subject to <a href="https://policies.google.com/privacy" target="_blank" class="text-[#46d4c6] underline hover:text-[#ff9146] transition-colors">Google's Privacy Policy</a>.</li>
+            <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <strong>Supabase:</strong> For database storage and authentication infrastructure.</li>
+            <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <strong>Netlify:</strong> For hosting and serverless functions.</li>
+            <li class="flex items-start gap-2"><span class="text-[#46d4c6] mt-0.5 shrink-0">&#8226;</span> <strong>OpenAI:</strong> For AI-powered features. Prompts may include business context you provide but never raw email content unless you explicitly ask the AI to draft a reply.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl border-[#46d4c6]/20">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6]">
+            <iconify-icon icon="solar:user-check-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Google API Services — Limited Use Disclosure</h2>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#46d4c6]/5 border border-[#46d4c6]/20 text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+          <p>Project D's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" class="text-[#46d4c6] underline hover:text-[#ff9146] transition-colors font-semibold">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#ff9146]/10 flex items-center justify-center text-[#ff9146]">
+            <iconify-icon icon="solar:tuning-2-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Your Rights & Controls</h2>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> <strong>Disconnect Gmail:</strong> You can disconnect your Gmail at any time from Settings. This immediately deletes your stored refresh token.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> <strong>Revoke Access:</strong> You can revoke Project D's access to your Google account at <a href="https://myaccount.google.com/permissions" target="_blank" class="text-[#46d4c6] underline hover:text-[#ff9146] transition-colors">myaccount.google.com/permissions</a>.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> <strong>Delete Account:</strong> You can reset all your data from Settings &gt; Danger Zone, which permanently removes all stored business data.</li>
+          <li class="flex items-start gap-2"><span class="text-[#ff9146] mt-0.5 shrink-0">&#8226;</span> <strong>Data Export:</strong> Contact us to request a copy of your stored data.</li>
+        </ul>
+      </section>
+
+      <section class="glass-card rounded-[2rem] p-8 md:p-10 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6]">
+            <iconify-icon icon="solar:letter-linear" width="22"></iconify-icon>
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Contact Us</h2>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="mailto:projectdweb3@gmail.com" class="group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full py-3 px-6 relative backdrop-blur-md items-center justify-center dramatic-hover shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)]">
+            <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+            <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+            <span class="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:letter-linear" width="18"></iconify-icon> projectdweb3@gmail.com</span>
+          </a>
+          <a href="https://projectd.io" class="group inline-flex gap-2 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-sm font-medium text-gray-900 bg-white/60 rounded-full py-3 px-6 relative backdrop-blur-md items-center justify-center dramatic-hover shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)]">
+            <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+            <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+            <span class="relative z-10 flex items-center gap-2"><iconify-icon icon="solar:global-linear" width="18"></iconify-icon> projectd.io</span>
+          </a>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-16 text-center text-xs text-gray-400 dark:text-gray-500 space-y-2">
+      <p>&copy; 2026 Project D. All rights reserved.</p>
+      <div class="flex items-center justify-center gap-4">
+        <a href="/privacy" class="text-[#46d4c6] hover:text-[#ff9146] transition-colors font-medium">Privacy Policy</a>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
+        <a href="/terms" class="hover:text-[#46d4c6] transition-colors">Terms of Service</a>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
+        <a href="/" class="hover:text-[#46d4c6] transition-colors">Home</a>
+      </div>
+    </div>
+  </main>
+
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>
+</body>
+</html>
