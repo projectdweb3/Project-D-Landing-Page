@@ -5,8 +5,8 @@
 /home           /home.html      200
 
 # Serve internal docs hub at /index
-/index          /docs.html      200!
-/index.html     /docs.html      200!
+/index          /docs.html      302!
+/index.html     /docs.html      302!
 
 # Serve AMP Center and static links
 /amp-center     /amp-center.html  200
