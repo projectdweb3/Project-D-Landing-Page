@@ -7196,19 +7196,6 @@ ${transactions.slice(0, 15).map(t => `
 
         </div>
       );
-    };ext-green-500' : 'bg-red-500/10 text-red-500'}`}>{t.type}</span></td>
-                        <td className={`py-3 text-sm text-right font-medium ${t.type === 'Income' ? 'text-green-500' : 'text-gray-900 dark:text-white'}`}>
-                          {t.type === 'Income' ? '+' : '-'}${t.amount.toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
     };
 
     // ─── GMAIL CENTER ───
