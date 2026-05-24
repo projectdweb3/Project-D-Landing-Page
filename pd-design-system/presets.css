@@ -141,20 +141,50 @@
   color: var(--color-text-primary);
   text-decoration: none;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-border-specular);
   z-index: 1;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, background 0.3s;
   will-change: transform, box-shadow;
+  transform: translate(var(--tx, 0px), var(--ty, 0px));
+}
+
+.conic-btn:not(:hover) {
+  --tx: 0px !important;
+  --ty: 0px !important;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.3s;
+}
+
+/* Glass Specular reflection sweep */
+.conic-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.0) 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.0) 60%,
+    transparent 70%
+  );
+  transform: translateX(-130%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.conic-btn:hover::after {
+  transform: translateX(130%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .conic-spin-bg {
   position: absolute;
   inset: -200%;
   background: conic-gradient(
-    from 90deg at 50% 50%, 
+    from var(--conic-angle, 90deg) at 50% 50%, 
     transparent 0%, 
     var(--pd-orange-light) 30%, 
     #ffffff 50%, 
@@ -162,7 +192,7 @@
     transparent 100%
   );
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.4s ease;
   z-index: -2;
   pointer-events: none;
 }
@@ -170,27 +200,26 @@
 /* Default Inner Mask (creates the thin border effect) */
 .conic-btn-mask {
   position: absolute;
-  inset: 2px;
+  inset: 1.5px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   transition: background-color 0.3s;
   z-index: -1;
   pointer-events: none;
 }
 
 .dark .conic-btn-mask {
-  background: rgba(11, 15, 25, 0.92);
+  background: rgba(11, 15, 25, 0.94);
 }
 
 /* Conic Spin Triggers on Hover */
 .conic-btn:hover .conic-spin-bg {
   opacity: 1;
-  animation: conic-spin-anim 1.5s linear infinite;
+  animation: conic-spin-anim 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .conic-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 95, 0, 0.18);
+  box-shadow: 0 10px 30px -5px rgba(70, 212, 198, 0.25), 0 10px 30px -5px rgba(255, 95, 0, 0.15);
 }
 
 /* Variant: Primary Teal */
@@ -205,7 +234,7 @@
 }
 
 .conic-btn.primary:hover {
-  box-shadow: 0 6px 32px rgba(70, 212, 198, 0.28), 0 4px 16px rgba(255, 145, 70, 0.2);
+  box-shadow: 0 12px 35px -5px rgba(70, 212, 198, 0.45), 0 4px 15px rgba(255, 145, 70, 0.25);
 }
 
 /* Variant: Accent Orange */
@@ -220,12 +249,12 @@
 }
 
 .conic-btn.orange:hover {
-  box-shadow: 0 6px 32px rgba(255, 95, 0, 0.3);
+  box-shadow: 0 12px 35px -5px rgba(255, 95, 0, 0.45);
 }
 
 .conic-btn.orange .conic-spin-bg {
   background: conic-gradient(
-    from 90deg at 50% 50%, 
+    from var(--conic-angle, 90deg) at 50% 50%, 
     transparent 0%, 
     #ffffff 30%, 
     var(--pd-orange-light) 50%, 
@@ -246,12 +275,12 @@
 }
 
 .conic-btn.danger:hover {
-  box-shadow: 0 6px 28px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 12px 30px -5px rgba(239, 68, 68, 0.45);
 }
 
 .conic-btn.danger .conic-spin-bg {
   background: conic-gradient(
-    from 90deg at 50% 50%, 
+    from var(--conic-angle, 90deg) at 50% 50%, 
     transparent 0%, 
     var(--pd-red-light) 30%, 
     #ffffff 50%, 

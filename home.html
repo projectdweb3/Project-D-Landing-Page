@@ -44,6 +44,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
   <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="pd-design-system/presets.css" />
   <script src="pd-design-system/presets.js"></script>
   <style>
     body {
@@ -3813,12 +3814,11 @@
                 <div class="w-full lg:w-[460px] shrink-0 bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-between min-h-[300px]">
                   <div class="flex flex-col gap-4 items-center justify-center py-4 bg-white dark:bg-[#0c101d]/50 border border-gray-100 dark:border-white/5 rounded-xl min-h-[170px]">
                     <!-- Preset Conic Spin Pill Button -->
-                    <div class="relative group/conic w-fit">
-                      <div class="sandbox-conic-glow absolute -inset-[1.5px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,#46d4c6_100%)] opacity-75 blur-[0.5px] animate-[spin_3s_linear_infinite]"></div>
-                      <button class="relative px-5 py-2 rounded-full bg-white dark:bg-[#0b0f19] text-[10px] font-semibold text-gray-800 dark:text-white tracking-wide border border-gray-200 dark:border-white/10 hover:border-transparent transition-all">
-                        Liquid Glass Button
-                      </button>
-                    </div>
+                    <button class="conic-btn sandbox-conic-btn dramatic-hover relative px-5 py-2 rounded-full text-[10px] font-semibold tracking-wide border border-gray-200 dark:border-white/10 hover:border-transparent transition-all select-none">
+                      <div class="sandbox-conic-glow conic-spin-bg absolute inset-[-200%] rounded-full bg-[conic-gradient(from_var(--conic-angle,0deg),transparent_60%,#46d4c6_100%)] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+                      <div class="conic-btn-mask"></div>
+                      <span class="relative z-10">Liquid Glass Button</span>
+                    </button>
                     
                     <!-- Preset Agent Badge -->
                     <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#0c101d]/85 border border-gray-200/50 dark:border-white/10 shadow-sm">
@@ -4031,21 +4031,21 @@
 
                 const themes = {
                   orange: {
-                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#ff9146_100%)]',
+                    glow: 'bg-[conic-gradient(from_var(--conic-angle,0deg),transparent_60%,#ff9146_100%)]',
                     badgeBorder: 'border-orange-500/30',
                     badgeText: 'text-[#ff9146]',
                     badgeBg: 'from-orange-500/10',
                     shadow: 'hover:shadow-[0_20px_40px_rgba(255,145,70,0.1)]'
                   },
                   teal: {
-                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#46d4c6_100%)]',
+                    glow: 'bg-[conic-gradient(from_var(--conic-angle,0deg),transparent_60%,#46d4c6_100%)]',
                     badgeBorder: 'border-teal-500/30',
                     badgeText: 'text-[#46d4c6]',
                     badgeBg: 'from-teal-500/10',
                     shadow: 'hover:shadow-[0_20px_40px_rgba(70,212,198,0.1)]'
                   },
                   indigo: {
-                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#818cf8_100%)]',
+                    glow: 'bg-[conic-gradient(from_var(--conic-angle,0deg),transparent_60%,#818cf8_100%)]',
                     badgeBorder: 'border-indigo-500/30',
                     badgeText: 'text-[#818cf8]',
                     badgeBg: 'from-indigo-500/10',
@@ -4059,7 +4059,7 @@
                   if (!theme) return;
                   
                   // Reset classes on conic button border
-                  conicButtonGlow.className = 'sandbox-conic-glow absolute -inset-[1.5px] rounded-full opacity-75 blur-[0.5px] animate-[spin_3s_linear_infinite] ' + theme.glow;
+                  conicButtonGlow.className = 'sandbox-conic-glow conic-spin-bg absolute inset-[-200%] rounded-full opacity-0 pointer-events-none transition-opacity duration-300 ' + theme.glow;
                   
                   // Reset classes on badge
                   agentBadgeBorder.className = 'sandbox-badge-avatar relative w-6 h-6 rounded-full flex items-center justify-center text-[10px] overflow-hidden border ' + theme.badgeBorder;

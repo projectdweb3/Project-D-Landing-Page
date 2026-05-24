@@ -327,6 +327,69 @@
     loop();
   };
 
+  // ==========================================================================
+  // 6. DYNAMIC MAGNETIC AND SPOTLIGHT BUTTONS
+  // ==========================================================================
+  presets.initMagneticButtons = function () {
+    // Only run on desktop devices with precise cursors
+    if (window.innerWidth < 768) return;
+
+    document.addEventListener('mousemove', function (e) {
+      const btn = e.target.closest('.conic-btn, .sandbox-conic-btn');
+      if (!btn) return;
+
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Update spotlight position variables
+      btn.style.setProperty('--mx', `${x}px`);
+      btn.style.setProperty('--my', `${y}px`);
+
+      // Dynamic angle for conic border sweep (relative angle in degrees from center)
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rad = Math.atan2(e.clientY - (rect.top + centerY), e.clientX - (rect.left + centerX));
+      const deg = rad * (180 / Math.PI) + 90;
+      btn.style.setProperty('--conic-angle', `${deg}deg`);
+
+      // Magnetic displacement offsets
+      const dx = e.clientX - (rect.left + centerX);
+      const dy = e.clientY - (rect.top + centerY);
+      
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > 0) {
+        const maxDist = 100;
+        const pull = Math.min(dist / maxDist, 1.0);
+        // Translate button (max 8px)
+        const tx = (dx / dist) * pull * 8;
+        const ty = (dy / dist) * pull * 6;
+        
+        btn.style.setProperty('--tx', `${tx}px`);
+        btn.style.setProperty('--ty', `${ty}px`);
+
+        // Parallax inner offset (max 3px)
+        const inner = btn.querySelector('.z-10, span, button, iconify-icon');
+        if (inner) {
+          inner.style.transform = `translate(${tx * 0.4}px, ${ty * 0.4}px)`;
+          inner.style.transition = 'transform 0.1s ease-out';
+        }
+      }
+    });
+
+    document.addEventListener('mouseout', function (e) {
+      const btn = e.target.closest('.conic-btn, .sandbox-conic-btn');
+      if (!btn) return;
+      
+      // Reset inner elements to home positioning
+      const inner = btn.querySelector('.z-10, span, button, iconify-icon');
+      if (inner) {
+        inner.style.transform = '';
+        inner.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+    });
+  };
+
   // Export to global scope
   global.PDPresets = presets;
 
@@ -334,9 +397,10 @@
     presets.initTheme();
     presets.initLiquidClicks();
     presets.initCursorTrail();
+    presets.initMagneticButtons();
   }
 
-  // Auto-init theme, clicks and cursor trail
+  // Auto-init theme, clicks, cursor trail and magnetic buttons
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAll);
   } else {

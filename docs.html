@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="pd-design-system/presets.css" />
   <script src="pd-design-system/presets.js"></script>
   
   <!-- Favicons -->
@@ -357,110 +358,6 @@
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-
-    /* Conic Spin Buttons - Dramatic Hover & Brand Gradients */
-    .conic-btn {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      overflow: hidden;
-      border-radius: 9999px;
-      border: none;
-      padding: 8px 18px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--color-text-primary);
-      text-decoration: none;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.05);
-      z-index: 1;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      will-change: transform, box-shadow;
-    }
-
-    .conic-spin-bg {
-      position: absolute;
-      inset: -200%;
-      background: conic-gradient(from 90deg at 50% 50%, transparent 0%, var(--color-accent-orange) 30%, #ffffff 50%, var(--color-accent-teal) 70%, transparent 100%);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      z-index: -2;
-      pointer-events: none;
-    }
-
-    /* Default White Glass Button */
-    .conic-btn-mask {
-      position: absolute;
-      inset: 2px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.9);
-      transition: background-color 0.3s;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .dark .conic-btn-mask {
-      background: rgba(15, 20, 35, 0.9);
-    }
-
-    /* Teal Conic Button (Primary) */
-    .conic-btn.primary {
-      color: #ffffff;
-      background: var(--color-accent-teal);
-      box-shadow: 0 4px 24px rgba(70, 212, 198, 0.18), 0 2px 8px rgba(255, 145, 70, 0.12);
-    }
-
-    .conic-btn.primary .conic-btn-mask {
-      background: var(--color-accent-teal);
-    }
-
-    .dark .conic-btn.primary .conic-btn-mask {
-      background: var(--color-accent-teal);
-    }
-
-    .conic-btn:hover .conic-spin-bg {
-      opacity: 1;
-      animation: conic-spin-anim 1.5s linear infinite;
-    }
-
-    @keyframes conic-spin-anim {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .conic-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 95, 0, 0.18);
-    }
-
-    .conic-btn.primary:hover {
-      box-shadow: 0 6px 32px rgba(70, 212, 198, 0.28), 0 4px 16px rgba(255, 145, 70, 0.2);
-    }
-
-    /* Dramatic Hover Floating effect matching homepage & AMP Center */
-    @keyframes floatHover {
-      0%, 100% {
-        transform: translateY(0) scale(1.02);
-        box-shadow: 0 0 20px rgba(255, 145, 70, 0.3), 0 0 30px rgba(70, 212, 198, 0.15);
-      }
-      50% {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 10px 30px rgba(255, 145, 70, 0.45), 0 15px 40px rgba(70, 212, 198, 0.3);
-      }
-    }
-
-    .dramatic-hover:hover {
-      animation: floatHover 2s ease-in-out infinite !important;
-    }
-
-    .dramatic-hover:active {
-      transform: scale(0.95) !important;
     }
 
     /* Theme Toggle with glass button styling */
