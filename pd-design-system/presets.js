@@ -143,9 +143,6 @@
   // 5. GLOBAL CURSOR TRAIL
   // ==========================================================================
   presets.initCursorTrail = function () {
-    // Disable custom cursor trail if running inside an iframe (e.g. documentation viewports)
-    if (window.self !== window.top) return;
-
     if (window.innerWidth < 768) return;
     const existingCanvas = document.getElementById('cursor-trail');
     if (existingCanvas) existingCanvas.remove();
@@ -162,7 +159,13 @@
 
     const canvas = document.createElement('canvas');
     canvas.id = 'cursor-trail';
-    canvas.className = 'fixed inset-0 pointer-events-none z-[10000]';
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '999999';
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     let width = window.innerWidth;
