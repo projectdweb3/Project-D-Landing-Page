@@ -7,8 +7,10 @@
 # Serve internal docs hub at /index
 /index          /docs.html      302!
 /index.html     /docs.html      302!
+/docs           /docs.html      200
 
 # Serve AMP Center and static links
 /amp-center     /amp-center.html  200
+/design-hub     /design-hub.html  200
 /privacy        /privacy.html     200
 /terms          /terms.html       200

@@ -1,0 +1,572 @@
+/* 
+   Project D Design System - UI Presets (presets.css)
+   Version: 1.0.0
+   Author: Antigravity AI
+   Description: Core styling rules, variables, and animations that define the Liquid Glass brand identity.
+*/
+
+:root {
+  /* Colors */
+  --pd-teal: #46d4c6;
+  --pd-orange: #FF5F00;
+  --pd-orange-light: #ff9146;
+  --pd-red: #ef4444;
+  --pd-red-light: #fca5a5;
+  --pd-purple: #a855f7;
+  
+  /* Light Mode Palette */
+  --color-bg-base: #eef2f7;
+  --color-bg-panel: rgba(255, 255, 255, 0.65);
+  --color-bg-card: rgba(255, 255, 255, 0.75);
+  --color-border-specular: rgba(255, 255, 255, 0.85);
+  --color-border-outer: rgba(0, 0, 0, 0.08);
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-shadow: rgba(0, 0, 0, 0.08);
+  --color-inset-shadow: rgba(255, 255, 255, 0.6);
+  --color-glow-orange: rgba(255, 145, 70, 0.08);
+  --color-glow-teal: rgba(70, 212, 198, 0.08);
+
+  /* Transitions & Curves */
+  --transition-smooth: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-fast: all 0.2s ease;
+}
+
+.dark {
+  /* Dark Mode Palette */
+  --color-bg-base: #070c18;
+  --color-bg-panel: rgba(30, 45, 80, 0.45);
+  --color-bg-card: rgba(60, 80, 120, 0.22);
+  --color-border-specular: rgba(255, 255, 255, 0.10);
+  --color-border-outer: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #9ca3af;
+  --color-shadow: rgba(0, 0, 0, 0.45);
+  --color-inset-shadow: rgba(255, 255, 255, 0.08);
+  --color-glow-orange: rgba(255, 145, 70, 0.15);
+  --color-glow-teal: rgba(70, 212, 198, 0.12);
+}
+
+/* ==========================================================================
+   1. LIQUID GLASS CONTAINERS
+   ========================================================================== */
+
+/* Glass Cards - specual glass borders, hover lift, glow border shadow */
+.amp-card {
+  background: linear-gradient(145deg, var(--color-bg-card) 0%, rgba(255,255,255,0.45) 100%);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  border: 1px solid var(--color-border-specular);
+  border-radius: 24px;
+  box-shadow:
+    0 2px 0 0 var(--color-inset-shadow) inset,
+    0 -1px 0 0 rgba(0,0,0,0.04) inset,
+    0 8px 32px var(--color-shadow),
+    0 2px 8px rgba(0,0,0,0.05);
+  transition: var(--transition-smooth);
+}
+
+.dark .amp-card {
+  background: linear-gradient(145deg, var(--color-bg-card) 0%, rgba(20,30,55,0.30) 100%);
+  border: 1px solid var(--color-border-specular);
+  box-shadow:
+    0 1px 0 0 var(--color-inset-shadow) inset,
+    0 -1px 0 0 rgba(0,0,0,0.3) inset,
+    0 8px 32px var(--color-shadow),
+    0 2px 8px rgba(0,0,0,0.3);
+}
+
+.amp-card:hover {
+  transform: translateY(-5px) scale(1.015);
+  border-color: rgba(70, 212, 198, 0.5);
+  box-shadow:
+    0 2px 0 0 var(--color-inset-shadow) inset,
+    0 -1px 0 0 rgba(0,0,0,0.04) inset,
+    0 20px 50px -10px rgba(70, 212, 198, 0.25),
+    0 8px 20px rgba(0,0,0,0.08),
+    0 0 0 1px rgba(70, 212, 198, 0.15);
+}
+
+.dark .amp-card:hover {
+  border-color: rgba(70, 212, 198, 0.35);
+  box-shadow:
+    0 1px 0 0 var(--color-inset-shadow) inset,
+    0 -1px 0 0 rgba(0,0,0,0.4) inset,
+    0 20px 50px -10px rgba(70, 212, 198, 0.20),
+    0 8px 20px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(70, 212, 198, 0.12);
+}
+
+/* Glass Panels (Base containers for sidebars, main content blocks) */
+.glass-panel {
+  background: linear-gradient(160deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.35) 100%);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid var(--color-border-specular);
+  box-shadow:
+    0 2px 0 var(--color-inset-shadow) inset,
+    0 -1px 0 rgba(0,0,0,0.05) inset,
+    0 12px 48px var(--color-shadow),
+    0 4px 16px rgba(0,0,0,0.04);
+}
+
+.dark .glass-panel {
+  background: linear-gradient(160deg, var(--color-bg-panel) 0%, rgba(10,18,40,0.55) 100%);
+  border: 1px solid var(--color-border-specular);
+  box-shadow:
+    0 1px 0 var(--color-inset-shadow) inset,
+    0 -1px 0 rgba(0,0,0,0.35) inset,
+    0 12px 48px var(--color-shadow),
+    0 4px 16px rgba(0,0,0,0.35);
+}
+
+
+/* ==========================================================================
+   2. CONIC gradient SPINNING BUTTONS
+   ========================================================================== */
+
+/* Base Conic Spin Button */
+.conic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: none;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
+.conic-spin-bg {
+  position: absolute;
+  inset: -200%;
+  background: conic-gradient(
+    from 90deg at 50% 50%, 
+    transparent 0%, 
+    var(--pd-orange-light) 30%, 
+    #ffffff 50%, 
+    var(--pd-teal) 70%, 
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Default Inner Mask (creates the thin border effect) */
+.conic-btn-mask {
+  position: absolute;
+  inset: 2px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  transition: background-color 0.3s;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.dark .conic-btn-mask {
+  background: rgba(11, 15, 25, 0.92);
+}
+
+/* Conic Spin Triggers on Hover */
+.conic-btn:hover .conic-spin-bg {
+  opacity: 1;
+  animation: conic-spin-anim 1.5s linear infinite;
+}
+
+.conic-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 95, 0, 0.18);
+}
+
+/* Variant: Primary Teal */
+.conic-btn.primary {
+  color: #ffffff;
+  background: var(--pd-teal);
+  box-shadow: 0 4px 24px rgba(70, 212, 198, 0.18), 0 2px 8px rgba(255, 145, 70, 0.12);
+}
+
+.conic-btn.primary .conic-btn-mask {
+  background: var(--pd-teal);
+}
+
+.conic-btn.primary:hover {
+  box-shadow: 0 6px 32px rgba(70, 212, 198, 0.28), 0 4px 16px rgba(255, 145, 70, 0.2);
+}
+
+/* Variant: Accent Orange */
+.conic-btn.orange {
+  color: #ffffff;
+  background: var(--pd-orange);
+  box-shadow: 0 4px 24px rgba(255, 95, 0, 0.18);
+}
+
+.conic-btn.orange .conic-btn-mask {
+  background: var(--pd-orange);
+}
+
+.conic-btn.orange:hover {
+  box-shadow: 0 6px 32px rgba(255, 95, 0, 0.3);
+}
+
+.conic-btn.orange .conic-spin-bg {
+  background: conic-gradient(
+    from 90deg at 50% 50%, 
+    transparent 0%, 
+    #ffffff 30%, 
+    var(--pd-orange-light) 50%, 
+    #ff5f00 70%, 
+    transparent 100%
+  );
+}
+
+/* Variant: Danger/Alert Red */
+.conic-btn.danger {
+  color: #ffffff;
+  background: var(--pd-red);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+}
+
+.conic-btn.danger .conic-btn-mask {
+  background: var(--pd-red);
+}
+
+.conic-btn.danger:hover {
+  box-shadow: 0 6px 28px rgba(239, 68, 68, 0.35);
+}
+
+.conic-btn.danger .conic-spin-bg {
+  background: conic-gradient(
+    from 90deg at 50% 50%, 
+    transparent 0%, 
+    var(--pd-red-light) 30%, 
+    #ffffff 50%, 
+    var(--pd-red) 70%, 
+    transparent 100%
+  );
+}
+
+/* Variant: Circle Button (Equal width and height) */
+.conic-btn.circle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.conic-btn.circle .conic-btn-mask {
+  border-radius: 50%;
+}
+
+
+/* ==========================================================================
+   3. STANDARD CLEAN GLASS BUTTONS
+   ========================================================================== */
+
+.amp-button {
+  background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,245,255,0.55) 100%);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #222;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,1) inset,
+    0 -1px 0 rgba(0,0,0,0.06) inset,
+    0 4px 14px rgba(0,0,0,0.07);
+}
+
+.dark .amp-button {
+  background: linear-gradient(135deg, rgba(35,50,85,0.7) 0%, rgba(20,30,60,0.55) 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #dde3f0;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.1) inset,
+    0 -1px 0 rgba(0,0,0,0.4) inset,
+    0 4px 14px rgba(0,0,0,0.35);
+}
+
+/* Sliding Shimmer effect */
+.amp-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,95,0,0.18), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.amp-button:hover::before {
+  transform: translateX(100%);
+}
+
+.amp-button:hover {
+  border-color: rgba(255,95,0,0.55);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,1) inset,
+    0 -1px 0 rgba(0,0,0,0.06) inset,
+    0 8px 25px rgba(255,95,0,0.18),
+    0 2px 8px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  color: #FF5F00;
+}
+
+.dark .amp-button:hover {
+  border-color: rgba(255,95,0,0.5);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.12) inset,
+    0 -1px 0 rgba(0,0,0,0.45) inset,
+    0 8px 25px rgba(255,95,0,0.15);
+  color: white;
+}
+
+
+/* ==========================================================================
+   4. DRAMATIC HOVER EFFECT
+   ========================================================================== */
+
+.dramatic-hover {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: transform, box-shadow;
+}
+
+.dramatic-hover:not(:disabled):hover {
+  animation: floatHover 2s ease-in-out infinite !important;
+}
+
+.dramatic-hover:not(:disabled):active {
+  transform: scale(0.95) !important;
+}
+
+
+/* ==========================================================================
+   5. NAVIGATION & HEADERS
+   ========================================================================== */
+
+/* Floating dynamic-island style navigation bar */
+.dynamic-island {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dynamic-island:hover {
+  scale: 1.02;
+}
+
+.dynamic-island-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.dynamic-island-content:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ==========================================================================
+   6. INTERACTIVE VISUAL FX
+   ========================================================================== */
+
+/* Liquid Click ripple effect */
+.liquid-click-effect {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(4px) brightness(1.15) contrast(1.2);
+  -webkit-backdrop-filter: blur(4px) brightness(1.15) contrast(1.2);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  animation: liquidPulse 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  mix-blend-mode: overlay;
+  will-change: transform, opacity;
+}
+
+/* Ambient neon background beams */
+.neon-beam-glow {
+  position: absolute;
+  top: 0%;
+  left: -20%;
+  width: 150vw;
+  height: 80vh;
+  transform: rotate(-22deg);
+  background: linear-gradient(90deg, rgba(70, 212, 198, 0.1) 0%, rgba(255, 145, 70, 0.1) 30%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .neon-beam-glow {
+  background: linear-gradient(90deg, rgba(70, 212, 198, 0.2) 0%, rgba(255, 145, 70, 0.15) 30%, transparent 70%);
+}
+
+.dot-grid-bg {
+  background-image: radial-gradient(circle at center, rgba(70, 212, 198, 0.2) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.6;
+}
+
+
+/* ==========================================================================
+   7. SCROLLBARS
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ==========================================================================
+   8. CORE KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes conic-spin-anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes floatHover {
+  0%, 100% {
+    transform: translateY(0) scale(1.03);
+    box-shadow: 0 0 20px rgba(255, 145, 70, 0.4), 0 0 30px rgba(70, 212, 198, 0.2);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(255, 145, 70, 0.6), 0 15px 40px rgba(70, 212, 198, 0.4);
+  }
+}
+
+@keyframes liquidPulse {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes glassReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.glass-reveal {
+  animation: glassReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Stagger delay classes */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Shimmer scan (sweep animation) */
+@keyframes shimmerScan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.shimmer-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-scan::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(70,212,198,0.06), transparent);
+  animation: shimmerScan 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Agent Active Glow & Capacity Pulse */
+@keyframes agentGlow {
+  0%, 100% { box-shadow: 0 0 4px currentColor; opacity: 1; }
+  50% { box-shadow: 0 0 12px currentColor; opacity: 0.7; }
+}
+
+.agent-active-glow {
+  animation: agentGlow 2s ease-in-out infinite;
+}
+
+@keyframes capacityPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(70,212,198,0.3); }
+  50% { box-shadow: 0 0 14px rgba(70,212,198,0.6); }
+}
+
+.capacity-active {
+  animation: capacityPulse 2s ease-in-out infinite;
+}

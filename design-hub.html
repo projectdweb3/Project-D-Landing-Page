@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title>Project D | Design System & UI Hub</title>
+  <meta name="title" content="Project D | Design System & UI Hub">
+  <meta name="description" content="Central registry for Project D Liquid Glass design presets. Copy and reuse verified, branded buttons, cards, and UI components.">
+  
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="https://projectd.io/logo.png">
+  <link rel="apple-touch-icon" href="https://projectd.io/logo.png">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pd: {
+              teal: '#46d4c6',
+              orange: '#FF5F00',
+              orangeLight: '#ff9146',
+              dark: '#070c18',
+              glass: 'rgba(255, 255, 255, 0.05)',
+              glassBorder: 'rgba(255, 255, 255, 0.1)'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+  <!-- Load Local Presets CSS -->
+  <link rel="stylesheet" href="pd-design-system/presets.css" />
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+    
+    /* Code block syntax coloring */
+    .code-editor {
+      background: #0f1423;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      font-family: 'Fira Code', monospace;
+      color: #9cdcfe;
+    }
+    
+    .code-comment { color: #6a9955; font-style: italic; }
+    .code-tag { color: #569cd6; }
+    .code-attr { color: #9cdcfe; }
+    .code-val { color: #ce9178; }
+    .code-class { color: #4ec9b0; }
+
+    /* Custom Category Tab Transitions */
+    .category-tab {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Custom style overlay tweaks for code visibility */
+    .preview-box {
+      background-image: radial-gradient(rgba(70, 212, 198, 0.15) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+  </style>
+</head>
+<body class="relative bg-gray-50 dark:bg-[#070c18] text-[#111827] dark:text-[#f3f4f6] transition-colors duration-300">
+
+  <!-- Ambient Background Beams (PD Ambient Background Preset) -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="neon-beam-glow"></div>
+    <div class="fixed inset-0 dot-grid-bg opacity-30"></div>
+  </div>
+
+  <!-- Sidebar Overlay for Mobile -->
+  <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden transition-opacity duration-300" onclick="toggleSidebar()"></div>
+
+  <!-- App Layout -->
+  <div class="relative z-10 w-full h-screen p-4 flex gap-4 overflow-hidden">
+    
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar-panel" class="glass-panel w-[290px] h-full rounded-[24px] flex flex-col z-[100] transition-all duration-300 max-lg:fixed max-lg:-left-[310px] max-lg:top-4 max-lg:bottom-4 max-lg:h-[calc(100vh-32px)]">
+      <div class="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+        <a href="/home" class="flex items-center gap-3">
+          <img src="logo.png" alt="Project D Logo" class="w-8 h-8 object-contain filter drop-shadow-[0_0_8px_rgba(70,212,198,0.4)]" />
+          <div>
+            <span class="font-extrabold text-lg tracking-tight">Project D</span>
+            <div class="text-[9px] font-bold text-pd-teal uppercase tracking-widest leading-none">Design System</div>
+          </div>
+        </a>
+        <button class="lg:hidden text-2xl hover:text-pd-teal transition-colors" onclick="toggleSidebar()">
+          <iconify-icon icon="solar:close-circle-linear"></iconify-icon>
+        </button>
+      </div>
+
+      <!-- Categories Filter -->
+      <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+        <div>
+          <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-3">UI Components</div>
+          <ul class="space-y-1">
+            <li>
+              <button onclick="filterCategory('all', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-black/5 dark:bg-white/5 text-pd-teal">
+                <iconify-icon icon="solar:widget-bold-duotone" class="text-lg"></iconify-icon>
+                <span>All Presets</span>
+              </button>
+            </li>
+            <li>
+              <button onclick="filterCategory('buttons', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:play-circle-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Conic Buttons</span>
+              </button>
+            </li>
+            <li>
+              <button onclick="filterCategory('containers', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:card-rec-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Liquid Glass Cards</span>
+              </button>
+            </li>
+            <li>
+              <button onclick="filterCategory('navigation', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:compass-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Navigation & Islands</span>
+              </button>
+            </li>
+            <li>
+              <button onclick="filterCategory('visualfx', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:magic-stick-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Interactive Visual FX</span>
+              </button>
+            </li>
+            <li>
+              <button onclick="filterCategory('dashboards', this)" class="category-tab w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:document-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Dashboard Elements</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 mb-3">Resources</div>
+          <ul class="space-y-1">
+            <li>
+              <a href="pd-design-system/README.md" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:checklist-minimalistic-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Nomenclature Guide</span>
+              </a>
+            </li>
+            <li>
+              <a href="/docs" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 hover:text-pd-teal text-slate-500 dark:text-slate-400">
+                <iconify-icon icon="solar:book-open-bold-duotone" class="text-lg"></iconify-icon>
+                <span>Documentation Hub</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Sidebar Footer Info -->
+      <div class="p-6 border-t border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.01]">
+        <div class="text-[11px] text-slate-400 dark:text-slate-500 mb-2">Workspace Reference Guide</div>
+        <div class="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed bg-white/40 dark:bg-black/20 p-2.5 rounded-xl border border-black/5 dark:border-white/5">
+          Copy snippets and paste them directly. Mention presets by name to reuse.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="glass-panel flex-1 h-full rounded-[24px] flex flex-col overflow-hidden">
+      
+      <!-- Hub Header -->
+      <header class="h-[76px] border-b border-black/5 dark:border-white/5 px-6 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <button class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 hover:text-pd-teal transition-colors" onclick="toggleSidebar()">
+            <iconify-icon icon="solar:hamburger-menu-linear" width="22"></iconify-icon>
+          </button>
+          <div>
+            <h1 class="text-lg font-bold">Presets & Design System Hub</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Explore and copy verified Project D Liquid Glass visual presets</p>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex items-center gap-3">
+          <a href="/home" class="conic-btn dramatic-hover py-2 px-4 text-xs font-semibold">
+            <div class="conic-spin-bg"></div>
+            <div class="conic-btn-mask"></div>
+            <span class="relative z-10 flex items-center gap-1.5">
+              <iconify-icon icon="solar:home-2-linear" width="14"></iconify-icon>
+              <span>Home</span>
+            </span>
+          </a>
+
+          <a href="/amp-center" class="conic-btn primary dramatic-hover py-2 px-4 text-xs font-semibold">
+            <div class="conic-spin-bg"></div>
+            <div class="conic-btn-mask"></div>
+            <span class="relative z-10 flex items-center gap-1.5">
+              <iconify-icon icon="solar:window-frame-bold-duotone" width="14"></iconify-icon>
+              <span>AMP Center</span>
+            </span>
+          </a>
+
+          <!-- Dark/Light Theme Toggle -->
+          <button onclick="PDPresets.toggleTheme()" class="btn-theme-toggle w-9 h-9 border border-black/10 dark:border-white/10 flex items-center justify-center rounded-full hover:border-pd-teal transition-all shadow-sm">
+            <iconify-icon icon="solar:sun-2-bold-duotone" class="sun-icon text-lg text-[#ff9146]"></iconify-icon>
+            <iconify-icon icon="solar:moon-stars-bold-duotone" class="moon-icon text-lg text-[#46d4c6]"></iconify-icon>
+          </button>
+        </div>
+      </header>
+
+      <!-- Viewport list for Cards -->
+      <div id="presets-grid" class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
+        
+        <!-- ==================== CATEGORY: BUTTONS ==================== -->
+        
+        <!-- Component Card: Conic Pill Teal Button -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch stagger-1" data-category="buttons">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-teal uppercase tracking-wider">Button</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-500 uppercase">Primary</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Conic Pill Teal Button</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">The flagship primary action button used across the website. Features a white-and-teal spinning border highlight and floating micro-animations on hover.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <button class="conic-btn primary dramatic-hover">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:add-circle-linear" width="16"></iconify-icon>
+                  <span>Add New User</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">teal-button.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn primary dramatic-hover"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-spin-bg"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn-mask"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 flex items-center gap-1.5"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:add-circle-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"16"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;span&gt;</span>Add New User<span class="code-tag">&lt;/span&gt;</span>
+  <span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/button&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Conic Pill Orange Button -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch stagger-2" data-category="buttons">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-orange-light uppercase tracking-wider">Button</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-pd-orange/10 text-pd-orange uppercase">Highlight</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Conic Pill Orange Button</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Branded call-to-action button utilizing the signature orange accent color. Highlights high-priority tasks and executive decisions.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <button class="conic-btn orange dramatic-hover">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:fire-bold" width="16"></iconify-icon>
+                  <span>Maximize Velocity</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">orange-button.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn orange dramatic-hover"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-spin-bg"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn-mask"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 flex items-center gap-1.5"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:fire-bold"</span> <span class="code-attr">width</span>=<span class="code-val">"16"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;span&gt;</span>Maximize Velocity<span class="code-tag">&lt;/span&gt;</span>
+  <span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/button&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Conic Pill Glass Button -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="buttons">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Button</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-black/10 dark:bg-white/10 text-slate-500 dark:text-slate-400 uppercase">Glass/Frosted</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Conic Pill Glass Button</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Frosted glass pill button with low opacity mask background, revealing the underlying orange-white-teal spin gradient on hover.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <button class="conic-btn dramatic-hover">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:settings-linear" width="16"></iconify-icon>
+                  <span>Configure Settings</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">glass-conic-btn.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn dramatic-hover"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-spin-bg"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn-mask"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 flex items-center gap-1.5"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:settings-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"16"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;span&gt;</span>Configure Settings<span class="code-tag">&lt;/span&gt;</span>
+  <span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/button&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Conic Circle Icon Button -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="buttons">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-teal uppercase tracking-wider">Button</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-pd-teal/10 text-pd-teal uppercase">Circle</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Conic Circle Icon Button</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Equal width and height variant for compact actions. Frequently used for triggers, toggles, controls, and icon-only floating anchors.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01] gap-4">
+              <!-- Glass circle -->
+              <button class="conic-btn circle dramatic-hover" title="Help">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center justify-center text-slate-900 dark:text-white">
+                  <iconify-icon icon="solar:question-square-bold" width="18"></iconify-icon>
+                </span>
+              </button>
+              <!-- Teal circle -->
+              <button class="conic-btn primary circle dramatic-hover" title="Add">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center justify-center">
+                  <iconify-icon icon="solar:add-circle-bold" width="18"></iconify-icon>
+                </span>
+              </button>
+              <!-- Orange circle -->
+              <button class="conic-btn orange circle dramatic-hover" title="Fire">
+                <div class="conic-spin-bg"></div>
+                <div class="conic-btn-mask"></div>
+                <span class="relative z-10 flex items-center justify-center">
+                  <iconify-icon icon="solar:fire-bold" width="18"></iconify-icon>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">circle-button.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-comment">&lt;!-- Conic Circle Button (Glass Variant) --&gt;</span>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn circle dramatic-hover"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-spin-bg"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"conic-btn-mask"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 flex items-center justify-center"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:settings-bold"</span> <span class="code-attr">width</span>=<span class="code-val">"18"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+  <span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/button&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Classic Glass Button -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="buttons">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Button</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-500/10 text-slate-500 dark:text-slate-400 uppercase">Classic</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Classic Glass Button</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">The standard secondary action button from the AMP Center design specs. Contains an elegant sliding horizontal shimmer sweep animation on hover.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <button class="amp-button px-5 py-2 text-xs font-semibold">
+                <iconify-icon icon="solar:import-linear" width="15"></iconify-icon>
+                <span>Import CSV File</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">classic-button.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"amp-button"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:import-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"15"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+  <span class="code-tag">&lt;span&gt;</span>Import CSV File<span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/button&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- ==================== CATEGORY: CONTAINERS ==================== -->
+
+        <!-- Component Card: Specular Card -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="containers">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-teal uppercase tracking-wider">Container</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-pd-teal/10 text-pd-teal uppercase">Glass</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Specular Card</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Specially crafted glassmorphic container displaying a bright top specular line, 24px rounded corners, and a slight lift + teal glow on hover.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="amp-card p-6 max-w-sm w-full cursor-pointer">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-pd-teal bg-pd-teal/10 px-2.5 py-1 rounded-full">Analytics</span>
+                  <iconify-icon icon="solar:graph-bold" class="text-pd-teal text-lg"></iconify-icon>
+                </div>
+                <h4 class="font-bold text-base mb-1">Conversion Optimization</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Liquid glass card component reacts smoothly to mouse positions and handles dark/light shifts.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">specular-card.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card p-6"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h4</span> <span class="code-attr">class</span>=<span class="code-val">"font-bold text-base mb-1"</span><span class="code-tag">&gt;</span>Card Title<span class="code-tag">&lt;/h4&gt;</span>
+  <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-val">"text-xs text-slate-500 dark:text-slate-400"</span><span class="code-tag">&gt;</span>Card content goes here.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Glass Panel -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="containers">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Container</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-500/10 text-slate-500 dark:text-slate-400 uppercase">Panel</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Glass Panel</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">A structural backdrop designed for heavy layout elements such as sidebars, overlay drawers, and main frames. Utilizes a high blur threshold.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="glass-panel p-5 rounded-2xl max-w-sm w-full">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Panel Content</span>
+                <div class="h-10 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">glass-panel.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"glass-panel p-5 rounded-2xl"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- Structural elements inside sidebar/backdrop --&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- ==================== CATEGORY: NAVIGATION ==================== -->
+
+        <!-- Component Card: Dynamic Island Navigation -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="navigation">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-orange-light uppercase tracking-wider">Navigation</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-pd-orange/10 text-pd-orange uppercase">Header</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Dynamic Island Navigation</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">The floating capsule-shaped header nav bar from Project D Home Page. Uses glass blur backdrop, dark mode quick button, and scales up on hover.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="relative py-10 w-full flex items-center justify-center bg-black/10 dark:bg-black/40 rounded-xl overflow-hidden">
+                <!-- Inline representation of navbar -->
+                <div class="dynamic-island-content">
+                  <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                    <img src="logo.png" class="w-5 h-5 object-contain" />
+                  </a>
+                  <div class="flex items-center gap-3 px-2">
+                    <span class="text-[10px] font-semibold text-[#111827] dark:text-[#f3f4f6]">Home</span>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">AMP Center</span>
+                  </div>
+                  <div class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-1"></div>
+                  <div class="w-6 h-6 rounded-full bg-white/20 dark:bg-white/10 flex items-center justify-center text-xs">
+                    <iconify-icon icon="solar:sun-2-bold" class="text-pd-orange-light"></iconify-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">nav-island.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;nav</span> <span class="code-attr">class</span>=<span class="code-val">"dynamic-island"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"dynamic-island-content"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;a</span> <span class="code-attr">href</span>=<span class="code-val">"#"</span> <span class="code-attr">class</span>=<span class="code-val">"flex items-center"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;img</span> <span class="code-attr">src</span>=<span class="code-val">"logo.png"</span> <span class="code-attr">style</span>=<span class="code-val">"width:24px; height:24px;"</span> <span class="code-tag">/&gt;</span>
+    <span class="code-tag">&lt;/a&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex gap-4 px-2"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;a</span> <span class="code-attr">href</span>=<span class="code-val">"#"</span> <span class="code-attr">class</span>=<span class="code-val">"text-xs font-semibold"</span><span class="code-tag">&gt;</span>Home<span class="code-tag">&lt;/a&gt;</span>
+      <span class="code-tag">&lt;a</span> <span class="code-attr">href</span>=<span class="code-val">"#"</span> <span class="code-attr">class</span>=<span class="code-val">"text-xs text-slate-400"</span><span class="code-tag">&gt;</span>AMP Center<span class="code-tag">&lt;/a&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-px h-4 bg-slate-300 mx-1"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;button</span> <span class="code-attr">onclick</span>=<span class="code-val">"PDPresets.toggleTheme()"</span> <span class="code-attr">class</span>=<span class="code-val">"btn-theme-toggle"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:sun-2-bold-duotone"</span> <span class="code-attr">class</span>=<span class="code-val">"sun-icon"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+      <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:moon-stars-bold-duotone"</span> <span class="code-attr">class</span>=<span class="code-val">"moon-icon"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;/button&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/nav&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- ==================== CATEGORY: VISUAL FX ==================== -->
+
+        <!-- Component Card: Liquid Click Effect -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="visualfx">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-orange-light uppercase tracking-wider">Effect</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-500 uppercase">Global JS</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Liquid Click Ripple FX</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Click anywhere on this document! A dynamic, glassmorphic water-like ripple spans, blur-zooms, and overlays on click coordinates. Pre-registered globally via `presets.js`.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex flex-col items-center justify-center bg-black/[0.01] dark:bg-white/[0.01] gap-2">
+              <div class="text-xs font-semibold text-pd-teal animate-pulse-fast">🔥 Try Clicking Anywhere!</div>
+              <div class="text-[10px] text-slate-400">Ripples expand automatically under the mouse cursor.</div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">ripple-trigger.js</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-comment">// JS ripple spawner (from presets.js)</span>
+<span class="code-tag">document</span>.addEventListener(<span class="code-val">'click'</span>, <span class="code-tag">function</span> (e) {
+  <span class="code-tag">const</span> ripple = <span class="code-tag">document</span>.createElement(<span class="code-val">'div'</span>);
+  ripple.className = <span class="code-val">'liquid-click-effect'</span>;
+  ripple.style.left = e.clientX + <span class="code-val">'px'</span>;
+  ripple.style.top = e.clientY + <span class="code-val">'px'</span>;
+  <span class="code-tag">document</span>.body.appendChild(ripple);
+  ripple.addEventListener(<span class="code-val">'animationend'</span>, () => ripple.remove());
+});</pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Background Ambient Beams -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="visualfx">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Effect</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-500/10 text-slate-400 uppercase">Background</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Ambient Background Beams</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Soft diagonal flowing brand gradients paired with a tech dot grid backplane to establish depth and futuristic premium aesthetics on any portal page.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="relative w-full h-[120px] rounded-xl overflow-hidden bg-slate-900 border border-white/5">
+                <div class="neon-beam-glow opacity-80 scale-50"></div>
+                <div class="absolute inset-0 dot-grid-bg opacity-40"></div>
+                <span class="absolute bottom-2 right-3 text-[9px] font-mono text-slate-500">Live preview simulation</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">ambient-bg.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-comment">&lt;!-- Place directly under &lt;body&gt; tag --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"fixed inset-0 pointer-events-none z-0 overflow-hidden bg-gray-50 dark:bg-[#070c18]"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"neon-beam-glow"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"fixed inset-0 dot-grid-bg opacity-30"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- ==================== CATEGORY: DASHBOARDS ==================== -->
+
+        <!-- Component Card: Stat Card Widget -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="dashboards">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-pd-teal uppercase tracking-wider">Dashboard</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-pd-teal/10 text-pd-teal uppercase">Widget</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Dashboard Stats Card</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Specially styled stat module with micro flex layouts, clean typography hierarchy, accent badges, and glass specular containers matching the AMP Center operations hub.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="amp-card p-5 max-w-[240px] w-full">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Marketing LTV</span>
+                  <div class="w-8 h-8 rounded-full bg-pd-orange/10 flex items-center justify-center text-pd-orange">
+                    <iconify-icon icon="solar:round-transfer-horizontal-bold" width="16"></iconify-icon>
+                  </div>
+                </div>
+                <div class="text-2xl font-extrabold mb-1">$48,290</div>
+                <div class="flex items-center gap-1 text-[10px] text-emerald-500 font-bold">
+                  <iconify-icon icon="solar:arrow-right-up-bold"></iconify-icon>
+                  <span>+18.4% this month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">stat-card.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card p-5 max-w-[240px] w-full"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex items-center justify-between mb-3"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"text-xs font-bold text-slate-500"</span><span class="code-tag">&gt;</span>Marketing LTV<span class="code-tag">&lt;/span&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full bg-pd-orange/10 flex items-center justify-center text-pd-orange"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:round-transfer-horizontal-bold"</span> <span class="code-attr">width</span>=<span class="code-val">"16"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-2xl font-extrabold mb-1"</span><span class="code-tag">&gt;</span>$48,290<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex items-center gap-1 text-[10px] text-emerald-500 font-bold"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:arrow-right-up-bold"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+    <span class="code-tag">&lt;span&gt;</span>+18.4% this month<span class="code-tag">&lt;/span&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- Component Card: Agent Glow Badge -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="dashboards">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-[#a855f7] uppercase tracking-wider">Dashboard</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-purple-500/10 text-purple-500 uppercase">Agent Node</span>
+            </div>
+            <h3 class="text-lg font-bold">PD Agent Glow Badge</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Specially animated active workforce avatar badge. Uses a double-glow container with `agent-active-glow` pulse animation matching the AMP Center agent tree nodes.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="flex items-center gap-3 p-3 bg-white/40 dark:bg-black/20 rounded-2xl border border-black/5 dark:border-white/5 max-w-[200px] w-full">
+                <div class="relative w-10 h-10 rounded-full border border-pd-teal agent-active-glow flex-shrink-0" style="color: #46d4c6;">
+                  <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_320w.png" class="w-full h-full rounded-full object-cover" />
+                </div>
+                <div>
+                  <div class="text-xs font-bold leading-tight">Copywriter Agent</div>
+                  <div class="text-[9px] font-bold text-emerald-500 tracking-wide uppercase leading-none mt-1">Delegated</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">agent-glow.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex items-center gap-3 p-3 bg-white/40 dark:bg-black/20 rounded-2xl border border-black/5 dark:border-white/5"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"relative w-10 h-10 rounded-full border border-pd-teal agent-active-glow flex-shrink-0"</span> <span class="code-attr">style</span>=<span class="code-val">"color: #46d4c6;"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;img</span> <span class="code-attr">src</span>=<span class="code-val">"logo.png"</span> <span class="code-attr">class</span>=<span class="code-val">"w-full h-full rounded-full"</span> <span class="code-tag">/&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-xs font-bold"</span><span class="code-tag">&gt;</span>Copywriter Agent<span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[9px] font-bold text-emerald-500 uppercase mt-1"</span><span class="code-tag">&gt;</span>Delegated<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Load Local Presets JS -->
+  <script src="pd-design-system/presets.js"></script>
+  
+  <script>
+    // Copy Snippet Action (Helper)
+    function copySnippet(btn) {
+      // Find the adjacent pre block
+      const card = btn.closest('div').parentElement;
+      const pre = card.querySelector('pre');
+      
+      // Clean syntax highlighted text back to raw html
+      let rawCode = pre.innerText;
+      
+      // Copy to clipboard using PD system presets js helper
+      PDPresets.copyText(rawCode, btn);
+    }
+    
+    // Toggle Sidebar Navigation on Mobile Drawers
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar-panel');
+      const overlay = document.getElementById('mobile-sidebar-overlay');
+      
+      sidebar.classList.toggle('max-lg:-left-[310px]');
+      sidebar.classList.toggle('max-lg:left-4');
+      overlay.classList.toggle('hidden');
+    }
+    
+    // Category Filtering mechanism
+    function filterCategory(category, button) {
+      // Manage active tab states
+      document.querySelectorAll('.category-tab').forEach(el => {
+        el.classList.remove('bg-black/5', 'dark:bg-white/5', 'text-pd-teal');
+        el.classList.add('text-slate-500', 'dark:text-slate-400');
+        el.classList.remove('font-bold');
+        el.classList.add('font-medium');
+      });
+      
+      button.classList.add('bg-black/5', 'dark:bg-white/5', 'text-pd-teal');
+      button.classList.remove('text-slate-500', 'dark:text-slate-400');
+      button.classList.add('font-bold');
+      button.classList.remove('font-medium');
+      
+      // Filter list cards
+      const cards = document.querySelectorAll('.preset-card');
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        if (category === 'all' || cat === category) {
+          card.style.display = 'flex';
+          // Trigger animations reveal again
+          card.classList.add('glass-reveal');
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Close sidebar on mobile after clicking
+      if (window.innerWidth < 1024) {
+        toggleSidebar();
+      }
+    }
+  </script>
+</body>
+</html>
