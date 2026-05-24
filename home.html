@@ -2224,108 +2224,6 @@
             border-color: rgba(0, 0, 0, 0.15);
         }
 
-        /* Hotspots styling */
-        .luxury-hotspot {
-            position: absolute;
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-            z-index: 20;
-            transform: translate(-50%, -50%);
-        }
-
-        .luxury-hotspot .hotspot-inner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 8px;
-            height: 8px;
-            margin: -4px 0 0 -4px;
-            background: var(--accent-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-gold);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .luxury-hotspot:hover .hotspot-inner {
-            transform: scale(1.4);
-            background: #ffffff;
-            box-shadow: 0 0 12px #ffffff;
-        }
-
-        .luxury-hotspot .hotspot-pulse {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 26px;
-            height: 26px;
-            margin: -13px 0 0 -13px;
-            border: 1px solid var(--accent-gold);
-            border-radius: 50%;
-            animation: luxuryPulse 3s infinite ease-out;
-            pointer-events: none;
-        }
-
-        @keyframes luxuryPulse {
-            0% {
-                transform: scale(0.5);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(2.2);
-                opacity: 0;
-            }
-        }
-
-        /* Luxury tooltip matching B2B style */
-        .luxury-tooltip {
-            position: absolute;
-            bottom: 34px;
-            left: 50%;
-            transform: translateX(-50%) translateY(8px);
-            background: rgba(16, 18, 26, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            width: 200px;
-            text-align: left;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 30;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-        }
-
-        body.light-mode .luxury-tooltip {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(0, 0, 0, 0.08);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-        }
-
-        .luxury-hotspot:hover .luxury-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .luxury-tooltip h4 {
-            font-family: &apos;Playfair Display&apos;, serif;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 2px;
-            letter-spacing: 0.5px;
-        }
-
-        .luxury-tooltip p {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            line-height: 1.3;
-        }
-
         /* Sparkle Star */
         .sparkle-star {
             position: absolute;
@@ -2396,6 +2294,112 @@
         body.light-mode #btn-exit-portal:hover {
             background: rgba(0, 0, 0, 0.03);
         }
+
+        /* Redesigned theme-aware classes */
+        .text-main-theme {
+            color: var(--text-main) !important;
+            transition: color 0.5s ease;
+        }
+        .text-muted-theme {
+            color: var(--text-muted) !important;
+            transition: color 0.5s ease;
+        }
+        .border-theme {
+            border-color: var(--glass-border) !important;
+            transition: border-color 0.5s ease;
+        }
+        .bg-theme-glass {
+            background-color: var(--glass-bg) !important;
+            transition: background-color 0.5s ease;
+        }
+        .nav-link-theme {
+            color: var(--text-muted) !important;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .nav-link-theme:hover, .nav-link-theme.active {
+            color: var(--text-main) !important;
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        /* Style for interactive service buttons */
+        .service-btn {
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-main);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .service-btn:hover {
+            border-color: var(--accent-gold) !important;
+            color: var(--text-main) !important;
+            background: rgba(197, 160, 89, 0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-gold-glow);
+        }
+        body.light-mode .service-btn:hover {
+            background: rgba(141, 110, 50, 0.06);
+        }
+        .bg-glass-tooltip {
+            background: var(--glass-card-bg) !important;
+        }
+
+        /* Service tooltip styling */
+        .service-tooltip {
+            position: absolute;
+            bottom: 100%;
+            margin-bottom: 0.75rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--glass-card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            width: 200px;
+            text-align: left;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 30;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        body.light-mode .service-tooltip {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+        }
+
+        .service-tooltip-wrapper:hover .service-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .service-tooltip h4 {
+            font-family: &apos;Playfair Display&apos;, serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .service-tooltip p {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -2428,9 +2432,9 @@
         &lt;div class="w-[98%] max-w-[1520px] h-[90vh] md:h-[680px] lg:h-[720px] xl:h-[780px] rounded-[2.5rem] glass-panel flex flex-col md:flex-row relative overflow-hidden z-10"&gt;
             
             &lt;!-- Left Sidebar Panel --&gt;
-            &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-white/10 dark:border-white/5 flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
+            &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
                 &lt;!-- Hamburger Menu --&gt;
-                &lt;button class="text-white/60 hover:text-white transition-colors duration-300"&gt;
+                &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
                         &lt;line x1="4" y1="12" x2="20" y2="12"&gt;&lt;/line&gt;
@@ -2447,7 +2451,7 @@
                 &lt;!-- Custom Circuit Lines (Hidden on mobile) --&gt;
                 &lt;div class="hidden md:flex absolute inset-x-0 top-24 bottom-24 opacity-20 pointer-events-none justify-center"&gt;
                     &lt;svg width="30" height="100%" viewBox="0 0 30 300" fill="none" preserveAspectRatio="none"&gt;
-                        &lt;path d="M15 0 V110 L5 120 V160 L25 180 V220 L15 230 V300" stroke="currentColor" stroke-width="1" class="text-white/40"&gt;&lt;/path&gt;
+                        &lt;path d="M15 0 V110 L5 120 V160 L25 180 V220 L15 230 V300" stroke="currentColor" stroke-width="1" stroke="var(--text-muted)" opacity="0.3"&gt;&lt;/path&gt;
                         &lt;circle cx="15" cy="110" r="1.5" fill="var(--accent-gold)"&gt;&lt;/circle&gt;
                         &lt;circle cx="5" cy="160" r="1.5" fill="var(--accent-gold)"&gt;&lt;/circle&gt;
                         &lt;circle cx="25" cy="220" r="1.5" fill="var(--accent-gold)"&gt;&lt;/circle&gt;
@@ -2461,20 +2465,20 @@
             &lt;!-- Main Content Window --&gt;
             &lt;div class="flex-1 flex flex-col h-full overflow-hidden"&gt;
                 &lt;!-- Header inside card --&gt;
-                &lt;header class="h-20 border-b border-white/10 dark:border-white/5 px-6 md:px-10 flex items-center justify-between z-10 shrink-0"&gt;
+                &lt;header class="h-20 border-b border-theme px-6 md:px-10 flex items-center justify-between z-10 shrink-0"&gt;
                     &lt;div class="flex items-center gap-3"&gt;
-                        &lt;span class="font-serif font-bold text-[15px] md:text-[17px] tracking-widest text-white"&gt;PROJECT D.IO&lt;/span&gt;
-                        &lt;span class="h-4 w-px bg-white/20"&gt;&lt;/span&gt;
-                        &lt;span class="text-[9px] md:text-[10px] text-white/50 tracking-widest font-sans uppercase"&gt;Web Design Experts&lt;/span&gt;
+                        &lt;span class="font-serif font-bold text-[15px] md:text-[17px] tracking-widest text-main-theme"&gt;PROJECT D.IO&lt;/span&gt;
+                        &lt;span class="h-4 w-px" style="background-color: var(--glass-border);"&gt;&lt;/span&gt;
+                        &lt;span class="text-[9px] md:text-[10px] text-muted-theme tracking-widest font-sans uppercase"&gt;Web Design Experts&lt;/span&gt;
                     &lt;/div&gt;
                     
                     &lt;!-- Navbar Links --&gt;
-                    &lt;nav class="hidden lg:flex items-center gap-8"&gt;
-                        &lt;a href="#" class="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors"&gt;Our Work&lt;/a&gt;
-                        &lt;a href="#" class="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors"&gt;Services&lt;/a&gt;
-                        &lt;a href="#" class="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors"&gt;Client Results&lt;/a&gt;
-                        &lt;a href="#" class="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors"&gt;About&lt;/a&gt;
-                        &lt;a href="#" class="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors"&gt;Blog&lt;/a&gt;
+                    &lt;nav class="hidden lg:flex items-center gap-4"&gt;
+                        &lt;a href="#" class="nav-link-theme active"&gt;Our Work&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme"&gt;Services&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme"&gt;Client Results&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme"&gt;About&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme"&gt;Blog&lt;/a&gt;
                     &lt;/nav&gt;
                     
                     &lt;div class="flex items-center gap-4"&gt;
@@ -2484,7 +2488,7 @@
                             &lt;div class="slider"&gt;&lt;/div&gt;
                         &lt;/label&gt;
                         
-                        &lt;button class="px-5 py-2.5 rounded-full border border-white/10 hover:border-white/30 text-[10px] font-semibold text-white tracking-widest hover:bg-white/10 transition-colors uppercase shrink-0" id="btn-get-started"&gt;
+                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0" id="btn-get-started"&gt;
                             [Get Started]
                         &lt;/button&gt;
                     &lt;/div&gt;
@@ -2496,20 +2500,20 @@
                     &lt;!-- Left Text Column --&gt;
                     &lt;div class="lg:col-span-7 flex flex-col gap-6 max-w-2xl text-left"&gt;
                         &lt;!-- Title --&gt;
-                        &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-white tracking-tight leading-[1.05]"&gt;
+                        &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
                             ELEVATE YOUR &lt;br/&gt;
                             &lt;span class="font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt;
                             DIGITAL PRESENCE
                         &lt;/h1&gt;
                         
                         &lt;!-- Subtitle --&gt;
-                        &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest text-amber-200/90 uppercase font-sans"&gt;
+                        &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-gold);"&gt;
                             Exceptional Web Design for Premier Aesthetic Practices.
-                        &lt;/h2&gt;
+                        &lt;/h2>
                         
                         &lt;!-- Description --&gt;
-                        &lt;p class="text-xs md:text-sm text-white/60 leading-relaxed font-light font-sans max-w-xl"&gt;
-                            Crafted by &lt;span class="text-amber-200/80 font-medium"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp;amp; development services tailored for the beauty industry.
+                        &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                            Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp;amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
                         
                         &lt;!-- CTA Buttons --&gt;
@@ -2518,19 +2522,19 @@
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
                                 &lt;span class="text-xs"&gt;→&lt;/span&gt;
                             &lt;/button&gt;
-                            &lt;button class="px-8 py-3.5 rounded-full btn-glass text-white/80 hover:text-white font-semibold text-[10px] uppercase tracking-widest" id="btn-discuss-project"&gt;
+                            &lt;button class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" id="btn-discuss-project"&gt;
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
 
                         &lt;!-- Slider Controls --&gt;
                         &lt;div class="flex items-center gap-3 mt-4"&gt;
-                            &lt;button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"&gt;
+                            &lt;button class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
                                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
                             &lt;/button&gt;
-                            &lt;button class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"&gt;
+                            &lt;button class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
                                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
@@ -2538,64 +2542,78 @@
                         &lt;/div&gt;
                     &lt;/div&gt;
 
-                    &lt;!-- Right Column: Interactive Image Frame --&gt;
-                    &lt;div class="lg:col-span-5 relative w-full h-[320px] sm:h-[400px] lg:h-[450px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl flex items-center justify-center group shrink-0"&gt;
-                        &lt;!-- Background image --&gt;
-                        &lt;div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
-                        
-                        &lt;!-- Blueprint Grid Line Overlay --&gt;
-                        &lt;div class="absolute inset-0 z-10 pointer-events-none opacity-50"&gt;
-                            &lt;!-- Horizontal grid lines --&gt;
-                            &lt;div class="absolute w-full h-px grid-line top-1/4"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-full h-px grid-line top-2/4"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-full h-px grid-line top-3/4"&gt;&lt;/div&gt;
-                            &lt;!-- Vertical grid lines --&gt;
-                            &lt;div class="absolute h-full w-px grid-line left-1/4"&gt;&lt;/div&gt;
-                            &lt;div class="absolute h-full w-px grid-line left-2/4"&gt;&lt;/div&gt;
-                            &lt;div class="absolute h-full w-px grid-line left-3/4"&gt;&lt;/div&gt;
-                            &lt;!-- Grid intersection indicators --&gt;
-                            &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-4 h-4 border grid-marker left-2/4 top-2/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
-                            &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
-                        &lt;/div&gt;
-
-                        &lt;!-- Floating sparkle star decoration --&gt;
-                        &lt;div class="absolute right-4 bottom-4 z-10 sparkle-star"&gt;
-                            &lt;svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"&gt;
-                                &lt;path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/&gt;
-                            &lt;/svg&gt;
-                        &lt;/div&gt;
-
-                        &lt;!-- Hotspots --&gt;
-                        &lt;!-- Hotspot 1: Laser Therapy --&gt;
-                        &lt;div class="luxury-hotspot" style="top: 32%; left: 45%;"&gt;
-                            &lt;div class="hotspot-pulse"&gt;&lt;/div&gt;
-                            &lt;div class="hotspot-inner"&gt;&lt;/div&gt;
-                            &lt;div class="luxury-tooltip"&gt;
-                                &lt;h4&gt;Laser Therapy&lt;/h4&gt;
-                                &lt;p&gt;Precision skin rejuvenation &amp;amp; resurfacing for flawless complexion.&lt;/p&gt;
+                    &lt;!-- Right Column: Interactive Image Frame (Inset style like mockup) --&gt;
+                    &lt;div class="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] lg:h-[460px] rounded-3xl border border-theme bg-theme-glass p-4 shadow-2xl flex flex-col shrink-0 z-10"&gt;
+                        &lt;!-- Inner Photo Container --&gt;
+                        &lt;div class="relative flex-1 w-full rounded-2xl overflow-hidden group/image"&gt;
+                            &lt;!-- Background image --&gt;
+                            &lt;div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
+                            
+                            &lt;!-- Blueprint Grid Line Overlay --&gt;
+                            &lt;div class="absolute inset-0 z-10 pointer-events-none opacity-40"&gt;
+                                &lt;!-- Horizontal grid lines --&gt;
+                                &lt;div class="absolute w-full h-px grid-line top-1/4"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-full h-px grid-line top-2/4"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-full h-px grid-line top-3/4"&gt;&lt;/div&gt;
+                                &lt;!-- Vertical grid lines --&gt;
+                                &lt;div class="absolute h-full w-px grid-line left-1/4"&gt;&lt;/div&gt;
+                                &lt;div class="absolute h-full w-px grid-line left-2/4"&gt;&lt;/div&gt;
+                                &lt;div class="absolute h-full w-px grid-line left-3/4"&gt;&lt;/div&gt;
+                                &lt;!-- Grid intersection indicators (crop-style markers) --&gt;
+                                &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-4 h-4 border grid-marker left-2/4 top-2/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
+                                &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                             &lt;/div&gt;
-                        &lt;/div&gt;
 
-                        &lt;!-- Hotspot 2: Injectables --&gt;
-                        &lt;div class="luxury-hotspot" style="top: 48%; left: 52%;"&gt;
-                            &lt;div class="hotspot-pulse"&gt;&lt;/div&gt;
-                            &lt;div class="hotspot-inner"&gt;&lt;/div&gt;
-                            &lt;div class="luxury-tooltip"&gt;
-                                &lt;h4&gt;Injectables&lt;/h4&gt;
-                                &lt;p&gt;Smooth expression lines &amp;amp; restore youthfulness with artistic care.&lt;/p&gt;
+                            &lt;!-- Floating sparkle star decoration --&gt;
+                            &lt;div class="absolute right-4 bottom-4 z-10 sparkle-star text-gold"&gt;
+                                &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"&gt;
+                                    &lt;path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/&gt;
+                                &lt;/svg&gt;
                             &lt;/div&gt;
-                        &lt;/div&gt;
 
-                        &lt;!-- Hotspot 3: Medical Facials --&gt;
-                        &lt;div class="luxury-hotspot" style="top: 66%; left: 41%;"&gt;
-                            &lt;div class="hotspot-pulse"&gt;&lt;/div&gt;
-                            &lt;div class="hotspot-inner"&gt;&lt;/div&gt;
-                            &lt;div class="luxury-tooltip"&gt;
-                                &lt;h4&gt;Medical Facials&lt;/h4&gt;
-                                &lt;p&gt;Deep cellular hydration, exfoliation &amp;amp; skin type customization.&lt;/p&gt;
+                            &lt;!-- Hover Overlay with Service Pills --&gt;
+                            &lt;div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/60 to-transparent z-20 flex justify-around items-center"&gt;
+                                &lt;!-- Service Tag 1 --&gt;
+                                &lt;div class="relative service-tooltip-wrapper"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                        &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
+                                        Laser
+                                    &lt;/button&gt;
+                                    &lt;!-- Tooltip --&gt;
+                                    &lt;div class="service-tooltip"&gt;
+                                        &lt;h4&gt;Laser Therapy&lt;/h4&gt;
+                                        &lt;p&gt;Precision skin rejuvenation &amp;amp; resurfacing for a flawless complexion.&lt;/p&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+
+                                &lt;!-- Service Tag 2 --&gt;
+                                &lt;div class="relative service-tooltip-wrapper"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                        &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon>
+                                        Injectables
+                                    &lt;/button&gt;
+                                    &lt;!-- Tooltip --&gt;
+                                    &lt;div class="service-tooltip"&gt;
+                                        &lt;h4&gt;Injectables&lt;/h4&gt;
+                                        &lt;p&gt;Smooth expression lines &amp;amp; restore youthful volume with artistic care.&lt;/p&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+
+                                &lt;!-- Service Tag 3 --&gt;
+                                &lt;div class="relative service-tooltip-wrapper"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                        &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
+                                        Facials
+                                    &lt;/button&gt;
+                                    &lt;!-- Tooltip --&gt;
+                                    &lt;div class="service-tooltip"&gt;
+                                        &lt;h4&gt;Medical Facials&lt;/h4&gt;
+                                        &lt;p&gt;Deep cellular hydration, clinical exfoliation &amp;amp; customized serums.&lt;/p&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
                             &lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
@@ -2609,24 +2627,24 @@
         &lt;!-- Left Sidebar Menu --&gt;
         &lt;aside class="w-full md:w-64 border-b md:border-b-0 md:border-r backdrop-blur-xl flex flex-col shrink-0" style="background: var(--glass-card-bg); border-color: var(--glass-border);"&gt;
             &lt;div class="p-6 border-b flex justify-between items-center" style="border-color: var(--glass-border);"&gt;
-                &lt;span class="font-bold tracking-tight text-white"&gt;AMP Center&lt;/span&gt;
+                &lt;span class="font-bold tracking-tight text-main-theme"&gt;AMP Center&lt;/span&gt;
             &lt;/div&gt;
             &lt;nav class="flex-1 p-4 flex flex-col gap-2 overflow-y-auto"&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium shadow-sm bg-white/5 text-white"&gt;
+                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium shadow-sm bg-theme-glass text-main-theme"&gt;
                     &lt;span style="color: var(--accent-gold);"&gt;⚡&lt;/span&gt; Neural Chat
                 &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-white/5 text-gray-400"&gt;
+                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
                     &lt;span&gt;📊&lt;/span&gt; Lead Pipeline
                 &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-white/5 text-gray-400"&gt;
+                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
                     &lt;span&gt;📁&lt;/span&gt; Client Ledger
                 &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-white/5 text-gray-400"&gt;
+                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
                     &lt;span&gt;🎨&lt;/span&gt; Content Factory
                 &lt;/button&gt;
             &lt;/nav&gt;
             &lt;div class="p-4 border-t" style="border-color: var(--glass-border);"&gt;
-                &lt;button id="btn-exit-portal" class="w-full py-2.5 rounded-xl border transition-colors text-sm font-medium text-gray-400" style="border-color: var(--glass-border);"&gt;Exit Portal&lt;/button&gt;
+                &lt;button id="btn-exit-portal" class="w-full py-2.5 rounded-xl border transition-colors text-sm font-medium text-muted-theme hover:text-main-theme" style="border-color: var(--glass-border);"&gt;Exit Portal&lt;/button&gt;
             &lt;/div&gt;
         &lt;/aside&gt;
         
@@ -2634,37 +2652,37 @@
         &lt;main class="flex-1 p-6 lg:p-10 overflow-y-auto flex flex-col gap-6"&gt;
             &lt;div class="flex justify-between items-center border-b pb-6" style="border-color: var(--glass-border);"&gt;
                 &lt;div class="text-left"&gt;
-                    &lt;h2 class="text-2xl font-semibold tracking-tight text-white"&gt;Neural Chat&lt;/h2&gt;
-                    &lt;p class="text-xs mt-1 text-gray-400"&gt;Orchestrating 3 sub-agents for your Medspa&apos;s digital growth.&lt;/p&gt;
+                    &lt;h2 class="text-2xl font-semibold tracking-tight text-main-theme"&gt;Neural Chat&lt;/h2&gt;
+                    &lt;p class="text-xs mt-1 text-muted-theme"&gt;Orchestrating 3 sub-agents for your Medspa&apos;s digital growth.&lt;/p&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
             
             &lt;div class="flex-1 flex flex-col gap-6 my-4"&gt;
                 &lt;!-- Message: AI Agent --&gt;
-                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-black/25" style="border-color: var(--glass-border); color: var(--text-main);"&gt;
+                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-theme-glass text-main-theme" style="border-color: var(--glass-border);"&gt;
                     &lt;div class="absolute -left-3 -top-3 w-6 h-6 rounded-full border flex items-center justify-center text-[10px]" style="background: var(--bg-dark); border-color: var(--glass-border); color: var(--accent-gold);"&gt;👑&lt;/div&gt;
                     &lt;p&gt;Systems online. I am currently monitoring 12 active leads for the Spring Botox Special. Should I have the CMO Agent send the follow-up sequence?&lt;/p&gt;
-                    &lt;div class="text-[9px] mt-2 text-gray-500"&gt;09:00 AM&lt;/div&gt;
+                    &lt;div class="text-[9px] mt-2 text-muted-theme"&gt;09:00 AM&lt;/div&gt;
                 &lt;/div&gt;
                 
                 &lt;!-- Message: User --&gt;
-                &lt;div class="self-end text-left max-w-lg rounded-2xl rounded-tr-sm p-4 text-sm shadow-sm bg-amber-500/10 border text-white" style="border-color: rgba(197, 160, 89, 0.3);"&gt;
+                &lt;div class="self-end text-left max-w-lg rounded-2xl rounded-tr-sm p-4 text-sm shadow-sm border text-main-theme" style="background: var(--accent-gold-glow); border-color: var(--accent-gold-glow);"&gt;
                     Yes, run the sequence. Also, have the Creative Agent prep some new Instagram stories for the Laser Therapy promo.
-                    &lt;div class="text-[9px] text-right mt-2 text-gray-400"&gt;09:05 AM&lt;/div&gt;
+                    &lt;div class="text-[9px] text-right mt-2 text-muted-theme"&gt;09:05 AM&lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Message: AI Agent --&gt;
-                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-black/25" style="border-color: var(--glass-border); color: var(--text-main);"&gt;
+                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-theme-glass text-main-theme" style="border-color: var(--glass-border);"&gt;
                     &lt;div class="absolute -left-3 -top-3 w-6 h-6 rounded-full border flex items-center justify-center text-[10px]" style="background: var(--bg-dark); border-color: var(--glass-border); color: var(--accent-gold);"&gt;👑&lt;/div&gt;
                     &lt;p&gt;Understood. Follow-up sequence initiated. Creative Agent is now vibe coding 3 new Instagram stories and will drop them in the Content Factory for your review.&lt;/p&gt;
-                    &lt;div class="text-[9px] mt-2 text-gray-500"&gt;09:06 AM&lt;/div&gt;
+                    &lt;div class="text-[9px] mt-2 text-muted-theme"&gt;09:06 AM&lt;/div&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
  
             &lt;!-- Chat Input Area --&gt;
             &lt;div class="mt-auto relative flex items-center pt-4 border-t" style="border-color: var(--glass-border);"&gt;
-                &lt;input type="text" placeholder="Instruct the CEO..." class="w-full border rounded-full pl-6 pr-14 py-4 text-sm focus:outline-none shadow-inner backdrop-blur bg-black/15 text-white" style="border-color: var(--glass-border);" /&gt;
-                &lt;button class="absolute right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30"&gt;
+                &lt;input type="text" placeholder="Instruct the CEO..." class="w-full border rounded-full pl-6 pr-14 py-4 text-sm focus:outline-none shadow-inner backdrop-blur bg-theme-glass text-main-theme" style="border-color: var(--glass-border);" /&gt;
+                &lt;button class="absolute right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all" style="background: var(--accent-gold-glow); border: 1px solid var(--accent-gold); color: var(--accent-gold);"&gt;
                     &lt;span&gt;➤&lt;/span&gt;
                 &lt;/button&gt;
             &lt;/div&gt;
@@ -2672,33 +2690,33 @@
         
         &lt;!-- Right Sidebar (CRM Tasks) --&gt;
         &lt;aside class="w-full md:w-72 border-t md:border-t-0 md:border-l backdrop-blur-xl flex flex-col p-6 gap-6 overflow-y-auto shrink-0" style="background: var(--glass-card-bg); border-color: var(--glass-border);"&gt;
-            &lt;h3 class="text-xs font-mono uppercase tracking-widest text-left text-gray-400"&gt;Active Tasks&lt;/h3&gt;
+            &lt;h3 class="text-xs font-mono uppercase tracking-widest text-left text-muted-theme"&gt;Active Tasks&lt;/h3&gt;
             
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-white/5" style="border-color: var(--glass-border);"&gt;
+            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
                 &lt;div class="absolute top-0 left-0 w-1 h-full" style="background: var(--accent-gold);"&gt;&lt;/div&gt;
                 &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-white"&gt;Lead Gen Agent&lt;/span&gt;
-                  &lt;span class="text-[10px] flex items-center gap-1 text-amber-400"&gt;&lt;span class="w-1.5 h-1.5 rounded-full animate-pulse bg-amber-400"&gt;&lt;/span&gt; Running&lt;/span&gt;
+                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Lead Gen Agent&lt;/span&gt;
+                  &lt;span class="text-[10px] flex items-center gap-1" style="color: var(--accent-gold);"&gt;&lt;span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--accent-gold);"&gt;&lt;/span&gt; Running&lt;/span&gt;
                 &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-gray-400"&gt;Sending SMS sequence to 12 &apos;Spring Special&apos; leads&lt;/p&gt;
+                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Sending SMS sequence to 12 &apos;Spring Special&apos; leads&lt;/p&gt;
             &lt;/div&gt;
             
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-white/5" style="border-color: var(--glass-border);"&gt;
+            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
                 &lt;div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"&gt;&lt;/div&gt;
                 &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-white"&gt;Creative Agent&lt;/span&gt;
+                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Creative Agent&lt;/span&gt;
                   &lt;span class="text-[10px] flex items-center gap-1 text-indigo-400"&gt;&lt;span class="w-1.5 h-1.5 rounded-full animate-pulse bg-indigo-400"&gt;&lt;/span&gt; Running&lt;/span&gt;
                 &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-gray-400"&gt;Vibe coding IG Stories for Laser Promo&lt;/p&gt;
+                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Vibe coding IG Stories for Laser Promo&lt;/p&gt;
             &lt;/div&gt;
  
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-white/5" style="border-color: var(--glass-border);"&gt;
+            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
                 &lt;div class="absolute top-0 left-0 w-1 h-full bg-gray-500"&gt;&lt;/div&gt;
                 &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-white"&gt;Support Agent&lt;/span&gt;
-                  &lt;span class="text-[10px] text-gray-500"&gt;Done&lt;/span&gt;
+                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Support Agent&lt;/span&gt;
+                  &lt;span class="text-[10px] text-muted-theme"&gt;Done&lt;/span&gt;
                 &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-gray-400"&gt;Rescheduled 2 patient appointments&lt;/p&gt;
+                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Rescheduled 2 patient appointments&lt;/p&gt;
             &lt;/div&gt;
         &lt;/aside&gt;
     &lt;/div&gt;
@@ -2739,25 +2757,42 @@
 
         const toggleSwitch = document.querySelector(&apos;.theme-switch input[type="checkbox"]&apos;);
         function switchTheme(e) {
-            if (e.target.checked) {
-                document.body.classList.add(&apos;light-mode&apos;);
-            } else {
-                document.body.classList.remove(&apos;light-mode&apos;);
+            try {
+                const parentHtml = window.parent.document.documentElement;
+                if (e.target.checked) {
+                    document.body.classList.remove(&apos;light-mode&apos;);
+                    document.documentElement.classList.add(&apos;dark&apos;);
+                    parentHtml.classList.add(&apos;dark&apos;);
+                    window.parent.localStorage.setItem(&apos;theme&apos;, &apos;dark&apos;);
+                } else {
+                    document.body.classList.add(&apos;light-mode&apos;);
+                    document.documentElement.classList.remove(&apos;dark&apos;);
+                    parentHtml.classList.remove(&apos;dark&apos;);
+                    window.parent.localStorage.setItem(&apos;theme&apos;, &apos;light&apos;);
+                }
+            } catch(err) {
+                if (e.target.checked) {
+                    document.body.classList.remove(&apos;light-mode&apos;);
+                    document.documentElement.classList.add(&apos;dark&apos;);
+                } else {
+                    document.body.classList.add(&apos;light-mode&apos;);
+                    document.documentElement.classList.remove(&apos;dark&apos;);
+                }
             }
         }
         toggleSwitch.addEventListener(&apos;change&apos;, switchTheme, false);
 
         try {
             const parentHtml = window.parent.document.documentElement;
-            const syncThemeFromParent = () =&gt; {
+            const syncThemeFromParent = () => {
                 const isParentDark = parentHtml.classList.contains(&apos;dark&apos;);
-                if (!isParentDark) {
-                    document.body.classList.add(&apos;light-mode&apos;);
-                    document.documentElement.classList.remove(&apos;dark&apos;);
-                    toggleSwitch.checked = true;
-                } else {
+                if (isParentDark) {
                     document.body.classList.remove(&apos;light-mode&apos;);
                     document.documentElement.classList.add(&apos;dark&apos;);
+                    toggleSwitch.checked = true;
+                } else {
+                    document.body.classList.add(&apos;light-mode&apos;);
+                    document.documentElement.classList.remove(&apos;dark&apos;);
                     toggleSwitch.checked = false;
                 }
             };
@@ -2824,7 +2859,7 @@
         });
 
         document.addEventListener(&apos;mouseover&apos;, (e) =&gt; {
-            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #logo-easter-egg, .glass-panel&apos;));
+            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #logo-easter-egg, .glass-panel, .service-btn&apos;));
         });
 
         function pLoop() {
@@ -2865,7 +2900,7 @@
         * { cursor: none !important; }
     &lt;/style&gt;
 &lt;/body&gt;
-&lt;/html&gt;&apos;&gt;&lt;/iframe&gt;
+&lt;/html&gt;'></iframe>
               </div>
             </div>
           </section>
@@ -2901,7 +2936,7 @@
             <div class="w-[98%] lg:w-[96%] max-w-[1680px] mx-auto flex flex-col gap-8 px-4 relative z-10">
               
               <!-- Card 1: AI Chatbot Coordinator -->
-              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(70,212,198,0.1)] overflow-hidden">
+              <div class="group relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)] overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#46d4c6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
                 <!-- Left Details -->
@@ -2951,7 +2986,7 @@
               </div>
 
               <!-- Card 2: Operational Dashboard Widget -->
-              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(255,145,70,0.1)] overflow-hidden">
+              <div class="group relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(255,145,70,0.15)] overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#ff9146]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
                 <!-- Left Details -->
@@ -3004,7 +3039,7 @@
               </div>
 
               <!-- Card 3: Presets Sandbox -->
-              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(70,212,198,0.1)] overflow-hidden">
+              <div class="group relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)] overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#46d4c6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
                 <!-- Left Details -->
@@ -3066,7 +3101,7 @@
               </div>
 
               <!-- Card 4: Terminal Pipeline Simulator -->
-              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(255,145,70,0.1)] overflow-hidden">
+              <div class="group relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-8 shadow-lg flex flex-col lg:flex-row gap-8 items-stretch transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(255,145,70,0.15)] overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#ff9146]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
                 <!-- Left Details -->
@@ -3546,7 +3581,7 @@
           <section id="discovery-call"
             class="w-full py-32 px-6 relative flex flex-col items-center justify-center min-h-[80vh] z-20">
             <div
-              class="max-w-6xl w-full bg-white dark:bg-[#0f172a] rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row gap-12">
+              class="max-w-6xl w-full bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-2xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row gap-12 z-10">
               <!-- Left side -->
               <div class="w-full md:w-1/2 flex flex-col justify-center">
                 <div
