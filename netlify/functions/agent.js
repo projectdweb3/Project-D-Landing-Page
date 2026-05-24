@@ -698,6 +698,68 @@ RULES OF ENGAGEMENT:
                 },
                 required: ["category", "content"],
               },
+            },
+            {
+              name: "log_transaction",
+              description: "Logs a manual income or expense transaction directly to the financial ledger.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  type: { type: "STRING", description: "The transaction type: 'Income' or 'Expense'" },
+                  amount: { type: "NUMBER", description: "The transaction value in dollars. Example: 350.00" },
+                  description: { type: "STRING", description: "A detailed description of the transaction. Example: 'Consulting Retainer Payment' or 'Marketing Ad Spend'" },
+                  category: { type: "STRING", description: "The transaction category, e.g., 'Monthly Recurring Revenue', 'One-Time Payment', 'Software Licensing', 'Merchant Fees', 'Marketing', 'Travel', 'General'" },
+                  clientName: { type: "STRING", description: "Optional. The name of the client or subscriber associated with this transaction." }
+                },
+                required: ["type", "amount", "description", "category"]
+              }
+            },
+            {
+              name: "create_invoice",
+              description: "Drafts a new invoice for a client with custom line items.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  clientName: { type: "STRING", description: "The client or subscriber's name to bill." },
+                  dueDate: { type: "STRING", description: "Optional. The due date of the invoice. Example: '06/15/2026'" },
+                  category: { type: "STRING", description: "Optional. The invoice category, e.g. 'Monthly Recurring Revenue' or 'One-Time Payment'." },
+                  items: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        desc: { type: "STRING", description: "Description of the product/service. Example: 'Premium SaaS Plan'" },
+                        qty: { type: "NUMBER", description: "Quantity of items" },
+                        rate: { type: "NUMBER", description: "Rate per unit in dollars" }
+                      },
+                      required: ["desc", "qty", "rate"]
+                    },
+                    description: "Line items to charge for on the invoice."
+                  }
+                },
+                required: ["clientName", "items"]
+              }
+            },
+            {
+              name: "update_billing_config",
+              description: "Updates a client's billing configuration (recurring subscription vs. one-time, and amount) in the Client Ledger.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  clientName: { type: "STRING", description: "The name of the client to update." },
+                  type: { type: "STRING", description: "The billing type: 'recurring' or 'one_time'" },
+                  amount: { type: "NUMBER", description: "The monthly rate (for recurring) or total contract amount (for one-time)." }
+                },
+                required: ["clientName", "type", "amount"]
+              }
+            },
+            {
+              name: "generate_financial_report",
+              description: "Generates a comprehensive executive financial report summarizing MRR, revenue, profit margins, outstanding invoices, and prints/saves it as a PDF.",
+              parameters: {
+                type: "OBJECT",
+                properties: {}
+              }
             }
           ]
         }
@@ -1170,6 +1232,22 @@ List 7-10 real companies that actually exist. No fabrications.` }] }],
           else if (call.name === "update_campaign") {
             frontendActions.push({ type: 'update_campaign', payload: call.args });
             toolResults.push(`Campaign '${call.args.name}' updated.`);
+          }
+          else if (call.name === "log_transaction") {
+            frontendActions.push({ type: 'log_transaction', payload: call.args });
+            toolResults.push(`Logged transaction: ${call.args.type} of $${call.args.amount} (${call.args.description}).`);
+          }
+          else if (call.name === "create_invoice") {
+            frontendActions.push({ type: 'create_invoice', payload: call.args });
+            toolResults.push(`Created invoice draft for client '${call.args.clientName}'.`);
+          }
+          else if (call.name === "update_billing_config") {
+            frontendActions.push({ type: 'update_billing_config', payload: call.args });
+            toolResults.push(`Updated billing configuration for '${call.args.clientName}' to ${call.args.type} ($${call.args.amount}).`);
+          }
+          else if (call.name === "generate_financial_report") {
+            frontendActions.push({ type: 'generate_financial_report', payload: call.args });
+            toolResults.push(`Generated and archived the latest monthly financial report PDF.`);
           }
         } catch (dbError) {
            toolResults.push(`Failed executing '${call.name}': ${dbError.message}`);

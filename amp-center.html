@@ -741,7 +741,7 @@
       'amp_documents', 'amp_usage_pct', 'amp_language'
     ];
     // Stage-dependent keys get resolved dynamically
-    const SYNC_STAGE_KEYS = ['amp_leads_', 'amp_clients_', 'amp_tasks_', 'amp_finances_', 'amp_inventory_', 'amp_calendar_'];
+    const SYNC_STAGE_KEYS = ['amp_leads_', 'amp_clients_', 'amp_tasks_', 'amp_finances_', 'amp_inventory_', 'amp_calendar_', 'amp_invoices_', 'amp_stripe_config_'];
 
     const getAllSyncKeys = (stage) => {
       const stageVal = stage || 'Default';
@@ -2988,7 +2988,8 @@
         const triggerSync = () => debouncedSync(session.user.id, userProfile?.stage);
         const events = ['amp-tasks-updated', 'amp-simulated-lead', 'amp-simulated-sale', 
                         'amp-campaigns-updated', 'amp-calendar-updated', 'amp-profile-updated',
-                        'amp-team-messages', 'amp-documents-updated', 'amp-subagents-updated'];
+                        'amp-team-messages', 'amp-documents-updated', 'amp-subagents-updated',
+                        'amp-finances-updated', 'amp-invoices-updated', 'amp-stripe-updated'];
         events.forEach(e => window.addEventListener(e, triggerSync));
         return () => events.forEach(e => window.removeEventListener(e, triggerSync));
       }, [session, userProfile?.stage]);
@@ -4729,10 +4730,109 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                       const s = p.deliveryResults.summary;
                       logAction(`ðŸ“§ Outreach: ${s.sent} sent, ${s.failed} failed, ${s.skipped} skipped â€” "${p.subject}"`, 'CMO');
                     } else if (p.status === 'draft') {
-                      logAction(`ðŸ“ Outreach draft prepared for ${recipientCount} recipient${recipientCount !== 1 ? 's' : ''} â€” "${p.subject}"`, 'CMO');
+                      logAction(`ðŸ“  Outreach draft prepared for ${recipientCount} recipient${recipientCount !== 1 ? 's' : ''} â€” "${p.subject}"`, 'CMO');
                     } else if (p.status === 'error') {
-                      logAction(`âŒ Outreach failed â€” "${p.subject}"`, 'CMO');
+                      logAction(`â Œ Outreach failed â€” "${p.subject}"`, 'CMO');
                     }
+                  } else if (action.type === 'log_transaction') {
+                    const stageKey = `amp_finances_${userProfile?.stage || 'Default'}`;
+                    const local = JSON.parse(localStorage.getItem(stageKey) || '[]');
+                    const payload = {
+                      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                      user_id: session?.user?.id || 'local',
+                      business_stage: userProfile?.stage || 'Default',
+                      type: action.payload.type || 'Expense',
+                      amount: parseFloat(action.payload.amount) || 0,
+                      description: action.payload.description || 'Transaction',
+                      category: action.payload.category || 'General',
+                      client_name: action.payload.clientName || null,
+                      created_at: new Date().toISOString()
+                    };
+                    local.unshift(payload);
+                    localStorage.setItem(stageKey, JSON.stringify(local));
+                    if (supabaseClient && session?.user?.id) {
+                      supabaseClient.from('finances').insert([payload]).then();
+                    }
+                    if (action.payload.clientName && action.payload.type === 'Income') {
+                      const cStage = userProfile?.stage || 'Default';
+                      const stagesToSearch = cStage === 'Software' ? ['Software', 'Software_Clients'] : [cStage];
+                      for (const s of stagesToSearch) {
+                        const cKey = `amp_clients_${s}`;
+                        const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
+                        const clientIdx = currentLocal.findIndex(c => c.name.toLowerCase() === action.payload.clientName.toLowerCase());
+                        if (clientIdx !== -1) {
+                          const c = currentLocal[clientIdx];
+                          const currentLtvVal = parseFloat(String(c.ltv || '0').replace(/[^0-9.]/g, '')) || 0;
+                          const newLtv = currentLtvVal + payload.amount;
+                          const newLtvString = `$${newLtv.toLocaleString()}`;
+                          currentLocal[clientIdx] = { ...c, ltv: newLtvString };
+                          localStorage.setItem(cKey, JSON.stringify(currentLocal));
+                          window.dispatchEvent(new Event('amp-clients-updated'));
+                          if (supabaseClient && session?.user?.id && c.id) {
+                            supabaseClient.from('clients').update({ ltv: newLtvString }).eq('id', c.id).then();
+                          }
+                          break;
+                        }
+                      }
+                    }
+                    window.dispatchEvent(new Event('amp-simulated-sale'));
+                    window.dispatchEvent(new Event('amp-finances-updated'));
+                    logAction(`Logged transaction: ${payload.description} ($${payload.amount})`, 'CEO');
+                  } else if (action.type === 'create_invoice') {
+                    const invoicesKey = `amp_invoices_${userProfile?.stage || 'Default'}`;
+                    const localInvs = JSON.parse(localStorage.getItem(invoicesKey) || '[]');
+                    const items = action.payload.items || [];
+                    const totalAmt = items.reduce((sum, item) => sum + ((parseFloat(item.qty) || 1) * (parseFloat(item.rate) || 0)), 0);
+                    
+                    const invoicePayload = {
+                      id: `INV-2026-${String(localInvs.length + 1).padStart(3, '0')}`,
+                      clientName: action.payload.clientName,
+                      issueDate: new Date().toLocaleDateString(),
+                      dueDate: action.payload.dueDate || new Date(Date.now() + 86400000 * 14).toLocaleDateString(),
+                      items: items,
+                      amount: totalAmt,
+                      status: 'Draft',
+                      category: action.payload.category || 'Monthly Recurring Revenue'
+                    };
+                    
+                    localInvs.unshift(invoicePayload);
+                    localStorage.setItem(invoicesKey, JSON.stringify(localInvs));
+                    window.dispatchEvent(new Event('amp-simulated-sale'));
+                    window.dispatchEvent(new Event('amp-invoices-updated'));
+                    logAction(`Drafted Invoice ${invoicePayload.id} for ${invoicePayload.clientName} ($${invoicePayload.amount})`, 'CEO');
+                  } else if (action.type === 'update_billing_config') {
+                    const cStage = userProfile?.stage || 'Default';
+                    const stagesToSearch = cStage === 'Software' ? ['Software', 'Software_Clients'] : [cStage];
+                    const amountNum = parseFloat(action.payload.amount) || 0;
+                    const updatedPayload = { 
+                      billing_type: action.payload.type || 'recurring',
+                      mrr_amount: action.payload.type === 'recurring' ? amountNum : 0,
+                      one_time_amount: action.payload.type === 'one_time' ? amountNum : 0,
+                      retainer: action.payload.type === 'recurring' ? `$${amountNum}/mo` : `$${amountNum} One-time`
+                    };
+                    
+                    for (const s of stagesToSearch) {
+                      const cKey = `amp_clients_${s}`;
+                      const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
+                      const clientIdx = currentLocal.findIndex(c => c.name.toLowerCase() === action.payload.clientName.toLowerCase());
+                      if (clientIdx !== -1) {
+                        currentLocal[clientIdx] = { 
+                          ...currentLocal[clientIdx], 
+                          ...updatedPayload
+                        };
+                        localStorage.setItem(cKey, JSON.stringify(currentLocal));
+                        window.dispatchEvent(new Event('amp-clients-updated'));
+                        if (supabaseClient && session?.user?.id && currentLocal[clientIdx].id) {
+                          supabaseClient.from('clients').update(updatedPayload).eq('id', currentLocal[clientIdx].id).then();
+                        }
+                        break;
+                      }
+                    }
+                    window.dispatchEvent(new Event('amp-simulated-sale'));
+                    logAction(`Updated Billing for ${action.payload.clientName} to ${action.payload.type}`, 'CEO');
+                  } else if (action.type === 'generate_financial_report') {
+                    window.dispatchEvent(new Event('amp-generate-financial-report'));
+                    logAction(`Generated Financial Report PDF`, 'CEO');
                   }
                 } catch (e) { console.error("Parse error", e); }
               });
@@ -6069,10 +6169,41 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           localInvoices = JSON.parse(localStorage.getItem(invoicesKey) || '[]');
         } catch(e) {}
 
+        // Active purge of legacy mockup/demo data from browser storage
+        const mockInvoiceIds = ['INV-2026-001', 'INV-2026-002', 'INV-2020-001'];
+        const cleanInvs = localInvoices.filter(inv => !mockInvoiceIds.includes(inv.id) && inv.clientName !== 'Stripe SaaS Payout' && inv.clientName !== 'Enterprise Consulting');
+        if (cleanInvs.length !== localInvoices.length) {
+          localInvoices = cleanInvs;
+          localStorage.setItem(invoicesKey, JSON.stringify(localInvoices));
+          window.dispatchEvent(new Event('amp-invoices-updated'));
+        }
+
+        // Active purge of legacy mockup transactions from browser storage
+        const cleanTxs = currentLocal.filter(tx => 
+          !tx.id.startsWith('st_tx_') && 
+          !(tx.description && (tx.description.includes('Stripe Webhook:') || tx.description.includes('Stripe Fee Deduction')))
+        );
+        if (cleanTxs.length !== currentLocal.length) {
+          currentLocal = cleanTxs;
+          localStorage.setItem(storageKey, JSON.stringify(currentLocal));
+          window.dispatchEvent(new Event('amp-finances-updated'));
+        }
+
         if (supabaseClient && session?.user?.id) {
           try {
-            const { data, error } = await supabaseClient.from('finances').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
+            let { data, error } = await supabaseClient.from('finances').select('*').eq('business_stage', currentStage).order('created_at', { ascending: false });
             if (!error && data) {
+              // Active purge of legacy mockup transactions from database
+              const remoteMockIds = data.filter(tx => 
+                tx.id.startsWith('st_tx_') || 
+                (tx.description && (tx.description.includes('Stripe Webhook:') || tx.description.includes('Stripe Fee Deduction')))
+              ).map(tx => tx.id);
+
+              if (remoteMockIds.length > 0) {
+                await supabaseClient.from('finances').delete().in('id', remoteMockIds);
+                data = data.filter(tx => !remoteMockIds.includes(tx.id));
+              }
+
               const remoteIds = new Set(data.map(d => d.id));
               const localOnly = currentLocal.filter(l => !remoteIds.has(l.id));
               setTransactions([...data, ...localOnly]);
@@ -6109,16 +6240,23 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           fetchClientsAndSubscribers();
           fetchFinances();
         };
+        const handleReportEvent = () => {
+          handleGeneratePDFReport();
+        };
         window.addEventListener('amp-simulated-sale', handleSync);
         window.addEventListener('amp-leads-updated', handleSync);
         window.addEventListener('amp-clients-updated', handleSync);
+        window.addEventListener('amp-invoices-updated', handleSync);
+        window.addEventListener('amp-generate-financial-report', handleReportEvent);
         
         return () => {
           window.removeEventListener('amp-simulated-sale', handleSync);
           window.removeEventListener('amp-leads-updated', handleSync);
           window.removeEventListener('amp-clients-updated', handleSync);
+          window.removeEventListener('amp-invoices-updated', handleSync);
+          window.removeEventListener('amp-generate-financial-report', handleReportEvent);
         };
-      }, [userProfile?.stage, session]);
+      }, [userProfile?.stage, session, transactions, clients, invoices, stripeConnected]);
 
       // Financial Calculation Engine
       const autoIncome = clients.reduce((acc, c) => {
@@ -6166,6 +6304,9 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           updateClientLTV(newTx.clientName, amountNum);
         }
         
+        window.dispatchEvent(new Event('amp-simulated-sale'));
+        window.dispatchEvent(new Event('amp-finances-updated'));
+
         setNewTx({ type: 'Expense', amount: '', description: '', category: 'General', clientName: '' });
         setShowManualAdd(false);
       };
@@ -6259,6 +6400,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         const updatedInvs = [invoicePayload, ...invoices];
         setInvoices(updatedInvs);
         localStorage.setItem(invoicesKey, JSON.stringify(updatedInvs));
+        window.dispatchEvent(new Event('amp-invoices-updated'));
         setShowInvoiceModal(false);
         setNewInvoice({ id: '', clientName: '', dueDate: '', items: [{ desc: '', qty: 1, rate: 0 }], category: 'Monthly Recurring Revenue' });
       };
@@ -6273,6 +6415,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         });
         setInvoices(updated);
         localStorage.setItem(invoicesKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event('amp-invoices-updated'));
 
         // Create outreach log in Team Chat/Logs
         const msgText = `[Invoice System] Invoice ${inv.id} for $${inv.amount.toLocaleString()} was successfully drafted and sent to client "${inv.clientName}". Due Date: ${inv.dueDate}`;
@@ -6295,6 +6438,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         });
         setInvoices(updated);
         localStorage.setItem(invoicesKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event('amp-invoices-updated'));
 
         // Automatically log as income transaction
         const payload = {
@@ -6316,102 +6460,171 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         const newTxs = [payload, ...transactions];
         setTransactions(newTxs);
         localStorage.setItem(storageKey, JSON.stringify(newTxs));
+        window.dispatchEvent(new Event('amp-finances-updated'));
+        window.dispatchEvent(new Event('amp-simulated-sale'));
         
         updateClientLTV(inv.clientName, inv.amount);
         alert(`Invoice ${inv.id} marked as PAID. Income logged in ledger.`);
       };
 
-      // Mock Stripe sync handler
-      const handleStripeSync = () => {
+      // Real or Mock Stripe sync handler
+      const handleStripeSync = async () => {
         // Save Credentials to localStorage first
         try {
           const config = { publishableKey, secretKey, webhookSecret };
           localStorage.setItem(`amp_stripe_config_${currentStage}`, JSON.stringify(config));
+          window.dispatchEvent(new Event('amp-stripe-updated'));
         } catch(e) {}
 
+        if (!secretKey) {
+          alert('Please enter your Stripe Live Secret Key to connect/sync.');
+          return;
+        }
+
         setStripeSyncing(true);
-        setTimeout(async () => {
-          setStripeSyncing(false);
-          setStripeConnected(true);
-          
-          // Try to dynamically match real clients in ledger for Stripe simulation
-          const subClients = clients.filter(c => c.accountType === 'Subscriber');
-          const nonSubClients = clients.filter(c => c.accountType !== 'Subscriber');
-          
-          const client1 = subClients[0] || clients[0] || { name: 'John Doe' };
-          const client2 = nonSubClients[0] || clients.find(c => c.name !== client1.name) || clients[1] || { name: 'Acme Corp' };
 
-          const amount1 = 150.00;
-          const amount2 = 450.00;
-          const amount3 = 15.00;
+        const isMockKey = secretKey.toLowerCase().includes('mock') || secretKey === 'sk_test_12345';
+        if (isMockKey) {
+          // Mock timer fallback
+          setTimeout(async () => {
+            setStripeSyncing(false);
+            setStripeConnected(true);
+            
+            const subClients = clients.filter(c => c.accountType === 'Subscriber');
+            const nonSubClients = clients.filter(c => c.accountType !== 'Subscriber');
+            
+            const client1 = subClients[0] || clients[0] || { name: 'John Doe' };
+            const client2 = nonSubClients[0] || clients.find(c => c.name !== client1.name) || clients[1] || { name: 'Acme Corp' };
 
-          // Generate 3 simulated webhook transactions
-          const t1 = {
-            id: 'st_tx_' + Date.now() + '1',
-            user_id: session?.user?.id || 'local',
-            business_stage: currentStage,
-            type: 'Income',
-            amount: amount1,
-            description: `Stripe Webhook: subscription_payment (${client1.name} SaaS)`,
-            category: 'Monthly Recurring Revenue',
-            client_name: client1.name,
-            created_at: new Date().toISOString()
-          };
-          const t2 = {
-            id: 'st_tx_' + Date.now() + '2',
-            user_id: session?.user?.id || 'local',
-            business_stage: currentStage,
-            type: 'Income',
-            amount: amount2,
-            description: `Stripe Webhook: payment_intent_succeeded (${client2.name} Consulting)`,
-            category: 'One-Time Payment',
-            client_name: client2.name,
-            created_at: new Date().toISOString()
-          };
-          const t3 = {
-            id: 'st_tx_' + Date.now() + '3',
-            user_id: session?.user?.id || 'local',
-            business_stage: currentStage,
-            type: 'Expense',
-            amount: amount3,
-            description: 'Stripe Fee Deduction (Transaction processing)',
-            category: 'Merchant Fees',
-            client_name: null,
-            created_at: new Date().toISOString()
-          };
+            const amount1 = 150.00;
+            const amount2 = 450.00;
+            const amount3 = 15.00;
 
-          // Save to local storage
-          const newTxs = [t1, t2, t3, ...transactions];
-          setTransactions(newTxs);
-          localStorage.setItem(storageKey, JSON.stringify(newTxs));
+            const t1 = {
+              id: 'st_tx_' + Date.now() + '1',
+              user_id: session?.user?.id || 'local',
+              business_stage: currentStage,
+              type: 'Income',
+              amount: amount1,
+              description: `Stripe Webhook: subscription_payment (${client1.name} SaaS)`,
+              category: 'Monthly Recurring Revenue',
+              client_name: client1.name,
+              created_at: new Date().toISOString()
+            };
+            const t2 = {
+              id: 'st_tx_' + Date.now() + '2',
+              user_id: session?.user?.id || 'local',
+              business_stage: currentStage,
+              type: 'Income',
+              amount: amount2,
+              description: `Stripe Webhook: payment_intent_succeeded (${client2.name} Consulting)`,
+              category: 'One-Time Payment',
+              client_name: client2.name,
+              created_at: new Date().toISOString()
+            };
+            const t3 = {
+              id: 'st_tx_' + Date.now() + '3',
+              user_id: session?.user?.id || 'local',
+              business_stage: currentStage,
+              type: 'Expense',
+              amount: amount3,
+              description: 'Stripe Fee Deduction (Transaction processing)',
+              category: 'Merchant Fees',
+              client_name: null,
+              created_at: new Date().toISOString()
+            };
 
-          // Save to Supabase if active
-          if (supabaseClient && session?.user?.id) {
-            try {
-              await supabaseClient.from('finances').insert([t1, t2, t3]);
-            } catch(e) {
-              console.error("Error inserting webhook transactions to Supabase", e);
+            const newTxs = [t1, t2, t3, ...transactions];
+            setTransactions(newTxs);
+            localStorage.setItem(storageKey, JSON.stringify(newTxs));
+
+            if (supabaseClient && session?.user?.id) {
+              try { await supabaseClient.from('finances').insert([t1, t2, t3]); } catch(e) {}
             }
+
+            if (client1.name) updateClientLTV(client1.name, amount1);
+            if (client2.name) updateClientLTV(client2.name, amount2);
+
+            setWebhookEvents(prev => [
+              { id: 'evt_' + Date.now() + '1', type: 'invoice.payment_succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount1.toFixed(2)}`, status: 'processed' },
+              { id: 'evt_' + Date.now() + '2', type: 'charge.succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount2.toFixed(2)}`, status: 'processed' },
+              { id: 'evt_' + Date.now() + '3', type: 'customer.subscription.created', time: new Date().toLocaleTimeString(), amount: `Sub: Premium ($${amount1.toFixed(2)}/mo)`, status: 'processed' },
+              ...prev
+            ]);
+            window.dispatchEvent(new Event('amp-simulated-sale'));
+            window.dispatchEvent(new Event('amp-finances-updated'));
+            alert('Stripe Account Synced! (Simulation Mode) Saved mock credentials, simulated 3 webhook events, and inserted transactions.');
+          }, 1500);
+          return;
+        }
+
+        // Real API sync
+        try {
+          const response = await fetch('/.netlify/functions/stripe-sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ secretKey, userId: session?.user?.id, businessStage: currentStage })
+          });
+
+          if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || 'Stripe sync function returned an error status.');
           }
 
-          // If client matches, update their LTV in ledger
-          if (client1.name) updateClientLTV(client1.name, amount1);
-          if (client2.name) updateClientLTV(client2.name, amount2);
+          const result = await response.json();
+          const fetchedTxs = result.transactions || [];
 
-          // Log webhooks
-          setWebhookEvents([
-            { id: 'evt_' + Date.now() + '1', type: 'invoice.payment_succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount1.toFixed(2)}`, status: 'processed' },
-            { id: 'evt_' + Date.now() + '2', type: 'charge.succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount2.toFixed(2)}`, status: 'processed' },
-            { id: 'evt_' + Date.now() + '3', type: 'customer.subscription.created', time: new Date().toLocaleTimeString(), amount: `Sub: Premium ($${amount1.toFixed(2)}/mo)`, status: 'processed' },
-            ...webhookEvents
-          ]);
+          if (fetchedTxs.length === 0) {
+            alert('Stripe Account Connected! However, no recent successful charges were found.');
+            setStripeConnected(true);
+            setStripeSyncing(false);
+            return;
+          }
 
-          alert('Stripe Account Synced! Saved credentials, factorized recurring subscribers, and synced webhook transactions into finances.');
-        }, 1500);
+          const existingIds = new Set(transactions.map(t => t.id));
+          const newTxsToInsert = fetchedTxs.filter(t => !existingIds.has(t.id));
+
+          if (newTxsToInsert.length > 0) {
+            if (supabaseClient && session?.user?.id) {
+              await supabaseClient.from('finances').insert(newTxsToInsert);
+            }
+
+            const mergedTxs = [...newTxsToInsert, ...transactions];
+            setTransactions(mergedTxs);
+            localStorage.setItem(storageKey, JSON.stringify(mergedTxs));
+            window.dispatchEvent(new Event('amp-finances-updated'));
+
+            newTxsToInsert.forEach(tx => {
+              if (tx.type === 'Income' && tx.client_name) {
+                updateClientLTV(tx.client_name, tx.amount);
+              }
+            });
+
+            const newEvents = newTxsToInsert.filter(tx => tx.type === 'Income').map((tx, idx) => ({
+              id: 'evt_stripe_' + tx.id + '_' + idx,
+              type: tx.category === 'Monthly Recurring Revenue' ? 'invoice.payment_succeeded' : 'charge.succeeded',
+              time: new Date(tx.created_at).toLocaleTimeString(),
+              amount: `$${tx.amount.toFixed(2)}`,
+              status: 'processed'
+            }));
+
+            setWebhookEvents(prev => [...newEvents, ...prev]);
+          }
+
+          setStripeConnected(true);
+          setStripeSyncing(false);
+          window.dispatchEvent(new Event('amp-simulated-sale'));
+          alert(`Stripe Account Connected & Synced! successfully retrieved and ledgered ${newTxsToInsert.length} transactions.`);
+
+        } catch (error) {
+          console.error("Stripe sync error:", error);
+          alert(`Stripe Connection Failed: ${error.message}`);
+          setStripeSyncing(false);
+        }
       };
 
       // PDF Revenue Report Generation
-      const handleGeneratePDFReport = () => {
+      function handleGeneratePDFReport() {
         const today = new Date();
         const monthName = today.toLocaleString('default', { month: 'long', year: 'numeric' });
         
