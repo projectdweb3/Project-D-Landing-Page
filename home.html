@@ -2389,19 +2389,22 @@
             transform: scale(1.05);
         }
         .service-btn {
-            border: 1px solid rgba(255, 255, 255, 0.25) !important;
-            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(217, 70, 239, 0.12) 50%, rgba(99, 102, 241, 0.12) 100%) !important;
             color: #ffffff !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-shadow: 0 0 5px rgba(244, 63, 94, 0.5);
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.15);
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .service-btn:hover {
-            border-color: var(--accent-pink) !important;
+            border-color: rgba(244, 63, 94, 0.95) !important;
             color: #ffffff !important;
-            background: rgba(255, 255, 255, 0.2) !important;
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.35);
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.3) 0%, rgba(217, 70, 239, 0.3) 50%, rgba(99, 102, 241, 0.3) 100%) !important;
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 8px 25px rgba(244, 63, 94, 0.45), 0 0 15px rgba(217, 70, 239, 0.3);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
         }
         .service-tooltip {
             position: absolute;
@@ -2648,7 +2651,7 @@
         &lt;div class="w-[98%] max-w-[1520px] h-[90vh] md:h-[680px] lg:h-[720px] xl:h-[780px] rounded-[2.5rem] glass-panel flex flex-col md:flex-row relative overflow-hidden"&gt;
             
             &lt;!-- Left Sidebar Panel --&gt;
-            &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
+            &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-start py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
                 &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300 hover:scale-110 active:scale-95" onclick="event.preventDefault()"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
@@ -2656,21 +2659,6 @@
                         &lt;line x1="4" y1="18" x2="20" y2="18"&gt;&lt;/line&gt;
                     &lt;/svg&gt;
                 &lt;/button&gt;
-                
-                &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal" onclick="event.preventDefault()"&gt;
-                    &lt;div class="absolute w-12 h-12 rounded-full bg-pink-500/10 filter blur-md group-hover:bg-pink-500/30 transition-all duration-500"&gt;&lt;/div&gt;
-                    &lt;span class="relative font-serif text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-pink-200 via-rose-100 to-pink-500 tracking-wider filter drop-shadow-[0_0_8px_rgba(224,94,131,0.5)]"&gt;D&lt;/span&gt;
-                &lt;/div&gt;
-
-                &lt;div class="hidden md:flex absolute inset-x-0 top-24 bottom-24 opacity-20 pointer-events-none justify-center"&gt;
-                    &lt;svg width="30" height="100%" viewBox="0 0 30 300" fill="none" preserveAspectRatio="none"&gt;
-                        &lt;path d="M15 0 V110 L5 120 V160 L25 180 V220 L15 230 V300" stroke="currentColor" stroke-width="1" stroke="var(--text-muted)" opacity="0.3"&gt;&lt;/path&gt;
-                        &lt;circle cx="15" cy="110" r="1.5" fill="var(--accent-pink)"&gt;&lt;/circle&gt;
-                        &lt;circle cx="5" cy="160" r="1.5" fill="var(--accent-pink)"&gt;&lt;/circle&gt;
-                        &lt;circle cx="25" cy="220" r="1.5" fill="var(--accent-pink)"&gt;&lt;/circle&gt;
-                    &lt;/svg&gt;
-                &lt;/div&gt;
-                &lt;div class="w-6 h-6 md:h-8"&gt;&lt;/div&gt;
             &lt;/div&gt;
 
             &lt;!-- Main Content Window --&gt;
@@ -2714,7 +2702,7 @@
                             Exceptional Web Design for Premier Aesthetic Practices.
                         &lt;/h2&gt;
                         &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
-                            Crafted by &lt;span style="color: var(--accent-pink); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
+                            Crafted by &lt;span style="color: var(--accent-pink); font-weight: 600;"&gt;Project D&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
                         &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
                             &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-pink text-white font-semibold text-[10px] uppercase tracking-widest flex items-center gap-2" onclick="event.preventDefault()"&gt;
@@ -2745,8 +2733,8 @@
                         &lt;!-- Larger Image itself filling the grid cell and bleeding over --&gt;
                         &lt;div class="absolute inset-0 -top-12 -bottom-12 md:-right-12 bg-cover bg-center transition-all duration-1000 pointer-events-none" 
                              style="background-image: url(&apos;medspa_hero.png&apos;);
-                                    -webkit-mask-image: radial-gradient(circle at 50% 45%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 75%);
-                                    mask-image: radial-gradient(circle at 50% 45%, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 75%);"&gt;
+                                    -webkit-mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 55%);
+                                    mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 55%);"&gt;
                         </div>
 
                         &lt;!-- Sparkle overlay relative to the column --&gt;
@@ -3579,14 +3567,29 @@
                     pCtx.fillStyle = isLight ? "rgba(0, 150, 136, 0.9)" : "rgba(0, 242, 234, 0.9)";
                     pCtx.fillText(acTemp + "°F", cursorX + (isHoveringP ? 22 : 16), cursorY + 3);
                 } else {
-                    // Standard Medspa glow dot
+                    // Medspa luxury custom cursor with spring-physics trailing ring
+                    cursorX += (pMouse.x - cursorX) * 0.15;
+                    cursorY += (pMouse.y - cursorY) * 0.15;
+
+                    const ringColor = isLight ? &apos;rgba(194, 59, 93, 0.5)&apos; : &apos;rgba(224, 94, 131, 0.6)&apos;;
+                    const glowColor = isLight ? &apos;rgba(194, 59, 93, 0.2)&apos; : &apos;rgba(224, 94, 131, 0.3)&apos;;
+
+                    // 1. Draw outer soft luxury ring following with easing
                     pCtx.beginPath();
-                    pCtx.arc(pMouse.x, pMouse.y, isHoveringP ? 5 : 3, 0, Math.PI * 2);
-                    pCtx.fillStyle = isLight ? &apos;rgba(141, 110, 50, 0.9)&apos; : &apos;rgba(255, 255, 255, 0.9)&apos;;
-                    pCtx.shadowBlur = 12;
-                    pCtx.shadowColor = isLight ? &apos;rgba(141, 110, 50, 0.6)&apos; : &apos;rgba(245, 158, 11, 0.8)&apos;;
+                    const radius = isHoveringP ? 20 : 12;
+                    pCtx.arc(cursorX, cursorY, radius, 0, Math.PI * 2);
+                    pCtx.strokeStyle = ringColor;
+                    pCtx.lineWidth = 1.0;
+                    pCtx.stroke();
+
+                    // 2. Draw inner glow dot at exact mouse coordinates
+                    pCtx.beginPath();
+                    pCtx.arc(pMouse.x, pMouse.y, isHoveringP ? 4.5 : 2.5, 0, Math.PI * 2);
+                    pCtx.fillStyle = isLight ? &apos;rgba(194, 59, 93, 0.9)&apos; : &apos;rgba(255, 255, 255, 0.95)&apos;;
+                    pCtx.shadowBlur = 10;
+                    pCtx.shadowColor = isLight ? &apos;rgba(194, 59, 93, 0.6)&apos; : &apos;rgba(224, 94, 131, 0.8)&apos;;
                     pCtx.fill();
-                    pCtx.shadowBlur = 0;
+                    pCtx.shadowBlur = 0; // Reset
                 }
             }
             
