@@ -138,14 +138,179 @@
       console.error('Failed to copy code: ', err);
     });
   };
+  
+  // ==========================================================================
+  // 5. GLOBAL CURSOR TRAIL
+  // ==========================================================================
+  presets.initCursorTrail = function () {
+    if (window.innerWidth < 768) return;
+    const existingCanvas = document.getElementById('cursor-trail');
+    if (existingCanvas) existingCanvas.remove();
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (pointer: fine) {
+        body, a, button, [role="button"], input, select, textarea, .cursor-pointer {
+          cursor: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'cursor-trail';
+    canvas.className = 'fixed inset-0 pointer-events-none z-[10000]';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    window.addEventListener('resize', () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    let mouse = { x: -100, y: -100 };
+    let isHovering = false;
+    let isHoveringSafari = false;
+    let isInsideIframe = false;
+    let particles = [];
+
+    const iframeEl = document.getElementById('medspa-iframe');
+    if (iframeEl) {
+      iframeEl.addEventListener('mouseenter', () => isInsideIframe = true);
+      iframeEl.addEventListener('mouseleave', () => isInsideIframe = false);
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      if (isHoveringSafari) {
+        const isLight = !document.documentElement.classList.contains('dark');
+        const colorA = isLight ? '212, 140, 148' : '255, 230, 235';
+        const colorB = isLight ? '180, 120, 130' : '255, 246, 245';
+
+        if (Math.random() > 0.3) {
+          particles.push({
+            x: mouse.x + (Math.random() - 0.5) * 12,
+            y: mouse.y + (Math.random() - 0.5) * 12,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 1) * 0.5,
+            life: 1,
+            size: Math.random() * 1.5 + 0.5,
+            color: Math.random() > 0.5 ? colorA : colorB
+          });
+        }
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseover', (e) => {
+      isHovering = !!(e.target && e.target.closest && e.target.closest('a, button, [role="button"], input, select, textarea, .cursor-pointer, iframe'));
+      isHoveringSafari = !!(e.target && e.target.closest && e.target.closest('#website-preview-section'));
+    }, { passive: true });
+
+    function loop() {
+      ctx.clearRect(0, 0, width, height);
+
+      if (isInsideIframe) {
+        for (let i = particles.length - 1; i >= 0; i--) {
+          let p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.015;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color}, ${p.life})`;
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `rgba(${p.color}, ${p.life * 0.5})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(loop);
+        return;
+      }
+
+      if (isHoveringSafari) {
+        const isLight = !document.documentElement.classList.contains('dark');
+
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, isHovering ? 5 : 3, 0, Math.PI * 2);
+        ctx.fillStyle = isLight ? 'rgba(212, 140, 148, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = isLight ? 'rgba(212, 140, 148, 0.6)' : 'rgba(255, 230, 235, 0.8)';
+        ctx.fill();
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          let p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.015;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color}, ${p.life})`;
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `rgba(${p.color}, ${p.life * 0.5})`;
+          ctx.fill();
+        }
+      } else {
+        const isDark = document.documentElement.classList.contains('dark');
+        const color = isDark ? '70, 212, 198' : '255, 145, 70';
+
+        ctx.save();
+        ctx.translate(mouse.x, mouse.y);
+        if (isHovering) {
+          ctx.scale(1.1, 1.1);
+        }
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(14, 14);
+        ctx.lineTo(6, 14);
+        ctx.lineTo(0, 20);
+        ctx.closePath();
+
+        ctx.fillStyle = isHovering ? `rgb(${color})` : '#ffffff';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = `rgba(${color}, 0.6)`;
+        ctx.fill();
+
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isHovering ? '#ffffff' : (isDark ? '#000000' : '#1e293b');
+        ctx.shadowBlur = 0;
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      requestAnimationFrame(loop);
+    }
+    loop();
+  };
 
   // Export to global scope
   global.PDPresets = presets;
 
-  // Auto-init theme and click ripple on DOM content loaded
-  document.addEventListener('DOMContentLoaded', () => {
+  function initAll() {
     presets.initTheme();
     presets.initLiquidClicks();
-  });
+    presets.initCursorTrail();
+  }
+
+  // Auto-init theme, clicks and cursor trail
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
 
 })(window);

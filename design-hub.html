@@ -167,14 +167,6 @@
 
       <!-- Sidebar Footer Info -->
       <div class="p-4 border-t border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.01] mt-auto space-y-3">
-        <a href="/docs" class="conic-btn dramatic-hover w-full py-2.5 px-4 text-xs font-semibold flex items-center justify-center">
-          <div class="conic-spin-bg"></div>
-          <div class="conic-btn-mask"></div>
-          <span class="relative z-10 flex items-center justify-center gap-2">
-            <iconify-icon icon="solar:book-open-bold-duotone" width="16"></iconify-icon>
-            <span>Documentation Hub</span>
-          </span>
-        </a>
         <div class="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed bg-white/40 dark:bg-black/20 p-2.5 rounded-xl border border-black/5 dark:border-white/5">
           Copy snippets and paste them directly. Mention presets by name to reuse.
         </div>
@@ -735,6 +727,49 @@
           </div>
         </div>
 
+        <!-- Component Card: Dynamic Cursor Trail -->
+        <div class="preset-card amp-card p-6 flex flex-col xl:flex-row gap-6 items-stretch" data-category="visualfx">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Effect</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-500/10 text-slate-400 uppercase">Interactive</span>
+            </div>
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <iconify-icon icon="solar:cursor-bold-duotone" class="text-slate-400 text-xl"></iconify-icon>
+              <span>PD Dynamic Cursor Trail</span>
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Dynamic "Liquid Glass" cursor trail tracking mouse coordinate interpolation. Generates glowing physics-bound pointer effects, automatically resizing, changing colors, and glowing upon hovering interactive targets.</p>
+            
+            <!-- Live Preview -->
+            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="cursor-pointer border border-dashed border-slate-300 dark:border-slate-700 bg-white/20 dark:bg-black/20 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:border-pd-teal/50 rounded-2xl p-6 text-center transition-all duration-300 w-full max-w-sm">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block font-medium mb-1">Interactive Sandbox Area</span>
+                <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Hover here to scale &amp; glow the cursor!</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code Inspector -->
+          <div class="xl:w-[480px] shrink-0 flex flex-col">
+            <div class="flex items-center justify-between px-4 py-2 bg-[#0b0e1a] rounded-t-xl border-b border-white/5">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-slate-500 font-mono ml-2">global-cursor.html</span>
+              </div>
+              <button onclick="copySnippet(this)" class="text-[10px] font-semibold text-slate-400 hover:text-white flex items-center gap-1">
+                <iconify-icon icon="solar:copy-linear" width="12"></iconify-icon> Copy Code
+              </button>
+            </div>
+            <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-comment">&lt;!-- 1. Include presets.js script in your head --&gt;</span>
+<span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-val">"pd-design-system/presets.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span>
+
+<span class="code-comment">&lt;!-- 2. The script auto-initializes and binds to canvas --&gt;</span>
+<span class="code-comment">&lt;!-- It handles hover scales, light/dark themes and disables on mobile --&gt;</span></pre>
+          </div>
+        </div>
+
         <!-- ==================== CATEGORY: DASHBOARDS ==================== -->
 
         <!-- Component Card: Stat Card Widget -->
@@ -905,10 +940,9 @@
               <span>PD Active Workforce Tree</span>
             </h3>
             <p class="text-sm text-slate-500 dark:text-slate-400">Hierarchical workforce link layouts mapping the executive tree flow from CEO down to specialized sub-agents with connector lines.</p>
-            
-            <!-- Live Preview -->
-            <div class="preview-box p-8 rounded-2xl border border-black/5 dark:border-white/5 flex flex-col items-center justify-center bg-black/[0.01] dark:bg-white/[0.01]">
-              <div class="flex flex-col items-center w-full relative">
+                      <!-- Live Preview -->
+            <div class="preview-box p-6 rounded-2xl border border-black/5 dark:border-white/5 overflow-x-auto w-full bg-black/[0.01] dark:bg-white/[0.01]">
+              <div class="flex flex-col items-center min-w-[620px] w-full relative">
                 <!-- CEO Node -->
                 <div class="amp-card p-3 flex items-center gap-3 w-48 justify-center z-10 border-pd-orange/20 shadow-[0_0_15px_rgba(255,95,0,0.1)] bg-white/80 dark:bg-[#0b0f19]">
                   <div class="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center flex-shrink-0">
@@ -923,18 +957,116 @@
                     </div>
                   </div>
                 </div>
-                <!-- Connector Vertical Line -->
+
+                <!-- Tree Connector Lines -->
                 <div class="tree-line-v h-6 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
-                <!-- Sub Agent Node -->
-                <div class="amp-card rounded-xl p-3 flex items-center gap-3 w-48 justify-center z-10 border-pd-teal/20 bg-white/80 dark:bg-[#0b0f19]">
-                  <div class="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center flex-shrink-0">
-                    <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#46d4c6_30%,#ffffff_50%,#ff9146_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite] pointer-events-none z-0"></div>
-                    <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
-                    <iconify-icon icon="solar:global-linear" width="14" class="text-pd-teal relative z-10"></iconify-icon>
+                <div class="tree-line-h w-full max-w-[420px] relative">
+                  <div class="absolute top-0 left-0 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10"></div>
+                  <div class="absolute top-0 right-0 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10"></div>
+                  <div class="absolute top-0 left-1/2 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10 -ml-[0.5px]"></div>
+                  <div class="h-[1px] w-full bg-gray-200 dark:bg-white/10"></div>
+                </div>
+                <div class="h-6"></div>
+
+                <!-- Sub-Agent Columns -->
+                <div class="flex flex-row justify-between w-full max-w-[560px] gap-4 relative z-10">
+                  <!-- CMO Branch -->
+                  <div class="flex flex-col items-center gap-0 w-[180px]">
+                    <div class="amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-pd-teal/20 bg-white/80 dark:bg-[#0b0f19]">
+                      <div class="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                        <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#46d4c6_30%,#ffffff_50%,#ff9146_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite] pointer-events-none z-0"></div>
+                        <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                        <iconify-icon icon="solar:global-linear" width="14" class="relative z-10 text-pd-teal"></iconify-icon>
+                      </div>
+                      <div>
+                        <div class="text-[11px] font-semibold text-gray-900 dark:text-white">CMO Agent</div>
+                        <div class="text-[8px] text-gray-500 dark:text-gray-400">Lead Gen & Marketing</div>
+                      </div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+                    
+                    <!-- Driver Acquisition Specialist -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-teal/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-pd-teal"><iconify-icon icon="solar:user-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Driver Acquisition Specialist</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Recruits and onboards new drivers to expand the dispatch fleet.</div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+
+                    <!-- Route Optimization Strategist -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-teal/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-pd-teal"><iconify-icon icon="solar:map-point-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Route Optimization Strategist</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Develops and implements strategies to maximize delivery efficiency and profitability.</div>
+                    </div>
                   </div>
-                  <div>
-                    <div class="text-[11px] font-semibold text-gray-900 dark:text-white">CMO Agent</div>
-                    <div class="text-[8px] text-gray-500 dark:text-gray-400">Marketing</div>
+
+                  <!-- CTO Branch -->
+                  <div class="flex flex-col items-center gap-0 w-[180px]">
+                    <div class="amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-pd-orange/20 bg-white/80 dark:bg-[#0b0f19]">
+                      <div class="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                        <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite] pointer-events-none z-0"></div>
+                        <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                        <iconify-icon icon="solar:settings-linear" width="14" class="relative z-10 text-pd-orange"></iconify-icon>
+                      </div>
+                      <div>
+                        <div class="text-[11px] font-semibold text-gray-900 dark:text-white">CTO Agent</div>
+                        <div class="text-[8px] text-gray-500 dark:text-gray-400">Systems & Code</div>
+                      </div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+                    
+                    <!-- Real-time Fleet Monitor -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-orange/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-pd-orange"><iconify-icon icon="solar:monitor-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Real-time Fleet Monitor</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Oversees the live status and location of all dispatch vehicles and drivers.</div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+
+                    <!-- Logistics Data Analyst -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-orange/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-pd-orange"><iconify-icon icon="solar:graph-up-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Logistics Data Analyst</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Analyzes operational data to identify trends, inefficiencies, and areas for improvement.</div>
+                    </div>
+                  </div>
+
+                  <!-- Creative Branch -->
+                  <div class="flex flex-col items-center gap-0 w-[180px]">
+                    <div class="amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-purple-500/20 bg-white/80 dark:bg-[#0b0f19]">
+                      <div class="w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm">
+                        <div class="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite] pointer-events-none z-0"></div>
+                        <div class="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 pointer-events-none z-0"></div>
+                        <iconify-icon icon="solar:document-linear" width="14" class="relative z-10 text-purple-500"></iconify-icon>
+                      </div>
+                      <div>
+                        <div class="text-[11px] font-semibold text-gray-900 dark:text-white">Creative Agent</div>
+                        <div class="text-[8px] text-gray-500 dark:text-gray-400">Content & Assets</div>
+                      </div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+                    
+                    <!-- Driver Experience Designer -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-purple-500/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-purple-500"><iconify-icon icon="solar:chat-square-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Driver Experience Designer</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Creates engaging content and communication strategies to foster a positive driver community.</div>
+                    </div>
+
+                    <div class="tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"></div>
+
+                    <!-- Compliance & Brand Manager -->
+                    <div class="amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-purple-500/20 bg-white/60 dark:bg-pd-glass shadow-sm">
+                      <div class="text-purple-500"><iconify-icon icon="solar:shield-check-linear" width="14"></iconify-icon></div>
+                      <div class="text-[10px] font-semibold text-gray-900 dark:text-white leading-tight mt-0.5">Compliance & Brand Manager</div>
+                      <div class="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Ensures all dispatch operations and communications adhere to Amazon's standards and regulations.</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -955,7 +1087,7 @@
               </button>
             </div>
             <pre class="code-editor text-[11px] p-4 rounded-b-xl overflow-x-auto select-all leading-relaxed whitespace-pre-wrap"><span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex flex-col items-center w-full relative"</span><span class="code-tag">&gt;</span>
-  <span class="code-comment">&lt;!-- Node Element --&gt;</span>
+  <span class="code-comment">&lt;!-- CEO Node --&gt;</span>
   <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card p-3 flex items-center gap-3 w-48 justify-center z-10 bg-white/80 dark:bg-[#0b0f19]"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center flex-shrink-0"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-50 animate-[spin_2s_linear_infinite]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
@@ -967,21 +1099,113 @@
       <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-emerald-500 font-bold"</span><span class="code-tag">&gt;</span>Active<span class="code-tag">&lt;/div&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
-  
+
   <span class="code-comment">&lt;!-- Connector Lines --&gt;</span>
   <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-6 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
-  
-  <span class="code-comment">&lt;!-- Child Node Element --&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-3 flex items-center gap-3 w-48 justify-center z-10 bg-white/80 dark:bg-[#0b0f19]"</span><span class="code-tag">&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center flex-shrink-0"</span><span class="code-tag">&gt;</span>
-      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#46d4c6_30%,#ffffff_50%,#ff9146_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
-      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
-      <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:global-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span> <span class="code-attr">class</span>=<span class="code-val">"text-pd-teal relative z-10"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-h w-full max-w-[420px] relative"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute top-0 left-0 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute top-0 right-0 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute top-0 left-1/2 w-[1px] h-6 tree-line-v bg-gray-200 dark:bg-white/10 -ml-[0.5px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"h-[1px] w-full bg-gray-200 dark:bg-white/10"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"h-6"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Sub-Agent Columns --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex flex-row justify-between w-full max-w-[560px] gap-4 relative z-10"</span><span class="code-tag">&gt;</span>
+    
+    <span class="code-comment">&lt;!-- CMO Branch --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex flex-col items-center gap-0 w-[180px]"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-pd-teal/20 bg-white/80 dark:bg-[#0b0f19]"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm"</span><span class="code-tag">&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#46d4c6_30%,#ffffff_50%,#ff9146_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:global-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 text-pd-teal"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[11px] font-semibold text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>CMO Agent<span class="code-tag">&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500"</span><span class="code-tag">&gt;</span>Lead Gen &amp; Marketing<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-teal/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-pd-teal"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:user-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Driver Acquisition Specialist<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Recruits and onboards new drivers to expand the dispatch fleet.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-teal/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-pd-teal"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:map-point-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Route Optimization Strategist<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Develops and implements strategies to maximize delivery efficiency and profitability.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
-    <span class="code-tag">&lt;div&gt;</span>
-      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[11px] font-semibold"</span><span class="code-tag">&gt;</span>CMO Agent<span class="code-tag">&lt;/div&gt;</span>
-      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500"</span><span class="code-tag">&gt;</span>Marketing<span class="code-tag">&lt;/div&gt;</span>
+
+    <span class="code-comment">&lt;!-- CTO Branch --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex flex-col items-center gap-0 w-[180px]"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-pd-orange/20 bg-white/80 dark:bg-[#0b0f19]"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm"</span><span class="code-tag">&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:settings-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 text-pd-orange"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[11px] font-semibold text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>CTO Agent<span class="code-tag">&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500"</span><span class="code-tag">&gt;</span>Systems &amp; Code<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-orange/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-pd-orange"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:monitor-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Real-time Fleet Monitor<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Oversees the live status and location of all dispatch vehicles and drivers.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-pd-orange/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-pd-orange"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:graph-up-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Logistics Data Analyst<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Analyzes operational data to identify trends, inefficiencies, and areas for improvement.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
+
+    <span class="code-comment">&lt;!-- Creative Branch --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"flex flex-col items-center gap-0 w-[180px]"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-2xl p-3 flex flex-col items-center gap-2 w-full text-center border-purple-500/20 bg-white/80 dark:bg-[#0b0f19]"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"w-8 h-8 rounded-full relative overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 flex items-center justify-center shadow-sm"</span><span class="code-tag">&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-40 animate-[spin_3s_linear_infinite]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+          <span class="code-tag">&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:document-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span> <span class="code-attr">class</span>=<span class="code-val">"relative z-10 text-purple-500"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[11px] font-semibold text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Creative Agent<span class="code-tag">&lt;/div&gt;</span>
+          <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500"</span><span class="code-tag">&gt;</span>Content &amp; Assets<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-purple-500/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-purple-500"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:chat-square-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Driver Experience Designer<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Creates engaging content and communication strategies to foster a positive driver community.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"tree-line-v h-4 bg-gray-200 dark:bg-white/10 w-[1px]"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"amp-card rounded-xl p-2.5 flex flex-col items-center gap-1 w-full text-center opacity-90 border border-purple-500/20 bg-white/60 dark:bg-pd-glass shadow-sm"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-purple-500"</span><span class="code-tag">&gt;&lt;iconify-icon</span> <span class="code-attr">icon</span>=<span class="code-val">"solar:shield-check-linear"</span> <span class="code-attr">width</span>=<span class="code-val">"14"</span><span class="code-tag">&gt;&lt;/iconify-icon&gt;&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[10px] font-semibold leading-tight mt-0.5 text-gray-900 dark:text-white"</span><span class="code-tag">&gt;</span>Compliance &amp; Brand Manager<span class="code-tag">&lt;/div&gt;</span>
+        <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"text-[8px] text-gray-500 leading-tight"</span><span class="code-tag">&gt;</span>Ensures all dispatch operations and communications adhere to Amazon's standards and regulations.<span class="code-tag">&lt;/div&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+
   <span class="code-tag">&lt;/div&gt;</span>
 <span class="code-tag">&lt;/div&gt;</span></pre>
           </div>
