@@ -143,6 +143,9 @@
   // 5. GLOBAL CURSOR TRAIL
   // ==========================================================================
   presets.initCursorTrail = function () {
+    // Disable custom cursor trail if running inside an iframe (e.g. documentation viewports)
+    if (window.self !== window.top) return;
+
     if (window.innerWidth < 768) return;
     const existingCanvas = document.getElementById('cursor-trail');
     if (existingCanvas) existingCanvas.remove();
@@ -178,17 +181,16 @@
     let isHovering = false;
     let isHoveringSafari = false;
     let isInsideIframe = false;
+    let isOutsideWindow = false;
     let particles = [];
 
-    const iframeEl = document.getElementById('medspa-iframe');
-    if (iframeEl) {
-      iframeEl.addEventListener('mouseenter', () => isInsideIframe = true);
-      iframeEl.addEventListener('mouseleave', () => isInsideIframe = false);
-    }
-
+    // Track mousemove: mouse is active and inside parent
     window.addEventListener('mousemove', (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
+      isInsideIframe = false;
+      isOutsideWindow = false;
+
       if (isHoveringSafari) {
         const isLight = !document.documentElement.classList.contains('dark');
         const colorA = isLight ? '212, 140, 148' : '255, 230, 235';
@@ -208,15 +210,40 @@
       }
     }, { passive: true });
 
+    // Track mouse entering/leaving the document window
+    document.addEventListener('mouseleave', () => {
+      isOutsideWindow = true;
+    });
+    document.addEventListener('mouseenter', () => {
+      isOutsideWindow = false;
+    });
+
+    // Track hover targets, specifically detecting iframes to hide parent cursor
     document.addEventListener('mouseover', (e) => {
-      isHovering = !!(e.target && e.target.closest && e.target.closest('a, button, [role="button"], input, select, textarea, .cursor-pointer, iframe'));
-      isHoveringSafari = !!(e.target && e.target.closest && e.target.closest('#website-preview-section'));
+      const target = e.target;
+      isHovering = !!(target && target.closest && target.closest('a, button, [role="button"], input, select, textarea, .cursor-pointer, iframe'));
+      isHoveringSafari = !!(target && target.closest && target.closest('#website-preview-section'));
+
+      if (target && (target.tagName === 'IFRAME' || (target.closest && target.closest('iframe')))) {
+        isInsideIframe = true;
+      }
     }, { passive: true });
+
+    // Setup listener directly on existing iframes as backup
+    document.querySelectorAll('iframe').forEach(iframeEl => {
+      iframeEl.addEventListener('mouseenter', () => {
+        isInsideIframe = true;
+      });
+      iframeEl.addEventListener('mouseleave', () => {
+        isInsideIframe = false;
+      });
+    });
 
     function loop() {
       ctx.clearRect(0, 0, width, height);
 
-      if (isInsideIframe) {
+      // Hide parent custom cursor if mouse is inside an iframe or outside window
+      if (isInsideIframe || isOutsideWindow) {
         for (let i = particles.length - 1; i >= 0; i--) {
           let p = particles[i];
           p.x += p.vx;
