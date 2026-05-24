@@ -2221,7 +2221,7 @@
             </div>
 
             <div
-              class="w-[96%] lg:w-[94%] max-w-[1440px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0b0f19] relative z-10 transform transition-all duration-500 hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)]">
+              class="w-[98%] lg:w-[96%] max-w-[1680px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0b0f19] relative z-10 transform transition-all duration-500 hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)]">
               <div
                 class="bg-gray-100 dark:bg-[#111827] border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-4">
                 <div class="flex gap-2 w-16">
@@ -2493,17 +2493,33 @@
         }
 
         .right-panel {
-            flex: 1;
+            flex: 1.2;
             position: relative;
-            background-image: url(&apos;medspa_hero.png&apos;);
-            background-size: cover;
-            background-position: center 20%;
-            background-repeat: no-repeat;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
             padding-bottom: 3rem;
+        }
+
+        .hero-bg-zoom {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url(&apos;medspa_hero.png&apos;);
+            background-size: cover;
+            background-position: center 20%;
+            background-repeat: no-repeat;
+            animation: medspaKenBurns 20s infinite alternate ease-in-out;
+            z-index: 0;
+        }
+
+        @keyframes medspaKenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.12); }
         }
 
         .right-panel::after {
@@ -2560,29 +2576,131 @@
             left: 150%;
         }
 
-        .cards-container {
+        .medspa-stats-badge {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(31, 21, 27, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #FFF6F5;
+            backdrop-filter: blur(10px);
+            z-index: 10;
             display: flex;
-            gap: 1.5rem;
-            width: 90%;
-            z-index: 5;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            pointer-events: none;
         }
 
-        .glass-card {
-            background: var(--glass-card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            flex: 1;
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.4s ease, border-color 0.4s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        .badge-pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-pink);
+            border-radius: 50%;
+            animation: badgePulseAnim 1.5s infinite ease-in-out;
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            background: var(--glass-card-hover);
-            border-color: rgba(212, 140, 148, 0.6);
+        @keyframes badgePulseAnim {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .medspa-hotspot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            margin: -5px 0 0 -5px;
+            background: #FFF;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .hotspot-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            border: 2px solid var(--accent-pink);
+            border-radius: 50%;
+            animation: hotspotPulseAnim 2s infinite ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes hotspotPulseAnim {
+            0% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        .medspa-hotspot:hover .hotspot-inner {
+            transform: scale(1.4);
+            background: var(--accent-pink);
+        }
+
+        .hotspot-tooltip {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(31, 21, 27, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            width: 180px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(8px);
+            z-index: 20;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .medspa-hotspot:hover .hotspot-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .hotspot-tooltip h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #FFF6F5;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .hotspot-tooltip p {
+            font-size: 0.65rem;
+            color: #9F8A91;
+            line-height: 1.3;
         }
 
         .theme-switch {
@@ -2633,59 +2751,75 @@
             background-color: #FFF;
         }
 
-        .card-list {
-            list-style: none;
-        }
-
-        .card-list li {
+        .treatment-highlights {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            margin-bottom: 2.5rem;
         }
 
-        .card-list li:last-child {
-            margin-bottom: 0;
-        }
-
-        .icon-box {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
+        .treatment-highlight-bar {
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 0.6rem;
+            gap: 12px;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid var(--accent-pink);
+            transition: all 0.3s ease;
         }
-        
-        .icon-injectables { background: rgba(212, 140, 148, 0.2); color: var(--accent-pink); }
-        .icon-lasers { background: rgba(168, 194, 203, 0.2); color: #A8C2CB; }
-        .icon-facials { background: rgba(227, 205, 164, 0.2); color: #E3CDA4; }
 
-        .card-title {
+        body.light-mode .treatment-highlight-bar {
+            background: rgba(45, 30, 40, 0.02);
+        }
+
+        .treatment-highlight-bar:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode .treatment-highlight-bar:hover {
+            background: rgba(45, 30, 40, 0.04);
+        }
+
+        .highlight-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--accent-pink);
+        }
+
+        .highlight-text {
             font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
+            font-weight: 600;
             letter-spacing: 1px;
-            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            text-transform: uppercase;
         }
 
-        .stat-value {
-            font-size: 1.25rem;
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-num {
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 0.25rem;
+            line-height: 1.2;
         }
 
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
+        .stat-lbl {
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: var(--text-muted);
         }
         
         .grid-overlay {
@@ -2720,6 +2854,19 @@
             .action-buttons {
                 justify-content: center;
             }
+            .treatment-highlights {
+                align-items: center;
+                width: 100%;
+            }
+            .treatment-highlight-bar {
+                justify-content: center;
+                width: 100%;
+                max-width: 320px;
+            }
+            .stats-row {
+                justify-content: center;
+                gap: 1.5rem;
+            }
             .right-panel {
                 flex: none;
                 height: auto;
@@ -2745,18 +2892,12 @@
             .right-pill {
                 display: none;
             }
+            .medspa-stats-badge {
+                display: none;
+            }
         }
 
         @media (max-width: 767px) {
-            .cards-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 1rem;
-            }
-            .glass-card {
-                width: 100%;
-                max-width: none;
-            }
             .right-panel {
                 padding-left: 1rem;
                 padding-right: 1rem;
@@ -2775,72 +2916,39 @@
                 &lt;label class="theme-switch" for="checkbox" title="Toggle Light/Dark Mode"&gt;
                     &lt;input type="checkbox" id="checkbox" /&gt;
                     &lt;div class="slider"&gt;&lt;/div&gt;
-                &lt;/label&gt;
-                &lt;button class="right-pill cursor-pointer hover:bg-white/10 transition-colors" style="border:none;"&gt;PATIENT PORTAL&lt;/button&gt;
-                &lt;button class="nav-btn" id="btn-admin-portal"&gt;ADMIN PORTAL&lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/nav&gt;
+    </style>
+</head>
+<body>
 
-        &lt;div class="left-panel"&gt;
-            &lt;h1 class="huge-title"&gt;
-                &lt;span class="title-line-1"&gt;REVEAL&lt;/span&gt;
-                &lt;span class="title-line-2"&gt;YOUR TRUE&lt;/span&gt;
-                &lt;span class="title-line-3"&gt;RADIANCE&lt;/span&gt;
-            &lt;/h1&gt;
+    <div class="hero-container">
+        <div class="grid-overlay"></div>
 
-            &lt;div class="tag-row"&gt;
-                &lt;span class="pill-badge"&gt;SPRING SPECIALS&lt;/span&gt;
-                &lt;span class="sub-tag"&gt;&lt;span&gt;EXPLORE&lt;/span&gt; TREATMENTS — ENHANCE YOUR BEAUTY&lt;/span&gt;
-            &lt;/div&gt;
+        <nav class="navbar">
+            <a href="#" class="logo">YOUR MEDSPA</a>
+            <div class="nav-actions">
+                <label class="theme-switch" for="checkbox" title="Toggle Light/Dark Mode">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider"></div>
+                </label>
+                <button class="right-pill cursor-pointer hover:bg-white/10 transition-colors" style="border:none;">PATIENT PORTAL</button>
+                <button class="nav-btn" id="btn-admin-portal">ADMIN PORTAL</button>
+            </div>
+        </nav>
 
-            &lt;p class="description"&gt;
+        <div class="left-panel">
+            <h1 class="huge-title">
+                <span class="title-line-1">REVEAL</span>
+                <span class="title-line-2">YOUR TRUE</span>
+                <span class="title-line-3">RADIANCE</span>
+            </h1>
+
+            <div class="tag-row">
+                <span class="pill-badge">SPRING SPECIALS</span>
+                <span class="sub-tag"><span>EXPLORE</span> TREATMENTS — ENHANCE YOUR BEAUTY</span>
+            </div>
+
+            <p class="description">
                 The ultimate destination to discover and experience the most advanced aesthetic treatments, tailored to perfection with complete care and transparency.
-            &lt;/p&gt;
-
-            &lt;div class="action-buttons"&gt;
-                &lt;button class="btn-primary"&gt;BOOK CONSULTATION&lt;/button&gt;
-                &lt;button class="btn-secondary"&gt;OUR SERVICES&lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;div class="right-panel"&gt;
-            &lt;div class="cards-container"&gt;
-                &lt;div class="glass-card"&gt;
-                    &lt;h3 class="card-title"&gt;TOP TREATMENTS&lt;/h3&gt;
-                    &lt;ul class="card-list"&gt;
-                        &lt;li&gt;&lt;div class="icon-box icon-injectables"&gt;✧&lt;/div&gt; INJECTABLES&lt;/li&gt;
-                        &lt;li&gt;&lt;div class="icon-box icon-lasers"&gt;⚡&lt;/div&gt; LASER THERAPY&lt;/li&gt;
-                        &lt;li&gt;&lt;div class="icon-box icon-facials"&gt;🌸&lt;/div&gt; MEDICAL FACIALS&lt;/li&gt;
-                    &lt;/ul&gt;
-                &lt;/div&gt;
-
-                &lt;div class="glass-card"&gt;
-                    &lt;h3 class="card-title"&gt;OUR EXPERTISE&lt;/h3&gt;
-                    &lt;div style="margin-bottom: 1rem;"&gt;
-                        &lt;div class="stat-value"&gt;5,000+&lt;/div&gt;
-                        &lt;div class="stat-label"&gt;HAPPY CLIENTS&lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div&gt;
-                        &lt;div class="stat-value"&gt;15+&lt;/div&gt;
-                        &lt;div class="stat-label"&gt;YEARS EXPERIENCE&lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-
-                &lt;div class="glass-card"&gt;
-                    &lt;h3 class="card-title"&gt;QUICK ACTIONS&lt;/h3&gt;
-                    &lt;ul class="card-list"&gt;
-                        &lt;li&gt;&lt;div class="icon-box" style="background: rgba(255,255,255,0.1);"&gt;📅&lt;/div&gt; BOOK NOW&lt;/li&gt;
-                        &lt;li&gt;&lt;div class="icon-box" style="background: rgba(255,255,255,0.1);"&gt;💳&lt;/div&gt; FINANCING&lt;/li&gt;
-                        &lt;li&gt;&lt;div class="icon-box" style="background: rgba(255,255,255,0.1);"&gt;🎁&lt;/div&gt; GIFT CARDS&lt;/li&gt;
-                    &lt;/ul&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- AMP Center Dashboard --&gt;
-    &lt;div id="amp-dashboard" style="display: none; opacity: 0; transition: opacity 0.5s ease; background-color: var(--bg-dark);" class="fixed inset-0 w-full h-full z-40 flex font-sans"&gt;
-        &lt;!-- Sidebar --&gt;
         &lt;aside class="w-64 border-r backdrop-blur-xl flex flex-col hidden md:flex" style="background: var(--glass-card-bg); border-color: var(--glass-border);"&gt;
             &lt;div class="p-6 border-b flex justify-between items-center" style="border-color: var(--glass-border);"&gt;
                 &lt;span class="font-bold tracking-tight" style="color: var(--text-main);"&gt;AMP Center&lt;/span&gt;
@@ -3092,6 +3200,413 @@
               </div>
             </div>
           </section>
+
+          <!-- Interactive Showcase Section -->
+          <section id="interactive-showcase-section" class="w-full py-24 relative flex flex-col items-center justify-center z-20 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/10">
+            <style>
+              @keyframes fadeInShowcase {
+                from { opacity: 0; transform: translateY(4px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              .animate-fade-in {
+                animation: fadeInShowcase 0.3s ease-out forwards;
+              }
+            </style>
+            <div class="text-center mb-16 relative z-10 max-w-3xl px-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-indigo-600 dark:text-[#a5b4fc] text-xs font-semibold uppercase tracking-widest mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#818cf8] animate-pulse"></span>
+                Interactive Capability Sandbox
+              </div>
+              <h2 class="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-gray-900 dark:text-white mb-6">
+                Functional <span class="text-[#818cf8]">Concepts</span>
+              </h2>
+              <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 font-light leading-relaxed max-w-2xl mx-auto">
+                Interact with live modules powered by Project D's custom CRM and automated agent workflows.
+              </p>
+            </div>
+
+            <!-- Showcase Grid -->
+            <div class="w-[98%] lg:w-[96%] max-w-[1680px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 px-4 relative z-10">
+              
+              <!-- Card 1: AI Chatbot Coordinator -->
+              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-6 shadow-lg flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(129,140,248,0.15)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div>
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                      <iconify-icon icon="solar:chat-round-line-bold" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-gray-900 dark:text-white text-base leading-none">AI Chatbot Agent</h3>
+                      <p class="text-xs text-gray-400 mt-1">Live Interactive Assistant</p>
+                    </div>
+                  </div>
+                  <hr class="border-gray-100 dark:border-white/5 mb-4">
+                  <!-- Chat box -->
+                  <div id="showcase-chat-box" class="h-64 flex flex-col gap-3 overflow-y-auto pr-1 text-xs border border-gray-100 dark:border-white/5 rounded-2xl p-4 bg-gray-50/50 dark:bg-black/30">
+                    <div class="flex gap-2 items-start">
+                      <div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] shrink-0">🤖</div>
+                      <div class="bg-gray-100 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 rounded-2xl rounded-tl-none p-3 text-gray-700 dark:text-gray-300 leading-normal">
+                        Hey there! I am your agentic coordinator. Click one of the quick actions below to see me orchestrate background tasks!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Controls -->
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    <button class="chat-trigger-btn px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 hover:border-indigo-400 text-[10px] font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-400 bg-white dark:bg-white/5 transition-all" data-prompt="Generate Email Flow">📧 Email Flow</button>
+                    <button class="chat-trigger-btn px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 hover:border-indigo-400 text-[10px] font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-400 bg-white dark:bg-white/5 transition-all" data-prompt="Optimize Bookings">📅 Bookings</button>
+                    <button class="chat-trigger-btn px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 hover:border-indigo-400 text-[10px] font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-400 bg-white dark:bg-white/5 transition-all" data-prompt="Sync CRM Leads">🔄 Sync leads</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Operational Dashboard Widget -->
+              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-6 shadow-lg flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#46d4c6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div>
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-2xl bg-[#46d4c6]/10 flex items-center justify-center text-[#46d4c6] border border-[#46d4c6]/20">
+                      <iconify-icon icon="solar:chart-2-bold" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-gray-900 dark:text-white text-base leading-none">Operational Metrics</h3>
+                      <p class="text-xs text-gray-400 mt-1">Live Dashboard Widget</p>
+                    </div>
+                  </div>
+                  <hr class="border-gray-100 dark:border-white/5 mb-4">
+                  <!-- Metrics lists -->
+                  <div class="flex flex-col gap-4 py-2">
+                    <div class="flex justify-between items-center bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl p-3.5">
+                      <span class="text-xs text-gray-500 dark:text-gray-400">Conversion Rate</span>
+                      <span id="metric-conversion" class="text-lg font-bold text-gray-900 dark:text-white font-mono">82.4%</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl p-3.5">
+                      <span class="text-xs text-gray-500 dark:text-gray-400">Active Bookings/hr</span>
+                      <span id="metric-bookings" class="text-lg font-bold text-gray-900 dark:text-white font-mono">118</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl p-3.5">
+                      <span class="text-xs text-gray-500 dark:text-gray-400">Agent Sync Status</span>
+                      <span id="metric-sync" class="text-xs font-bold text-[#46d4c6] uppercase flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-[#46d4c6] rounded-full animate-ping"></span>
+                        Active
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Button -->
+                <button id="btn-optimize-dashboard" class="w-full mt-4 py-3 rounded-2xl bg-gradient-to-r from-[#46d4c6]/20 to-[#46d4c6]/5 hover:from-[#46d4c6]/30 hover:to-[#46d4c6]/10 border border-[#46d4c6]/30 hover:border-[#46d4c6]/60 text-xs font-semibold text-gray-800 dark:text-white uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 shadow-sm">
+                  <span>Optimize Operations</span>
+                </button>
+              </div>
+
+              <!-- Card 3: Presets Sandbox -->
+              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-6 shadow-lg flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(255,145,70,0.15)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div>
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
+                      <iconify-icon icon="solar:box-bold" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-gray-900 dark:text-white text-base leading-none">Presets Sandbox</h3>
+                      <p class="text-xs text-gray-400 mt-1">Interactive Elements</p>
+                    </div>
+                  </div>
+                  <hr class="border-gray-100 dark:border-white/5 mb-4">
+                  <!-- Presets Area -->
+                  <div class="flex flex-col gap-4 items-center justify-center py-4 bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl min-h-[220px]">
+                    <!-- Preset Conic Spin Pill Button -->
+                    <div class="relative group/conic">
+                      <div class="absolute -inset-[1.5px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,#ff9146_100%)] animate-[spin_3s_linear_infinite] opacity-75 blur-[0.5px]"></div>
+                      <button class="relative px-6 py-2.5 rounded-full bg-white dark:bg-[#0b0f19] text-xs font-semibold text-gray-800 dark:text-white tracking-wide border border-gray-200 dark:border-white/10 hover:border-transparent transition-all">
+                        Liquid Glass Button
+                      </button>
+                    </div>
+                    
+                    <!-- Preset Agent Badge -->
+                    <div class="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 shadow-sm">
+                      <div class="relative w-8 h-8 rounded-full border border-orange-500/30 flex items-center justify-center text-xs overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent"></div>
+                        🤖
+                      </div>
+                      <div>
+                        <div class="text-[10px] font-bold text-gray-800 dark:text-white leading-none">CEO Agent</div>
+                        <div class="text-[9px] text-[#ff9146] font-medium tracking-wide mt-1">Supervising workforce</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Interactive Controls -->
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-400">Sandbox Theme</span>
+                    <select id="sandbox-theme-select" class="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 dark:text-white focus:outline-none">
+                      <option value="orange">Orange Glow</option>
+                      <option value="teal">Teal Glow</option>
+                      <option value="indigo">Indigo Glow</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Terminal Pipeline Simulator -->
+              <div class="group relative bg-white dark:bg-[#0c101d] backdrop-blur-xl border border-gray-200/60 dark:border-white/10 rounded-3xl p-6 shadow-lg flex flex-col justify-between min-h-[500px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(239,68,68,0.12)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div>
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
+                      <iconify-icon icon="solar:terminal-bold" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-gray-900 dark:text-white text-base leading-none">Content Pipeline</h3>
+                      <p class="text-xs text-gray-400 mt-1">Terminal Simulation Loop</p>
+                    </div>
+                  </div>
+                  <hr class="border-gray-100 dark:border-white/5 mb-4">
+                  <!-- Monospace console -->
+                  <div id="showcase-terminal-box" class="h-64 font-mono text-[10px] text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-black/40 border border-gray-100 dark:border-white/5 rounded-2xl p-4 overflow-y-auto leading-relaxed flex flex-col gap-1.5 pr-1">
+                    <div class="text-gray-400">--- PIPELINE LOGS START ---</div>
+                    <div class="flex gap-1.5"><span class="text-gray-400 shrink-0">[09:00:01]</span><span class="text-indigo-400">System:</span> Startup sequence complete.</div>
+                  </div>
+                </div>
+                <!-- Status footer -->
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-[10px] text-gray-400">
+                  <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Agent Activity Logs
+                  </span>
+                  <span class="font-mono">v1.0.4</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Showcase Scripts -->
+            <script>
+              (function() {
+                // 1. Chatbot Interactions
+                const chatBox = document.getElementById('showcase-chat-box');
+                const triggerBtns = document.querySelectorAll('.chat-trigger-btn');
+                
+                const responses = {
+                  'Generate Email Flow': [
+                    { type: 'user', text: 'Generate Email Flow' },
+                    { type: 'bot', text: 'Initiating email flow creation sequence...' },
+                    { type: 'bot', text: 'CMO Agent is designing 3 templates: Welcome Offer, Treatment Benefits, and Reactivation Flow.' },
+                    { type: 'bot', text: 'Success! Email templates synced with ESP. Live tests sent to admin.' }
+                  ],
+                  'Optimize Bookings': [
+                    { type: 'user', text: 'Optimize Bookings' },
+                    { type: 'bot', text: 'Checking lead flow against calendar vacancies...' },
+                    { type: 'bot', text: 'Identified 4 open slots for tomorrow afternoon. Launching targeted SMS campaign to standby list.' },
+                    { type: 'bot', text: 'Targeted SMS sent to 12 matches. Syncing live slots.' }
+                  ],
+                  'Sync CRM Leads': [
+                    { type: 'user', text: 'Sync CRM Leads' },
+                    { type: 'bot', text: 'Syncing lead entries from Facebook Ads & Website Forms...' },
+                    { type: 'bot', text: 'Fetched 8 new patient inquiries. Sync complete.' },
+                    { type: 'bot', text: 'Assigned 5 leads to LeadGen Agent, 3 leads to Patient Outreach Agent.' }
+                  ]
+                };
+
+                let chatAnimating = false;
+                triggerBtns.forEach(btn => {
+                  btn.addEventListener('click', () => {
+                    if (chatAnimating) return;
+                    const prompt = btn.getAttribute('data-prompt');
+                    const dialog = responses[prompt];
+                    if (!dialog) return;
+                    
+                    chatAnimating = true;
+                    // Disable buttons temporarily
+                    triggerBtns.forEach(b => b.classList.add('opacity-50', 'pointer-events-none'));
+                    
+                    // Add user message
+                    addChatMessage('🧑', dialog[0].text, 'user');
+                    
+                    let step = 1;
+                    function nextStep() {
+                      if (step >= dialog.length) {
+                        chatAnimating = false;
+                        triggerBtns.forEach(b => b.classList.remove('opacity-50', 'pointer-events-none'));
+                        return;
+                      }
+                      
+                      // Typing indicator
+                      const typingDiv = document.createElement('div');
+                      typingDiv.className = 'flex gap-2 items-start typing-indicator-showcase';
+                      typingDiv.innerHTML = '<div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] shrink-0">🤖</div><div class="bg-gray-100 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 rounded-2xl rounded-tl-none p-3 text-gray-400 italic">Agent is processing...</div>';
+                      chatBox.appendChild(typingDiv);
+                      chatBox.scrollTop = chatBox.scrollHeight;
+                      
+                      setTimeout(() => {
+                        typingDiv.remove();
+                        addChatMessage('🤖', dialog[step].text, 'bot');
+                        step++;
+                        nextStep();
+                      }, 1200);
+                    }
+                    setTimeout(nextStep, 500);
+                  });
+                });
+
+                function addChatMessage(avatar, text, type) {
+                  const div = document.createElement('div');
+                  div.className = 'flex gap-2 items-start animate-fade-in';
+                  const bubbleClass = type === 'user' 
+                    ? 'bg-indigo-500 text-white rounded-tr-none ml-auto' 
+                    : 'bg-gray-100 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 rounded-tl-none text-gray-700 dark:text-gray-300';
+                  
+                  div.innerHTML = type === 'user'
+                    ? '<div class="' + bubbleClass + ' rounded-2xl p-3 text-gray-100 leading-normal">' + text + '</div><div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] shrink-0">' + avatar + '</div>'
+                    : '<div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] shrink-0">' + avatar + '</div><div class="' + bubbleClass + ' rounded-2xl p-3 leading-normal">' + text + '</div>';
+                  
+                  chatBox.appendChild(div);
+                  chatBox.scrollTop = chatBox.scrollHeight;
+                }
+
+                // 2. Dashboard metrics counter optimization
+                const optBtn = document.getElementById('btn-optimize-dashboard');
+                const metricConversion = document.getElementById('metric-conversion');
+                const metricBookings = document.getElementById('metric-bookings');
+                
+                let dashboardOptimized = false;
+                optBtn.addEventListener('click', () => {
+                  if (dashboardOptimized) return;
+                  dashboardOptimized = true;
+                  
+                  optBtn.innerHTML = '<span>Optimizing...</span><span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin inline-block"></span>';
+                  optBtn.classList.add('opacity-70', 'pointer-events-none');
+                  
+                  setTimeout(() => {
+                    // Animate conversion rate
+                    animateCount(82.4, 96.8, 1000, '%', metricConversion);
+                    animateCount(118, 185, 1000, '', metricBookings);
+                    
+                    setTimeout(() => {
+                      optBtn.innerHTML = '<span>System Optimized</span><span class="text-green-500 font-bold">✓</span>';
+                      optBtn.className = 'w-full mt-4 py-3 rounded-2xl bg-green-500/10 border border-green-500/30 text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider flex items-center justify-center gap-2 pointer-events-none shadow-sm';
+                    }, 1100);
+                  }, 600);
+                });
+
+                function animateCount(start, end, duration, suffix, element) {
+                  const startTime = performance.now();
+                  const isFloat = !Number.isInteger(start) || !Number.isInteger(end);
+                  
+                  function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // ease out quad
+                    const ease = progress * (2 - progress);
+                    const currentVal = start + (end - start) * ease;
+                    
+                    element.textContent = isFloat 
+                      ? currentVal.toFixed(1) + suffix 
+                      : Math.floor(currentVal) + suffix;
+                    
+                    if (progress < 1) {
+                      requestAnimationFrame(update);
+                    }
+                  }
+                  requestAnimationFrame(update);
+                }
+
+                // 3. Presets Theme Changer
+                const themeSelect = document.getElementById('sandbox-theme-select');
+                const sandboxContainer = themeSelect.closest('.group').querySelector('.min-h-\\[220px\\]');
+                const conicButtonGlow = sandboxContainer.querySelector('.group\\/conic > div');
+                const agentBadgeBorder = sandboxContainer.querySelector('.group\\/conic + div > div');
+                const agentBadgeText = sandboxContainer.querySelector('.group\\/conic + div > div + div > div + div');
+
+                const themes = {
+                  orange: {
+                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#ff9146_100%)]',
+                    badgeBorder: 'border-orange-500/30',
+                    badgeText: 'text-[#ff9146]',
+                    badgeBg: 'from-orange-500/10',
+                    shadow: 'hover:shadow-[0_20px_40px_rgba(255,145,70,0.15)]'
+                  },
+                  teal: {
+                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#46d4c6_100%)]',
+                    badgeBorder: 'border-teal-500/30',
+                    badgeText: 'text-[#46d4c6]',
+                    badgeBg: 'from-teal-500/10',
+                    shadow: 'hover:shadow-[0_20px_40px_rgba(70,212,198,0.15)]'
+                  },
+                  indigo: {
+                    glow: 'bg-[conic-gradient(from_0deg,transparent_60%,#818cf8_100%)]',
+                    badgeBorder: 'border-indigo-500/30',
+                    badgeText: 'text-[#818cf8]',
+                    badgeBg: 'from-indigo-500/10',
+                    shadow: 'hover:shadow-[0_20px_40px_rgba(129,140,248,0.15)]'
+                  }
+                };
+
+                themeSelect.addEventListener('change', (e) => {
+                  const val = e.target.value;
+                  const theme = themes[val];
+                  if (!theme) return;
+                  
+                  // Reset classes on conic button border
+                  conicButtonGlow.className = 'absolute -inset-[1.5px] rounded-full opacity-75 blur-[0.5px] animate-[spin_3s_linear_infinite] ' + theme.glow;
+                  
+                  // Reset classes on badge
+                  agentBadgeBorder.className = 'relative w-8 h-8 rounded-full flex items-center justify-center text-xs overflow-hidden border ' + theme.badgeBorder;
+                  agentBadgeBorder.querySelector('div').className = 'absolute inset-0 bg-gradient-to-br to-transparent ' + theme.badgeBg;
+                  agentBadgeText.className = 'text-[9px] font-medium tracking-wide mt-1 ' + theme.badgeText;
+                  
+                  // Reset card hover glow class
+                  const cardEl = themeSelect.closest('.group');
+                  cardEl.className = cardEl.className.replace(/hover:shadow-\[.+?\]/g, theme.shadow);
+                });
+
+                // 4. Terminal Logs Loop
+                const termBox = document.getElementById('showcase-terminal-box');
+                const logTemplates = [
+                  { agent: 'CMO Agent', text: 'Scanning search patterns for local beauty trends...', type: 'info' },
+                  { agent: 'CMO Agent', text: 'High volume keywords identified: Injectables, Laser skin surfacing.', type: 'info' },
+                  { agent: 'CreativeAgent', text: 'Initiating vibe coding for beauty templates...', type: 'info' },
+                  { agent: 'CreativeAgent', text: 'Assets matched. Outputting 3 story presets.', type: 'success' },
+                  { agent: 'Patient Agent', text: 'Updating schedule constraints. Booking window verified.', type: 'info' },
+                  { agent: 'System', text: 'CRM integration confirmed. Direct pipeline synchronized.', type: 'success' },
+                  { agent: 'CMO Agent', text: 'Syncing Facebook Ads pixel conversion events.', type: 'info' }
+                ];
+                
+                let termIndex = 0;
+                function logLoop() {
+                  const log = logTemplates[termIndex];
+                  const time = new Date().toTimeString().split(' ')[0];
+                  
+                  const div = document.createElement('div');
+                  div.className = 'flex gap-1.5 animate-fade-in';
+                  
+                  let agentColor = 'text-indigo-400';
+                  if (log.agent === 'CreativeAgent') agentColor = 'text-orange-400';
+                  if (log.agent === 'System') agentColor = 'text-[#46d4c6]';
+                  if (log.agent === 'Patient Agent') agentColor = 'text-red-400';
+                  
+                  const contentClass = log.type === 'success' ? 'text-green-500' : 'text-gray-700 dark:text-gray-300';
+                  
+                  div.innerHTML = '<span class="text-gray-400 shrink-0">[' + time + ']</span><span class="' + agentColor + ' shrink-0">' + log.agent + ':</span><span class="' + contentClass + '">' + log.text + '</span>';
+                  termBox.appendChild(div);
+                  termBox.scrollTop = termBox.scrollHeight;
+                  
+                  // Keep box lines count reasonable (max 40)
+                  if (termBox.childElementCount > 40) {
+                    termBox.firstElementChild.remove();
+                  }
+                  
+                  termIndex = (termIndex + 1) % logTemplates.length;
+                  setTimeout(logLoop, Math.random() * 1500 + 1500);
+                }
+                setTimeout(logLoop, 1000);
+              })();
+            </script>
+          </section>
+          
           <section id="reviews-section"
             class="w-full pt-32 pb-40 px-6 relative flex flex-col items-center justify-center min-h-screen">
             <div class="text-center mb-16 relative z-10">
