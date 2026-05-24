@@ -2203,7 +2203,7 @@
         }
 
         .btn-glass:active {
-            transform: translateY(0) scale(0.97);
+            transform: translateY(0 scale(0.97));
         }
 
         /* Image grid line style */
@@ -2500,41 +2500,41 @@
                     &lt;!-- Left Text Column --&gt;
                     &lt;div class="lg:col-span-7 flex flex-col gap-6 max-w-2xl text-left"&gt;
                         &lt;!-- Title --&gt;
-                        &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
+                        &lt;h1 id="slide-title" class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
                             ELEVATE YOUR &lt;br/&gt;
                             &lt;span class="font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt;
                             DIGITAL PRESENCE
                         &lt;/h1&gt;
                         
                         &lt;!-- Subtitle --&gt;
-                        &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-gold);"&gt;
+                        &lt;h2 id="slide-subtitle" class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-gold);"&gt;
                             Exceptional Web Design for Premier Aesthetic Practices.
-                        &lt;/h2>
+                        &lt;/h2&gt;
                         
                         &lt;!-- Description --&gt;
-                        &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
-                            Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp;amp; development services tailored for the beauty industry.
+                        &lt;p id="slide-description" class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                            Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
                         
                         &lt;!-- CTA Buttons --&gt;
                         &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                            &lt;button class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest transform hover:-translate-y-0.5 flex items-center gap-2"&gt;
+                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest transform hover:-translate-y-0.5 flex items-center gap-2"&gt;
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
                                 &lt;span class="text-xs"&gt;→&lt;/span&gt;
                             &lt;/button&gt;
-                            &lt;button class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" id="btn-discuss-project"&gt;
+                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest"&gt;
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
 
                         &lt;!-- Slider Controls --&gt;
                         &lt;div class="flex items-center gap-3 mt-4"&gt;
-                            &lt;button class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
+                            &lt;button id="btn-prev-slide" class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
                                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
                             &lt;/button&gt;
-                            &lt;button class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
+                            &lt;button id="btn-next-slide" class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
                                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
@@ -2547,7 +2547,7 @@
                         &lt;!-- Inner Photo Container --&gt;
                         &lt;div class="relative flex-1 w-full rounded-2xl overflow-hidden group/image"&gt;
                             &lt;!-- Background image --&gt;
-                            &lt;div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
+                            &lt;div id="slide-image" class="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
                             
                             &lt;!-- Blueprint Grid Line Overlay --&gt;
                             &lt;div class="absolute inset-0 z-10 pointer-events-none opacity-40"&gt;
@@ -2575,7 +2575,7 @@
                             &lt;/div&gt;
 
                             &lt;!-- Hover Overlay with Service Pills --&gt;
-                            &lt;div class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
+                            &lt;div id="service-pills-container" class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
                                 &lt;!-- Service Tag 1 --&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
@@ -2585,20 +2585,20 @@
                                     &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Laser Therapy&lt;/h4&gt;
-                                        &lt;p&gt;Precision skin rejuvenation &amp;amp; resurfacing for a flawless complexion.&lt;/p&gt;
+                                        &lt;p&gt;Precision skin rejuvenation &amp; resurfacing for a flawless complexion.&lt;/p&gt;
                                     &lt;/div&gt;
                                 &lt;/div&gt;
 
                                 &lt;!-- Service Tag 2 --&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
-                                        &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon>
+                                        &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Injectables
                                     &lt;/button&gt;
                                     &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Injectables&lt;/h4&gt;
-                                        &lt;p&gt;Smooth expression lines &amp;amp; restore youthful volume with artistic care.&lt;/p&gt;
+                                        &lt;p&gt;Smooth expression lines &amp; restore youthful volume with artistic care.&lt;/p&gt;
                                     &lt;/div&gt;
                                 &lt;/div&gt;
 
@@ -2611,7 +2611,7 @@
                                     &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Medical Facials&lt;/h4&gt;
-                                        &lt;p&gt;Deep cellular hydration, clinical exfoliation &amp;amp; customized serums.&lt;/p&gt;
+                                        &lt;p&gt;Deep cellular hydration, clinical exfoliation &amp; customized serums.&lt;/p&gt;
                                     &lt;/div&gt;
                                 &lt;/div&gt;
                             &lt;/div&gt;
@@ -2622,137 +2622,107 @@
         &lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;!-- Admin Portal CRM Dashboard View (Hidden by default) --&gt;
-    &lt;div id="amp-dashboard" class="w-full min-h-screen flex flex-col md:flex-row opacity-0" style="display: none; transition: opacity 0.4s ease; background: var(--bg-dark);"&gt;
-        &lt;!-- Left Sidebar Menu --&gt;
-        &lt;aside class="w-full md:w-64 border-b md:border-b-0 md:border-r backdrop-blur-xl flex flex-col shrink-0" style="background: var(--glass-card-bg); border-color: var(--glass-border);"&gt;
-            &lt;div class="p-6 border-b flex justify-between items-center" style="border-color: var(--glass-border);"&gt;
-                &lt;span class="font-bold tracking-tight text-main-theme"&gt;AMP Center&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;nav class="flex-1 p-4 flex flex-col gap-2 overflow-y-auto"&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium shadow-sm bg-theme-glass text-main-theme"&gt;
-                    &lt;span style="color: var(--accent-gold);"&gt;⚡&lt;/span&gt; Neural Chat
-                &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
-                    &lt;span&gt;📊&lt;/span&gt; Lead Pipeline
-                &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
-                    &lt;span&gt;📁&lt;/span&gt; Client Ledger
-                &lt;/button&gt;
-                &lt;button class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium hover:bg-theme-glass text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
-                    &lt;span&gt;🎨&lt;/span&gt; Content Factory
-                &lt;/button&gt;
-            &lt;/nav&gt;
-            &lt;div class="p-4 border-t" style="border-color: var(--glass-border);"&gt;
-                &lt;button id="btn-exit-portal" class="w-full py-2.5 rounded-xl border transition-colors text-sm font-medium text-muted-theme hover:text-main-theme" style="border-color: var(--glass-border);"&gt;Exit Portal&lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/aside&gt;
-        
-        &lt;!-- Central Workspace (Neural Chat) --&gt;
-        &lt;main class="flex-1 p-6 lg:p-10 overflow-y-auto flex flex-col gap-6"&gt;
-            &lt;div class="flex justify-between items-center border-b pb-6" style="border-color: var(--glass-border);"&gt;
-                &lt;div class="text-left"&gt;
-                    &lt;h2 class="text-2xl font-semibold tracking-tight text-main-theme"&gt;Neural Chat&lt;/h2&gt;
-                    &lt;p class="text-xs mt-1 text-muted-theme"&gt;Orchestrating 3 sub-agents for your Medspa&apos;s digital growth.&lt;/p&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-            
-            &lt;div class="flex-1 flex flex-col gap-6 my-4"&gt;
-                &lt;!-- Message: AI Agent --&gt;
-                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-theme-glass text-main-theme" style="border-color: var(--glass-border);"&gt;
-                    &lt;div class="absolute -left-3 -top-3 w-6 h-6 rounded-full border flex items-center justify-center text-[10px]" style="background: var(--bg-dark); border-color: var(--glass-border); color: var(--accent-gold);"&gt;👑&lt;/div&gt;
-                    &lt;p&gt;Systems online. I am currently monitoring 12 active leads for the Spring Botox Special. Should I have the CMO Agent send the follow-up sequence?&lt;/p&gt;
-                    &lt;div class="text-[9px] mt-2 text-muted-theme"&gt;09:00 AM&lt;/div&gt;
-                &lt;/div&gt;
-                
-                &lt;!-- Message: User --&gt;
-                &lt;div class="self-end text-left max-w-lg rounded-2xl rounded-tr-sm p-4 text-sm shadow-sm border text-main-theme" style="background: var(--accent-gold-glow); border-color: var(--accent-gold-glow);"&gt;
-                    Yes, run the sequence. Also, have the Creative Agent prep some new Instagram stories for the Laser Therapy promo.
-                    &lt;div class="text-[9px] text-right mt-2 text-muted-theme"&gt;09:05 AM&lt;/div&gt;
-                &lt;/div&gt;
-
-                &lt;!-- Message: AI Agent --&gt;
-                &lt;div class="self-start text-left max-w-lg border backdrop-blur-xl rounded-2xl rounded-tl-sm p-5 text-sm shadow-sm relative bg-theme-glass text-main-theme" style="border-color: var(--glass-border);"&gt;
-                    &lt;div class="absolute -left-3 -top-3 w-6 h-6 rounded-full border flex items-center justify-center text-[10px]" style="background: var(--bg-dark); border-color: var(--glass-border); color: var(--accent-gold);"&gt;👑&lt;/div&gt;
-                    &lt;p&gt;Understood. Follow-up sequence initiated. Creative Agent is now vibe coding 3 new Instagram stories and will drop them in the Content Factory for your review.&lt;/p&gt;
-                    &lt;div class="text-[9px] mt-2 text-muted-theme"&gt;09:06 AM&lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
- 
-            &lt;!-- Chat Input Area --&gt;
-            &lt;div class="mt-auto relative flex items-center pt-4 border-t" style="border-color: var(--glass-border);"&gt;
-                &lt;input type="text" placeholder="Instruct the CEO..." class="w-full border rounded-full pl-6 pr-14 py-4 text-sm focus:outline-none shadow-inner backdrop-blur bg-theme-glass text-main-theme" style="border-color: var(--glass-border);" /&gt;
-                &lt;button class="absolute right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all" style="background: var(--accent-gold-glow); border: 1px solid var(--accent-gold); color: var(--accent-gold);"&gt;
-                    &lt;span&gt;➤&lt;/span&gt;
-                &lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/main&gt;
-        
-        &lt;!-- Right Sidebar (CRM Tasks) --&gt;
-        &lt;aside class="w-full md:w-72 border-t md:border-t-0 md:border-l backdrop-blur-xl flex flex-col p-6 gap-6 overflow-y-auto shrink-0" style="background: var(--glass-card-bg); border-color: var(--glass-border);"&gt;
-            &lt;h3 class="text-xs font-mono uppercase tracking-widest text-left text-muted-theme"&gt;Active Tasks&lt;/h3&gt;
-            
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
-                &lt;div class="absolute top-0 left-0 w-1 h-full" style="background: var(--accent-gold);"&gt;&lt;/div&gt;
-                &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Lead Gen Agent&lt;/span&gt;
-                  &lt;span class="text-[10px] flex items-center gap-1" style="color: var(--accent-gold);"&gt;&lt;span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--accent-gold);"&gt;&lt;/span&gt; Running&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Sending SMS sequence to 12 &apos;Spring Special&apos; leads&lt;/p&gt;
-            &lt;/div&gt;
-            
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
-                &lt;div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"&gt;&lt;/div&gt;
-                &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Creative Agent&lt;/span&gt;
-                  &lt;span class="text-[10px] flex items-center gap-1 text-indigo-400"&gt;&lt;span class="w-1.5 h-1.5 rounded-full animate-pulse bg-indigo-400"&gt;&lt;/span&gt; Running&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Vibe coding IG Stories for Laser Promo&lt;/p&gt;
-            &lt;/div&gt;
- 
-            &lt;div class="border rounded-xl p-3 relative overflow-hidden text-left bg-theme-glass" style="border-color: var(--glass-border);"&gt;
-                &lt;div class="absolute top-0 left-0 w-1 h-full bg-gray-500"&gt;&lt;/div&gt;
-                &lt;div class="flex justify-between items-start mb-1"&gt;
-                  &lt;span class="text-[10px] font-semibold text-main-theme"&gt;Support Agent&lt;/span&gt;
-                  &lt;span class="text-[10px] text-muted-theme"&gt;Done&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;p class="text-xs leading-tight text-muted-theme"&gt;Rescheduled 2 patient appointments&lt;/p&gt;
-            &lt;/div&gt;
-        &lt;/aside&gt;
-    &lt;/div&gt;
-
     &lt;script&gt;
-        const btnDiscuss = document.getElementById(&apos;btn-discuss-project&apos;);
-        const btnGetStarted = document.getElementById(&apos;btn-get-started&apos;);
-        const logoEasterEgg = document.getElementById(&apos;logo-easter-egg&apos;);
-        const btnExit = document.getElementById(&apos;btn-exit-portal&apos;);
-        
-        const heroContainer = document.querySelector(&apos;.hero-container&apos;);
-        const ampDashboard = document.getElementById(&apos;amp-dashboard&apos;);
+        const btnPrev = document.getElementById(&apos;btn-prev-slide&apos;);
+        const btnNext = document.getElementById(&apos;btn-next-slide&apos;);
 
-        const openDashboard = () =&gt; {
-            heroContainer.style.transition = &apos;opacity 0.4s ease&apos;;
-            heroContainer.style.opacity = &apos;0&apos;;
+        const slideTitle = document.getElementById(&apos;slide-title&apos;);
+        const slideSubtitle = document.getElementById(&apos;slide-subtitle&apos;);
+        const slideDescription = document.getElementById(&apos;slide-description&apos;);
+        const btnPortfolio = document.getElementById(&apos;btn-portfolio-slide&apos;);
+        const btnDiscuss = document.getElementById(&apos;btn-discuss-slide&apos;);
+        const slideImage = document.getElementById(&apos;slide-image&apos;);
+        const servicePillsContainer = document.getElementById(&apos;service-pills-container&apos;);
+
+        const slides = [
+            {
+                title: "ELEVATE YOUR &lt;br/&gt; &lt;span class=\"font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]\"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt; DIGITAL PRESENCE",
+                subtitle: "Exceptional Web Design for Premier Aesthetic Practices.",
+                description: "Crafted by &lt;span style=\"color: var(--accent-gold); font-weight: 600;\"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.",
+                image: "medspa_hero.png",
+                btn1: "Our Portfolio",
+                btn2: "Discuss Your Project",
+                pills: [
+                    { label: "Laser", title: "Laser Therapy", text: "Precision skin rejuvenation &amp; resurfacing for a flawless complexion." },
+                    { label: "Injectables", title: "Injectables", text: "Smooth expression lines &amp; restore youthful volume with artistic care." },
+                    { label: "Facials", title: "Medical Facials", text: "Deep cellular hydration, clinical exfoliation &amp; customized serums." }
+                ]
+            },
+            {
+                title: "ELEVATE YOUR &lt;br/&gt; &lt;span class=\"font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]\"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt; CLIMATE CONTROL",
+                subtitle: "Premier HVAC &amp; Smart Home System Design.",
+                description: "We craft integrated comfort solutions that perform, endure, and inspire. Discover expert engineering for residential and commercial spaces.",
+                image: "hvac_woman.png",
+                btn1: "View Our Projects",
+                btn2: "Request a Design Consultation",
+                pills: [
+                    { label: "Thermostats", title: "Smart Thermostats", text: "Advanced climate scheduling, remote access &amp; zone control." },
+                    { label: "Heat Pumps", title: "Modern Heat Pumps", text: "High-efficiency heating &amp; cooling for residential spaces." },
+                    { label: "Automation", title: "Home Automation", text: "Integrated smart comfort, air quality monitoring &amp; lighting." }
+                ]
+            }
+        ];
+
+        let currentSlide = 0;
+        let isTransitioning = false;
+
+        const showSlide = (index) =&gt; {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const fadeElements = [slideTitle, slideSubtitle, slideDescription, btnPortfolio, btnDiscuss, slideImage, servicePillsContainer];
+            fadeElements.forEach(el =&gt; {
+                el.style.transition = &apos;opacity 0.3s ease, transform 0.3s ease&apos;;
+                el.style.opacity = &apos;0&apos;;
+                el.style.transform = &apos;translateY(8px)&apos;;
+            });
+
             setTimeout(() =&gt; {
-                heroContainer.style.display = &apos;none&apos;;
-                ampDashboard.style.display = &apos;flex&apos;;
-                void ampDashboard.offsetWidth;
-                ampDashboard.style.opacity = &apos;1&apos;;
-            }, 400);
+                currentSlide = index;
+                const slide = slides[currentSlide];
+
+                slideTitle.innerHTML = slide.title;
+                slideSubtitle.innerHTML = slide.subtitle;
+                slideDescription.innerHTML = slide.description;
+                btnPortfolio.innerHTML = `&lt;span&gt;${slide.btn1}&lt;/span&gt;&lt;span class="text-xs"&gt;→&lt;/span&gt;`;
+                btnDiscuss.innerHTML = slide.btn2;
+
+                slideImage.style.backgroundImage = `url(&apos;${slide.image}&apos;)`;
+
+                servicePillsContainer.innerHTML = slide.pills.map(pill =&gt; `
+                    &lt;div class="relative service-tooltip-wrapper"&gt;
+                        &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                            &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
+                            ${pill.label}
+                        &lt;/button&gt;
+                        &lt;div class="service-tooltip"&gt;
+                            &lt;h4&gt;${pill.title}&lt;/h4&gt;
+                            &lt;p&gt;${pill.text}&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                `).join(&apos;&apos;);
+
+                fadeElements.forEach(el =&gt; {
+                    el.style.opacity = &apos;1&apos;;
+                    el.style.transform = &apos;translateY(0)&apos;;
+                });
+
+                setTimeout(() =&gt; {
+                    isTransitioning = false;
+                }, 300);
+            }, 300);
         };
 
-        btnDiscuss.addEventListener(&apos;click&apos;, openDashboard);
-        btnGetStarted.addEventListener(&apos;click&apos;, openDashboard);
-        logoEasterEgg.addEventListener(&apos;click&apos;, openDashboard);
+        btnPrev.addEventListener(&apos;click&apos;, () =&gt; {
+            let nextIndex = currentSlide - 1;
+            if (nextIndex &lt; 0) nextIndex = slides.length - 1;
+            showSlide(nextIndex);
+        });
 
-        btnExit.addEventListener(&apos;click&apos;, () =&gt; {
-            ampDashboard.style.opacity = &apos;0&apos;;
-            setTimeout(() =&gt; {
-                ampDashboard.style.display = &apos;none&apos;;
-                heroContainer.style.display = &apos;flex&apos;;
-                void heroContainer.offsetWidth;
-                heroContainer.style.opacity = &apos;1&apos;;
-            }, 400);
+        btnNext.addEventListener(&apos;click&apos;, () =&gt; {
+            let nextIndex = currentSlide + 1;
+            if (nextIndex &gt;= slides.length) nextIndex = 0;
+            showSlide(nextIndex);
         });
 
         const toggleSwitch = document.querySelector(&apos;.theme-switch input[type="checkbox"]&apos;);
@@ -2784,7 +2754,7 @@
 
         try {
             const parentHtml = window.parent.document.documentElement;
-            const syncThemeFromParent = () => {
+            const syncThemeFromParent = () =&gt; {
                 const isParentDark = parentHtml.classList.contains(&apos;dark&apos;);
                 if (isParentDark) {
                     document.body.classList.remove(&apos;light-mode&apos;);
@@ -2859,7 +2829,7 @@
         });
 
         document.addEventListener(&apos;mouseover&apos;, (e) =&gt; {
-            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #logo-easter-egg, .glass-panel, .service-btn&apos;));
+            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #btn-prev-slide, #btn-next-slide, .glass-panel, .service-btn&apos;));
         });
 
         function pLoop() {
