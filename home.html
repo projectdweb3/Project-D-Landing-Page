@@ -2484,6 +2484,24 @@
         body.light-mode .hvac-project-card:hover {
             background: rgba(255, 255, 255, 0.9);
         }
+
+        /* Hover card glow classes */
+        .card-glow-cyan:hover {
+            box-shadow: 0 15px 30px rgba(0, 242, 234, 0.15);
+            border-color: rgba(0, 242, 234, 0.4) !important;
+        }
+        .card-glow-orange:hover {
+            box-shadow: 0 15px 30px rgba(249, 115, 22, 0.15);
+            border-color: rgba(249, 115, 22, 0.4) !important;
+        }
+        .card-glow-emerald:hover {
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.4) !important;
+        }
+        .card-glow-blue:hover {
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -2513,8 +2531,8 @@
     &lt;div id="hvac-bg" class="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-500 opacity-0"&gt;
         &lt;div class="absolute inset-0 blueprint-grid"&gt;&lt;/div&gt;
         &lt;!-- Light Leaks / Circuit Glows --&gt;
-        &lt;div class="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-cyan-500/5 filter blur-[130px]"&gt;&lt;/div&gt;
-        &lt;div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/5 filter blur-[130px]"&gt;&lt;/div&gt;
+        &lt;div id="hvac-glow-1" class="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-cyan-500/5 filter blur-[130px] transition-all duration-700"&gt;&lt;/div&gt;
+        &lt;div id="hvac-glow-2" class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/5 filter blur-[130px] transition-all duration-700"&gt;&lt;/div&gt;
         &lt;!-- horizontal light trails --&gt;
         &lt;div class="absolute top-[20%] left-[-10%] w-[600px] h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent rotate-[12deg] filter blur-sm"&gt;&lt;/div&gt;
         &lt;div class="absolute bottom-[35%] right-[-10%] w-[700px] h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent rotate-[-8deg] filter blur-sm"&gt;&lt;/div&gt;
@@ -2550,7 +2568,7 @@
             
             &lt;!-- Left Sidebar Panel --&gt;
             &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
-                &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
+                &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300" onclick="window.showToast(&apos;Sidebar Panel Initialized&apos;)"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
                         &lt;line x1="4" y1="12" x2="20" y2="12"&gt;&lt;/line&gt;
@@ -2558,7 +2576,7 @@
                     &lt;/svg&gt;
                 &lt;/button&gt;
                 
-                &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal"&gt;
+                &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal" onclick="window.showToast(&apos;Easter Egg: Project D Portal Activated!&apos;)"&gt;
                     &lt;div class="absolute w-12 h-12 rounded-full bg-amber-500/10 filter blur-md group-hover:bg-amber-500/30 transition-all duration-500"&gt;&lt;/div&gt;
                     &lt;span class="relative font-serif text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-100 to-amber-500 tracking-wider filter drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]"&gt;D&lt;/span&gt;
                 &lt;/div&gt;
@@ -2584,11 +2602,11 @@
                     &lt;/div&gt;
                     
                     &lt;nav class="hidden lg:flex items-center gap-4"&gt;
-                        &lt;a href="#" class="nav-link-theme active"&gt;Our Work&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme"&gt;Services&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme"&gt;Client Results&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme"&gt;About&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme"&gt;Blog&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme active" onclick="window.showToast(&apos;Navigating to Showcase&apos;)"&gt;Our Work&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Services details are listed inside components&apos;)"&gt;Services&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Client reviews and metrics loaded&apos;)"&gt;Client Results&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Project D Web Design Studio v4.0&apos;)"&gt;About&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Read our latest design principles&apos;)"&gt;Blog&lt;/a&gt;
                     &lt;/nav&gt;
                     
                     &lt;div class="flex items-center gap-4"&gt;
@@ -2596,7 +2614,7 @@
                             &lt;input type="checkbox" id="checkbox" /&gt;
                             &lt;div class="slider"&gt;&lt;/div&gt;
                         &lt;/label&gt;
-                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0" id="btn-get-started"&gt;
+                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0" id="btn-get-started" onclick="window.showToast(&apos;Get Started Initialized: Thank you for interest!&apos;)"&gt;
                             [Get Started]
                         &lt;/button&gt;
                     &lt;/div&gt;
@@ -2618,11 +2636,11 @@
                             Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
                         &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest transform hover:-translate-y-0.5 flex items-center gap-2"&gt;
+                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest transform hover:-translate-y-0.5 flex items-center gap-2" onclick="showHvac()"&gt;
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
                                 &lt;span class="text-xs"&gt;→&lt;/span&gt;
                             &lt;/button&gt;
-                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest"&gt;
+                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" onclick="window.showToast(&apos;Let\&apos;s discuss your project! Contact info: hello@projectd.io&apos;)"&gt;
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
@@ -2667,7 +2685,7 @@
                             &lt;!-- Bottom Service Pills --&gt;
                             &lt;div class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Skin Resurfacing Laser Treatments&apos;)"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Laser
                                     &lt;/button&gt;
@@ -2677,7 +2695,7 @@
                                     &lt;/div&gt;
                                 &lt;/div&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Dermal Fillers &amp; Botox Injectables&apos;)"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Injectables
                                     &lt;/button&gt;
@@ -2687,7 +2705,7 @@
                                     &lt;/div&gt;
                                 &lt;/div&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Customized Medical Hydrafacials&apos;)"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Facials
                                     &lt;/button&gt;
@@ -2710,17 +2728,17 @@
         &lt;!-- Header --&gt;
         &lt;header class="h-20 flex items-center justify-between px-6 z-20 shrink-0"&gt;
             &lt;div class="flex items-center gap-2"&gt;
-                &lt;span class="font-serif font-bold text-lg md:text-xl tracking-widest text-main-theme"&gt;PROJECT D&lt;/span&gt;
+                &lt;span class="font-serif font-bold text-lg md:text-xl tracking-widest text-main-theme animate-pulse"&gt;PROJECT D&lt;/span&gt;
             &lt;/div&gt;
             
             &lt;!-- Capsule Navbar (mock design in mockup) --&gt;
             &lt;nav class="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full border border-white/10 dark:border-white/5 bg-white/5 backdrop-blur-md shadow-lg"&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Work&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Services&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Portfolio&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;About&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Blog&lt;/a&gt;
-                &lt;button class="ml-4 px-5 py-2 rounded-full btn-book-project text-[9px] font-bold tracking-widest uppercase shrink-0"&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors" onclick="window.showToast(&apos;Active mock portfolio: Climate Control design system&apos;)"&gt;Work&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors" onclick="window.showToast(&apos;Providing system engineering &amp; custom programming&apos;)"&gt;Services&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors" onclick="window.showToast(&apos;Mock project gallery updated successfully&apos;)"&gt;Portfolio&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors" onclick="window.showToast(&apos;We design software interfaces for physical smart appliances&apos;)"&gt;About&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors" onclick="window.showToast(&apos;Read about SEER ratings and heat pump efficiency&apos;)"&gt;Blog&lt;/a&gt;
+                &lt;button class="ml-4 px-5 py-2 rounded-full btn-book-project text-[9px] font-bold tracking-widest uppercase shrink-0" onclick="window.showToast(&apos;Booking Form Loaded: Secure checkout initialized.&apos;, &apos;sync&apos;)"&gt;
                     Book Your Project
                 &lt;/button&gt;
             &lt;/nav&gt;
@@ -2744,7 +2762,7 @@
                 
                 &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl hvac-title text-main-theme tracking-tight leading-[1.05]"&gt;
                     ELEVATE YOUR &lt;br/&gt;
-                    &lt;span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]" style="font-family: &apos;Playfair Display&apos;, serif;"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt;
+                    &lt;span class="font-sans font-extrabold italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt;
                     CLIMATE CONTROL
                 &lt;/h1&gt;
                 
@@ -2757,55 +2775,67 @@
                 &lt;/p&gt;
                 
                 &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest"&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest" onclick="window.showToast(&apos;Displaying project details inside lower cards&apos;)"&gt;
                         View Our Projects
                     &lt;/button&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest"&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" onclick="window.showToast(&apos;Consultation request received! Our engineers will call you.&apos;, &apos;success&apos;)"&gt;
                         Request a Design Consultation
                     &lt;/button&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;!-- Right Hero Interactive AC Module (thermostat style wall unit) --&gt;
+            &lt;!-- Right Hero Interactive AC Module (Clean wall thermostat style unit) --&gt;
             &lt;div class="lg:col-span-5 relative w-full h-[340px] sm:h-[380px] lg:h-[400px] rounded-[2rem] hvac-glass-card p-6 shadow-2xl flex flex-col justify-between overflow-hidden border border-white/5"&gt;
                 &lt;!-- Ambient circular gradients --&gt;
                 &lt;div class="absolute -right-20 -bottom-20 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"&gt;&lt;/div&gt;
                 &lt;div class="absolute -left-20 -top-20 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"&gt;&lt;/div&gt;
 
                 &lt;!-- Header status --&gt;
-                &lt;div class="flex justify-between items-center z-10"&gt;
+                &lt;div class="flex justify-between items-center z-10 border-b border-white/5 pb-3"&gt;
                     &lt;span class="text-[9px] font-bold tracking-widest text-[#00f2ea] uppercase flex items-center gap-1.5"&gt;
                         &lt;span id="ac-status-dot" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"&gt;&lt;/span&gt;
                         &lt;span id="ac-status-text"&gt;System Cooling&lt;/span&gt;
                     &lt;/span&gt;
-                    &lt;span class="text-[9px] text-muted-theme font-bold tracking-wider"&gt;THERMOSTAT: ONLINE&lt;/span&gt;
+                    &lt;span class="text-[9px] text-muted-theme font-bold tracking-wider"&gt;THERMOSTAT: ACTIVE&lt;/span&gt;
                 &lt;/div&gt;
 
-                &lt;!-- Circular Temp Dial --&gt;
-                &lt;div class="flex-1 flex flex-col items-center justify-center py-4 z-10"&gt;
-                    &lt;div class="relative w-40 h-40 rounded-full border-4 border-white/10 bg-black/40 flex items-center justify-center shadow-[0_0_40px_rgba(0,242,234,0.15)] group transition-all duration-500 hover:border-[#00f2ea]/30"&gt;
-                        &lt;svg class="absolute inset-0 w-full h-full rotate-[-90deg] pointer-events-none opacity-40" viewBox="0 0 100 100"&gt;
-                            &lt;circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" class="text-white/20" fill="none"/&gt;
+                &lt;!-- Thermostat Control Row (Dial in middle, flanking buttons on left and right) --&gt;
+                &lt;div class="flex-1 flex items-center justify-center gap-6 py-4 z-10"&gt;
+                    &lt;!-- Temp Minus Button (flanking left) --&gt;
+                    &lt;button onclick="changeAcTemp(-1)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] transition-all active:scale-90 shadow-md" title="Decrease Temp"&gt;
+                        &lt;iconify-icon icon="solar:minus-linear" width="18"&gt;&lt;/iconify-icon&gt;
+                    &lt;/button&gt;
+                    
+                    &lt;!-- Circular Thermostat Dial (Interactive via click-and-drag rotation &amp; mouse wheel scroll) --&gt;
+                    &lt;div id="thermostat-dial" class="relative w-44 h-44 rounded-full border-4 border-white/15 bg-black/55 flex items-center justify-center shadow-[0_0_35px_rgba(0,242,234,0.15)] group transition-all duration-500 hover:border-[#00f2ea]/40 cursor-pointer" title="Scroll Wheel or Drag Radially to Rotate Temperature dial"&gt;
+                        &lt;!-- Dial progress arc SVG (Rotated by 130deg to start at bottom-left) --&gt;
+                        &lt;svg class="absolute inset-0 w-full h-full rotate-[130deg] pointer-events-none" viewBox="0 0 100 100"&gt;
+                            &lt;!-- Background dotted track scale --&gt;
+                            &lt;circle cx="50" cy="50" r="41" stroke="rgba(255,255,255,0.12)" stroke-width="1.8" stroke-dasharray="1 3.5" fill="none"/&gt;
+                            &lt;!-- Glowing progress arc --&gt;
+                            &lt;circle id="temp-arc" cx="50" cy="50" r="41" stroke="#00f2ea" stroke-width="2.5" stroke-dasharray="0 257.6" class="transition-all duration-300" fill="none"/&gt;
                         &lt;/svg&gt;
                         
-                        &lt;div class="text-center select-none"&gt;
-                            &lt;span id="ac-temp-display" class="text-5xl font-extrabold tracking-tighter text-white font-sans"&gt;72&lt;/span&gt;
-                            &lt;span class="text-xl font-bold text-[#00f2ea]"&gt;°F&lt;/span&gt;
-                            &lt;p id="ac-mode-indicator" class="text-[8px] font-bold text-muted-theme uppercase tracking-wider mt-1"&gt;Target Temp&lt;/p&gt;
+                        &lt;!-- Rotating indicator marker container --&gt;
+                        &lt;div id="dial-marker-container" class="absolute inset-0 pointer-events-none transition-transform duration-100" style="transform: rotate(-140deg);"&gt;
+                            &lt;div id="dial-marker" class="absolute top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-[#00f2ea] shadow-[0_0_12px_#00f2ea]"&gt;&lt;/div&gt;
                         &lt;/div&gt;
-                        
-                        &lt;!-- Temperature increase/decrease controls --&gt;
-                        &lt;button onclick="changeAcTemp(1)" class="absolute top-2 w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-[#00f2ea]/40 hover:text-[#00f2ea] transition-all" title="Increase Temperature"&gt;
-                            &lt;iconify-icon icon="solar:add-linear" width="14"&gt;&lt;/iconify-icon&gt;
-                        &lt;/button&gt;
-                        &lt;button onclick="changeAcTemp(-1)" class="absolute bottom-2 w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-[#00f2ea]/40 hover:text-[#00f2ea] transition-all" title="Decrease Temperature"&gt;
-                            &lt;iconify-icon icon="solar:minus-linear" width="14"&gt;&lt;/iconify-icon&gt;
-                        &lt;/button&gt;
+
+                        &lt;div class="text-center select-none z-10"&gt;
+                            &lt;span id="ac-temp-display" class="text-6xl font-extrabold tracking-tighter text-white font-sans drop-shadow-[0_0_15px_rgba(0,242,234,0.2)]"&gt;72&lt;/span&gt;
+                            &lt;span class="text-xl font-bold text-[#00f2ea]" id="ac-degree-unit"&gt;°F&lt;/span&gt;
+                            &lt;p id="ac-mode-indicator" class="text-[8px] font-bold text-muted-theme uppercase tracking-widest mt-1"&gt;Target Temp&lt;/p&gt;
+                        &lt;/div&gt;
                     &lt;/div&gt;
+                    
+                    &lt;!-- Temp Plus Button (flanking right) --&gt;
+                    &lt;button onclick="changeAcTemp(1)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] transition-all active:scale-90 shadow-md" title="Increase Temp"&gt;
+                        &lt;iconify-icon icon="solar:add-linear" width="18"&gt;&lt;/iconify-icon&gt;
+                    &lt;/button&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Climate Mode Selectors --&gt;
-                &lt;div class="flex flex-col gap-3.5 z-10"&gt;
+                &lt;div class="flex flex-col gap-3.5 z-10 border-t border-white/5 pt-4"&gt;
                     &lt;div class="grid grid-cols-3 gap-2"&gt;
                         &lt;button id="ac-mode-cool" onclick="setAcMode(&apos;cool&apos;)" class="py-2 px-2.5 rounded-xl border border-[#00f2ea]/30 bg-[#00f2ea]/10 text-[#00f2ea] text-[9px] font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-1"&gt;
                             &lt;iconify-icon icon="solar:snowflake-linear" width="12"&gt;&lt;/iconify-icon&gt;
@@ -2834,7 +2864,7 @@
             &lt;/div&gt;
         &lt;/div&gt;
 
-        &lt;!-- Centered UI Card Elements providing Information (Replaced old awkward left-aligned images) --&gt;
+        &lt;!-- Centered UI Card Elements providing Information (Now highly interactive!) --&gt;
         &lt;div class="w-full max-w-[1480px] mx-auto px-6 py-2 flex items-center justify-center gap-4 z-10 shrink-0"&gt;
             &lt;!-- Arrow Prev --&gt;
             &lt;button id="hvac-prev-arrow" class="w-10 h-10 rounded-full border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg active:scale-95"&gt;
@@ -2843,16 +2873,16 @@
                 &lt;/svg&gt;
             &lt;/button&gt;
             
-            &lt;!-- Cards grid layout (centered and spaced out) --&gt;
+            &lt;!-- Cards grid layout (centered and spaced out with glow shadows &amp; active states) --&gt;
             &lt;div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-6 py-1"&gt;
                 
-                &lt;!-- Info Card 1: Thermostats --&gt;
-                &lt;div class="hvac-project-card rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md"&gt;
+                &lt;!-- Info Card 1: Thermostats (Controls Cool Mode) --&gt;
+                &lt;div onclick="selectCardAction(&apos;cool&apos;)" class="hvac-project-card card-glow-cyan cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
                     &lt;div class="flex justify-between items-center"&gt;
                         &lt;div class="w-8 h-8 rounded-lg bg-[#00f2ea]/15 flex items-center justify-center text-[#00f2ea]"&gt;
                             &lt;iconify-icon icon="solar:temperature-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase"&gt;Zone Control&lt;/span&gt;
+                        &lt;span id="card-badge-1" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase"&gt;Zone Control&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Thermostats&lt;/h4&gt;
@@ -2860,13 +2890,13 @@
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;!-- Info Card 2: Heat Pumps --&gt;
-                &lt;div class="hvac-project-card rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md"&gt;
+                &lt;!-- Info Card 2: Heat Pumps (Controls Heat Mode) --&gt;
+                &lt;div onclick="selectCardAction(&apos;heat&apos;)" class="hvac-project-card card-glow-orange cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
                     &lt;div class="flex justify-between items-center"&gt;
                         &lt;div class="w-8 h-8 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400"&gt;
                             &lt;iconify-icon icon="solar:settings-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase"&gt;24.5 SEER&lt;/span&gt;
+                        &lt;span id="card-badge-2" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase"&gt;24.5 SEER&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Modern Heat Pumps&lt;/h4&gt;
@@ -2874,13 +2904,13 @@
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;!-- Info Card 3: Air Purification --&gt;
-                &lt;div class="hvac-project-card rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md"&gt;
+                &lt;!-- Info Card 3: Air Purification (Controls Fan Mode) --&gt;
+                &lt;div onclick="selectCardAction(&apos;fan&apos;)" class="hvac-project-card card-glow-emerald cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
                     &lt;div class="flex justify-between items-center"&gt;
                         &lt;div class="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400"&gt;
                             &lt;iconify-icon icon="solar:wind-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase"&gt;99.9% Pure&lt;/span&gt;
+                        &lt;span id="card-badge-3" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase"&gt;99.9% Pure&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Air Purification&lt;/h4&gt;
@@ -2888,13 +2918,13 @@
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;!-- Info Card 4: Home Automation --&gt;
-                &lt;div class="hvac-project-card rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md"&gt;
+                &lt;!-- Info Card 4: Home Automation (Triggers Sync Status) --&gt;
+                &lt;div onclick="selectCardAction(&apos;sync&apos;)" class="hvac-project-card card-glow-blue cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
                     &lt;div class="flex justify-between items-center"&gt;
                         &lt;div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400"&gt;
                             &lt;iconify-icon icon="solar:cpu-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase"&gt;Sync Active&lt;/span&gt;
+                        &lt;span id="card-badge-4" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase"&gt;Sync Active&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Home Sync&lt;/h4&gt;
@@ -2911,6 +2941,12 @@
                 &lt;/svg&gt;
             &lt;/button&gt;
         &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Toast Notification Overlay --&gt;
+    &lt;div id="hvac-toast" class="fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-black/85 border border-white/10 text-white text-[10px] font-bold tracking-wider uppercase shadow-[0_10px_25px_rgba(0,0,0,0.5)] backdrop-blur-md opacity-0 pointer-events-none transform -translate-y-4 transition-all duration-300 z-[99999] flex items-center gap-2"&gt;
+        &lt;span id="hvac-toast-icon" class="text-[#00f2ea] flex items-center"&gt;&lt;iconify-icon icon="solar:check-circle-bold-duotone" width="16"&gt;&lt;/iconify-icon&gt;&lt;/span&gt;
+        &lt;span id="hvac-toast-message"&gt;Action Complete&lt;/span&gt;
     &lt;/div&gt;
 
     &lt;!-- ================= CONTROLLER SCRIPTS ================= --&gt;
@@ -2982,6 +3018,7 @@
                 hvacSite.style.transform = &apos;translateY(0)&apos;;
                 
                 document.body.classList.add(&apos;hvac-theme-active&apos;);
+                updateAcArc();
 
                 setTimeout(() =&gt; {
                     isTransitioning = false;
@@ -2994,6 +3031,40 @@
         btnPrevHvac.addEventListener(&apos;click&apos;, showMedspa);
         btnNextHvac.addEventListener(&apos;click&apos;, showMedspa);
 
+        // Toast Helper
+        let toastTimeout = null;
+        window.showToast = (message, type = &apos;success&apos;) =&gt; {
+            const toast = document.getElementById(&apos;hvac-toast&apos;);
+            const toastMsg = document.getElementById(&apos;hvac-toast-message&apos;);
+            const toastIcon = document.getElementById(&apos;hvac-toast-icon&apos;);
+            if (!toast || !toastMsg) return;
+            
+            toastMsg.innerText = message;
+            
+            if (type === &apos;success&apos;) {
+                toastIcon.innerHTML = &apos;&lt;iconify-icon icon="solar:check-circle-bold-duotone" class="text-[#00f2ea]" width="16"&gt;&lt;/iconify-icon&gt;&apos;;
+                toast.style.borderColor = &apos;rgba(0, 242, 234, 0.3)&apos;;
+            } else if (type === &apos;heat&apos;) {
+                toastIcon.innerHTML = &apos;&lt;iconify-icon icon="solar:fire-bold-duotone" class="text-orange-400" width="16"&gt;&lt;/iconify-icon&gt;&apos;;
+                toast.style.borderColor = &apos;rgba(249, 115, 22, 0.3)&apos;;
+            } else if (type === &apos;fan&apos;) {
+                toastIcon.innerHTML = &apos;&lt;iconify-icon icon="solar:wind-bold-duotone" class="text-emerald-400" width="16"&gt;&lt;/iconify-icon&gt;&apos;;
+                toast.style.borderColor = &apos;rgba(16, 185, 129, 0.3)&apos;;
+            } else if (type === &apos;sync&apos;) {
+                toastIcon.innerHTML = &apos;&lt;iconify-icon icon="solar:cpu-bold-duotone" class="text-blue-400" width="16"&gt;&lt;/iconify-icon&gt;&apos;;
+                toast.style.borderColor = &apos;rgba(59, 130, 246, 0.3)&apos;;
+            }
+            
+            toast.style.opacity = &apos;1&apos;;
+            toast.style.transform = &apos;translateX(-50%) translateY(0)&apos;;
+            
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() =&gt; {
+                toast.style.opacity = &apos;0&apos;;
+                toast.style.transform = &apos;translateX(-50%) translateY(-10px)&apos;;
+            }, 3000);
+        };
+
         // Interactive AC Controller Logic
         let acTemp = 72;
         let acMode = &apos;cool&apos;;
@@ -3003,7 +3074,9 @@
             acTemp += change;
             if (acTemp &lt; 60) acTemp = 60;
             if (acTemp &gt; 85) acTemp = 85;
+            
             document.getElementById(&apos;ac-temp-display&apos;).innerText = acTemp;
+            updateAcArc();
         };
 
         window.setAcMode = (mode) =&gt; {
@@ -3033,6 +3106,7 @@
                 dot.className = &apos;w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse&apos;;
                 text.innerText = &apos;Fan Active&apos;;
             }
+            updateAcArc();
         };
 
         window.setAcFan = (speed) =&gt; {
@@ -3048,6 +3122,196 @@
             const activeEl = document.getElementById(`ac-fan-${speed}`);
             activeEl.className = &apos;px-2 py-0.5 rounded text-[8px] font-extrabold bg-[#00f2ea]/15 text-[#00f2ea] border border-[#00f2ea]/20 uppercase&apos;;
         };
+
+        window.selectCardAction = (action) =&gt; {
+            if (action === &apos;cool&apos;) {
+                window.setAcMode(&apos;cool&apos;);
+                acTemp = 72;
+                document.getElementById(&apos;ac-temp-display&apos;).innerText = acTemp;
+                updateAcArc();
+                window.showToast(&apos;Thermostat: Cool mode set to 72°F&apos;, &apos;success&apos;);
+            } else if (action === &apos;heat&apos;) {
+                window.setAcMode(&apos;heat&apos;);
+                acTemp = 74;
+                document.getElementById(&apos;ac-temp-display&apos;).innerText = acTemp;
+                updateAcArc();
+                window.showToast(&apos;Thermostat: Heat mode set to 74°F&apos;, &apos;heat&apos;);
+            } else if (action === &apos;fan&apos;) {
+                window.setAcMode(&apos;fan&apos;);
+                window.setAcFan(3);
+                window.showToast(&apos;Air Filtration: Maximum Fan Speed Enabled&apos;, &apos;fan&apos;);
+            } else if (action === &apos;sync&apos;) {
+                // Flash the dial to indicate sync action
+                const dial = document.getElementById(&apos;thermostat-dial&apos;);
+                if (dial) {
+                    dial.style.borderColor = &apos;rgba(59, 130, 246, 0.6)&apos;;
+                    setTimeout(() =&gt; { dial.style.borderColor = &apos;&apos;; }, 600);
+                }
+                window.showToast(&apos;Smart Home Sync: Voice Assistants updated&apos;, &apos;sync&apos;);
+            }
+        };
+
+        function updateCardBadges() {
+            const badge1 = document.getElementById(&apos;card-badge-1&apos;);
+            const badge2 = document.getElementById(&apos;card-badge-2&apos;);
+            const badge3 = document.getElementById(&apos;card-badge-3&apos;);
+            const badge4 = document.getElementById(&apos;card-badge-4&apos;);
+            
+            if (!badge1 || !badge2 || !badge3 || !badge4) return;
+            
+            // Reset to defaults
+            badge1.innerText = &apos;Zone Control&apos;;
+            badge1.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase&apos;;
+            
+            badge2.innerText = &apos;24.5 SEER&apos;;
+            badge2.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase&apos;;
+            
+            badge3.innerText = &apos;99.9% Pure&apos;;
+            badge3.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase&apos;;
+            
+            badge4.innerText = &apos;Sync Active&apos;;
+            badge4.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase&apos;;
+            
+            if (acMode === &apos;cool&apos;) {
+                badge1.innerText = &apos;COOL ACTIVE&apos;;
+                badge1.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00f2ea]/25 text-[#00f2ea] tracking-wider uppercase shadow-[0_0_10px_rgba(0,242,234,0.3)]&apos;;
+            } else if (acMode === &apos;heat&apos;) {
+                badge2.innerText = &apos;HEAT ACTIVE&apos;;
+                badge2.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/25 text-orange-400 tracking-wider uppercase shadow-[0_0_10px_rgba(249,115,22,0.3)]&apos;;
+            } else if (acMode === &apos;fan&apos;) {
+                badge3.innerText = &apos;FAN ACTIVE&apos;;
+                badge3.className = &apos;text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-400 tracking-wider uppercase shadow-[0_0_10px_rgba(16,185,129,0.3)]&apos;;
+            }
+        }
+
+        function updateAcArc() {
+            const arc = document.getElementById(&apos;temp-arc&apos;);
+            const marker = document.getElementById(&apos;dial-marker-container&apos;);
+            if (!arc || !marker) return;
+            
+            const min = 60;
+            const max = 85;
+            const totalArcLength = 200.35; // 280/360 * 257.6
+            const percent = (acTemp - min) / (max - min);
+            const activeLength = percent * totalArcLength;
+            
+            arc.style.strokeDasharray = `${activeLength} 257.6`;
+            
+            const angle = -140 + (percent * 280);
+            marker.style.transform = `rotate(${angle}deg)`;
+            
+            const dot = document.getElementById(&apos;dial-marker&apos;);
+            const degreeUnit = document.getElementById(&apos;ac-degree-unit&apos;);
+            const glow1 = document.getElementById(&apos;hvac-glow-1&apos;);
+            const glow2 = document.getElementById(&apos;hvac-glow-2&apos;);
+            
+            let colorHex = &apos;#00f2ea&apos;;
+            let rgbColor = &apos;0, 242, 234&apos;;
+            
+            if (acMode === &apos;cool&apos;) {
+                colorHex = &apos;#00f2ea&apos;;
+                rgbColor = &apos;0, 242, 234&apos;;
+                if (glow1) glow1.style.backgroundColor = `rgba(6, 182, 212, ${Math.max(0.02, 0.12 - percent * 0.08)})`; // Cool blue intensifies when colder
+                if (glow2) glow2.style.backgroundColor = `rgba(16, 185, 129, 0.02)`;
+            } else if (acMode === &apos;heat&apos;) {
+                colorHex = &apos;#f97316&apos;;
+                rgbColor = &apos;249, 115, 22&apos;;
+                if (glow1) glow1.style.backgroundColor = `rgba(249, 115, 22, ${Math.max(0.02, 0.02 + percent * 0.08)})`; // Orange intensifies when warmer
+                if (glow2) glow2.style.backgroundColor = `rgba(239, 68, 68, 0.02)`;
+            } else {
+                colorHex = &apos;#10b981&apos;;
+                rgbColor = &apos;16, 185, 129&apos;;
+                if (glow1) glow1.style.backgroundColor = `rgba(16, 185, 129, 0.06)`;
+                if (glow2) glow2.style.backgroundColor = `rgba(6, 182, 212, 0.02)`;
+            }
+            
+            arc.style.stroke = colorHex;
+            if (dot) {
+                dot.style.backgroundColor = colorHex;
+                dot.style.boxShadow = `0 0 12px ${colorHex}`;
+            }
+            if (degreeUnit) {
+                degreeUnit.style.color = colorHex;
+            }
+            
+            updateCardBadges();
+        }
+
+        // Mouse Wheel &amp; Radial Drag bindings on Thermostat Dial
+        const dial = document.getElementById(&apos;thermostat-dial&apos;);
+        if (dial) {
+            dial.addEventListener(&apos;wheel&apos;, (e) =&gt; {
+                e.preventDefault();
+                const dir = e.deltaY &lt; 0 ? 1 : -1;
+                window.changeAcTemp(dir);
+            });
+            
+            let isDragging = false;
+            
+            const startDrag = (e) =&gt; {
+                isDragging = true;
+                e.preventDefault();
+                handleRadialDrag(e);
+            };
+            
+            dial.addEventListener(&apos;mousedown&apos;, startDrag);
+            dial.addEventListener(&apos;touchstart&apos;, startDrag, { passive: false });
+            
+            const doDrag = (e) =&gt; {
+                if (!isDragging) return;
+                handleRadialDrag(e);
+            };
+            
+            document.addEventListener(&apos;mousemove&apos;, doDrag);
+            document.addEventListener(&apos;touchmove&apos;, doDrag, { passive: false });
+            
+            const stopDrag = () =&gt; {
+                isDragging = false;
+            };
+            
+            document.addEventListener(&apos;mouseup&apos;, stopDrag);
+            document.addEventListener(&apos;touchend&apos;, stopDrag);
+        }
+        
+        function handleRadialDrag(e) {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const rect = dial.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dx = clientX - centerX;
+            const dy = clientY - centerY;
+            
+            // Calculate angle relative to vertical axis (12 o&apos;clock)
+            let angleFromTop = Math.atan2(dx, -dy) * (180 / Math.PI);
+            
+            // Clamp the angle between -140 and 140 degrees
+            if (angleFromTop &lt; -140) {
+                if (angleFromTop &gt; -160) {
+                    angleFromTop = -140;
+                } else {
+                    angleFromTop = 140;
+                }
+            } else if (angleFromTop &gt; 140) {
+                if (angleFromTop &lt; 160) {
+                    angleFromTop = 140;
+                } else {
+                    angleFromTop = -140;
+                }
+            }
+            
+            const min = 60;
+            const max = 85;
+            const percent = (angleFromTop - (-140)) / 280; // 0 to 1
+            const temp = Math.round(min + percent * (max - min));
+            
+            if (temp !== acTemp) {
+                acTemp = temp;
+                document.getElementById(&apos;ac-temp-display&apos;).innerText = acTemp;
+                updateAcArc();
+            }
+        }
 
         // Theme Toggle Functionality
         const checkboxMedspa = document.getElementById(&apos;checkbox&apos;);
@@ -3116,7 +3380,7 @@
             observer.observe(parentHtml, { attributes: true });
         } catch(e) {}
 
-        // Pixie Dust Cursor
+        // Custom Cursor Render System
         const pCanvas = document.createElement(&apos;canvas&apos;);
         pCanvas.style.position = &apos;fixed&apos;;
         pCanvas.style.top = &apos;0&apos;;
@@ -3127,10 +3391,12 @@
         pCanvas.style.zIndex = &apos;99999&apos;;
         document.body.appendChild(pCanvas);
         const pCtx = pCanvas.getContext(&apos;2d&apos;);
+        
         let pWidth = window.innerWidth;
         let pHeight = window.innerHeight;
         pCanvas.width = pWidth;
         pCanvas.height = pHeight;
+        
         window.addEventListener(&apos;resize&apos;, () =&gt; {
             pWidth = window.innerWidth;
             pHeight = window.innerHeight;
@@ -3140,6 +3406,11 @@
 
         let particles = [];
         let pMouse = { x: -100, y: -100 };
+        
+        // Eased/smoothed coordinates for custom HVAC cursor
+        let cursorX = -100;
+        let cursorY = -100;
+        
         let isHoveringP = false;
         let isInsideP = false;
 
@@ -3150,32 +3421,46 @@
             pMouse.x = e.clientX;
             pMouse.y = e.clientY;
             
-            const isLight = document.body.classList.contains(&apos;light-mode&apos;);
             const isHvac = document.body.classList.contains(&apos;hvac-theme-active&apos;);
-            
-            let colorA = isLight ? &apos;141, 110, 50&apos; : &apos;245, 158, 11&apos;;
-            let colorB = isLight ? &apos;197, 160, 89&apos; : &apos;255, 255, 255&apos;;
-            
-            if (isHvac) {
-                colorA = isLight ? &apos;0, 150, 136&apos; : &apos;0, 242, 234&apos;;
-                colorB = isLight ? &apos;0, 188, 212&apos; : &apos;255, 255, 255&apos;;
-            }
+            const isLight = document.body.classList.contains(&apos;light-mode&apos;);
 
-            if (Math.random() &gt; 0.3) {
-                particles.push({
-                    x: pMouse.x + (Math.random() - 0.5) * 12,
-                    y: pMouse.y + (Math.random() - 0.5) * 12,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 1) * 0.5,
-                    life: 1,
-                    size: Math.random() * 1.5 + 0.5,
-                    color: Math.random() &gt; 0.5 ? colorA : colorB
-                });
+            if (isHvac) {
+                // Emit custom breeze current ribbons instead of stars
+                if (Math.random() &gt; 0.35) {
+                    const color = acMode === &apos;cool&apos; ? &apos;0, 242, 234&apos; : (acMode === &apos;heat&apos; ? &apos;249, 115, 22&apos; : &apos;16, 185, 129&apos;);
+                    particles.push({
+                        type: &apos;wind&apos;,
+                        x: pMouse.x,
+                        y: pMouse.y,
+                        trail: [{ x: pMouse.x, y: pMouse.y }],
+                        vx: -1.2 - Math.random() * 1.5, // Drift leftward
+                        vy: (Math.random() - 0.5) * 0.8,
+                        life: 1.0,
+                        width: Math.random() * 1.5 + 1.0,
+                        color: color
+                    });
+                }
+            } else {
+                // Sparkle particles for Medspa
+                if (Math.random() &gt; 0.3) {
+                    const colorA = isLight ? &apos;141, 110, 50&apos; : &apos;245, 158, 11&apos;;
+                    const colorB = isLight ? &apos;197, 160, 89&apos; : &apos;255, 255, 255&apos;;
+                    particles.push({
+                        type: &apos;sparkle&apos;,
+                        x: pMouse.x + (Math.random() - 0.5) * 12,
+                        y: pMouse.y + (Math.random() - 0.5) * 12,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 1) * 0.5,
+                        life: 1,
+                        size: Math.random() * 1.5 + 0.5,
+                        color: Math.random() &gt; 0.5 ? colorA : colorB
+                    });
+                }
             }
         });
 
         document.addEventListener(&apos;mouseover&apos;, (e) =&gt; {
-            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #btn-prev-slide, #btn-next-slide, #hvac-prev-arrow, #hvac-next-arrow, .glass-panel, .service-btn, .hvac-btn-cyan, .hvac-btn-glass, .btn-book-project&apos;));
+            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #btn-prev-slide, #btn-next-slide, #hvac-prev-arrow, #hvac-next-arrow, #thermostat-dial, .hvac-project-card, .service-btn, .hvac-btn-cyan, .hvac-btn-glass, .btn-book-project&apos;));
         });
 
         function pLoop() {
@@ -3185,36 +3470,95 @@
             const isHvac = document.body.classList.contains(&apos;hvac-theme-active&apos;);
 
             if (isInsideP) {
-                pCtx.beginPath();
-                pCtx.arc(pMouse.x, pMouse.y, isHoveringP ? 5 : 3, 0, Math.PI * 2);
-                
                 if (isHvac) {
-                    pCtx.fillStyle = isLight ? &apos;rgba(0, 150, 136, 0.9)&apos; : &apos;rgba(0, 242, 234, 0.9)&apos;;
-                    pCtx.shadowBlur = 12;
-                    pCtx.shadowColor = isLight ? &apos;rgba(0, 150, 136, 0.6)&apos; : &apos;rgba(0, 242, 234, 0.8)&apos;;
+                    // Smooth tracking ring with spring physics
+                    cursorX += (pMouse.x - cursorX) * 0.18;
+                    cursorY += (pMouse.y - cursorY) * 0.18;
+                    
+                    const ringColor = isLight ? &apos;rgba(0, 150, 136, 0.7)&apos; : &apos;rgba(0, 242, 234, 0.7)&apos;;
+                    const glowColor = isLight ? &apos;rgba(0, 150, 136, 0.3)&apos; : &apos;rgba(0, 242, 234, 0.4)&apos;;
+                    
+                    // 1. Draw outer rotating dashed HUD ring
+                    pCtx.save();
+                    pCtx.translate(cursorX, cursorY);
+                    const rotation = (Date.now() / 1500) % (Math.PI * 2);
+                    pCtx.rotate(rotation);
+                    
+                    pCtx.beginPath();
+                    const radius = isHoveringP ? 18 : 12;
+                    pCtx.arc(0, 0, radius, 0, Math.PI * 2);
+                    pCtx.strokeStyle = ringColor;
+                    pCtx.lineWidth = 1.2;
+                    pCtx.setLineDash([4, 4]); // Dashed
+                    pCtx.stroke();
+                    pCtx.restore();
+                    
+                    // 2. Draw inner solid dot
+                    pCtx.beginPath();
+                    pCtx.arc(cursorX, cursorY, 2.5, 0, Math.PI * 2);
+                    pCtx.fillStyle = ringColor;
+                    pCtx.shadowBlur = 8;
+                    pCtx.shadowColor = glowColor;
+                    pCtx.fill();
+                    pCtx.shadowBlur = 0; // Reset
+                    
+                    // 3. Draw HUD style degrees floating next to the cursor
+                    pCtx.font = "bold 9px &apos;Plus Jakarta Sans&apos;, sans-serif";
+                    pCtx.fillStyle = isLight ? "rgba(0, 150, 136, 0.9)" : "rgba(0, 242, 234, 0.9)";
+                    pCtx.fillText(acTemp + "°F", cursorX + (isHoveringP ? 22 : 16), cursorY + 3);
                 } else {
+                    // Standard Medspa glow dot
+                    pCtx.beginPath();
+                    pCtx.arc(pMouse.x, pMouse.y, isHoveringP ? 5 : 3, 0, Math.PI * 2);
                     pCtx.fillStyle = isLight ? &apos;rgba(141, 110, 50, 0.9)&apos; : &apos;rgba(255, 255, 255, 0.9)&apos;;
                     pCtx.shadowBlur = 12;
                     pCtx.shadowColor = isLight ? &apos;rgba(141, 110, 50, 0.6)&apos; : &apos;rgba(245, 158, 11, 0.8)&apos;;
+                    pCtx.fill();
+                    pCtx.shadowBlur = 0;
                 }
-                pCtx.fill();
             }
             
+            // Draw particles
             for (let i = particles.length - 1; i &gt;= 0; i--) {
                 let p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= 0.015;
+                p.life -= 0.02;
                 if (p.life &lt;= 0) {
                     particles.splice(i, 1);
                     continue;
                 }
-                pCtx.beginPath();
-                pCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-                pCtx.fillStyle = `rgba(${p.color}, ${p.life})`;
-                pCtx.shadowBlur = 6;
-                pCtx.shadowColor = `rgba(${p.color}, ${p.life * 0.5})`;
-                pCtx.fill();
+                
+                if (p.type === &apos;wind&apos;) {
+                    // Wind ripple particle
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.trail.push({ x: p.x, y: p.y });
+                    if (p.trail.length &gt; 8) {
+                        p.trail.shift();
+                    }
+                    
+                    // Draw flowing wind line path
+                    pCtx.beginPath();
+                    pCtx.moveTo(p.trail[0].x, p.trail[0].y);
+                    for (let j = 1; j &lt; p.trail.length; j++) {
+                        pCtx.lineTo(p.trail[j].x, p.trail[j].y);
+                    }
+                    pCtx.strokeStyle = `rgba(${p.color}, ${p.life * 0.4})`;
+                    pCtx.lineWidth = p.width * p.life;
+                    pCtx.lineCap = &apos;round&apos;;
+                    pCtx.lineJoin = &apos;round&apos;;
+                    pCtx.stroke();
+                } else {
+                    // Star sparkle particle
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    pCtx.beginPath();
+                    pCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    pCtx.fillStyle = `rgba(${p.color}, ${p.life})`;
+                    pCtx.shadowBlur = 6;
+                    pCtx.shadowColor = `rgba(${p.color}, ${p.life * 0.5})`;
+                    pCtx.fill();
+                    pCtx.shadowBlur = 0;
+                }
             }
             requestAnimationFrame(pLoop);
         }
