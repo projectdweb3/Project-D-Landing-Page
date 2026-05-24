@@ -16,30 +16,32 @@
   <style>
     :root {
       --color-bg-base: #f9fafb;
-      --color-bg-sidebar: #f3f4f6;
-      --color-border: rgba(0, 0, 0, 0.08);
+      --color-bg-panel: rgba(255, 255, 255, 0.45);
+      --color-border: rgba(255, 255, 255, 0.85);
+      --color-border-outer: rgba(0, 0, 0, 0.08);
       --color-text-primary: #111827;
       --color-text-secondary: #4b5563;
       --color-accent-orange: #ff9146;
       --color-accent-teal: #46d4c6;
-      --color-glow-opacity-orange: rgba(255, 145, 70, 0.03);
-      --color-glow-opacity-teal: rgba(70, 212, 198, 0.02);
-      --color-header-bg: rgba(243, 244, 246, 0.7);
       --color-shadow: rgba(0, 0, 0, 0.05);
+      --color-inset-shadow: rgba(255, 255, 255, 0.8);
+      --color-sidebar-item-hover: rgba(0, 0, 0, 0.05);
+      --color-sidebar-item-active: rgba(0, 0, 0, 0.05);
     }
 
     .dark {
-      --color-bg-base: #070a13;
-      --color-bg-sidebar: #0b0f19;
+      --color-bg-base: #0b0f19;
+      --color-bg-panel: rgba(15, 20, 35, 0.4);
       --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-outer: rgba(255, 255, 255, 0.08);
       --color-text-primary: #ffffff;
       --color-text-secondary: #9ca3af;
       --color-accent-orange: #ff9146;
       --color-accent-teal: #46d4c6;
-      --color-glow-opacity-orange: rgba(255, 145, 70, 0.05);
-      --color-glow-opacity-teal: rgba(70, 212, 198, 0.04);
-      --color-header-bg: rgba(11, 15, 25, 0.7);
       --color-shadow: rgba(0, 0, 0, 0.3);
+      --color-inset-shadow: rgba(255, 255, 255, 0.05);
+      --color-sidebar-item-hover: rgba(255, 255, 255, 0.05);
+      --color-sidebar-item-active: rgba(255, 255, 255, 0.1);
     }
 
     * {
@@ -53,41 +55,159 @@
       color: var(--color-text-primary);
       font-family: 'Inter', sans-serif;
       height: 100vh;
-      display: flex;
       overflow: hidden;
       transition: background-color 0.3s, color 0.3s;
     }
 
-    /* Ambient Background Glows */
-    .glow-bg {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--color-glow-opacity-orange) 0%, var(--color-glow-opacity-teal) 50%, transparent 100%);
-      filter: blur(80px);
+    /* Animated Liquid Glass Background Blobs */
+    .bg-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       pointer-events: none;
       z-index: 0;
+      opacity: 0.6;
+      background-color: var(--color-bg-base);
+      transition: background-color 0.3s;
     }
-    .glow-1 { top: -200px; left: -200px; }
-    .glow-2 { bottom: -200px; right: -200px; }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+
+    .dark .blob {
+      opacity: 0.2;
+    }
+
+    .blob-1 {
+      top: 10%;
+      left: -10%;
+      width: 40vw;
+      height: 40vw;
+      background-color: var(--color-accent-orange);
+      animation: blob-anim 15s infinite ease-in-out;
+    }
+
+    .blob-2 {
+      top: 5%;
+      right: -5%;
+      width: 35vw;
+      height: 35vw;
+      background-color: var(--color-accent-teal);
+      animation: blob-anim 15s infinite ease-in-out;
+      animation-delay: 2s;
+    }
+
+    .blob-3 {
+      bottom: -20%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background-color: var(--color-accent-teal);
+      animation: blob-anim 15s infinite ease-in-out;
+      animation-delay: 4s;
+    }
+
+    .blob-4 {
+      bottom: -10%;
+      right: 10%;
+      width: 35vw;
+      height: 35vw;
+      background-color: var(--color-accent-orange);
+      animation: blob-anim 15s infinite ease-in-out;
+      animation-delay: 6s;
+    }
+
+    .blob-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(255, 145, 70, 0.08) 0%, rgba(70, 212, 198, 0.08) 50%, transparent 100%);
+      filter: blur(100px);
+      opacity: 0.4;
+      animation: pulse-anim 6s infinite ease-in-out;
+    }
+
+    .dot-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: radial-gradient(var(--color-text-primary) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .dark .dot-grid {
+      opacity: 0.05;
+    }
+
+    @keyframes blob-anim {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+
+    @keyframes pulse-anim {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.5; }
+    }
+
+    /* Glassmorphic Container Layout */
+    .app-layout {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      padding: 16px;
+      gap: 16px;
+      box-sizing: border-box;
+      overflow: hidden;
+      animation: glassReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes glassReveal {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
     /* Sidebar Navigation */
     aside {
-      width: 320px;
-      background-color: var(--color-bg-sidebar);
-      border-right: 1px solid var(--color-border);
+      width: 280px;
+      background: var(--color-bg-panel);
+      backdrop-filter: blur(32px) saturate(160%);
+      -webkit-backdrop-filter: blur(32px) saturate(160%);
+      border: 1px solid var(--color-border);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px var(--color-shadow), inset 0 1px 0 var(--color-inset-shadow);
       display: flex;
       flex-direction: column;
       height: 100%;
       z-index: 10;
       flex-shrink: 0;
-      transition: background-color 0.3s, border-color 0.3s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
     }
 
     .sidebar-header {
       padding: 24px;
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border-outer);
     }
 
     .logo-container {
@@ -105,6 +225,7 @@
       width: 28px;
       height: 28px;
       object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(70, 212, 198, 0.3));
     }
 
     .sidebar-subtitle {
@@ -120,6 +241,21 @@
       flex-grow: 1;
       overflow-y: auto;
       padding: 24px 16px;
+    }
+
+    /* Custom Scrollbar for Sidebar nav */
+    .nav-sections::-webkit-scrollbar {
+      width: 4px;
+    }
+    .nav-sections::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .nav-sections::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    .dark .nav-sections::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .nav-group-title {
@@ -146,64 +282,69 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
       color: var(--color-text-secondary);
       text-decoration: none;
       font-size: 14px;
       font-weight: 500;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       margin-bottom: 4px;
     }
 
     .nav-item a:hover {
       color: var(--color-text-primary);
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: var(--color-sidebar-item-hover);
     }
 
     .nav-item.active a {
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--color-accent-orange), var(--color-accent-teal));
+      color: var(--color-text-primary);
+      background-color: var(--color-sidebar-item-active);
       font-weight: 600;
-      box-shadow: 0 4px 12px var(--color-shadow);
+      box-shadow: inset 0 1px 0 var(--color-inset-shadow);
     }
 
     .nav-item.active a iconify-icon {
-      color: #ffffff;
+      color: var(--color-accent-teal);
     }
 
     .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid var(--color-border);
-      background-color: rgba(0, 0, 0, 0.03);
+      padding: 16px;
+      border-top: 1px solid var(--color-border-outer);
+      background-color: rgba(0, 0, 0, 0.02);
     }
     
     .dark .sidebar-footer {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(255, 255, 255, 0.01);
     }
 
-    /* Main Content Viewer */
+    /* Main Content Viewer Glass Panel */
     main {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       height: 100%;
       position: relative;
+      background: var(--color-bg-panel);
+      backdrop-filter: blur(32px) saturate(160%);
+      -webkit-backdrop-filter: blur(32px) saturate(160%);
+      border: 1px solid var(--color-border);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px var(--color-shadow), inset 0 1px 0 var(--color-inset-shadow);
       z-index: 10;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     header {
       height: 72px;
-      border-bottom: 1px solid var(--color-border);
-      background-color: var(--color-header-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 0 32px;
+      border-bottom: 1px solid var(--color-border-outer);
+      padding: 0 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
-      transition: background-color 0.3s, border-color 0.3s;
+      transition: border-color 0.3s;
     }
 
     .header-doc-title {
@@ -217,7 +358,7 @@
       gap: 12px;
     }
 
-    /* Conic Spin Buttons - Glassmorphic & Dramatic Hover */
+    /* Conic Spin Buttons - Dramatic Hover & Brand Gradients */
     .conic-btn {
       position: relative;
       display: inline-flex;
@@ -235,7 +376,7 @@
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
       z-index: 1;
-      box-shadow: 0 4px 6px -1px var(--color-shadow);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -252,14 +393,34 @@
       pointer-events: none;
     }
 
+    /* Default White Glass Button */
     .conic-btn-mask {
       position: absolute;
-      inset: 1px;
+      inset: 2px;
       border-radius: 9999px;
-      background: var(--color-bg-sidebar);
+      background: rgba(255, 255, 255, 0.9);
       transition: background-color 0.3s;
       z-index: -1;
       pointer-events: none;
+    }
+
+    .dark .conic-btn-mask {
+      background: rgba(15, 20, 35, 0.9);
+    }
+
+    /* Teal Conic Button (Primary) */
+    .conic-btn.primary {
+      color: #ffffff;
+      background: var(--color-accent-teal);
+      box-shadow: 0 4px 24px rgba(70, 212, 198, 0.18), 0 2px 8px rgba(255, 145, 70, 0.12);
+    }
+
+    .conic-btn.primary .conic-btn-mask {
+      background: var(--color-accent-teal);
+    }
+
+    .dark .conic-btn.primary .conic-btn-mask {
+      background: var(--color-accent-teal);
     }
 
     .conic-btn:hover .conic-spin-bg {
@@ -272,24 +433,24 @@
       to { transform: rotate(360deg); }
     }
 
-    .conic-btn.primary {
-      color: #070a13;
-      background: var(--color-accent-teal);
+    .conic-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 95, 0, 0.18);
     }
 
-    .conic-btn.primary .conic-btn-mask {
-      background: var(--color-accent-teal);
+    .conic-btn.primary:hover {
+      box-shadow: 0 6px 32px rgba(70, 212, 198, 0.28), 0 4px 16px rgba(255, 145, 70, 0.2);
     }
 
     /* Dramatic Hover Floating effect matching homepage & AMP Center */
     @keyframes floatHover {
       0%, 100% {
         transform: translateY(0) scale(1.02);
-        box-shadow: 0 0 20px rgba(255, 145, 70, 0.4), 0 0 30px rgba(70, 212, 198, 0.2);
+        box-shadow: 0 0 20px rgba(255, 145, 70, 0.3), 0 0 30px rgba(70, 212, 198, 0.15);
       }
       50% {
         transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 10px 30px rgba(255, 145, 70, 0.6), 0 15px 40px rgba(70, 212, 198, 0.4);
+        box-shadow: 0 10px 30px rgba(255, 145, 70, 0.45), 0 15px 40px rgba(70, 212, 198, 0.3);
       }
     }
 
@@ -301,7 +462,7 @@
       transform: scale(0.95) !important;
     }
 
-    /* Theme Toggle with Custom CSS visibility */
+    /* Theme Toggle with glass button styling */
     .btn-theme-toggle {
       width: 36px;
       height: 36px;
@@ -309,16 +470,18 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      background: var(--color-bg-sidebar);
+      background: var(--color-bg-panel);
       border: 1px solid var(--color-border);
       cursor: pointer;
       transition: all 0.3s;
       color: var(--color-text-primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
 
     .btn-theme-toggle:hover {
       border-color: var(--color-accent-teal);
       transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(70, 212, 198, 0.25);
     }
 
     .btn-theme-toggle .sun-icon {
@@ -337,12 +500,56 @@
       display: block;
     }
 
+    /* Responsive hamburger menu button */
+    .btn-menu-toggle {
+      display: none;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--color-bg-panel);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.3s;
+      color: var(--color-text-primary);
+      margin-right: 12px;
+    }
+
+    .btn-menu-toggle:hover {
+      border-color: var(--color-accent-teal);
+      transform: scale(1.05);
+    }
+
+    /* Backdrop overlay for mobile drawer */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 40;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .sidebar-backdrop.open {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     /* Content Area Frame */
     .viewer-container {
       flex-grow: 1;
-      background-color: var(--color-bg-base);
+      background-color: transparent;
       padding: 0;
       display: flex;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      overflow: hidden;
     }
 
     iframe {
@@ -351,123 +558,204 @@
       border: none;
       background-color: transparent;
     }
+
+    /* Responsive layouts & transitions */
+    @media (max-width: 992px) {
+      .btn-menu-toggle {
+        display: flex;
+      }
+
+      aside {
+        position: fixed;
+        left: -300px;
+        top: 16px;
+        bottom: 16px;
+        height: calc(100vh - 32px);
+        width: 280px;
+        z-index: 50;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      }
+
+      aside.open {
+        left: 16px;
+      }
+
+      .app-layout {
+        padding: 12px;
+        gap: 0;
+      }
+
+      main {
+        border-radius: 18px;
+      }
+
+      .viewer-container {
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .conic-btn span span {
+        display: none; /* Hide labels on mobile to prevent overflow */
+      }
+      
+      .conic-btn {
+        padding: 8px 12px;
+      }
+
+      .header-doc-title {
+        font-size: 15px;
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
   </style>
 </head>
 <body>
   
-  <div class="glow-bg glow-1"></div>
-  <div class="glow-bg glow-2"></div>
+  <!-- Animated Liquid Glass Background Blobs -->
+  <div class="bg-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="blob-center"></div>
+    <div class="dot-grid"></div>
+  </div>
 
-  <!-- Sidebar Nav -->
-  <aside>
-    <div class="sidebar-header">
-      <a href="/home" class="logo-container">
-        <img src="logo.png" alt="Project D" class="logo-img" />
-        <span>Project D</span>
-      </a>
-      <div class="sidebar-subtitle">Operations Academy</div>
-    </div>
+  <!-- Backdrop overlay for mobile drawer -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
 
-    <nav class="nav-sections">
-      <div class="nav-group-title">Vision & Strategy</div>
-      <ul class="nav-list">
-        <li class="nav-item active" data-src="mission.html" data-title="Mission Statement">
-          <a href="#"><iconify-icon icon="solar:compass-bold-duotone"></iconify-icon> Mission Statement</a>
-        </li>
-        <li class="nav-item" data-src="pricing_strategy.html" data-title="Pricing Strategy">
-          <a href="#"><iconify-icon icon="solar:banknote-bold-duotone"></iconify-icon> Pricing Strategy</a>
-        </li>
-        <li class="nav-item" data-src="team_structure.html" data-title="Organizational Structure v6.0">
-          <a href="#"><iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon> Team Structure v6.0</a>
-        </li>
-      </ul>
-
-      <div class="nav-group-title">Client Onboarding</div>
-      <ul class="nav-list">
-        <li class="nav-item" data-src="welcome_guide.html" data-title="AMP Client Welcome Guide">
-          <a href="#"><iconify-icon icon="solar:hand-stars-bold-duotone"></iconify-icon> Client Welcome Guide</a>
-        </li>
-      </ul>
-
-      <div class="nav-group-title">Department Manuals</div>
-      <ul class="nav-list">
-        <li class="nav-item" data-src="leadership_playbook.html" data-title="Executive Leadership Playbook">
-          <a href="#"><iconify-icon icon="solar:crown-bold-duotone"></iconify-icon> Executive Leadership</a>
-        </li>
-        <li class="nav-item" data-src="growth_onboarding.html" data-title="Growth & Success Playbook">
-          <a href="#"><iconify-icon icon="solar:graph-up-bold-duotone"></iconify-icon> Growth & Success</a>
-        </li>
-        <li class="nav-item" data-src="tech_onboarding.html" data-title="Technology & Engineering Onboarding">
-          <a href="#"><iconify-icon icon="solar:code-bold-duotone"></iconify-icon> Tech & Engineering</a>
-        </li>
-        <li class="nav-item" data-src="creative_onboarding.html" data-title="Creative Production Manual">
-          <a href="#"><iconify-icon icon="solar:palette-bold-duotone"></iconify-icon> Creative Production</a>
-        </li>
-        <li class="nav-item" data-src="coaching_onboarding.html" data-title="Coaching & Support Guide">
-          <a href="#"><iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon> Coaching & Support</a>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="sidebar-footer">
-      <a href="./amp-center.html" class="conic-btn dramatic-hover" style="width: 100%;">
-        <div class="conic-spin-bg"></div>
-        <div class="conic-btn-mask"></div>
-        <span class="relative z-10 flex items-center gap-1.5 text-xs font-semibold">
-          <iconify-icon icon="solar:window-frame-bold-duotone"></iconify-icon>
-          Open AMP Center
-        </span>
-      </a>
-    </div>
-  </aside>
-
-  <!-- Main View -->
-  <main>
-    <header>
-      <div class="header-doc-title" id="current-doc-title">Mission Statement</div>
-      <div class="header-actions">
-        <!-- Dark Mode Toggle -->
-        <button onclick="toggleTheme()" class="btn-theme-toggle" title="Toggle Theme">
-          <iconify-icon icon="solar:sun-2-bold-duotone" class="sun-icon" width="20" height="20" style="color: rgb(255, 145, 70)"></iconify-icon>
-          <iconify-icon icon="solar:moon-stars-bold-duotone" class="moon-icon" width="18" height="18" style="color: rgb(70, 212, 198)"></iconify-icon>
-        </button>
-
-        <a href="/home" class="conic-btn dramatic-hover">
-          <div class="conic-spin-bg"></div>
-          <div class="conic-btn-mask"></div>
-          <span class="relative z-10 flex items-center gap-1.5">
-            <iconify-icon icon="solar:home-2-linear"></iconify-icon> Home
-          </span>
+  <!-- Glassmorphic Container Layout -->
+  <div class="app-layout">
+    <!-- Sidebar Nav -->
+    <aside>
+      <div class="sidebar-header">
+        <a href="/home" class="logo-container">
+          <img src="logo.png" alt="Project D" class="logo-img" />
+          <span>Project D</span>
         </a>
-
-        <a href="mission.html" target="_blank" id="btn-new-tab" class="conic-btn dramatic-hover">
-          <div class="conic-spin-bg"></div>
-          <div class="conic-btn-mask"></div>
-          <span class="relative z-10 flex items-center gap-1.5">
-            <iconify-icon icon="solar:arrow-right-up-bold"></iconify-icon> Open in New Tab
-          </span>
-        </a>
-
-        <button onclick="printIframe()" class="conic-btn primary dramatic-hover">
-          <div class="conic-spin-bg"></div>
-          <div class="conic-btn-mask"></div>
-          <span class="relative z-10 flex items-center gap-1.5">
-            <iconify-icon icon="solar:printer-bold"></iconify-icon> Save / Print
-          </span>
-        </button>
+        <div class="sidebar-subtitle">Operations Academy</div>
       </div>
-    </header>
 
-    <div class="viewer-container">
-      <iframe src="mission.html" id="doc-iframe" name="doc-iframe"></iframe>
-    </div>
-  </main>
+      <nav class="nav-sections">
+        <div class="nav-group-title">Vision & Strategy</div>
+        <ul class="nav-list">
+          <li class="nav-item active" data-src="mission.html" data-title="Mission Statement">
+            <a href="#"><iconify-icon icon="solar:compass-bold-duotone"></iconify-icon> Mission Statement</a>
+          </li>
+          <li class="nav-item" data-src="pricing_strategy.html" data-title="Pricing Strategy">
+            <a href="#"><iconify-icon icon="solar:banknote-bold-duotone"></iconify-icon> Pricing Strategy</a>
+          </li>
+          <li class="nav-item" data-src="team_structure.html" data-title="Organizational Structure v6.0">
+            <a href="#"><iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon> Team Structure v6.0</a>
+          </li>
+        </ul>
+
+        <div class="nav-group-title">Client Onboarding</div>
+        <ul class="nav-list">
+          <li class="nav-item" data-src="welcome_guide.html" data-title="AMP Client Welcome Guide">
+            <a href="#"><iconify-icon icon="solar:hand-stars-bold-duotone"></iconify-icon> Client Welcome Guide</a>
+          </li>
+        </ul>
+
+        <div class="nav-group-title">Department Manuals</div>
+        <ul class="nav-list">
+          <li class="nav-item" data-src="leadership_playbook.html" data-title="Executive Leadership Playbook">
+            <a href="#"><iconify-icon icon="solar:crown-bold-duotone"></iconify-icon> Executive Leadership</a>
+          </li>
+          <li class="nav-item" data-src="growth_onboarding.html" data-title="Growth & Success Playbook">
+            <a href="#"><iconify-icon icon="solar:graph-up-bold-duotone"></iconify-icon> Growth & Success</a>
+          </li>
+          <li class="nav-item" data-src="tech_onboarding.html" data-title="Technology & Engineering Onboarding">
+            <a href="#"><iconify-icon icon="solar:code-bold-duotone"></iconify-icon> Tech & Engineering</a>
+          </li>
+          <li class="nav-item" data-src="creative_onboarding.html" data-title="Creative Production Manual">
+            <a href="#"><iconify-icon icon="solar:palette-bold-duotone"></iconify-icon> Creative Production</a>
+          </li>
+          <li class="nav-item" data-src="coaching_onboarding.html" data-title="Coaching & Support Guide">
+            <a href="#"><iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon> Coaching & Support</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="./amp-center.html" class="conic-btn dramatic-hover" style="width: 100%;">
+          <div class="conic-spin-bg"></div>
+          <div class="conic-btn-mask"></div>
+          <span class="relative z-10 flex items-center justify-center gap-1.5 text-xs font-semibold">
+            <iconify-icon icon="solar:window-frame-bold-duotone"></iconify-icon>
+            <span>Open AMP Center</span>
+          </span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main View -->
+    <main>
+      <header>
+        <div style="display: flex; align-items: center;">
+          <!-- Mobile Hamburger Toggle -->
+          <button id="menu-toggle" class="btn-menu-toggle" onclick="toggleMobileSidebar()" title="Toggle Sidebar">
+            <iconify-icon icon="solar:hamburger-menu-linear" width="22" height="22"></iconify-icon>
+          </button>
+          <div class="header-doc-title" id="current-doc-title">Mission Statement</div>
+        </div>
+        <div class="header-actions">
+          <!-- Dark Mode Toggle -->
+          <button onclick="toggleTheme()" class="btn-theme-toggle" title="Toggle Theme">
+            <iconify-icon icon="solar:sun-2-bold-duotone" class="sun-icon" width="20" height="20" style="color: rgb(255, 145, 70)"></iconify-icon>
+            <iconify-icon icon="solar:moon-stars-bold-duotone" class="moon-icon" width="18" height="18" style="color: rgb(70, 212, 198)"></iconify-icon>
+          </button>
+
+          <a href="/home" class="conic-btn dramatic-hover">
+            <div class="conic-spin-bg"></div>
+            <div class="conic-btn-mask"></div>
+            <span class="relative z-10 flex items-center gap-1.5">
+              <iconify-icon icon="solar:home-2-linear"></iconify-icon> <span>Home</span>
+            </span>
+          </a>
+
+          <a href="mission.html" target="_blank" id="btn-new-tab" class="conic-btn dramatic-hover">
+            <div class="conic-spin-bg"></div>
+            <div class="conic-btn-mask"></div>
+            <span class="relative z-10 flex items-center gap-1.5">
+              <iconify-icon icon="solar:arrow-right-up-bold"></iconify-icon> <span>Open in New Tab</span>
+            </span>
+          </a>
+
+          <button onclick="printIframe()" class="conic-btn primary dramatic-hover">
+            <div class="conic-spin-bg"></div>
+            <div class="conic-btn-mask"></div>
+            <span class="relative z-10 flex items-center gap-1.5">
+              <iconify-icon icon="solar:printer-bold"></iconify-icon> <span>Save / Print</span>
+            </span>
+          </button>
+        </div>
+      </header>
+
+      <div class="viewer-container">
+        <iframe src="mission.html" id="doc-iframe" name="doc-iframe"></iframe>
+      </div>
+    </main>
+  </div>
 
   <script>
     const navItems = document.querySelectorAll('.nav-item');
     const iframe = document.getElementById('doc-iframe');
     const docTitle = document.getElementById('current-doc-title');
     const newTabBtn = document.getElementById('btn-new-tab');
+
+    // Toggle Mobile Sidebar Drawer
+    function toggleMobileSidebar() {
+      const sidebar = document.querySelector('aside');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('open');
+      backdrop.classList.toggle('open');
+    }
 
     // Apply stored theme on initial load
     function applyTheme() {
@@ -527,6 +815,14 @@
         iframe.src = src;
         docTitle.textContent = title;
         newTabBtn.href = src;
+
+        // Auto-close mobile sidebar drawer when a document is clicked
+        const sidebar = document.querySelector('aside');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        if (sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+          backdrop.classList.remove('open');
+        }
       });
     });
 
