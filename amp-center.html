@@ -5452,7 +5452,7 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
                     <label className="block text-xs text-gray-500 mb-1">{inputLabels?.[0] || 'Name / Company'}</label>
                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">Phone</label>
                       <input type="tel" value={formData.phone || ''} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="(555) 123-4567" className="w-full bg-black/5 dark:bg-white/10 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-pd-teal outline-none" />
@@ -7468,7 +7468,7 @@ ${transactions.slice(0, 15).map(t => `
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs text-gray-500 mb-2">Billing Model Type</label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button 
                         onClick={() => setBillingConfig({...billingConfig, type: 'recurring'})}
                         className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all ${billingConfig.type === 'recurring' ? 'bg-pd-teal/15 border-pd-teal text-pd-teal' : 'bg-black/5 dark:bg-white/5 border-transparent text-gray-500 hover:bg-black/10'}`}
@@ -7546,7 +7546,7 @@ ${transactions.slice(0, 15).map(t => `
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">Invoice Due Date</label>
                       <input 

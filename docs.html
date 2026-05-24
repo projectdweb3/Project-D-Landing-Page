@@ -613,6 +613,12 @@
         text-overflow: ellipsis;
       }
     }
+
+    @media (max-width: 600px) {
+      #btn-new-tab, button[onclick="printIframe()"] {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>

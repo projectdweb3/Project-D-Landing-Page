@@ -76,6 +76,24 @@
     .preview-box {
       background-image: radial-gradient(rgba(70, 212, 198, 0.15) 1px, transparent 1px);
       background-size: 16px 16px;
+      padding: 1rem !important; /* Mobile padding */
+    }
+
+    @media (min-width: 640px) {
+      .preview-box {
+        padding: 2rem !important; /* Desktop padding */
+      }
+    }
+
+    /* Responsive preset card padding override */
+    .preset-card {
+      padding: 1rem !important; /* Mobile padding */
+    }
+
+    @media (min-width: 640px) {
+      .preset-card {
+        padding: 1.5rem !important; /* Desktop padding */
+      }
     }
   </style>
 </head>
@@ -195,7 +213,7 @@
             <div class="conic-btn-mask"></div>
             <span class="relative z-10 flex items-center gap-1.5">
               <iconify-icon icon="solar:home-2-linear" width="14"></iconify-icon>
-              <span>Home</span>
+              <span class="hidden md:inline">Home</span>
             </span>
           </a>
 
@@ -204,7 +222,7 @@
             <div class="conic-btn-mask"></div>
             <span class="relative z-10 flex items-center gap-1.5">
               <iconify-icon icon="solar:window-frame-bold-duotone" width="14"></iconify-icon>
-              <span>AMP Center</span>
+              <span class="hidden md:inline">AMP Center</span>
             </span>
           </a>
 

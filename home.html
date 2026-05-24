@@ -536,6 +536,22 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    @media (max-width: 400px) {
+      #dynamic-island > div {
+        padding: 4px !important;
+        gap: 4px !important;
+      }
+      #dynamic-island a {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 10px !important;
+      }
+      #dynamic-island button {
+        width: 28px !important;
+        height: 28px !important;
+      }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
