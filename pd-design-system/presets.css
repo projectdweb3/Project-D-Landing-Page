@@ -570,3 +570,73 @@
 .capacity-active {
   animation: capacityPulse 2s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   9. ADDITIONAL ENHANCEMENTS
+   ========================================================================== */
+
+/* Active Workforce Tree Connectors */
+.tree-line-v {
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent);
+}
+.dark .tree-line-v {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+}
+.tree-line-h {
+  height: 1px;
+  background: rgba(0,0,0,0.2);
+}
+.dark .tree-line-h {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Custom Settings Switch Slider */
+.pd-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.pd-switch input {
+  display: none;
+}
+.pd-switch-slider {
+  width: 36px;
+  height: 18px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  transition: background-color 0.3s;
+  position: relative;
+}
+.dark .pd-switch-slider {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.pd-switch-slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+.pd-switch input:checked + .pd-switch-slider {
+  background-color: var(--pd-teal);
+}
+.pd-switch input:checked + .pd-switch-slider::before {
+  transform: translateX(18px);
+}
+
+/* Typing Dots Animation */
+@keyframes typingDotBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+.typing-dot {
+  animation: typingDotBounce 1s ease-in-out infinite;
+}
+
