@@ -5938,6 +5938,12 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
     };
 
     const FinanceTracker = ({ session, userProfile, onLogExpense, title, subtitle }) => {
+      const isSoftware = userProfile?.stage === 'Software';
+      const currentStage = userProfile?.stage || 'Default';
+      const storageKey = `amp_finances_${currentStage}`;
+      const invoicesKey = `amp_invoices_${currentStage}`;
+      const stripeConfigKey = `amp_stripe_config_${currentStage}`;
+
       const [activeTab, setActiveTab] = useState('overview');
       const [clients, setClients] = useState([]);
       const [transactions, setTransactions] = useState([]);
@@ -5949,17 +5955,29 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
       const [showBillingModal, setShowBillingModal] = useState(false);
       const [selectedClient, setSelectedClient] = useState(null);
       
-      // Stripe credentials fields
-      const [publishableKey, setPublishableKey] = useState('pk_test_51Nx...8z9a');
-      const [secretKey, setSecretKey] = useState('sk_test_51Nx...2g7y');
-      const [webhookSecret, setWebhookSecret] = useState('whsec_7d...4a8e');
+      // Stripe credentials fields (persisted)
+      const [publishableKey, setPublishableKey] = useState(() => {
+        try {
+          const config = JSON.parse(localStorage.getItem(`amp_stripe_config_${currentStage}`) || '{}');
+          return config.publishableKey || '';
+        } catch(e) { return ''; }
+      });
+      const [secretKey, setSecretKey] = useState(() => {
+        try {
+          const config = JSON.parse(localStorage.getItem(`amp_stripe_config_${currentStage}`) || '{}');
+          return config.secretKey || '';
+        } catch(e) { return ''; }
+      });
+      const [webhookSecret, setWebhookSecret] = useState(() => {
+        try {
+          const config = JSON.parse(localStorage.getItem(`amp_stripe_config_${currentStage}`) || '{}');
+          return config.webhookSecret || '';
+        } catch(e) { return ''; }
+      });
       const [showKeys, setShowKeys] = useState(false);
 
       // Webhook event logger
-      const [webhookEvents, setWebhookEvents] = useState([
-        { id: 'evt_1', type: 'charge.succeeded', time: new Date(Date.now() - 3600000).toLocaleTimeString(), amount: '$150.00', status: 'processed' },
-        { id: 'evt_2', type: 'customer.subscription.created', time: new Date(Date.now() - 7200000).toLocaleTimeString(), amount: 'Sub: Pro SaaS ($79/mo)', status: 'processed' }
-      ]);
+      const [webhookEvents, setWebhookEvents] = useState([]);
 
       // Form States
       const [newTx, setNewTx] = useState({ type: 'Expense', amount: '', description: '', category: 'General', clientName: '' });
@@ -5974,11 +5992,6 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         type: 'recurring',
         amount: ''
       });
-
-      const isSoftware = userProfile?.stage === 'Software';
-      const currentStage = userProfile?.stage || 'Default';
-      const storageKey = `amp_finances_${currentStage}`;
-      const invoicesKey = `amp_invoices_${currentStage}`;
 
       // Load client ledger and software subscriber list (if Software stage)
       const fetchClientsAndSubscribers = async () => {
@@ -6073,18 +6086,22 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
           setTransactions(currentLocal);
         }
 
-        // Initialize mockup invoices if empty
-        if (localInvoices.length === 0) {
-          localInvoices = [
-            { id: 'INV-2026-001', clientName: 'Stripe SaaS Payout', issueDate: new Date(Date.now() - 86400000 * 3).toLocaleDateString(), dueDate: new Date(Date.now() + 86400000 * 10).toLocaleDateString(), items: [{ desc: 'Pro Subscription Package', qty: 1, rate: 150 }], amount: 150, status: 'Paid', category: 'Monthly Recurring Revenue' },
-            { id: 'INV-2026-002', clientName: 'Enterprise Consulting', issueDate: new Date(Date.now() - 86400000 * 5).toLocaleDateString(), dueDate: new Date(Date.now() - 86400000 * 1).toLocaleDateString(), items: [{ desc: 'Custom Cloud Architecture Setup', qty: 1, rate: 2500 }], amount: 2500, status: 'Sent', category: 'One-Time Payment' }
-          ];
-          localStorage.setItem(invoicesKey, JSON.stringify(localInvoices));
-        }
         setInvoices(localInvoices);
       };
 
       useEffect(() => {
+        // Load Stripe Config dynamically on stage change
+        try {
+          const config = JSON.parse(localStorage.getItem(`amp_stripe_config_${currentStage}`) || '{}');
+          setPublishableKey(config.publishableKey || '');
+          setSecretKey(config.secretKey || '');
+          setWebhookSecret(config.webhookSecret || '');
+        } catch(e) {
+          setPublishableKey('');
+          setSecretKey('');
+          setWebhookSecret('');
+        }
+
         fetchClientsAndSubscribers();
         fetchFinances();
         
@@ -6162,16 +6179,24 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         const cKey = `amp_clients_${targetStage}`;
         const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
         
+        let newLtvString = '';
         const updated = currentLocal.map(c => {
           if (c.name === name) {
             const currentLtvVal = parseFloat(String(c.ltv || '0').replace(/[^0-9.]/g, '')) || 0;
             const newLtv = currentLtvVal + amount;
-            return { ...c, ltv: `$${newLtv.toLocaleString()}` };
+            newLtvString = `$${newLtv.toLocaleString()}`;
+            return { ...c, ltv: newLtvString };
           }
           return c;
         });
 
         localStorage.setItem(cKey, JSON.stringify(updated));
+
+        // Sync LTV to Supabase if active
+        if (supabaseClient && session?.user?.id && clientObj.id && newLtvString) {
+          supabaseClient.from('clients').update({ ltv: newLtvString }).eq('id', clientObj.id).then();
+        }
+
         fetchClientsAndSubscribers();
       };
 
@@ -6184,20 +6209,30 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
         const currentLocal = JSON.parse(localStorage.getItem(cKey) || '[]');
         
         const amountNum = parseFloat(billingConfig.amount) || 0;
+        const updatedPayload = { 
+          billing_type: billingConfig.type,
+          mrr_amount: billingConfig.type === 'recurring' ? amountNum : 0,
+          one_time_amount: billingConfig.type === 'one_time' ? amountNum : 0,
+          retainer: billingConfig.type === 'recurring' ? `$${amountNum}/mo` : `$${amountNum} One-time`
+        };
+
         const updated = currentLocal.map(c => {
           if (c.name === selectedClient.name) {
             return { 
               ...c, 
-              billing_type: billingConfig.type,
-              mrr_amount: billingConfig.type === 'recurring' ? amountNum : 0,
-              one_time_amount: billingConfig.type === 'one_time' ? amountNum : 0,
-              retainer: billingConfig.type === 'recurring' ? `$${amountNum}/mo` : `$${amountNum} One-time`
+              ...updatedPayload
             };
           }
           return c;
         });
 
         localStorage.setItem(cKey, JSON.stringify(updated));
+
+        // Sync back to Supabase if active
+        if (supabaseClient && session?.user?.id && selectedClient.id) {
+          supabaseClient.from('clients').update(updatedPayload).eq('id', selectedClient.id).then();
+        }
+
         setShowBillingModal(false);
         fetchClientsAndSubscribers();
       };
@@ -6288,21 +6323,38 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
 
       // Mock Stripe sync handler
       const handleStripeSync = () => {
+        // Save Credentials to localStorage first
+        try {
+          const config = { publishableKey, secretKey, webhookSecret };
+          localStorage.setItem(`amp_stripe_config_${currentStage}`, JSON.stringify(config));
+        } catch(e) {}
+
         setStripeSyncing(true);
-        setTimeout(() => {
+        setTimeout(async () => {
           setStripeSyncing(false);
           setStripeConnected(true);
           
+          // Try to dynamically match real clients in ledger for Stripe simulation
+          const subClients = clients.filter(c => c.accountType === 'Subscriber');
+          const nonSubClients = clients.filter(c => c.accountType !== 'Subscriber');
+          
+          const client1 = subClients[0] || clients[0] || { name: 'John Doe' };
+          const client2 = nonSubClients[0] || clients.find(c => c.name !== client1.name) || clients[1] || { name: 'Acme Corp' };
+
+          const amount1 = 150.00;
+          const amount2 = 450.00;
+          const amount3 = 15.00;
+
           // Generate 3 simulated webhook transactions
           const t1 = {
             id: 'st_tx_' + Date.now() + '1',
             user_id: session?.user?.id || 'local',
             business_stage: currentStage,
             type: 'Income',
-            amount: 150.00,
-            description: 'Stripe Webhook: subscription_payment (John Doe SaaS)',
+            amount: amount1,
+            description: `Stripe Webhook: subscription_payment (${client1.name} SaaS)`,
             category: 'Monthly Recurring Revenue',
-            client_name: 'John Doe',
+            client_name: client1.name,
             created_at: new Date().toISOString()
           };
           const t2 = {
@@ -6310,10 +6362,10 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             user_id: session?.user?.id || 'local',
             business_stage: currentStage,
             type: 'Income',
-            amount: 450.00,
-            description: 'Stripe Webhook: payment_intent_succeeded (Acme Corp Consulting)',
+            amount: amount2,
+            description: `Stripe Webhook: payment_intent_succeeded (${client2.name} Consulting)`,
             category: 'One-Time Payment',
-            client_name: 'Acme Corp',
+            client_name: client2.name,
             created_at: new Date().toISOString()
           };
           const t3 = {
@@ -6321,26 +6373,40 @@ CRITICAL RULES ON WORKFLOW & HUMAN TASKS:
             user_id: session?.user?.id || 'local',
             business_stage: currentStage,
             type: 'Expense',
-            amount: 15.00,
+            amount: amount3,
             description: 'Stripe Fee Deduction (Transaction processing)',
             category: 'Merchant Fees',
             client_name: null,
             created_at: new Date().toISOString()
           };
 
+          // Save to local storage
           const newTxs = [t1, t2, t3, ...transactions];
           setTransactions(newTxs);
           localStorage.setItem(storageKey, JSON.stringify(newTxs));
 
+          // Save to Supabase if active
+          if (supabaseClient && session?.user?.id) {
+            try {
+              await supabaseClient.from('finances').insert([t1, t2, t3]);
+            } catch(e) {
+              console.error("Error inserting webhook transactions to Supabase", e);
+            }
+          }
+
+          // If client matches, update their LTV in ledger
+          if (client1.name) updateClientLTV(client1.name, amount1);
+          if (client2.name) updateClientLTV(client2.name, amount2);
+
           // Log webhooks
           setWebhookEvents([
-            { id: 'evt_' + Date.now() + '1', type: 'invoice.payment_succeeded', time: new Date().toLocaleTimeString(), amount: '$150.00', status: 'processed' },
-            { id: 'evt_' + Date.now() + '2', type: 'charge.succeeded', time: new Date().toLocaleTimeString(), amount: '$450.00', status: 'processed' },
-            { id: 'evt_' + Date.now() + '3', type: 'customer.subscription.created', time: new Date().toLocaleTimeString(), amount: 'Sub: Premium ($150/mo)', status: 'processed' },
+            { id: 'evt_' + Date.now() + '1', type: 'invoice.payment_succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount1.toFixed(2)}`, status: 'processed' },
+            { id: 'evt_' + Date.now() + '2', type: 'charge.succeeded', time: new Date().toLocaleTimeString(), amount: `$${amount2.toFixed(2)}`, status: 'processed' },
+            { id: 'evt_' + Date.now() + '3', type: 'customer.subscription.created', time: new Date().toLocaleTimeString(), amount: `Sub: Premium ($${amount1.toFixed(2)}/mo)`, status: 'processed' },
             ...webhookEvents
           ]);
 
-          alert('Stripe Account Synced! Factorized recurring subscribers and invoice events into revenue.');
+          alert('Stripe Account Synced! Saved credentials, factorized recurring subscribers, and synced webhook transactions into finances.');
         }, 1500);
       };
 
@@ -6552,23 +6618,37 @@ ${transactions.slice(0, 15).map(t => `
             <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
               <button 
                 onClick={handleGeneratePDFReport}
-                className="group inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate bg-pd-orange rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(255,145,70,0.18)] hover:shadow-[0_6px_32px_rgba(255,145,70,0.28)] hover:-translate-y-[1px] active:scale-[0.98]"
+                className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
               >
                 <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
-                <div className="absolute inset-[2px] rounded-full bg-pd-orange transition-colors duration-500 pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
                 <span className="relative z-10 flex items-center gap-2">
-                  <iconify-icon icon="solar:document-text-bold" width="16"></iconify-icon>
-                  Generate Report PDF
+                  <iconify-icon icon="solar:document-text-linear" width="16"></iconify-icon>
+                  Generate PDF Report
                 </span>
               </button>
 
               <button 
                 onClick={() => setShowManualAdd(!showManualAdd)} 
-                className="group inline-flex gap-1.5 transition-all duration-500 text-gray-900 dark:text-white overflow-hidden isolate bg-white/60 dark:bg-gray-800/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] active:scale-[0.98]"
+                className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-medium text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
               >
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
                 <span className="relative z-10 flex items-center gap-2">
                   <iconify-icon icon={showManualAdd ? "solar:close-circle-linear" : "solar:pen-linear"} width="16"></iconify-icon>
-                  {showManualAdd ? 'Cancel' : 'Log Transaction'}
+                  {showManualAdd ? 'Cancel' : 'Manual Entry'}
+                </span>
+              </button>
+
+              <button 
+                onClick={onLogExpense}
+                className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-medium bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center w-full md:w-auto shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+              >
+                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <iconify-icon icon="solar:add-circle-linear" width="16"></iconify-icon>
+                  Ask CEO to Log
                 </span>
               </button>
             </div>
@@ -6599,7 +6679,7 @@ ${transactions.slice(0, 15).map(t => `
             {activeTab === 'overview' && (
               <>
                 {/* Dashboard Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-2xl p-5 shadow-sm relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-pd-teal/5 rounded-full filter blur-xl"></div>
                     <div className="text-gray-500 text-xs mb-1 flex justify-between">Monthly Recurring Revenue (MRR) <iconify-icon icon="solar:wallet-money-bold" className="text-pd-teal"></iconify-icon></div>
@@ -6633,7 +6713,7 @@ ${transactions.slice(0, 15).map(t => `
                       <iconify-icon icon="solar:pen-bold" className="text-pd-teal"></iconify-icon>
                       Log Manual Transaction
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                       <div>
                         <label className="block text-[10px] uppercase text-gray-500 mb-1">Type</label>
                         <select value={newTx.type} onChange={e => setNewTx({...newTx, type: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white outline-none">
@@ -6668,9 +6748,28 @@ ${transactions.slice(0, 15).map(t => `
                         </select>
                       </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => setShowManualAdd(false)} className="px-4 py-2 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
-                      <button onClick={handleAddTx} className="bg-pd-teal text-black font-semibold rounded-xl px-4 py-2 text-xs transition-colors shadow-lg shadow-pd-teal/20">Add Ledger Entry</button>
+                    <div className="flex justify-end gap-3">
+                      <button 
+                        onClick={() => setShowManualAdd(false)} 
+                        className="group inline-flex gap-1.5 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-semibold text-gray-900 bg-white/60 rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                      >
+                        <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                        <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                        <span className="relative z-10 flex items-center gap-2">
+                          Cancel
+                        </span>
+                      </button>
+                      <button 
+                        onClick={handleAddTx} 
+                        className="group inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-semibold bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                      >
+                        <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                        <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                        <span className="relative z-10 flex items-center gap-2">
+                          <iconify-icon icon="solar:add-circle-linear" width="16"></iconify-icon>
+                          Add Ledger Entry
+                        </span>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -6756,9 +6855,14 @@ ${transactions.slice(0, 15).map(t => `
                           <td className="py-3.5 text-sm text-right">
                             <button 
                               onClick={() => { setSelectedClient(c); setBillingConfig({ type: c.billing_type || 'recurring', amount: String(c.billing_type === 'recurring' ? c.mrr_amount : (c.one_time_amount || 0)) }); setShowBillingModal(true); }}
-                              className="px-3 py-1 bg-black/5 dark:bg-white/10 hover:bg-pd-teal hover:text-black rounded-lg text-xs font-semibold transition-colors"
+                              className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-[10px] font-semibold text-gray-900 bg-white/60 rounded-full py-1.5 px-3.5 relative backdrop-blur-md items-center justify-center shadow-[0_2px_8px_rgba(70,212,198,0.08)] hover:shadow-[0_4px_16px_rgba(70,212,198,0.18)] hover:-translate-y-[0.5px] active:scale-[0.98]"
                             >
-                              Configure Billing
+                              <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                              <div className="absolute inset-[1.5px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                              <span className="relative z-10 flex items-center gap-1">
+                                <iconify-icon icon="solar:settings-bold" width="12"></iconify-icon>
+                                Configure Billing
+                              </span>
                             </button>
                           </td>
                         </tr>
@@ -6773,7 +6877,7 @@ ${transactions.slice(0, 15).map(t => `
             {activeTab === 'invoices' && (
               <div className="space-y-6">
                 {/* Stats row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-white/40 dark:bg-pd-glass border border-gray-200 dark:border-pd-glassBorder rounded-xl p-4 text-center">
                     <div className="text-gray-500 text-xs mb-1">Total Outstanding</div>
                     <div className="text-xl font-bold">${invoices.filter(i => i.status !== 'Paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}</div>
@@ -6800,10 +6904,14 @@ ${transactions.slice(0, 15).map(t => `
                     </div>
                     <button 
                       onClick={() => setShowInvoiceModal(true)} 
-                      className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center text-xs font-semibold shadow-lg shadow-pd-teal/20"
+                      className="group inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-semibold bg-pd-teal rounded-full py-2 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
                     >
-                      <iconify-icon icon="solar:add-circle-linear" className="mr-2" width="16"></iconify-icon>
-                      Create Invoice
+                      <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                      <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                      <span className="relative z-10 flex items-center gap-2">
+                        <iconify-icon icon="solar:add-circle-linear" width="16"></iconify-icon>
+                        Create Invoice
+                      </span>
                     </button>
                   </div>
 
@@ -6831,80 +6939,107 @@ ${transactions.slice(0, 15).map(t => `
                             <td className="py-3 text-sm font-semibold text-gray-900 dark:text-white">${inv.amount.toLocaleString()}</td>
                             <td className="py-3 text-sm text-right space-x-2">
                               {inv.status === 'Draft' && (
-                                <button onClick={() => handleSendInvoice(inv)} className="px-2 py-1 bg-pd-teal/10 text-pd-teal hover:bg-pd-teal hover:text-black rounded text-xs font-semibold transition-colors">Send Invoice</button>
+                                <button 
+                                  onClick={() => handleSendInvoice(inv)} 
+                                  className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-[10px] font-semibold bg-pd-teal rounded-full py-1 px-3 relative backdrop-blur-md items-center justify-center shadow-[0_2px_8px_rgba(70,212,198,0.08)] hover:shadow-[0_4px_16px_rgba(70,212,198,0.18)] hover:-translate-y-[0.5px] active:scale-[0.98]"
+                                >
+                                  <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                                  <div className="absolute inset-[1.5px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                                  <span className="relative z-10 flex items-center gap-1">
+                                    Send Invoice
+                                  </span>
+                                </button>
                               )}
                               {inv.status === 'Sent' && (
-                                <button onClick={() => handleMarkPaid(inv)} className="px-2 py-1 bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white rounded text-xs font-semibold transition-colors">Mark Paid</button>
+                                <button 
+                                  onClick={() => handleMarkPaid(inv)} 
+                                  className="group inline-flex gap-1 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-[10px] font-semibold bg-green-500 rounded-full py-1 px-3 relative backdrop-blur-md items-center justify-center shadow-[0_2px_8px_rgba(34,197,94,0.08)] hover:shadow-[0_4px_16px_rgba(34,197,94,0.18)] hover:-translate-y-[0.5px] active:scale-[0.98]"
+                                >
+                                  <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                                  <div className="absolute inset-[1.5px] rounded-full bg-green-600 transition-colors duration-500 pointer-events-none z-0"></div>
+                                  <span className="relative z-10 flex items-center gap-1">
+                                    Mark Paid
+                                  </span>
+                                </button>
                               )}
-                              <button onClick={() => {
-                                const printWin = window.open('', '_blank');
-                                printWin.document.write(`
-                                  <html>
-                                    <head>
-                                      <title>Invoice ${inv.id}</title>
-                                      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-                                      <style>
-                                        body { font-family: 'Inter', sans-serif; padding: 50px; color: #334155; }
-                                        .container { max-width: 700px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 40px; border-radius: 12px; }
-                                        .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
-                                        .invoice-title { font-size: 24px; font-weight: 700; color: #0b0f19; }
-                                        .meta { text-align: right; font-size: 13px; }
-                                        .section { margin: 30px 0; }
-                                        .bill-to { font-weight: 600; margin-bottom: 5px; color: #0b0f19; }
-                                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                                        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-                                        th { background: #f8fafc; font-weight: 600; }
-                                        .total-row { font-size: 16px; font-weight: 700; color: #0b0f19; text-align: right; padding-top: 20px; }
-                                      </style>
-                                    </head>
-                                    <body>
-                                      <div class="container">
-                                        <div class="inv-header">
-                                          <div>
-                                            <div class="invoice-title">INVOICE</div>
-                                            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">Project D Software Suite</div>
+                              <button 
+                                onClick={() => {
+                                  const printWin = window.open('', '_blank');
+                                  printWin.document.write(`
+                                    <html>
+                                      <head>
+                                        <title>Invoice ${inv.id}</title>
+                                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+                                        <style>
+                                          body { font-family: 'Inter', sans-serif; padding: 50px; color: #334155; }
+                                          .container { max-width: 700px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 40px; border-radius: 12px; }
+                                          .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+                                          .invoice-title { font-size: 24px; font-weight: 700; color: #0b0f19; }
+                                          .meta { text-align: right; font-size: 13px; }
+                                          .section { margin: 30px 0; }
+                                          .bill-to { font-weight: 600; margin-bottom: 5px; color: #0b0f19; }
+                                          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                                          th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+                                          th { background: #f8fafc; font-weight: 600; }
+                                          .total-row { font-size: 16px; font-weight: 700; color: #0b0f19; text-align: right; padding-top: 20px; }
+                                        </style>
+                                      </head>
+                                      <body>
+                                        <div class="container">
+                                          <div class="inv-header">
+                                            <div>
+                                              <div class="invoice-title">INVOICE</div>
+                                              <div style="font-size: 12px; color: #64748b; margin-top: 5px;">Project D Software Suite</div>
+                                            </div>
+                                            <div class="meta">
+                                              <div><strong>Invoice ID:</strong> ${inv.id}</div>
+                                              <div><strong>Issued:</strong> ${inv.issueDate}</div>
+                                              <div><strong>Due Date:</strong> ${inv.dueDate}</div>
+                                              <div><strong>Status:</strong> ${inv.status}</div>
+                                            </div>
                                           </div>
-                                          <div class="meta">
-                                            <div><strong>Invoice ID:</strong> ${inv.id}</div>
-                                            <div><strong>Issued:</strong> ${inv.issueDate}</div>
-                                            <div><strong>Due Date:</strong> ${inv.dueDate}</div>
-                                            <div><strong>Status:</strong> ${inv.status}</div>
+                                          <div class="section">
+                                            <div class="bill-to">Bill To:</div>
+                                            <div>${inv.clientName}</div>
                                           </div>
-                                        </div>
-                                        <div class="section">
-                                          <div class="bill-to">Bill To:</div>
-                                          <div>${inv.clientName}</div>
-                                        </div>
-                                        <table>
-                                          <thead>
-                                            <tr>
-                                              <th>Description</th>
-                                              <th>Qty</th>
-                                              <th>Unit Rate</th>
-                                              <th style="text-align: right;">Total</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            ${inv.items.map(item => `
+                                          <table>
+                                            <thead>
                                               <tr>
-                                                <td>${item.desc}</td>
-                                                <td>${item.qty}</td>
-                                                <td>$${parseFloat(item.rate).toLocaleString()}</td>
-                                                <td style="text-align: right;">$${(item.qty * item.rate).toLocaleString()}</td>
+                                                <th>Description</th>
+                                                <th>Qty</th>
+                                                <th>Unit Rate</th>
+                                                <th style="text-align: right;">Total</th>
                                               </tr>
-                                            `).join('')}
-                                          </tbody>
-                                        </table>
-                                        <div class="total-row">
-                                          Total Due: $${inv.amount.toLocaleString()}
+                                            </thead>
+                                            <tbody>
+                                              ${inv.items.map(item => `
+                                                <tr>
+                                                  <td>${item.desc}</td>
+                                                  <td>${item.qty}</td>
+                                                  <td>$${parseFloat(item.rate).toLocaleString()}</td>
+                                                  <td style="text-align: right;">$${(item.qty * item.rate).toLocaleString()}</td>
+                                                </tr>
+                                              `).join('')}
+                                            </tbody>
+                                          </table>
+                                          <div class="total-row">
+                                            Total Due: $${inv.amount.toLocaleString()}
+                                          </div>
                                         </div>
-                                      </div>
-                                      <\script>window.onload = () => { window.print(); };<\/script>
-                                    </body>
-                                  </html>
-                                `);
-                                printWin.document.close();
-                              }} className="px-2 py-1 bg-black/5 dark:bg-white/10 hover:bg-white/20 rounded text-xs text-gray-500 dark:text-gray-400 transition-colors">Print PDF</button>
+                                        <\script>window.onload = () => { window.print(); };<\/script>
+                                      </body>
+                                    </html>
+                                  `);
+                                  printWin.document.close();
+                                }} 
+                                className="group inline-flex gap-1 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-[10px] font-semibold text-gray-900 bg-white/60 rounded-full py-1 px-3 relative backdrop-blur-md items-center justify-center shadow-[0_2px_8px_rgba(70,212,198,0.08)] hover:shadow-[0_4px_16px_rgba(70,212,198,0.18)] hover:-translate-y-[0.5px] active:scale-[0.98]"
+                              >
+                                <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                                <div className="absolute inset-[1.5px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                                <span className="relative z-10 flex items-center gap-1">
+                                  Print PDF
+                                </span>
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -6983,14 +7118,16 @@ ${transactions.slice(0, 15).map(t => `
                       <button 
                         onClick={handleStripeSync} 
                         disabled={stripeSyncing}
-                        className="group flex-1 inline-flex gap-1.5 transition-all duration-500 text-black font-bold overflow-hidden bg-pd-teal rounded-xl py-3 px-4 relative backdrop-blur-md items-center justify-center shadow-lg shadow-pd-teal/20 disabled:opacity-50"
+                        className="group flex-1 inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-semibold bg-pd-teal rounded-full py-3 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98] disabled:opacity-50"
                       >
-                        {stripeSyncing ? (
-                          <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                        ) : (
-                          <iconify-icon icon="solar:round-transfer-horizontal-bold" width="18"></iconify-icon>
-                        )}
-                        <span className="relative z-10">
+                        <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                        <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                        <span className="relative z-10 flex items-center justify-center gap-2">
+                          {stripeSyncing ? (
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          ) : (
+                            <iconify-icon icon="solar:round-transfer-horizontal-bold" width="18"></iconify-icon>
+                          )}
                           {stripeSyncing ? 'Authenticating API...' : (stripeConnected ? 'Sync Latest Webhooks' : 'Connect Stripe Account')}
                         </span>
                       </button>
@@ -7033,7 +7170,7 @@ ${transactions.slice(0, 15).map(t => `
           {/* Configuration Billing Modal */}
           {showBillingModal && selectedClient && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl animate-fade-in">
+              <div className="bg-white dark:bg-[#0b0f19] border border-gray-200 dark:border-pd-glassBorder rounded-2xl w-full max-w-md p-6 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Configure Billing: {selectedClient.name}</h3>
                   <button onClick={() => setShowBillingModal(false)} className="text-gray-500 hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon></button>
@@ -7072,8 +7209,27 @@ ${transactions.slice(0, 15).map(t => `
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button onClick={() => setShowBillingModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
-                  <button onClick={handleSaveBilling} className="flex-1 py-2.5 bg-pd-teal text-black rounded-xl text-xs font-semibold shadow-lg shadow-pd-teal/20 transition-all hover:scale-[1.02]">Save Billing Config</button>
+                  <button 
+                    onClick={() => setShowBillingModal(false)} 
+                    className="group flex-1 inline-flex gap-1.5 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-semibold text-gray-900 bg-white/60 rounded-full py-2.5 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                  >
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      Cancel
+                    </span>
+                  </button>
+                  
+                  <button 
+                    onClick={handleSaveBilling} 
+                    className="group flex-1 inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-semibold bg-pd-teal rounded-full py-2.5 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                  >
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      Save Billing Config
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -7187,8 +7343,27 @@ ${transactions.slice(0, 15).map(t => `
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button onClick={() => setShowInvoiceModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-black/5 transition-all">Cancel</button>
-                  <button onClick={handleCreateInvoice} className="flex-1 py-2.5 bg-pd-teal text-black rounded-xl text-xs font-semibold shadow-lg shadow-pd-teal/20 transition-all hover:scale-[1.02]">Create Draft Invoice</button>
+                  <button 
+                    onClick={() => setShowInvoiceModal(false)} 
+                    className="group flex-1 inline-flex gap-1.5 transition-all duration-500 dark:text-white overflow-hidden isolate dark:bg-gray-800/60 text-xs font-semibold text-gray-900 bg-white/60 rounded-full py-2.5 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                  >
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-white/90 dark:bg-gray-800/90 transition-colors duration-500 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      Cancel
+                    </span>
+                  </button>
+                  
+                  <button 
+                    onClick={handleCreateInvoice} 
+                    className="group flex-1 inline-flex gap-1.5 transition-all duration-500 text-white overflow-hidden isolate dramatic-hover text-xs font-semibold bg-pd-teal rounded-full py-2.5 px-4 relative backdrop-blur-md items-center justify-center shadow-[0_4px_24px_rgba(70,212,198,0.18),0_2px_8px_rgba(255,145,70,0.12)] hover:shadow-[0_6px_32px_rgba(70,212,198,0.28),0_4px_16px_rgba(255,145,70,0.2)] hover:-translate-y-[1px] active:scale-[0.98]"
+                  >
+                    <div className="absolute inset-[-200%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#ff9146_30%,#ffffff_50%,#46d4c6_70%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_1.5s_linear_infinite] pointer-events-none z-0"></div>
+                    <div className="absolute inset-[2px] rounded-full bg-pd-teal transition-colors duration-500 pointer-events-none z-0"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      Create Draft Invoice
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
