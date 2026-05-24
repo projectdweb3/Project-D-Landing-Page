@@ -2645,7 +2645,7 @@
             
             &lt;!-- Left Sidebar Panel --&gt;
             &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
-                &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300 hover:scale-110 active:scale-95" onclick="window.showToast(&apos;Sidebar Panel Initialized&apos;)"&gt;
+                &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300 hover:scale-110 active:scale-95" onclick="event.preventDefault()"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
                         &lt;line x1="4" y1="12" x2="20" y2="12"&gt;&lt;/line&gt;
@@ -2653,7 +2653,7 @@
                     &lt;/svg&gt;
                 &lt;/button&gt;
                 
-                &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal" onclick="window.showToast(&apos;Easter Egg: Project D Portal Activated!&apos;)"&gt;
+                &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal" onclick="event.preventDefault()"&gt;
                     &lt;div class="absolute w-12 h-12 rounded-full bg-amber-500/10 filter blur-md group-hover:bg-amber-500/30 transition-all duration-500"&gt;&lt;/div&gt;
                     &lt;span class="relative font-serif text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-100 to-amber-500 tracking-wider filter drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]"&gt;D&lt;/span&gt;
                 &lt;/div&gt;
@@ -2679,11 +2679,11 @@
                     &lt;/div&gt;
                     
                     &lt;nav class="hidden lg:flex items-center gap-4"&gt;
-                        &lt;a href="#" class="nav-link-theme active" onclick="window.showToast(&apos;Navigating to Showcase&apos;)"&gt;Our Work&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Services details are listed inside components&apos;)"&gt;Services&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Client reviews and metrics loaded&apos;)"&gt;Client Results&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Project D Web Design Studio v4.0&apos;)"&gt;About&lt;/a&gt;
-                        &lt;a href="#" class="nav-link-theme" onclick="window.showToast(&apos;Read our latest design principles&apos;)"&gt;Blog&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme active" onclick="event.preventDefault()"&gt;Our Work&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="event.preventDefault()"&gt;Services&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="event.preventDefault()"&gt;Client Results&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="event.preventDefault()"&gt;About&lt;/a&gt;
+                        &lt;a href="#" class="nav-link-theme" onclick="event.preventDefault()"&gt;Blog&lt;/a&gt;
                     &lt;/nav&gt;
                     
                     &lt;div class="flex items-center gap-4"&gt;
@@ -2691,7 +2691,7 @@
                             &lt;input type="checkbox" id="checkbox" /&gt;
                             &lt;div class="slider"&gt;&lt;/div&gt;
                         &lt;/label&gt;
-                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0 hover:border-amber-400 active:scale-95" id="btn-get-started" onclick="window.showToast(&apos;Get Started Initialized: Thank you for interest!&apos;)"&gt;
+                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0 hover:border-amber-400 active:scale-95" id="btn-get-started" onclick="event.preventDefault()"&gt;
                             [Get Started]
                         &lt;/button&gt;
                     &lt;/div&gt;
@@ -2713,11 +2713,11 @@
                             Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
                         &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest flex items-center gap-2" onclick="showHvac()"&gt;
+                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest flex items-center gap-2" onclick="event.preventDefault()"&gt;
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
                                 &lt;span class="text-xs"&gt;→&lt;/span&gt;
                             &lt;/button&gt;
-                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest active:scale-95" onclick="window.showToast(&apos;Let\&apos;s discuss your project! Contact info: hello@projectd.io&apos;)"&gt;
+                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest active:scale-95" onclick="event.preventDefault()"&gt;
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
@@ -2762,7 +2762,7 @@
                             &lt;!-- Bottom Service Pills --&gt;
                             &lt;div class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Skin Resurfacing Laser Treatments&apos;)"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Laser
                                     &lt;/button&gt;
@@ -2772,7 +2772,7 @@
                                     &lt;/div&gt;
                                 &lt;/div&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Dermal Fillers &amp; Botox Injectables&apos;)"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Injectables
                                     &lt;/button&gt;
@@ -2782,7 +2782,7 @@
                                     &lt;/div&gt;
                                 &lt;/div&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
-                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="window.showToast(&apos;Category selected: Customized Medical Hydrafacials&apos;)"&gt;
+                                    &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Facials
                                     &lt;/button&gt;
@@ -2810,12 +2810,12 @@
             
             &lt;!-- Capsule Navbar (mock design in mockup) --&gt;
             &lt;nav class="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full border border-white/10 dark:border-white/5 bg-white/5 backdrop-blur-md shadow-lg"&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="window.showToast(&apos;Active mock portfolio: Climate Control design system&apos;)"&gt;Work&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="window.showToast(&apos;Providing system engineering &amp; custom programming&apos;)"&gt;Services&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="window.showToast(&apos;Mock project gallery updated successfully&apos;)"&gt;Portfolio&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="window.showToast(&apos;We design software interfaces for physical smart appliances&apos;)"&gt;About&lt;/a&gt;
-                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="window.showToast(&apos;Read about SEER ratings and heat pump efficiency&apos;)"&gt;Blog&lt;/a&gt;
-                &lt;button class="ml-4 px-5 py-2 rounded-full btn-book-project text-[9px] font-bold tracking-widest uppercase shrink-0 hover:scale-105 active:scale-95" onclick="window.showToast(&apos;Booking Form Loaded: Secure checkout initialized.&apos;, &apos;sync&apos;)"&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="event.preventDefault()"&gt;Work&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="event.preventDefault()"&gt;Services&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="event.preventDefault()"&gt;Portfolio&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="event.preventDefault()"&gt;About&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors hover:scale-105" onclick="event.preventDefault()"&gt;Blog&lt;/a&gt;
+                &lt;button class="ml-4 px-5 py-2 rounded-full btn-book-project text-[9px] font-bold tracking-widest uppercase shrink-0 hover:scale-105 active:scale-95" onclick="event.preventDefault()"&gt;
                     Book Your Project
                 &lt;/button&gt;
             &lt;/nav&gt;
@@ -2852,10 +2852,10 @@
                 &lt;/p&gt;
                 
                 &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest" onclick="window.showToast(&apos;Displaying project details inside lower cards&apos;)"&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest" onclick="event.preventDefault()"&gt;
                         View Our Projects
                     &lt;/button&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" onclick="window.showToast(&apos;Consultation request received! Our engineers will call you.&apos;, &apos;success&apos;)"&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" onclick="event.preventDefault()"&gt;
                         Request a Design Consultation
                     &lt;/button&gt;
                 &lt;/div&gt;
