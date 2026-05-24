@@ -2332,22 +2332,22 @@
         }
         /* Style for interactive service buttons */
         .service-btn {
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            color: var(--text-main);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .service-btn:hover {
             border-color: var(--accent-gold) !important;
-            color: var(--text-main) !important;
-            background: rgba(197, 160, 89, 0.08);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px var(--accent-gold-glow);
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.35);
         }
         body.light-mode .service-btn:hover {
-            background: rgba(141, 110, 50, 0.06);
+            background: rgba(255, 255, 255, 0.2) !important;
         }
         .bg-glass-tooltip {
             background: var(--glass-card-bg) !important;
@@ -2575,7 +2575,7 @@
                             &lt;/div&gt;
 
                             &lt;!-- Hover Overlay with Service Pills --&gt;
-                            &lt;div class="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/60 to-transparent z-20 flex justify-around items-center"&gt;
+                            &lt;div class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
                                 &lt;!-- Service Tag 1 --&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
@@ -3069,8 +3069,8 @@
                 <div class="w-full lg:w-[460px] shrink-0 bg-gray-50/50 dark:bg-black/30 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-between min-h-[300px]">
                   <div class="flex flex-col gap-4 items-center justify-center py-4 bg-white dark:bg-[#0c101d]/50 border border-gray-100 dark:border-white/5 rounded-xl min-h-[170px]">
                     <!-- Preset Conic Spin Pill Button -->
-                    <div class="relative group/conic">
-                      <div class="sandbox-conic-glow absolute -inset-[1.5px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,#46d4c6_100%)] opacity-75 blur-[0.5px]"></div>
+                    <div class="relative group/conic w-fit">
+                      <div class="sandbox-conic-glow absolute -inset-[1.5px] rounded-full bg-[conic-gradient(from_0deg,transparent_60%,#46d4c6_100%)] opacity-75 blur-[0.5px] animate-[spin_3s_linear_infinite]"></div>
                       <button class="relative px-5 py-2 rounded-full bg-white dark:bg-[#0b0f19] text-[10px] font-semibold text-gray-800 dark:text-white tracking-wide border border-gray-200 dark:border-white/10 hover:border-transparent transition-all">
                         Liquid Glass Button
                       </button>
