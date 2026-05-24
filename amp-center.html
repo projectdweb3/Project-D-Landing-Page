@@ -6952,7 +6952,7 @@ ${transactions.slice(0, 15).map(t => `
           </div>
 
           {/* Premium Sub-Navigation Tabs */}
-          <div className="flex bg-gray-200/50 dark:bg-black/20 p-1 border-b border-gray-200 dark:border-pd-glassBorder overflow-x-auto snap-x flex-shrink-0">
+          <div className="flex gap-2 bg-gray-200/50 dark:bg-black/20 p-1.5 border-b border-gray-200 dark:border-pd-glassBorder overflow-x-auto snap-x flex-shrink-0">
             {[
               { id: 'overview', label: 'Financial Overview', icon: 'solar:chart-square-linear' },
               { id: 'billing', label: 'Accounts Billing Config', icon: 'solar:settings-bold-duotone' },
@@ -6962,9 +6962,13 @@ ${transactions.slice(0, 15).map(t => `
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold transition-all shrink-0 snap-center ${activeTab === tab.id ? 'bg-white dark:bg-[#0f172a] text-pd-teal shadow-sm border-b-2 border-pd-teal' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/10'}`}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 snap-center ${
+                  activeTab === tab.id
+                    ? 'bg-pd-orange/10 border-pd-orange/50 text-pd-orange shadow-sm'
+                    : 'bg-white/60 dark:bg-black/20 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-gray-400'
+                }`}
               >
-                <iconify-icon icon={tab.icon} width="16"></iconify-icon>
+                <iconify-icon icon={tab.icon} width="13"></iconify-icon>
                 {tab.label}
               </button>
             ))}
