@@ -2069,11 +2069,12 @@
 &lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Project D - Medspa Premium Digital Experience&lt;/title&gt;
+    &lt;title&gt;Project D - Interactive Showcase&lt;/title&gt;
     &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
     &lt;script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"&gt;&lt;/script&gt;
     &lt;link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"&gt;
     &lt;style&gt;
+        /* Shared variables &amp; themes */
         :root {
             --bg-dark: #10121a;
             --accent-gold: #c5a059;
@@ -2104,6 +2105,33 @@
             --orbit-color: rgba(141, 110, 50, 0.08);
         }
 
+        /* HVAC Theme Specific CSS Variables */
+        body.hvac-theme-active {
+            --hvac-bg: #15181f;
+            --hvac-grid: rgba(0, 242, 234, 0.04);
+            --hvac-text: #f3f4f6;
+            --hvac-text-muted: #9ca3af;
+            --hvac-glass: rgba(25, 30, 40, 0.55);
+            --hvac-border: rgba(255, 255, 255, 0.08);
+            --hvac-glow: rgba(0, 242, 234, 0.25);
+            --hvac-btn-gradient: linear-gradient(135deg, rgba(13, 42, 45, 0.9) 0%, rgba(0, 150, 136, 0.2) 100%);
+            --hvac-btn-border: #00f2ea;
+            --hvac-liquid-bg: radial-gradient(circle at 50% 30%, #1a1e26 0%, #101216 70%, #0d0f12 100%);
+        }
+
+        body.light-mode.hvac-theme-active {
+            --hvac-bg: #f8fafc;
+            --hvac-grid: rgba(0, 150, 136, 0.07);
+            --hvac-text: #0f172a;
+            --hvac-text-muted: #475569;
+            --hvac-glass: rgba(255, 255, 255, 0.8);
+            --hvac-border: rgba(0, 0, 0, 0.08);
+            --hvac-glow: rgba(0, 150, 136, 0.15);
+            --hvac-btn-gradient: linear-gradient(135deg, #009688 0%, #00bcd4 100%);
+            --hvac-btn-border: #009688;
+            --hvac-liquid-bg: radial-gradient(circle at 50% 30%, #ffffff 0%, #f1f5f9 70%, #e2e8f0 100%);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -2116,24 +2144,19 @@
             color: var(--text-main);
             overflow-x: hidden;
             transition: background 0.5s ease, color 0.5s ease;
+            min-height: 100vh;
         }
 
-        .hero-container {
-            display: flex;
-            min-height: 100vh;
-            width: 100vw;
-            position: relative;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            z-index: 5;
+        body.hvac-theme-active {
+            background: var(--hvac-liquid-bg);
+            color: var(--hvac-text);
         }
 
         .font-serif-luxury {
             font-family: &apos;Playfair Display&apos;, &apos;Cinzel&apos;, Georgia, serif;
         }
 
-        /* Main Glassmorphic Card Container */
+        /* Medspa Styles */
         .glass-panel {
             background: var(--glass-card-bg);
             border: 1px solid var(--glass-border);
@@ -2147,7 +2170,6 @@
             border-color: var(--glass-border-glow);
         }
 
-        /* SVG Orbit Lines */
         .orbit-line {
             stroke: var(--orbit-color);
             stroke-dasharray: 6 3;
@@ -2161,7 +2183,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Bronze Gold Gradient Button */
         .btn-bronze {
             background: linear-gradient(135deg, var(--accent-gold) 0%, #a27e3e 100%);
             color: #ffffff !important;
@@ -2179,7 +2200,6 @@
             transform: translateY(0) scale(0.97);
         }
 
-        /* Glass Pill Button */
         .btn-glass {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
@@ -2202,11 +2222,6 @@
             background: rgba(0, 0, 0, 0.04);
         }
 
-        .btn-glass:active {
-            transform: translateY(0 scale(0.97));
-        }
-
-        /* Image grid line style */
         .grid-line {
             background-color: rgba(255, 255, 255, 0.08);
             pointer-events: none;
@@ -2224,7 +2239,6 @@
             border-color: rgba(0, 0, 0, 0.15);
         }
 
-        /* Sparkle Star */
         .sparkle-star {
             position: absolute;
             color: var(--accent-gold);
@@ -2285,17 +2299,7 @@
             background-color: #ffffff;
         }
 
-        #btn-exit-portal:hover {
-            color: var(--text-main);
-            border-color: var(--text-main);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        body.light-mode #btn-exit-portal:hover {
-            background: rgba(0, 0, 0, 0.03);
-        }
-
-        /* Redesigned theme-aware classes */
+        /* Theme-aware utilities */
         .text-main-theme {
             color: var(--text-main) !important;
             transition: color 0.5s ease;
@@ -2330,7 +2334,6 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
-        /* Style for interactive service buttons */
         .service-btn {
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
             background: rgba(255, 255, 255, 0.08) !important;
@@ -2346,14 +2349,6 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(197, 160, 89, 0.35);
         }
-        body.light-mode .service-btn:hover {
-            background: rgba(255, 255, 255, 0.2) !important;
-        }
-        .bg-glass-tooltip {
-            background: var(--glass-card-bg) !important;
-        }
-
-        /* Service tooltip styling */
         .service-tooltip {
             position: absolute;
             bottom: 100%;
@@ -2375,17 +2370,14 @@
             z-index: 30;
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
-
         body.light-mode .service-tooltip {
             box-shadow: 0 15px 30px rgba(0,0,0,0.05);
         }
-
         .service-tooltip-wrapper:hover .service-tooltip {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(0);
         }
-
         .service-tooltip h4 {
             font-family: &apos;Playfair Display&apos;, serif;
             font-size: 0.75rem;
@@ -2394,18 +2386,102 @@
             margin-bottom: 2px;
             letter-spacing: 0.5px;
         }
-
         .service-tooltip p {
             font-size: 0.65rem;
             color: var(--text-muted);
             line-height: 1.35;
         }
+
+        /* HVAC Styles */
+        .blueprint-grid {
+            background-image: 
+                linear-gradient(var(--hvac-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--hvac-grid) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .hvac-glass-card {
+            background: var(--hvac-glass);
+            border: 1px solid var(--hvac-border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+            transition: background 0.5s ease, border-color 0.5s ease;
+        }
+        .hvac-btn-cyan {
+            background: var(--hvac-btn-gradient);
+            border: 1px solid var(--hvac-btn-border) !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px var(--hvac-glow);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .hvac-btn-cyan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--hvac-glow);
+            filter: brightness(1.1);
+        }
+        .hvac-btn-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--hvac-border);
+            color: var(--hvac-text) !important;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        body.light-mode .hvac-btn-glass {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0,0,0,0.1);
+        }
+        .hvac-btn-glass:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--hvac-text);
+            transform: translateY(-2px);
+        }
+        body.light-mode .hvac-btn-glass:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .btn-book-project {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.45) 0%, rgba(59, 130, 246, 0.2) 100%);
+            border: 1px solid rgba(147, 197, 253, 0.3) !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+        body.light-mode .btn-book-project {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        .btn-book-project:hover {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.6) 0%, rgba(59, 130, 246, 0.4) 100%);
+            border-color: rgba(147, 197, 253, 0.6) !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            transform: scale(1.03);
+        }
+        body.light-mode .btn-book-project:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        }
+        .hvac-project-card {
+            border: 1px solid var(--hvac-border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .hvac-project-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--hvac-btn-border);
+            box-shadow: 0 15px 30px var(--hvac-glow);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 
-    &lt;!-- Liquid Orbits in Backdrop --&gt;
-    &lt;div class="absolute inset-0 z-0 overflow-hidden pointer-events-none"&gt;
+    &lt;!-- ================= MEDSPA BACKGROUNDS ================= --&gt;
+    &lt;div id="medspa-bg" class="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-500"&gt;
         &lt;svg class="absolute w-full h-full opacity-60" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
             &lt;defs&gt;
                 &lt;linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%"&gt;
@@ -2421,19 +2497,51 @@
             &lt;ellipse cx="50%" cy="50%" rx="48%" ry="45%" class="orbit-line" stroke="url(#gold-grad)" stroke-width="1" fill="none" filter="url(#glow-filter)"/&gt;
             &lt;ellipse cx="50%" cy="50%" rx="52%" ry="48%" class="orbit-line" stroke="url(#gold-grad)" stroke-width="0.75" fill="none" style="animation-direction: reverse; animation-duration: 240s;"/&gt;
         &lt;/svg&gt;
-        &lt;!-- Blur Spotlights --&gt;
         &lt;div class="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-amber-500/5 filter blur-[100px]"&gt;&lt;/div&gt;
         &lt;div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-blue-500/5 filter blur-[120px]"&gt;&lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;!-- Landing Page View --&gt;
-    &lt;div class="hero-container"&gt;
+    &lt;!-- ================= HVAC BACKGROUNDS ================= --&gt;
+    &lt;div id="hvac-bg" class="absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-500 opacity-0"&gt;
+        &lt;div class="absolute inset-0 blueprint-grid"&gt;&lt;/div&gt;
+        &lt;!-- Light Leaks / Circuit Glows --&gt;
+        &lt;div class="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-cyan-500/5 filter blur-[130px]"&gt;&lt;/div&gt;
+        &lt;div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/5 filter blur-[130px]"&gt;&lt;/div&gt;
+        &lt;!-- horizontal light trails --&gt;
+        &lt;div class="absolute top-[20%] left-[-10%] w-[600px] h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent rotate-[12deg] filter blur-sm"&gt;&lt;/div&gt;
+        &lt;div class="absolute bottom-[35%] right-[-10%] w-[700px] h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent rotate-[-8deg] filter blur-sm"&gt;&lt;/div&gt;
+        
+        &lt;!-- Circuit SVG network --&gt;
+        &lt;div class="absolute inset-0 opacity-[0.18]"&gt;
+            &lt;svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"&gt;
+                &lt;defs&gt;
+                    &lt;linearGradient id="circuit-grad" x1="0%" y1="0%" x2="100%" y2="100%"&gt;
+                        &lt;stop offset="0%" stop-color="#00f2ea" stop-opacity="0.4"/&gt;
+                        &lt;stop offset="50%" stop-color="#059669" stop-opacity="0.1"/&gt;
+                        &lt;stop offset="100%" stop-color="#00f2ea" stop-opacity="0.4"/&gt;
+                    &lt;/linearGradient&gt;
+                &lt;/defs&gt;
+                &lt;path d="M 50,120 L 180,120 L 220,160 L 450,160" stroke="url(#circuit-grad)" stroke-width="1.5" fill="none" /&gt;
+                &lt;path d="M 320,60 L 380,120 L 380,280 L 440,340" stroke="url(#circuit-grad)" stroke-width="1" fill="none" /&gt;
+                &lt;path d="M 700,120 L 820,240 L 950,240 L 1000,290" stroke="url(#circuit-grad)" stroke-width="1.5" fill="none" /&gt;
+                &lt;circle cx="50" cy="120" r="3.5" fill="#00f2ea" /&gt;
+                &lt;circle cx="450" cy="160" r="3.5" fill="#10b981" /&gt;
+                &lt;circle cx="320" cy="60" r="2.5" fill="#00f2ea" /&gt;
+                &lt;circle cx="440" cy="340" r="3.5" fill="#00f2ea" /&gt;
+                &lt;circle cx="700" cy="120" r="3.5" fill="#00f2ea" /&gt;
+                &lt;circle cx="1000" cy="290" r="3.5" fill="#10b981" /&gt;
+            &lt;/svg&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;!-- ================= SLIDE 1: MEDSPA SITE ================= --&gt;
+    &lt;div id="medspa-site" class="hero-container transition-all duration-500 w-full min-h-screen relative flex items-center justify-center p-8 z-10"&gt;
         &lt;!-- Glassmorphic Window --&gt;
-        &lt;div class="w-[98%] max-w-[1520px] h-[90vh] md:h-[680px] lg:h-[720px] xl:h-[780px] rounded-[2.5rem] glass-panel flex flex-col md:flex-row relative overflow-hidden z-10"&gt;
+        &lt;div class="w-[98%] max-w-[1520px] h-[90vh] md:h-[680px] lg:h-[720px] xl:h-[780px] rounded-[2.5rem] glass-panel flex flex-col md:flex-row relative overflow-hidden"&gt;
             
             &lt;!-- Left Sidebar Panel --&gt;
             &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-between py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
-                &lt;!-- Hamburger Menu --&gt;
                 &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
@@ -2442,13 +2550,11 @@
                     &lt;/svg&gt;
                 &lt;/button&gt;
                 
-                &lt;!-- Glowing Serif "D" Logo in Center --&gt;
                 &lt;div class="relative group cursor-pointer my-auto flex flex-col items-center justify-center py-2" id="logo-easter-egg" title="Open Admin Portal"&gt;
                     &lt;div class="absolute w-12 h-12 rounded-full bg-amber-500/10 filter blur-md group-hover:bg-amber-500/30 transition-all duration-500"&gt;&lt;/div&gt;
                     &lt;span class="relative font-serif text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-100 to-amber-500 tracking-wider filter drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]"&gt;D&lt;/span&gt;
                 &lt;/div&gt;
 
-                &lt;!-- Custom Circuit Lines (Hidden on mobile) --&gt;
                 &lt;div class="hidden md:flex absolute inset-x-0 top-24 bottom-24 opacity-20 pointer-events-none justify-center"&gt;
                     &lt;svg width="30" height="100%" viewBox="0 0 30 300" fill="none" preserveAspectRatio="none"&gt;
                         &lt;path d="M15 0 V110 L5 120 V160 L25 180 V220 L15 230 V300" stroke="currentColor" stroke-width="1" stroke="var(--text-muted)" opacity="0.3"&gt;&lt;/path&gt;
@@ -2457,14 +2563,11 @@
                         &lt;circle cx="25" cy="220" r="1.5" fill="var(--accent-gold)"&gt;&lt;/circle&gt;
                     &lt;/svg&gt;
                 &lt;/div&gt;
-                
-                &lt;!-- Bottom Placeholder for spacing --&gt;
                 &lt;div class="w-6 h-6 md:h-8"&gt;&lt;/div&gt;
             &lt;/div&gt;
 
             &lt;!-- Main Content Window --&gt;
             &lt;div class="flex-1 flex flex-col h-full overflow-hidden"&gt;
-                &lt;!-- Header inside card --&gt;
                 &lt;header class="h-20 border-b border-theme px-6 md:px-10 flex items-center justify-between z-10 shrink-0"&gt;
                     &lt;div class="flex items-center gap-3"&gt;
                         &lt;span class="font-serif font-bold text-[15px] md:text-[17px] tracking-widest text-main-theme"&gt;PROJECT D.IO&lt;/span&gt;
@@ -2472,7 +2575,6 @@
                         &lt;span class="text-[9px] md:text-[10px] text-muted-theme tracking-widest font-sans uppercase"&gt;Web Design Experts&lt;/span&gt;
                     &lt;/div&gt;
                     
-                    &lt;!-- Navbar Links --&gt;
                     &lt;nav class="hidden lg:flex items-center gap-4"&gt;
                         &lt;a href="#" class="nav-link-theme active"&gt;Our Work&lt;/a&gt;
                         &lt;a href="#" class="nav-link-theme"&gt;Services&lt;/a&gt;
@@ -2482,12 +2584,10 @@
                     &lt;/nav&gt;
                     
                     &lt;div class="flex items-center gap-4"&gt;
-                        &lt;!-- Theme Toggler --&gt;
                         &lt;label class="theme-switch flex items-center" for="checkbox" title="Toggle Light/Dark Mode"&gt;
                             &lt;input type="checkbox" id="checkbox" /&gt;
                             &lt;div class="slider"&gt;&lt;/div&gt;
                         &lt;/label&gt;
-                        
                         &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0" id="btn-get-started"&gt;
                             [Get Started]
                         &lt;/button&gt;
@@ -2496,27 +2596,19 @@
 
                 &lt;!-- Hero Section Layout --&gt;
                 &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 p-6 md:p-10 gap-8 lg:gap-10 items-center overflow-y-auto"&gt;
-                    
                     &lt;!-- Left Text Column --&gt;
                     &lt;div class="lg:col-span-7 flex flex-col gap-6 max-w-2xl text-left"&gt;
-                        &lt;!-- Title --&gt;
-                        &lt;h1 id="slide-title" class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
+                        &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
                             ELEVATE YOUR &lt;br/&gt;
                             &lt;span class="font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt;
                             DIGITAL PRESENCE
                         &lt;/h1&gt;
-                        
-                        &lt;!-- Subtitle --&gt;
-                        &lt;h2 id="slide-subtitle" class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-gold);"&gt;
+                        &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-gold);"&gt;
                             Exceptional Web Design for Premier Aesthetic Practices.
                         &lt;/h2&gt;
-                        
-                        &lt;!-- Description --&gt;
-                        &lt;p id="slide-description" class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                        &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
                             Crafted by &lt;span style="color: var(--accent-gold); font-weight: 600;"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
-                        
-                        &lt;!-- CTA Buttons --&gt;
                         &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
                             &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-bronze text-white font-semibold text-[10px] uppercase tracking-widest transform hover:-translate-y-0.5 flex items-center gap-2"&gt;
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
@@ -2526,7 +2618,6 @@
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
-
                         &lt;!-- Slider Controls --&gt;
                         &lt;div class="flex items-center gap-3 mt-4"&gt;
                             &lt;button id="btn-prev-slide" class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass"&gt;
@@ -2542,73 +2633,56 @@
                         &lt;/div&gt;
                     &lt;/div&gt;
 
-                    &lt;!-- Right Column: Interactive Image Frame (Inset style like mockup) --&gt;
-                    &lt;div class="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] lg:h-[460px] rounded-3xl border border-theme bg-theme-glass p-4 shadow-2xl flex flex-col shrink-0 z-10"&gt;
-                        &lt;!-- Inner Photo Container --&gt;
+                    &lt;!-- Right Column: Model Image card --&gt;
+                    &lt;div class="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] lg:h-[460px] rounded-3xl border border-theme bg-theme-glass p-4 shadow-2xl flex flex-col shrink-0"&gt;
                         &lt;div class="relative flex-1 w-full rounded-2xl overflow-hidden group/image"&gt;
-                            &lt;!-- Background image --&gt;
-                            &lt;div id="slide-image" class="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
+                            &lt;div class="absolute inset-0 bg-cover bg-center transition-all duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;medspa_hero.png&apos;);"&gt;&lt;/div&gt;
                             
-                            &lt;!-- Blueprint Grid Line Overlay --&gt;
                             &lt;div class="absolute inset-0 z-10 pointer-events-none opacity-40"&gt;
-                                &lt;!-- Horizontal grid lines --&gt;
                                 &lt;div class="absolute w-full h-px grid-line top-1/4"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-full h-px grid-line top-2/4"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-full h-px grid-line top-3/4"&gt;&lt;/div&gt;
-                                &lt;!-- Vertical grid lines --&gt;
                                 &lt;div class="absolute h-full w-px grid-line left-1/4"&gt;&lt;/div&gt;
                                 &lt;div class="absolute h-full w-px grid-line left-2/4"&gt;&lt;/div&gt;
                                 &lt;div class="absolute h-full w-px grid-line left-3/4"&gt;&lt;/div&gt;
-                                &lt;!-- Grid intersection indicators (crop-style markers) --&gt;
                                 &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-1/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-4 h-4 border grid-marker left-2/4 top-2/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-4 h-4 border grid-marker left-1/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                                 &lt;div class="absolute w-4 h-4 border grid-marker left-3/4 top-3/4 -translate-x-2 -translate-y-2"&gt;&lt;/div&gt;
                             &lt;/div&gt;
-
-                            &lt;!-- Floating sparkle star decoration --&gt;
                             &lt;div class="absolute right-4 bottom-4 z-10 sparkle-star text-gold"&gt;
                                 &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"&gt;
                                     &lt;path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/&gt;
                                 &lt;/svg&gt;
                             &lt;/div&gt;
-
-                            &lt;!-- Hover Overlay with Service Pills --&gt;
-                            &lt;div id="service-pills-container" class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
-                                &lt;!-- Service Tag 1 --&gt;
+                            &lt;!-- Bottom Service Pills --&gt;
+                            &lt;div class="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/75 via-black/45 to-transparent z-20 flex justify-around items-center"&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Laser
                                     &lt;/button&gt;
-                                    &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Laser Therapy&lt;/h4&gt;
                                         &lt;p&gt;Precision skin rejuvenation &amp; resurfacing for a flawless complexion.&lt;/p&gt;
                                     &lt;/div&gt;
                                 &lt;/div&gt;
-
-                                &lt;!-- Service Tag 2 --&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Injectables
                                     &lt;/button&gt;
-                                    &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Injectables&lt;/h4&gt;
                                         &lt;p&gt;Smooth expression lines &amp; restore youthful volume with artistic care.&lt;/p&gt;
                                     &lt;/div&gt;
                                 &lt;/div&gt;
-
-                                &lt;!-- Service Tag 3 --&gt;
                                 &lt;div class="relative service-tooltip-wrapper"&gt;
                                     &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
                                         &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
                                         Facials
                                     &lt;/button&gt;
-                                    &lt;!-- Tooltip --&gt;
                                     &lt;div class="service-tooltip"&gt;
                                         &lt;h4&gt;Medical Facials&lt;/h4&gt;
                                         &lt;p&gt;Deep cellular hydration, clinical exfoliation &amp; customized serums.&lt;/p&gt;
@@ -2622,135 +2696,241 @@
         &lt;/div&gt;
     &lt;/div&gt;
 
+
+    &lt;!-- ================= SLIDE 2: HVAC SITE ================= --&gt;
+    &lt;div id="hvac-site" class="transition-all duration-500 w-full min-h-screen relative flex flex-col justify-between p-6 md:p-8 z-10 opacity-0 pointer-events-none" style="display: none;"&gt;
+        &lt;!-- Header --&gt;
+        &lt;header class="h-20 flex items-center justify-between px-6 z-20 shrink-0"&gt;
+            &lt;div class="flex items-center gap-2"&gt;
+                &lt;span class="font-serif font-bold text-lg md:text-xl tracking-widest text-main-theme"&gt;PROJECT D&lt;/span&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Capsule Navbar (mock design in mockup) --&gt;
+            &lt;nav class="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full border border-white/10 dark:border-white/5 bg-white/5 backdrop-blur-md shadow-lg"&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Work&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Services&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Portfolio&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;About&lt;/a&gt;
+                &lt;a href="#" class="text-[10px] font-bold text-main-theme hover:text-[#00f2ea] uppercase tracking-widest transition-colors"&gt;Blog&lt;/a&gt;
+                &lt;button class="ml-4 px-5 py-2 rounded-full btn-book-project text-[9px] font-bold tracking-widest uppercase shrink-0"&gt;
+                    Book Your Project
+                &lt;/button&gt;
+            &lt;/nav&gt;
+            
+            &lt;div class="flex items-center gap-4"&gt;
+                &lt;!-- Keep a theme toggle switch inside header that works --&gt;
+                &lt;label class="theme-switch flex items-center" for="checkbox-hvac" title="Toggle Light/Dark Mode"&gt;
+                    &lt;input type="checkbox" id="checkbox-hvac" /&gt;
+                    &lt;div class="slider"&gt;&lt;/div&gt;
+                &lt;/label&gt;
+            &lt;/div&gt;
+        &lt;/header&gt;
+
+        &lt;!-- Content Grid (Frosted Glass Panel and Image Bezel) --&gt;
+        &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center px-6 py-2 overflow-y-auto"&gt;
+            
+            &lt;!-- Left Hero Info Box --&gt;
+            &lt;div class="lg:col-span-7 rounded-[2rem] hvac-glass-card p-8 md:p-10 flex flex-col gap-6 text-left shadow-2xl relative overflow-hidden border border-white/5"&gt;
+                &lt;!-- Accent light spot --&gt;
+                &lt;div class="absolute -top-10 -left-10 w-24 h-24 bg-cyan-400/10 rounded-full blur-2xl"&gt;&lt;/div&gt;
+                
+                &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif font-light text-main-theme tracking-tight leading-[1.05]"&gt;
+                    ELEVATE YOUR &lt;br/&gt;
+                    &lt;span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt;
+                    CLIMATE CONTROL
+                &lt;/h1&gt;
+                
+                &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans text-amber-500/90" style="letter-spacing: 0.15em;"&gt;
+                    Premier HVAC &amp; Smart Home System Design.
+                &lt;/h2&gt;
+                
+                &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                    We craft integrated comfort solutions that perform, endure, and inspire. Discover expert engineering for residential and commercial spaces.
+                &lt;/p&gt;
+                
+                &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest"&gt;
+                        View Our Projects
+                    &lt;/button&gt;
+                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest"&gt;
+                        Request a Design Consultation
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Right Hero Photo Box --&gt;
+            &lt;div class="lg:col-span-5 relative w-full h-[320px] sm:h-[360px] lg:h-[400px] rounded-[2rem] hvac-image-card p-3 shadow-2xl flex flex-col overflow-hidden border border-white/5"&gt;
+                &lt;div class="relative flex-1 w-full rounded-[1.5rem] overflow-hidden group/image"&gt;
+                    &lt;!-- Photo cropped directly from original mockup, containing all tech overlays --&gt;
+                    &lt;div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/image:scale-105" style="background-image: url(&apos;hvac_woman_crop.png&apos;);"&gt;&lt;/div&gt;
+                    
+                    &lt;div class="absolute inset-0 z-10 pointer-events-none opacity-20 border border-white/10 rounded-2xl"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Horizontal Projects Row (Bento Style Layout at Bottom) --&gt;
+        &lt;div class="h-[120px] px-6 py-2 flex items-center gap-4 relative overflow-hidden shrink-0 z-10"&gt;
+            &lt;!-- Arrow Prev --&gt;
+            &lt;button id="hvac-prev-arrow" class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] hover:border-[#00f2ea] transition-all bg-white/5 z-20"&gt;
+                &lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
+                    &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
+                &lt;/svg&gt;
+            &lt;/button&gt;
+            
+            &lt;!-- Bento project thumbnail slider row --&gt;
+            &lt;div class="flex-1 flex gap-4 overflow-x-auto no-scrollbar scroll-smooth py-1"&gt;
+                &lt;!-- Card 1 --&gt;
+                &lt;div class="w-[190px] h-[85px] hvac-project-card rounded-2xl overflow-hidden shrink-0 group relative cursor-pointer"&gt;
+                    &lt;div class="absolute inset-0 bg-cover bg-center" style="background-image: url(&apos;hvac_project1.png&apos;);"&gt;&lt;/div&gt;
+                    &lt;div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- Card 2 --&gt;
+                &lt;div class="w-[190px] h-[85px] hvac-project-card rounded-2xl overflow-hidden shrink-0 group relative cursor-pointer"&gt;
+                    &lt;div class="absolute inset-0 bg-cover bg-center" style="background-image: url(&apos;hvac_project2.png&apos;);"&gt;&lt;/div&gt;
+                    &lt;div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- Card 3 --&gt;
+                &lt;div class="w-[190px] h-[85px] hvac-project-card rounded-2xl overflow-hidden shrink-0 group relative cursor-pointer"&gt;
+                    &lt;div class="absolute inset-0 bg-cover bg-center" style="background-image: url(&apos;hvac_project3.png&apos;);"&gt;&lt;/div&gt;
+                    &lt;div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;!-- Card 4 --&gt;
+                &lt;div class="w-[190px] h-[85px] hvac-project-card rounded-2xl overflow-hidden shrink-0 group relative cursor-pointer"&gt;
+                    &lt;div class="absolute inset-0 bg-cover bg-center" style="background-image: url(&apos;hvac_project4.png&apos;);"&gt;&lt;/div&gt;
+                    &lt;div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Arrow Next --&gt;
+            &lt;button id="hvac-next-arrow" class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] hover:border-[#00f2ea] transition-all bg-white/5 z-20"&gt;
+                &lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
+                    &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
+                &lt;/svg&gt;
+            &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- ================= CONTROLLER SCRIPTS ================= --&gt;
     &lt;script&gt;
-        const btnPrev = document.getElementById(&apos;btn-prev-slide&apos;);
-        const btnNext = document.getElementById(&apos;btn-next-slide&apos;);
+        const medspaSite = document.getElementById(&apos;medspa-site&apos;);
+        const hvacSite = document.getElementById(&apos;hvac-site&apos;);
+        const medspaBg = document.getElementById(&apos;medspa-bg&apos;);
+        const hvacBg = document.getElementById(&apos;hvac-bg&apos;);
 
-        const slideTitle = document.getElementById(&apos;slide-title&apos;);
-        const slideSubtitle = document.getElementById(&apos;slide-subtitle&apos;);
-        const slideDescription = document.getElementById(&apos;slide-description&apos;);
-        const btnPortfolio = document.getElementById(&apos;btn-portfolio-slide&apos;);
-        const btnDiscuss = document.getElementById(&apos;btn-discuss-slide&apos;);
-        const slideImage = document.getElementById(&apos;slide-image&apos;);
-        const servicePillsContainer = document.getElementById(&apos;service-pills-container&apos;);
+        const btnPrevMedspa = document.getElementById(&apos;btn-prev-slide&apos;);
+        const btnNextMedspa = document.getElementById(&apos;btn-next-slide&apos;);
+        const btnPrevHvac = document.getElementById(&apos;hvac-prev-arrow&apos;);
+        const btnNextHvac = document.getElementById(&apos;hvac-next-arrow&apos;);
 
-        const slides = [
-            {
-                title: "ELEVATE YOUR &lt;br/&gt; &lt;span class=\"font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]\"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt; DIGITAL PRESENCE",
-                subtitle: "Exceptional Web Design for Premier Aesthetic Practices.",
-                description: "Crafted by &lt;span style=\"color: var(--accent-gold); font-weight: 600;\"&gt;projectd.io&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.",
-                image: "medspa_hero.png",
-                btn1: "Our Portfolio",
-                btn2: "Discuss Your Project",
-                pills: [
-                    { label: "Laser", title: "Laser Therapy", text: "Precision skin rejuvenation &amp; resurfacing for a flawless complexion." },
-                    { label: "Injectables", title: "Injectables", text: "Smooth expression lines &amp; restore youthful volume with artistic care." },
-                    { label: "Facials", title: "Medical Facials", text: "Deep cellular hydration, clinical exfoliation &amp; customized serums." }
-                ]
-            },
-            {
-                title: "ELEVATE YOUR &lt;br/&gt; &lt;span class=\"font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 font-serif filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]\"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt; CLIMATE CONTROL",
-                subtitle: "Premier HVAC &amp; Smart Home System Design.",
-                description: "We craft integrated comfort solutions that perform, endure, and inspire. Discover expert engineering for residential and commercial spaces.",
-                image: "hvac_woman.png",
-                btn1: "View Our Projects",
-                btn2: "Request a Design Consultation",
-                pills: [
-                    { label: "Thermostats", title: "Smart Thermostats", text: "Advanced climate scheduling, remote access &amp; zone control." },
-                    { label: "Heat Pumps", title: "Modern Heat Pumps", text: "High-efficiency heating &amp; cooling for residential spaces." },
-                    { label: "Automation", title: "Home Automation", text: "Integrated smart comfort, air quality monitoring &amp; lighting." }
-                ]
-            }
-        ];
-
-        let currentSlide = 0;
         let isTransitioning = false;
 
-        const showSlide = (index) =&gt; {
+        const showMedspa = () =&gt; {
             if (isTransitioning) return;
             isTransitioning = true;
 
-            const fadeElements = [slideTitle, slideSubtitle, slideDescription, btnPortfolio, btnDiscuss, slideImage, servicePillsContainer];
-            fadeElements.forEach(el =&gt; {
-                el.style.transition = &apos;opacity 0.3s ease, transform 0.3s ease&apos;;
-                el.style.opacity = &apos;0&apos;;
-                el.style.transform = &apos;translateY(8px)&apos;;
-            });
+            hvacSite.style.transition = &apos;opacity 0.4s ease, transform 0.4s ease&apos;;
+            hvacSite.style.opacity = &apos;0&apos;;
+            hvacSite.style.transform = &apos;translateY(10px)&apos;;
+            hvacBg.style.opacity = &apos;0&apos;;
 
             setTimeout(() =&gt; {
-                currentSlide = index;
-                const slide = slides[currentSlide];
+                hvacSite.style.display = &apos;none&apos;;
+                
+                medspaSite.style.display = &apos;flex&apos;;
+                medspaSite.style.opacity = &apos;0&apos;;
+                medspaSite.style.transform = &apos;translateY(-10px)&apos;;
+                medspaBg.style.opacity = &apos;1&apos;;
+                
+                void medspaSite.offsetWidth;
 
-                slideTitle.innerHTML = slide.title;
-                slideSubtitle.innerHTML = slide.subtitle;
-                slideDescription.innerHTML = slide.description;
-                btnPortfolio.innerHTML = `&lt;span&gt;${slide.btn1}&lt;/span&gt;&lt;span class="text-xs"&gt;→&lt;/span&gt;`;
-                btnDiscuss.innerHTML = slide.btn2;
-
-                slideImage.style.backgroundImage = `url(&apos;${slide.image}&apos;)`;
-
-                servicePillsContainer.innerHTML = slide.pills.map(pill =&gt; `
-                    &lt;div class="relative service-tooltip-wrapper"&gt;
-                        &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5"&gt;
-                            &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-gold"&gt;&lt;/iconify-icon&gt;
-                            ${pill.label}
-                        &lt;/button&gt;
-                        &lt;div class="service-tooltip"&gt;
-                            &lt;h4&gt;${pill.title}&lt;/h4&gt;
-                            &lt;p&gt;${pill.text}&lt;/p&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                `).join(&apos;&apos;);
-
-                fadeElements.forEach(el =&gt; {
-                    el.style.opacity = &apos;1&apos;;
-                    el.style.transform = &apos;translateY(0)&apos;;
-                });
+                medspaSite.style.transition = &apos;opacity 0.4s ease, transform 0.4s ease&apos;;
+                medspaSite.style.opacity = &apos;1&apos;;
+                medspaSite.style.transform = &apos;translateY(0)&apos;;
+                
+                document.body.classList.remove(&apos;hvac-theme-active&apos;);
 
                 setTimeout(() =&gt; {
                     isTransitioning = false;
-                }, 300);
-            }, 300);
+                }, 400);
+            }, 400);
         };
 
-        btnPrev.addEventListener(&apos;click&apos;, () =&gt; {
-            let nextIndex = currentSlide - 1;
-            if (nextIndex &lt; 0) nextIndex = slides.length - 1;
-            showSlide(nextIndex);
-        });
+        const showHvac = () =&gt; {
+            if (isTransitioning) return;
+            isTransitioning = true;
 
-        btnNext.addEventListener(&apos;click&apos;, () =&gt; {
-            let nextIndex = currentSlide + 1;
-            if (nextIndex &gt;= slides.length) nextIndex = 0;
-            showSlide(nextIndex);
-        });
+            medspaSite.style.transition = &apos;opacity 0.4s ease, transform 0.4s ease&apos;;
+            medspaSite.style.opacity = &apos;0&apos;;
+            medspaSite.style.transform = &apos;translateY(-10px)&apos;;
+            medspaBg.style.opacity = &apos;0&apos;;
 
-        const toggleSwitch = document.querySelector(&apos;.theme-switch input[type="checkbox"]&apos;);
-        function switchTheme(e) {
+            setTimeout(() =&gt; {
+                medspaSite.style.display = &apos;none&apos;;
+                
+                hvacSite.style.display = &apos;flex&apos;;
+                hvacSite.style.opacity = &apos;0&apos;;
+                hvacSite.style.transform = &apos;translateY(10px)&apos;;
+                hvacBg.style.opacity = &apos;1&apos;;
+                
+                void hvacSite.offsetWidth;
+
+                hvacSite.style.transition = &apos;opacity 0.4s ease, transform 0.4s ease&apos;;
+                hvacSite.style.opacity = &apos;1&apos;;
+                hvacSite.style.transform = &apos;translateY(0)&apos;;
+                
+                document.body.classList.add(&apos;hvac-theme-active&apos;);
+
+                setTimeout(() =&gt; {
+                    isTransitioning = false;
+                }, 400);
+            }, 400);
+        };
+
+        btnPrevMedspa.addEventListener(&apos;click&apos;, showHvac);
+        btnNextMedspa.addEventListener(&apos;click&apos;, showHvac);
+        btnPrevHvac.addEventListener(&apos;click&apos;, showMedspa);
+        btnNextHvac.addEventListener(&apos;click&apos;, showMedspa);
+
+        // Theme Toggle Functionality
+        const checkboxMedspa = document.getElementById(&apos;checkbox&apos;);
+        const checkboxHvac = document.getElementById(&apos;checkbox-hvac&apos;);
+        
+        function switchTheme(checked) {
             try {
                 const parentHtml = window.parent.document.documentElement;
-                if (e.target.checked) {
+                if (checked) {
                     document.body.classList.remove(&apos;light-mode&apos;);
                     document.documentElement.classList.add(&apos;dark&apos;);
                     parentHtml.classList.add(&apos;dark&apos;);
                     window.parent.localStorage.setItem(&apos;theme&apos;, &apos;dark&apos;);
+                    checkboxMedspa.checked = true;
+                    checkboxHvac.checked = true;
                 } else {
                     document.body.classList.add(&apos;light-mode&apos;);
                     document.documentElement.classList.remove(&apos;dark&apos;);
                     parentHtml.classList.remove(&apos;dark&apos;);
                     window.parent.localStorage.setItem(&apos;theme&apos;, &apos;light&apos;);
+                    checkboxMedspa.checked = false;
+                    checkboxHvac.checked = false;
                 }
             } catch(err) {
-                if (e.target.checked) {
+                if (checked) {
                     document.body.classList.remove(&apos;light-mode&apos;);
                     document.documentElement.classList.add(&apos;dark&apos;);
+                    checkboxMedspa.checked = true;
+                    checkboxHvac.checked = true;
                 } else {
                     document.body.classList.add(&apos;light-mode&apos;);
                     document.documentElement.classList.remove(&apos;dark&apos;);
+                    checkboxMedspa.checked = false;
+                    checkboxHvac.checked = false;
                 }
             }
         }
-        toggleSwitch.addEventListener(&apos;change&apos;, switchTheme, false);
+        
+        checkboxMedspa.addEventListener(&apos;change&apos;, (e) =&gt; switchTheme(e.target.checked));
+        checkboxHvac.addEventListener(&apos;change&apos;, (e) =&gt; switchTheme(e.target.checked));
 
         try {
             const parentHtml = window.parent.document.documentElement;
@@ -2759,11 +2939,13 @@
                 if (isParentDark) {
                     document.body.classList.remove(&apos;light-mode&apos;);
                     document.documentElement.classList.add(&apos;dark&apos;);
-                    toggleSwitch.checked = true;
+                    checkboxMedspa.checked = true;
+                    checkboxHvac.checked = true;
                 } else {
                     document.body.classList.add(&apos;light-mode&apos;);
                     document.documentElement.classList.remove(&apos;dark&apos;);
-                    toggleSwitch.checked = false;
+                    checkboxMedspa.checked = false;
+                    checkboxHvac.checked = false;
                 }
             };
             syncThemeFromParent();
@@ -2812,8 +2994,15 @@
             pMouse.y = e.clientY;
             
             const isLight = document.body.classList.contains(&apos;light-mode&apos;);
-            const colorA = isLight ? &apos;141, 110, 50&apos; : &apos;245, 158, 11&apos;;
-            const colorB = isLight ? &apos;197, 160, 89&apos; : &apos;255, 255, 255&apos;;
+            const isHvac = document.body.classList.contains(&apos;hvac-theme-active&apos;);
+            
+            let colorA = isLight ? &apos;141, 110, 50&apos; : &apos;245, 158, 11&apos;;
+            let colorB = isLight ? &apos;197, 160, 89&apos; : &apos;255, 255, 255&apos;;
+            
+            if (isHvac) {
+                colorA = isLight ? &apos;0, 150, 136&apos; : &apos;0, 242, 234&apos;;
+                colorB = isLight ? &apos;0, 188, 212&apos; : &apos;255, 255, 255&apos;;
+            }
 
             if (Math.random() &gt; 0.3) {
                 particles.push({
@@ -2829,20 +3018,28 @@
         });
 
         document.addEventListener(&apos;mouseover&apos;, (e) =&gt; {
-            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #btn-prev-slide, #btn-next-slide, .glass-panel, .service-btn&apos;));
+            isHoveringP = !!(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest(&apos;a, button, input, label, #btn-prev-slide, #btn-next-slide, #hvac-prev-arrow, #hvac-next-arrow, .glass-panel, .service-btn, .hvac-btn-cyan, .hvac-btn-glass, .btn-book-project&apos;));
         });
 
         function pLoop() {
             pCtx.clearRect(0, 0, pWidth, pHeight);
             
             const isLight = document.body.classList.contains(&apos;light-mode&apos;);
+            const isHvac = document.body.classList.contains(&apos;hvac-theme-active&apos;);
 
             if (isInsideP) {
                 pCtx.beginPath();
                 pCtx.arc(pMouse.x, pMouse.y, isHoveringP ? 5 : 3, 0, Math.PI * 2);
-                pCtx.fillStyle = isLight ? &apos;rgba(141, 110, 50, 0.9)&apos; : &apos;rgba(255, 255, 255, 0.9)&apos;;
-                pCtx.shadowBlur = 12;
-                pCtx.shadowColor = isLight ? &apos;rgba(141, 110, 50, 0.6)&apos; : &apos;rgba(245, 158, 11, 0.8)&apos;;
+                
+                if (isHvac) {
+                    pCtx.fillStyle = isLight ? &apos;rgba(0, 150, 136, 0.9)&apos; : &apos;rgba(0, 242, 234, 0.9)&apos;;
+                    pCtx.shadowBlur = 12;
+                    pCtx.shadowColor = isLight ? &apos;rgba(0, 150, 136, 0.6)&apos; : &apos;rgba(0, 242, 234, 0.8)&apos;;
+                } else {
+                    pCtx.fillStyle = isLight ? &apos;rgba(141, 110, 50, 0.9)&apos; : &apos;rgba(255, 255, 255, 0.9)&apos;;
+                    pCtx.shadowBlur = 12;
+                    pCtx.shadowColor = isLight ? &apos;rgba(141, 110, 50, 0.6)&apos; : &apos;rgba(245, 158, 11, 0.8)&apos;;
+                }
                 pCtx.fill();
             }
             
