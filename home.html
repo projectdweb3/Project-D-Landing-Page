@@ -850,7 +850,7 @@
       if (!('theme' in localStorage)) applyTheme();
     });
 
-    // Listen for theme toggle message from iframe
+    // Listen for theme toggle and resize messages from iframe
     window.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'theme-change') {
         const html = document.documentElement;
@@ -860,6 +860,28 @@
         } else {
           html.classList.remove('dark');
           localStorage.setItem('theme', 'light');
+        }
+      } else if (event.data && event.data.type === 'resize-iframe') {
+        const container = document.getElementById('iframe-container');
+        if (container) {
+          if (event.data.height === 'desktop') {
+            container.style.height = '';
+          } else {
+            container.style.height = event.data.height + 'px';
+          }
+        }
+      }
+    });
+
+    // Handle parent window resize events
+    window.addEventListener('resize', () => {
+      const container = document.getElementById('iframe-container');
+      if (window.innerWidth >= 1024) {
+        if (container) container.style.height = '';
+      } else {
+        const iframe = document.getElementById('medspa-iframe');
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ type: 'get-height' }, '*');
         }
       }
     });
@@ -2100,7 +2122,7 @@
                   <iconify-icon icon="solar:refresh-linear"></iconify-icon>
                 </div>
               </div>
-              <div class="w-full h-[85vh] sm:h-[80vh] md:h-[750px] lg:h-[800px] xl:h-[850px] relative bg-[#1F151B]">
+              <div id="iframe-container" class="w-full h-[85vh] sm:h-[80vh] md:h-[750px] lg:h-[800px] xl:h-[850px] relative bg-[#1F151B]">
                 <iframe id="medspa-iframe" class="w-full h-full border-none" sandbox="allow-scripts allow-same-origin"
                   srcdoc='&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
@@ -2179,13 +2201,21 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        *::-webkit-scrollbar {
+            display: none !important;
         }
 
         body {
             font-family: &apos;Plus Jakarta Sans&apos;, &apos;Inter&apos;, sans-serif;
             background: var(--liquid-bg);
             color: var(--text-main);
-            overflow-x: hidden;
+            overflow: hidden !important;
+            width: 100%;
+            height: 100%;
             transition: background 0.5s ease, color 0.5s ease;
             min-height: 100vh;
         }
@@ -2662,7 +2692,7 @@
     &lt;!-- ================= SLIDE 1: MEDSPA SITE ================= --&gt;
     &lt;div id="medspa-site" class="hero-container transition-all duration-500 w-full min-h-screen relative flex items-center justify-center p-4 sm:p-8 z-10"&gt;
         &lt;!-- Glassmorphic Window --&gt;
-        &lt;div class="w-[98%] max-w-[1520px] h-[92vh] lg:h-[88vh] rounded-[2rem] lg:rounded-[2.5rem] glass-panel flex flex-col lg:flex-row relative overflow-hidden"&gt;
+        &lt;div class="w-[98%] max-w-[1520px] h-auto lg:h-[88vh] rounded-[2rem] lg:rounded-[2.5rem] glass-panel flex flex-col lg:flex-row relative overflow-hidden"&gt;
             
             &lt;!-- Left Sidebar Panel --&gt;
             &lt;div class="hidden lg:flex w-20 border-r border-theme flex-col items-center justify-start py-8 relative shrink-0"&gt;
@@ -2687,7 +2717,7 @@
                                 &lt;line x1="4" y1="18" x2="20" y2="18"&gt;&lt;/line&gt;
                             &lt;/svg&gt;
                         &lt;/button&gt;
-                        &lt;span class="font-serif font-bold text-[13px] sm:text-[15px] lg:text-[17px] tracking-widest text-main-theme whitespace-nowrap"&gt;PROJECT D.IO&lt;/span&gt;
+                        &lt;span class="font-serif font-bold text-[13px] sm:text-[15px] lg:text-[17px] tracking-widest text-main-theme whitespace-nowrap"&gt;Project D&lt;/span&gt;
                         &lt;span class="h-4 w-px hidden sm:block" style="background-color: var(--glass-border);"&gt;&lt;/span&gt;
                         &lt;span class="text-[8px] lg:text-[10px] text-muted-theme tracking-widest font-sans uppercase whitespace-nowrap hidden sm:block"&gt;Web Design Experts&lt;/span&gt;
                     &lt;/div&gt;
@@ -2835,34 +2865,37 @@
                     &lt;input type="checkbox" id="checkbox-hvac" /&gt;
                     &lt;div class="slider"&gt;&lt;/div&gt;
                 &lt;/label&gt;
-            &lt;/div&        &lt;!-- Content Grid (Frosted Glass Panel and Interactive AC controller) --&gt;
-        &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center px-4 sm:px-6 py-2 overflow-y-auto"&gt;
+            &lt;/div&gt;
+        &lt;/header&gt;
+
+        &lt;!-- Content Grid (Frosted Glass Panel and Interactive AC controller) --&gt;
+        &lt;div class="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-6 sm:gap-8 items-center px-4 sm:px-6 py-2 overflow-y-auto"&gt;
             
             &lt;!-- Left Hero Info Box (Redesigned with Plus Jakarta Sans Title) --&gt;
-            &lt;div class="lg:col-span-7 rounded-[2rem] hvac-glass-card p-5 sm:p-8 md:p-10 flex flex-col gap-4 sm:gap-6 text-left shadow-2xl relative overflow-hidden border border-white/5"&gt;
+            &lt;div class="w-full lg:col-span-7 rounded-[2rem] hvac-glass-card p-5 sm:p-8 lg:p-10 flex flex-col gap-4 lg:gap-6 text-left shadow-2xl relative overflow-hidden border border-white/5"&gt;
                 &lt;!-- Accent light spot --&gt;
                 &lt;div class="absolute -top-10 -left-10 w-24 h-24 bg-cyan-400/10 rounded-full blur-2xl"&gt;&lt;/div&gt;
                 
-                &lt;h1 class="text-3xl sm:text-5xl xl:text-6xl hvac-title text-main-theme tracking-tight leading-[1.05]"&gt;
+                &lt;h1 class="text-3xl sm:text-5xl lg:text-6xl hvac-title text-main-theme tracking-tight leading-[1.05]"&gt;
                     ELEVATE YOUR &lt;br/&gt;
                     &lt;span class="font-sans font-extrabold italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt;
                     CLIMATE CONTROL
-                &lt;/h1>
+                &lt;/h1&gt;
                 
-                &lt;h2 class="text-[10px] sm:text-xs md:text-sm font-semibold tracking-widest uppercase font-sans text-amber-500/90" style="letter-spacing: 0.15em;"&gt;
+                &lt;h2 class="text-[10px] sm:text-xs lg:text-sm font-semibold tracking-widest uppercase font-sans text-amber-500/90" style="letter-spacing: 0.15em;"&gt;
                     Premier HVAC &amp; Smart Home System Design.
                 &lt;/h2&gt;
                 
-                &lt;p class="text-[11px] sm:text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                &lt;p class="text-[11px] sm:text-xs lg:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
                     We craft integrated comfort solutions that perform, endure, and inspire. Discover expert engineering for residential and commercial spaces.
                 &lt;/p&gt;
                 
                 &lt;div class="flex flex-wrap gap-3 sm:gap-4 mt-1 sm:mt-2"&gt;
-                    &lt;button class="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all" onclick="event.preventDefault()"&gt;
+                    &lt;button class="px-5 sm:px-7 py-2.5 lg:py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all" onclick="event.preventDefault()"&gt;
                         View Our Projects
                     &lt;/button&gt;
-                    &lt;button class="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all whitespace-nowrap" onclick="event.preventDefault()"&gt;
-                        Request Consultation
+                    &lt;button class="px-5 sm:px-7 py-2.5 lg:py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all whitespace-nowrap" onclick="event.preventDefault()"&gt;
+                        Request a Design Consultation
                     &lt;/button&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
@@ -2944,85 +2977,86 @@
                         &lt;/div&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
-            &lt;/        &lt;!-- Centered UI Card Elements providing Information (Now highly interactive!) --&gt;
-        &lt;div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 py-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 z-10 shrink-0"&gt;
+            &lt;/div&gt;&lt;/div&gt;
+        &lt;!-- Centered UI Card Elements providing Information (Now highly interactive!) --&gt;
+        &lt;div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 py-2 flex flex-col lg:flex-row items-center justify-center gap-3 sm:gap-4 z-10 shrink-0"&gt;
             &lt;!-- Arrow Prev --&gt;
-            &lt;button id="hvac-prev-arrow" class="hidden sm:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
+            &lt;button id="hvac-prev-arrow" class="hidden lg:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
                     &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
                 &lt;/svg&gt;
             &lt;/button&gt;
             
             &lt;!-- Cards grid layout (centered and spaced out with glow shadows &amp; active states) --&gt;
-            &lt;div class="w-full flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 py-1"&gt;
+            &lt;div class="w-full flex-1 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 py-1"&gt;
                 
                 &lt;!-- Info Card 1: Thermostats (Controls Cool Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;cool&apos;)" class="hvac-project-card card-glow-cyan cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
-                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[#00f2ea]/15 flex items-center justify-center text-[#00f2ea] shrink-0"&gt;
-                            &lt;iconify-icon icon="solar:temperature-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;cool&apos;)" class="hvac-project-card card-glow-cyan cursor-pointer rounded-xl lg:rounded-2xl p-3 lg:p-4 flex flex-col gap-2 lg:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-1.5 lg:gap-2"&gt;
+                        &lt;div class="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#00f2ea]/15 flex items-center justify-center text-[#00f2ea] shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:temperature-bold-duotone" class="text-sm lg:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-1" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase w-max"&gt;Zone Control&lt;/span&gt;
+                        &lt;span id="card-badge-1" class="text-[7px] lg:text-[9px] font-bold px-1.5 lg:px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase w-max"&gt;Zone Control&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Thermostats&lt;/h4&gt;
-                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Advanced scheduling, multi-zone control, and intelligent auto comfort settings.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] lg:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Thermostats&lt;/h4&gt;
+                        &lt;p class="text-[8px] lg:text-[10px] text-muted-theme leading-normal mt-0.5 lg:mt-1 font-light"&gt;Advanced scheduling, multi-zone control, and intelligent auto comfort settings.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 2: Heat Pumps (Controls Heat Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;heat&apos;)" class="hvac-project-card card-glow-orange cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
-                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400 shrink-0"&gt;
-                            &lt;iconify-icon icon="solar:settings-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;heat&apos;)" class="hvac-project-card card-glow-orange cursor-pointer rounded-xl lg:rounded-2xl p-3 lg:p-4 flex flex-col gap-2 lg:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-1.5 lg:gap-2"&gt;
+                        &lt;div class="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:settings-bold-duotone" class="text-sm lg:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-2" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase w-max"&gt;24.5 SEER&lt;/span&gt;
+                        &lt;span id="card-badge-2" class="text-[7px] lg:text-[9px] font-bold px-1.5 lg:px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase w-max"&gt;24.5 SEER&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Modern Heat Pumps&lt;/h4&gt;
-                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;High-coefficient heating &amp; cooling systems designed to reduce monthly utility costs.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] lg:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Modern Heat Pumps&lt;/h4&gt;
+                        &lt;p class="text-[8px] lg:text-[10px] text-muted-theme leading-normal mt-0.5 lg:mt-1 font-light"&gt;High-coefficient heating &amp; cooling systems designed to reduce monthly utility costs.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 3: Air Purification (Controls Fan Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;fan&apos;)" class="hvac-project-card card-glow-emerald cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
-                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"&gt;
-                            &lt;iconify-icon icon="solar:wind-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;fan&apos;)" class="hvac-project-card card-glow-emerald cursor-pointer rounded-xl lg:rounded-2xl p-3 lg:p-4 flex flex-col gap-2 lg:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-1.5 lg:gap-2"&gt;
+                        &lt;div class="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:wind-bold-duotone" class="text-sm lg:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-3" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase w-max"&gt;99.9% Pure&lt;/span&gt;
+                        &lt;span id="card-badge-3" class="text-[7px] lg:text-[9px] font-bold px-1.5 lg:px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase w-max"&gt;99.9% Pure&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Air Purification&lt;/h4&gt;
-                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Multi-stage HEPA filtration, proactive humidity control, and active UV sanitization.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] lg:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Air Purification&lt;/h4&gt;
+                        &lt;p class="text-[8px] lg:text-[10px] text-muted-theme leading-normal mt-0.5 lg:mt-1 font-light"&gt;Multi-stage HEPA filtration, proactive humidity control, and active UV sanitization.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 4: Home Automation (Triggers Sync Status) --&gt;
-                &lt;div onclick="selectCardAction(&apos;sync&apos;)" class="hvac-project-card card-glow-blue cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
-                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400 shrink-0"&gt;
-                            &lt;iconify-icon icon="solar:cpu-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;sync&apos;)" class="hvac-project-card card-glow-blue cursor-pointer rounded-xl lg:rounded-2xl p-3 lg:p-4 flex flex-col gap-2 lg:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-1.5 lg:gap-2"&gt;
+                        &lt;div class="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:cpu-bold-duotone" class="text-sm lg:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-4" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase w-max"&gt;Sync Active&lt;/span&gt;
+                        &lt;span id="card-badge-4" class="text-[7px] lg:text-[9px] font-bold px-1.5 lg:px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase w-max"&gt;Sync Active&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Home Sync&lt;/h4&gt;
-                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Full integration with smart assistant ecosystems for voice-activated profiles.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] lg:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Home Sync&lt;/h4&gt;
+                        &lt;p class="text-[8px] lg:text-[10px] text-muted-theme leading-normal mt-0.5 lg:mt-1 font-light"&gt;Full integration with smart assistant ecosystems for voice-activated profiles.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
             &lt;/div&gt;
             
             &lt;!-- Arrow Next --&gt;
-            &lt;button id="hvac-next-arrow" class="hidden sm:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
+            &lt;button id="hvac-next-arrow" class="hidden lg:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
                     &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
                 &lt;/svg&gt;
             &lt;/button&gt;
 
             &lt;!-- Mobile Slider Controls --&gt;
-            &lt;div class="flex sm:hidden items-center justify-center gap-4 py-1"&gt;
+            &lt;div class="flex lg:hidden items-center justify-center gap-4 py-1"&gt;
                 &lt;button id="hvac-prev-arrow-mobile" class="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] active:scale-90"&gt;
                     &lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
                         &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
@@ -3084,9 +3118,11 @@
                 medspaSite.classList.remove(&apos;pointer-events-none&apos;);
                 
                 document.body.classList.remove(&apos;hvac-theme-active&apos;);
+                if (window.updateParentHeight) window.updateParentHeight();
 
                 setTimeout(() =&gt; {
                     isTransitioning = false;
+                    if (window.updateParentHeight) window.updateParentHeight();
                 }, 400);
             }, 400);
         };
@@ -3118,9 +3154,11 @@
                 
                 document.body.classList.add(&apos;hvac-theme-active&apos;);
                 updateAcArc();
+                if (window.updateParentHeight) window.updateParentHeight();
 
                 setTimeout(() =&gt; {
                     isTransitioning = false;
+                    if (window.updateParentHeight) window.updateParentHeight();
                 }, 400);
             }, 400);
         };
@@ -3465,10 +3503,30 @@
         checkboxMedspa.addEventListener(&apos;change&apos;, (e) =&gt; switchTheme(e.target.checked));
         checkboxHvac.addEventListener(&apos;change&apos;, (e) =&gt; switchTheme(e.target.checked));
 
+        // Auto-height sending logic
+        window.updateParentHeight = function() {
+            try {
+                if (window.innerWidth >= 1024) {
+                    window.parent.postMessage({ type: &apos;resize-iframe&apos;, height: &apos;desktop&apos; }, &apos;*&apos;);
+                } else {
+                    const activeSite = document.getElementById(&apos;hvac-site&apos;).style.display !== &apos;none&apos; ? document.getElementById(&apos;hvac-site&apos;) : document.getElementById(&apos;medspa-site&apos;);
+                    if (activeSite) {
+                        const height = activeSite.scrollHeight;
+                        window.parent.postMessage({ type: &apos;resize-iframe&apos;, height: height }, &apos;*&apos;);
+                    }
+                }
+            } catch (e) {}
+        };
+
+        window.addEventListener(&apos;load&apos;, window.updateParentHeight);
+        window.addEventListener(&apos;resize&apos;, window.updateParentHeight);
+
         // Listen for parent page message events
-        window.addEventListener(&apos;message&apos;, (event) =&gt; {
-            if (event.data &amp;&amp; event.data.type === &apos;theme-change&apos;) {
+        window.addEventListener(&apos;message&apos;, (event) => {
+            if (event.data && event.data.type === &apos;theme-change&apos;) {
                 switchTheme(event.data.dark);
+            } else if (event.data && event.data.type === &apos;get-height&apos;) {
+                window.updateParentHeight();
             }
         });
 
