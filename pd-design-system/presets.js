@@ -143,7 +143,7 @@
   // 5. GLOBAL CURSOR TRAIL
   // ==========================================================================
   presets.initCursorTrail = function () {
-    if (window.innerWidth < 768) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
     const existingCanvas = document.getElementById('cursor-trail');
     if (existingCanvas) existingCanvas.remove();
 

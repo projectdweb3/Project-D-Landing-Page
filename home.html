@@ -781,39 +781,39 @@
 
 <body
   class="relative min-h-screen overflow-x-hidden bg-white dark:bg-[#0b0f19] selection:bg-[#ff9146]/20 selection:text-[#ff9146]">
-  <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 hover:scale-[1.02] print:hidden"
+  <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 hover:scale-[1.02] print:hidden w-max max-w-[calc(100%-2rem)]"
     id="dynamic-island">
     <div
-      class="flex transition-all hover:bg-white/10 hover:border-white/20 duration-300 bg-white/5 border-white/10 border rounded-full pt-1.5 pr-1.5 pb-1.5 pl-1.5 shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] backdrop-blur-2xl gap-x-1.5 gap-y-1.5 items-center">
+      class="flex transition-all hover:bg-white/10 hover:border-white/20 duration-300 bg-white/5 border-white/10 border rounded-full p-1 sm:p-1.5 shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] backdrop-blur-2xl gap-x-1 sm:gap-x-1.5 items-center w-full">
       <!-- Logo -->
       <a href="#"
-        class="flex items-center justify-center transition-transform hover:scale-110 group bg-center w-9 h-9 bg-[url(https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_320w.png)] bg-cover rounded-full"></a>
+        class="flex items-center justify-center transition-transform hover:scale-110 group bg-center w-8 h-8 sm:w-9 sm:h-9 bg-[url(https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8c547aee-5092-488d-9b24-cc3cadf37fdc_320w.png)] bg-cover rounded-full flex-shrink-0"></a>
 
       <!-- Navigation Links -->
-      <div class="flex items-center gap-1 sm:gap-2 px-1 sm:px-2">
+      <div class="flex items-center gap-0.5 sm:gap-2 px-0.5 sm:px-2">
         <a href="/home"
-          class="transition-all text-xs font-medium text-slate-950 bg-white/20 mix-blend-difference rounded-full px-3.5 py-1.5 relative shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]">
+          class="transition-all text-[11px] sm:text-xs font-medium text-slate-950 bg-white/20 mix-blend-difference rounded-full px-2.5 sm:px-3.5 py-1.5 relative shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] whitespace-nowrap">
           Home
         </a>
         <a href="/amp-center"
-          class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full pt-1.5 pr-3.5 pb-1.5 pl-3.5">
+          class="hover:bg-white/10 transition-all text-[11px] sm:text-xs font-normal text-slate-950 mix-blend-difference rounded-full px-2.5 sm:px-3.5 py-1.5 whitespace-nowrap">
           AMP Center
         </a>
         <a href="/design-hub"
-          class="hover:bg-white/10 transition-all text-xs font-normal text-slate-950 mix-blend-difference rounded-full pt-1.5 pr-3.5 pb-1.5 pl-3.5">
+          class="hover:bg-white/10 transition-all text-[11px] sm:text-xs font-normal text-slate-950 mix-blend-difference rounded-full px-2.5 sm:px-3.5 py-1.5 whitespace-nowrap">
           Design Hub
         </a>
       </div>
 
       <!-- Divider -->
-      <div class="w-px h-4 bg-white/60 mix-blend-difference mx-1.5"></div>
+      <div class="w-px h-4 bg-white/60 mix-blend-difference mx-0.5 sm:mx-1.5 flex-shrink-0"></div>
 
       <!-- Dark Mode Toggle -->
       <button onclick="toggleTheme()"
-        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all active:scale-90">
-        <iconify-icon icon="solar:sun-2-bold-duotone" width="20" class="block dark:hidden text-[#ff9146]" height="20"
+        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all active:scale-90 flex-shrink-0">
+        <iconify-icon icon="solar:sun-2-bold-duotone" width="18" class="block dark:hidden text-[#ff9146]" height="18"
           style="color: rgb(255, 145, 70)"></iconify-icon>
-        <iconify-icon icon="solar:moon-stars-bold-duotone" width="18"
+        <iconify-icon icon="solar:moon-stars-bold-duotone" width="16"
           class="hidden dark:block text-[#46d4c6]"></iconify-icon>
       </button>
     </div>
@@ -2061,7 +2061,7 @@
           </section>
           <!-- Reviews Section -->
           <section id="website-preview-section"
-            class="w-full py-24 relative flex flex-col items-center justify-center z-20">
+            class="w-full py-24 relative flex flex-col items-center justify-center z-20 overflow-hidden">
             <div class="text-center mb-12 relative z-10">
               <div
                 class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-[#46d4c6] text-xs font-semibold uppercase tracking-widest mb-6">
@@ -2659,15 +2659,13 @@
             &lt;/svg&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-
-
     &lt;!-- ================= SLIDE 1: MEDSPA SITE ================= --&gt;
-    &lt;div id="medspa-site" class="hero-container transition-all duration-500 w-full min-h-screen relative flex items-center justify-center p-8 z-10"&gt;
+    &lt;div id="medspa-site" class="hero-container transition-all duration-500 w-full min-h-screen relative flex items-center justify-center p-4 sm:p-8 z-10"&gt;
         &lt;!-- Glassmorphic Window --&gt;
-        &lt;div class="w-[98%] max-w-[1520px] h-[90vh] md:h-[680px] lg:h-[720px] xl:h-[780px] rounded-[2.5rem] glass-panel flex flex-col md:flex-row relative overflow-hidden"&gt;
+        &lt;div class="w-[98%] max-w-[1520px] h-[92vh] lg:h-[88vh] rounded-[2rem] lg:rounded-[2.5rem] glass-panel flex flex-col lg:flex-row relative overflow-hidden"&gt;
             
             &lt;!-- Left Sidebar Panel --&gt;
-            &lt;div class="w-full md:w-20 border-b md:border-b-0 md:border-r border-theme flex md:flex-col items-center justify-start py-4 md:py-8 px-6 md:px-0 relative shrink-0"&gt;
+            &lt;div class="hidden lg:flex w-20 border-r border-theme flex-col items-center justify-start py-8 relative shrink-0"&gt;
                 &lt;button class="text-muted-theme hover:text-main-theme transition-colors duration-300 hover:scale-110 active:scale-95" onclick="event.preventDefault()"&gt;
                     &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                         &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
@@ -2679,11 +2677,19 @@
 
             &lt;!-- Main Content Window --&gt;
             &lt;div class="flex-1 flex flex-col h-full overflow-hidden"&gt;
-                &lt;header class="h-20 border-b border-theme px-6 md:px-10 flex items-center justify-between z-10 shrink-0"&gt;
-                    &lt;div class="flex items-center gap-3"&gt;
-                        &lt;span class="font-serif font-bold text-[15px] md:text-[17px] tracking-widest text-main-theme"&gt;PROJECT D.IO&lt;/span&gt;
-                        &lt;span class="h-4 w-px" style="background-color: var(--glass-border);"&gt;&lt;/span&gt;
-                        &lt;span class="text-[9px] md:text-[10px] text-muted-theme tracking-widest font-sans uppercase"&gt;Web Design Experts&lt;/span&gt;
+                &lt;header class="h-16 lg:h-20 border-b border-theme px-4 lg:px-10 flex items-center justify-between z-10 shrink-0"&gt;
+                    &lt;div class="flex items-center gap-2 lg:gap-3"&gt;
+                        &lt;!-- Menu Button on mobile/tablet --&gt;
+                        &lt;button class="lg:hidden text-muted-theme hover:text-main-theme transition-colors mr-1 flex items-center justify-center" onclick="event.preventDefault()"&gt;
+                            &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
+                                &lt;line x1="4" y1="6" x2="20" y2="6"&gt;&lt;/line&gt;
+                                &lt;line x1="4" y1="12" x2="20" y2="12"&gt;&lt;/line&gt;
+                                &lt;line x1="4" y1="18" x2="20" y2="18"&gt;&lt;/line&gt;
+                            &lt;/svg&gt;
+                        &lt;/button&gt;
+                        &lt;span class="font-serif font-bold text-[13px] sm:text-[15px] lg:text-[17px] tracking-widest text-main-theme whitespace-nowrap"&gt;PROJECT D.IO&lt;/span&gt;
+                        &lt;span class="h-4 w-px hidden sm:block" style="background-color: var(--glass-border);"&gt;&lt;/span&gt;
+                        &lt;span class="text-[8px] lg:text-[10px] text-muted-theme tracking-widest font-sans uppercase whitespace-nowrap hidden sm:block"&gt;Web Design Experts&lt;/span&gt;
                     &lt;/div&gt;
                     
                     &lt;nav class="hidden lg:flex items-center gap-4"&gt;
@@ -2694,50 +2700,50 @@
                         &lt;a href="#" class="nav-link-theme" onclick="event.preventDefault()"&gt;Blog&lt;/a&gt;
                     &lt;/nav&gt;
                     
-                    &lt;div class="flex items-center gap-4"&gt;
+                    &lt;div class="flex items-center gap-2 lg:gap-4"&gt;
                         &lt;label class="theme-switch flex items-center" for="checkbox" title="Toggle Light/Dark Mode"&gt;
                             &lt;input type="checkbox" id="checkbox" /&gt;
                             &lt;div class="slider"&gt;&lt;/div&gt;
                         &lt;/label&gt;
-                        &lt;button class="px-5 py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0 hover:border-pink-400 active:scale-95" id="btn-get-started" onclick="event.preventDefault()"&gt;
+                        &lt;button class="px-3 lg:px-5 py-2 lg:py-2.5 rounded-full border border-theme bg-theme-glass hover:scale-[1.03] text-[9px] lg:text-[10px] font-semibold text-main-theme tracking-widest transition-all uppercase shrink-0 hover:border-pink-400 active:scale-95" id="btn-get-started" onclick="event.preventDefault()"&gt;
                             [Get Started]
                         &lt;/button&gt;
                     &lt;/div&gt;
                 &lt;/header&gt;
 
                 &lt;!-- Hero Section Layout --&gt;
-                &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 p-6 md:p-10 gap-8 lg:gap-10 items-center overflow-y-auto"&gt;
+                &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 p-4 sm:p-6 lg:p-10 gap-6 lg:gap-10 items-center overflow-y-auto"&gt;
                     &lt;!-- Left Text Column --&gt;
-                    &lt;div class="lg:col-span-7 flex flex-col gap-6 max-w-2xl text-left"&gt;
-                        &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.05]"&gt;
+                    &lt;div class="lg:col-span-7 flex flex-col gap-4 lg:gap-6 max-w-2xl text-left"&gt;
+                        &lt;h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-serif-luxury font-light text-main-theme tracking-tight leading-[1.1] lg:leading-[1.05]"&gt;
                             ELEVATE YOUR &lt;br/&gt;
-                            &lt;span class="font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-rose-100 to-pink-500 font-serif filter drop-shadow-[0_0_8px_rgba(224,94,131,0.4)]"&gt;MEDSPA&apos;S&lt;/span&gt; &lt;br/&gt;
+                            &lt;span class="font-normal italic text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-rose-100 to-pink-500 font-serif filter drop-shadow-[0_0_8px_rgba(224,94,131,0.4)]"&gt;MEDSPA&amp;apos;S&lt;/span&gt; &lt;br/&gt;
                             DIGITAL PRESENCE
                         &lt;/h1&gt;
-                        &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-pink);"&gt;
+                        &lt;h2 class="text-[10px] sm:text-xs lg:text-sm font-semibold tracking-widest uppercase font-sans" style="color: var(--accent-pink);"&gt;
                             Exceptional Web Design for Premier Aesthetic Practices.
                         &lt;/h2&gt;
-                        &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                        &lt;p class="text-[11px] sm:text-xs lg:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
                             Crafted by &lt;span style="color: var(--accent-pink); font-weight: 600;"&gt;Project D&lt;/span&gt; — We transform beauty brands into digital masterpieces that convert, retain, and inspire. Discover our expert design &amp; development services tailored for the beauty industry.
                         &lt;/p&gt;
-                        &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                            &lt;button id="btn-portfolio-slide" class="px-8 py-3.5 rounded-full btn-pink text-white font-semibold text-[10px] uppercase tracking-widest flex items-center gap-2" onclick="event.preventDefault()"&gt;
+                        &lt;div class="flex flex-wrap gap-3 lg:gap-4 mt-1 lg:mt-2"&gt;
+                            &lt;button id="btn-portfolio-slide" class="px-5 lg:px-8 py-2.5 lg:py-3.5 rounded-full btn-pink text-white font-semibold text-[9px] lg:text-[10px] uppercase tracking-widest flex items-center gap-2" onclick="event.preventDefault()"&gt;
                                 &lt;span&gt;Our Portfolio&lt;/span&gt;
                                 &lt;span class="text-xs"&gt;→&lt;/span&gt;
                             &lt;/button&gt;
-                            &lt;button id="btn-discuss-slide" class="px-8 py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest active:scale-95" onclick="event.preventDefault()"&gt;
+                            &lt;button id="btn-discuss-slide" class="px-5 lg:px-8 py-2.5 lg:py-3.5 rounded-full btn-glass text-main-theme font-semibold text-[9px] lg:text-[10px] uppercase tracking-widest active:scale-95" onclick="event.preventDefault()"&gt;
                                 Discuss Your Project
                             &lt;/button&gt;
                         &lt;/div&gt;
                         &lt;!-- Slider Controls --&gt;
-                        &lt;div class="flex items-center gap-3 mt-4"&gt;
-                            &lt;button id="btn-prev-slide" class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass hover:scale-110 active:scale-90"&gt;
-                                &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
+                        &lt;div class="flex items-center gap-2.5 lg:gap-3 mt-2 lg:mt-4"&gt;
+                            &lt;button id="btn-prev-slide" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass hover:scale-110 active:scale-90"&gt;
+                                &lt;svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
                             &lt;/button&gt;
-                            &lt;button id="btn-next-slide" class="w-10 h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass hover:scale-110 active:scale-90"&gt;
-                                &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
+                            &lt;button id="btn-next-slide" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full border border-theme flex items-center justify-center text-muted-theme hover:text-main-theme hover:border-theme transition-all bg-theme-glass hover:scale-110 active:scale-90"&gt;
+                                &lt;svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
                                     &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
                                 &lt;/svg&gt;
                             &lt;/button&gt;
@@ -2745,56 +2751,56 @@
                     &lt;/div&gt;
 
                     &lt;!-- Right Column: Freed Model Image (Faded into Background) --&gt;
-                    &lt;div class="lg:col-span-5 relative w-full h-[400px] sm:h-[460px] lg:h-full flex flex-col justify-end items-center z-10 overflow-visible"&gt;
+                    &lt;div class="lg:col-span-5 relative w-full h-[280px] sm:h-[340px] lg:h-full flex flex-col justify-end items-center z-10 overflow-visible mt-4 lg:mt-0"&gt;
                         &lt;!-- Overlapping Hero Images for Smooth Cross-Fade --&gt;
-                        &lt;div class="absolute inset-0 -top-12 -bottom-12 md:-right-12 md:-left-48 medspa-hero-img-dark bg-cover bg-center pointer-events-none" 
+                        &lt;div class="absolute inset-0 -top-6 -bottom-6 lg:-top-12 lg:-bottom-12 lg:-right-12 lg:-left-48 medspa-hero-img-dark bg-cover bg-center pointer-events-none" 
                              style="-webkit-mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 5%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 85%);
                                     mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 5%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 85%);"&gt;
-                        </div>
-                        &lt;div class="absolute inset-0 -top-12 -bottom-12 md:-right-12 md:-left-48 medspa-hero-img-light bg-cover bg-center pointer-events-none" 
+                        &lt;/div&gt;
+                        &lt;div class="absolute inset-0 -top-6 -bottom-6 lg:-top-12 lg:-bottom-12 lg:-right-12 lg:-left-48 medspa-hero-img-light bg-cover bg-center pointer-events-none" 
                              style="-webkit-mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 5%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 85%);
                                     mask-image: radial-gradient(circle at 60% 45%, rgba(0,0,0,1) 5%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 85%);"&gt;
-                        </div>
+                        &lt;/div&gt;
 
                         &lt;!-- Sparkle overlay relative to the column --&gt;
                         &lt;div class="absolute right-8 top-12 z-20 sparkle-star text-pink"&gt;
                             &lt;svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"&gt;
                                 &lt;path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/&gt;
                             &lt;/svg&gt;
-                        </div>
+                        &lt;/div&gt;
                         
                         &lt;!-- Floating Service Pills at the bottom --&gt;
-                        &lt;div class="relative w-full z-20 flex justify-around items-center gap-2 pb-6 md:-translate-x-6"&gt;
+                        &lt;div class="relative w-full z-20 flex justify-around items-center gap-1 sm:gap-2 pb-4 lg:pb-6 lg:-translate-x-6"&gt;
                             &lt;div class="relative service-tooltip-wrapper"&gt;
-                                &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
+                                &lt;button class="px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-full service-btn text-[8px] lg:text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 lg:gap-1.5" onclick="event.preventDefault()"&gt;
                                     &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-pink"&gt;&lt;/iconify-icon&gt;
                                     Laser
                                 &lt;/button&gt;
                                 &lt;div class="service-tooltip"&gt;
                                     &lt;h4&gt;Laser Therapy&lt;/h4&gt;
                                     &lt;p&gt;Precision skin rejuvenation &amp;amp; resurfacing for a flawless complexion.&lt;/p&gt;
-                                </div>
-                            </div>
+                                &lt;/div&gt;
+                            &lt;/div&gt;
                             &lt;div class="relative service-tooltip-wrapper"&gt;
-                                &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
+                                &lt;button class="px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-full service-btn text-[8px] lg:text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 lg:gap-1.5" onclick="event.preventDefault()"&gt;
                                     &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-pink"&gt;&lt;/iconify-icon&gt;
                                     Injectables
-                                </button>
+                                &lt;/button&gt;
                                 &lt;div class="service-tooltip"&gt;
                                     &lt;h4&gt;Injectables&lt;/h4&gt;
                                     &lt;p&gt;Smooth expression lines &amp;amp; restore youthful volume with artistic care.&lt;/p&gt;
-                                </div>
-                            </div>
+                                &lt;/div&gt;
+                            &lt;/div&gt;
                             &lt;div class="relative service-tooltip-wrapper"&gt;
-                                &lt;button class="px-3.5 py-2 rounded-full service-btn text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1.5" onclick="event.preventDefault()"&gt;
+                                &lt;button class="px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-full service-btn text-[8px] lg:text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 lg:gap-1.5" onclick="event.preventDefault()"&gt;
                                     &lt;iconify-icon icon="solar:sparkles-bold-duotone" class="text-pink"&gt;&lt;/iconify-icon&gt;
                                     Facials
                                 &lt;/button&gt;
                                 &lt;div class="service-tooltip"&gt;
-                                    &lt;h4&gt;Medical Facials&lt;/h4&gt;
-                                    &lt;p&gt;Deep cellular hydration, clinical exfoliation &amp;amp; customized serums.&lt;/p&gt;
-                                </div>
-                            </div>
+                                    &lt;h4&gt;Facials&lt;/h4&gt;
+                                    &lt;p&gt;Customized facials &amp;amp; peels designed to restore your natural glow.&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
@@ -2829,47 +2835,44 @@
                     &lt;input type="checkbox" id="checkbox-hvac" /&gt;
                     &lt;div class="slider"&gt;&lt;/div&gt;
                 &lt;/label&gt;
-            &lt;/div&gt;
-        &lt;/header&gt;
-
-        &lt;!-- Content Grid (Frosted Glass Panel and Interactive AC controller) --&gt;
-        &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center px-6 py-2 overflow-y-auto"&gt;
+            &lt;/div&        &lt;!-- Content Grid (Frosted Glass Panel and Interactive AC controller) --&gt;
+        &lt;div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center px-4 sm:px-6 py-2 overflow-y-auto"&gt;
             
             &lt;!-- Left Hero Info Box (Redesigned with Plus Jakarta Sans Title) --&gt;
-            &lt;div class="lg:col-span-7 rounded-[2rem] hvac-glass-card p-8 md:p-10 flex flex-col gap-6 text-left shadow-2xl relative overflow-hidden border border-white/5"&gt;
+            &lt;div class="lg:col-span-7 rounded-[2rem] hvac-glass-card p-5 sm:p-8 md:p-10 flex flex-col gap-4 sm:gap-6 text-left shadow-2xl relative overflow-hidden border border-white/5"&gt;
                 &lt;!-- Accent light spot --&gt;
                 &lt;div class="absolute -top-10 -left-10 w-24 h-24 bg-cyan-400/10 rounded-full blur-2xl"&gt;&lt;/div&gt;
                 
-                &lt;h1 class="text-4xl sm:text-5xl xl:text-6xl hvac-title text-main-theme tracking-tight leading-[1.05]"&gt;
+                &lt;h1 class="text-3xl sm:text-5xl xl:text-6xl hvac-title text-main-theme tracking-tight leading-[1.05]"&gt;
                     ELEVATE YOUR &lt;br/&gt;
                     &lt;span class="font-sans font-extrabold italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-100 to-amber-500 filter drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]"&gt;HOME&apos;S&lt;/span&gt; &lt;br/&gt;
                     CLIMATE CONTROL
-                &lt;/h1&gt;
+                &lt;/h1>
                 
-                &lt;h2 class="text-xs md:text-sm font-semibold tracking-widest uppercase font-sans text-amber-500/90" style="letter-spacing: 0.15em;"&gt;
+                &lt;h2 class="text-[10px] sm:text-xs md:text-sm font-semibold tracking-widest uppercase font-sans text-amber-500/90" style="letter-spacing: 0.15em;"&gt;
                     Premier HVAC &amp; Smart Home System Design.
                 &lt;/h2&gt;
                 
-                &lt;p class="text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
+                &lt;p class="text-[11px] sm:text-xs md:text-sm text-muted-theme leading-relaxed font-light font-sans max-w-xl"&gt;
                     We craft integrated comfort solutions that perform, endure, and inspire. Discover expert engineering for residential and commercial spaces.
                 &lt;/p&gt;
                 
-                &lt;div class="flex flex-wrap gap-4 mt-2"&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[10px] uppercase tracking-widest" onclick="event.preventDefault()"&gt;
+                &lt;div class="flex flex-wrap gap-3 sm:gap-4 mt-1 sm:mt-2"&gt;
+                    &lt;button class="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full hvac-btn-cyan text-white font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all" onclick="event.preventDefault()"&gt;
                         View Our Projects
                     &lt;/button&gt;
-                    &lt;button class="px-7 py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[10px] uppercase tracking-widest" onclick="event.preventDefault()"&gt;
-                        Request a Design Consultation
+                    &lt;button class="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full hvac-btn-glass text-main-theme font-semibold text-[9px] sm:text-[10px] uppercase tracking-widest transition-all whitespace-nowrap" onclick="event.preventDefault()"&gt;
+                        Request Consultation
                     &lt;/button&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
 
             &lt;!-- Right Hero Interactive AC Module (Clean wall thermostat style unit) --&gt;
-            &lt;div class="lg:col-span-5 relative w-full h-[340px] sm:h-[380px] lg:h-[400px] rounded-[2rem] hvac-glass-card p-6 shadow-2xl flex flex-col justify-between overflow-hidden border border-white/5"&gt;
+            &lt;div class="lg:col-span-5 relative w-full h-auto min-h-[320px] sm:h-[380px] lg:h-[400px] rounded-[2rem] hvac-glass-card p-4 sm:p-6 shadow-2xl flex flex-col justify-between overflow-hidden border border-white/5"&gt;
                 &lt;!-- Ambient circular gradients --&gt;
                 &lt;div class="absolute -right-20 -bottom-20 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"&gt;&lt;/div&gt;
                 &lt;div class="absolute -left-20 -top-20 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"&gt;&lt;/div&gt;
-
+ 
                 &lt;!-- Header status --&gt;
                 &lt;div class="flex justify-between items-center z-10 border-b border-white/5 pb-3"&gt;
                     &lt;span class="text-[9px] font-bold tracking-widest text-[#00f2ea] uppercase flex items-center gap-1.5"&gt;
@@ -2878,16 +2881,16 @@
                     &lt;/span&gt;
                     &lt;span class="text-[9px] text-muted-theme font-bold tracking-wider"&gt;THERMOSTAT: ACTIVE&lt;/span&gt;
                 &lt;/div&gt;
-
+ 
                 &lt;!-- Thermostat Control Row (Dial in middle, flanking buttons on left and right) --&gt;
-                &lt;div class="flex-1 flex items-center justify-center gap-6 py-4 z-10"&gt;
+                &lt;div class="flex-1 flex items-center justify-center gap-3 sm:gap-6 py-4 z-10"&gt;
                     &lt;!-- Temp Minus Button (flanking left) --&gt;
-                    &lt;button onclick="changeAcTemp(-1)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] hover:scale-110 hover:shadow-[0_0_15px_rgba(0,242,234,0.3)] transition-all active:scale-90 shadow-md" title="Decrease Temp"&gt;
-                        &lt;iconify-icon icon="solar:minus-linear" width="18"&gt;&lt;/iconify-icon&gt;
+                    &lt;button onclick="changeAcTemp(-1)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] hover:scale-110 hover:shadow-[0_0_15px_rgba(0,242,234,0.3)] transition-all active:scale-90 shadow-md shrink-0" title="Decrease Temp"&gt;
+                        &lt;iconify-icon icon="solar:minus-linear" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                     &lt;/button&gt;
                     
                     &lt;!-- Circular Thermostat Dial (Interactive via click-and-drag rotation &amp; mouse wheel scroll) --&gt;
-                    &lt;div id="thermostat-dial" class="relative w-44 h-44 rounded-full border-4 border-white/15 bg-black/55 flex items-center justify-center shadow-[0_0_35px_rgba(0,242,234,0.15)] group cursor-pointer" title="Scroll Wheel or Drag Radially to Rotate Temperature dial"&gt;
+                    &lt;div id="thermostat-dial" class="relative w-32 h-32 sm:w-44 sm:h-44 rounded-full border-4 border-white/15 bg-black/55 flex items-center justify-center shadow-[0_0_35px_rgba(0,242,234,0.15)] group cursor-pointer shrink-0" title="Scroll Wheel or Drag Radially to Rotate Temperature dial"&gt;
                         &lt;!-- Dial progress arc SVG (Rotated by 130deg to start at bottom-left) --&gt;
                         &lt;svg class="absolute inset-0 w-full h-full rotate-[130deg] pointer-events-none" viewBox="0 0 100 100"&gt;
                             &lt;!-- Background dotted track scale --&gt;
@@ -2898,22 +2901,22 @@
                         
                         &lt;!-- Rotating indicator marker container --&gt;
                         &lt;div id="dial-marker-container" class="absolute inset-0 pointer-events-none transition-transform duration-100" style="transform: rotate(-140deg);"&gt;
-                            &lt;div id="dial-marker" class="absolute top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-[#00f2ea] shadow-[0_0_12px_#00f2ea] transition-all duration-300"&gt;&lt;/div&gt;
+                            &lt;div id="dial-marker" class="absolute top-1 sm:top-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#00f2ea] shadow-[0_0_12px_#00f2ea] transition-all duration-300"&gt;&lt;/div&gt;
                         &lt;/div&gt;
-
+ 
                         &lt;div class="text-center select-none z-10"&gt;
-                            &lt;span id="ac-temp-display" class="text-6xl font-extrabold tracking-tighter text-white font-sans drop-shadow-[0_0_15px_rgba(0,242,234,0.2)]"&gt;72&lt;/span&gt;
-                            &lt;span class="text-xl font-bold text-[#00f2ea]" id="ac-degree-unit"&gt;°F&lt;/span&gt;
-                            &lt;p id="ac-mode-indicator" class="text-[8px] font-bold text-muted-theme uppercase tracking-widest mt-1"&gt;Target Temp&lt;/p&gt;
+                            &lt;span id="ac-temp-display" class="text-4xl sm:text-6xl font-extrabold tracking-tighter text-white font-sans drop-shadow-[0_0_15px_rgba(0,242,234,0.2)]"&gt;72&lt;/span&gt;
+                            &lt;span class="text-sm sm:text-xl font-bold text-[#00f2ea]" id="ac-degree-unit"&gt;°F&lt;/span&gt;
+                            &lt;p id="ac-mode-indicator" class="text-[7px] sm:text-[8px] font-bold text-muted-theme uppercase tracking-widest mt-0.5 sm:mt-1"&gt;Target Temp&lt;/p&gt;
                         &lt;/div&gt;
                     &lt;/div&gt;
                     
                     &lt;!-- Temp Plus Button (flanking right) --&gt;
-                    &lt;button onclick="changeAcTemp(1)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] hover:scale-110 hover:shadow-[0_0_15px_rgba(0,242,234,0.3)] transition-all active:scale-90 shadow-md" title="Increase Temp"&gt;
-                        &lt;iconify-icon icon="solar:add-linear" width="18"&gt;&lt;/iconify-icon&gt;
+                    &lt;button onclick="changeAcTemp(1)" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-white hover:bg-black/60 hover:text-[#00f2ea] hover:scale-110 hover:shadow-[0_0_15px_rgba(0,242,234,0.3)] transition-all active:scale-90 shadow-md shrink-0" title="Increase Temp"&gt;
+                        &lt;iconify-icon icon="solar:add-linear" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                     &lt;/button&gt;
                 &lt;/div&gt;
-
+ 
                 &lt;!-- Climate Mode Selectors --&gt;
                 &lt;div class="flex flex-col gap-3.5 z-10 border-t border-white/5 pt-4"&gt;
                     &lt;div class="grid grid-cols-3 gap-2"&gt;
@@ -2930,7 +2933,7 @@
                             Fan
                         &lt;/button&gt;
                     &lt;/div&gt;
-
+ 
                     &lt;!-- Fan Speed Controller --&gt;
                     &lt;div class="flex justify-between items-center bg-white/5 rounded-xl p-2 border border-white/5"&gt;
                         &lt;span class="text-[9px] font-bold text-muted-theme uppercase tracking-wider pl-1"&gt;Fan Control&lt;/span&gt;
@@ -2941,85 +2944,97 @@
                         &lt;/div&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;!-- Centered UI Card Elements providing Information (Now highly interactive!) --&gt;
-        &lt;div class="w-full max-w-[1480px] mx-auto px-6 py-2 flex items-center justify-center gap-4 z-10 shrink-0"&gt;
+            &lt;/        &lt;!-- Centered UI Card Elements providing Information (Now highly interactive!) --&gt;
+        &lt;div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 py-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 z-10 shrink-0"&gt;
             &lt;!-- Arrow Prev --&gt;
-            &lt;button id="hvac-prev-arrow" class="w-10 h-10 rounded-full border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
+            &lt;button id="hvac-prev-arrow" class="hidden sm:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
                     &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
                 &lt;/svg&gt;
             &lt;/button&gt;
             
             &lt;!-- Cards grid layout (centered and spaced out with glow shadows &amp; active states) --&gt;
-            &lt;div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-6 py-1"&gt;
+            &lt;div class="w-full flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 py-1"&gt;
                 
                 &lt;!-- Info Card 1: Thermostats (Controls Cool Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;cool&apos;)" class="hvac-project-card card-glow-cyan cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex justify-between items-center"&gt;
-                        &lt;div class="w-8 h-8 rounded-lg bg-[#00f2ea]/15 flex items-center justify-center text-[#00f2ea]"&gt;
-                            &lt;iconify-icon icon="solar:temperature-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;cool&apos;)" class="hvac-project-card card-glow-cyan cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
+                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[#00f2ea]/15 flex items-center justify-center text-[#00f2ea] shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:temperature-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-1" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase"&gt;Zone Control&lt;/span&gt;
+                        &lt;span id="card-badge-1" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#00f2ea]/10 text-[#00f2ea] tracking-wider uppercase w-max"&gt;Zone Control&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Thermostats&lt;/h4&gt;
-                        &lt;p class="text-[10px] text-muted-theme leading-normal mt-1 font-light"&gt;Advanced scheduling, multi-zone control, and intelligent auto comfort settings.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Thermostats&lt;/h4&gt;
+                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Advanced scheduling, multi-zone control, and intelligent auto comfort settings.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 2: Heat Pumps (Controls Heat Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;heat&apos;)" class="hvac-project-card card-glow-orange cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex justify-between items-center"&gt;
-                        &lt;div class="w-8 h-8 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400"&gt;
-                            &lt;iconify-icon icon="solar:settings-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;heat&apos;)" class="hvac-project-card card-glow-orange cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
+                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-orange-500/15 flex items-center justify-center text-orange-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:settings-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-2" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase"&gt;24.5 SEER&lt;/span&gt;
+                        &lt;span id="card-badge-2" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 tracking-wider uppercase w-max"&gt;24.5 SEER&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Modern Heat Pumps&lt;/h4&gt;
-                        &lt;p class="text-[10px] text-muted-theme leading-normal mt-1 font-light"&gt;High-coefficient heating &amp; cooling systems designed to reduce monthly utility costs.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Modern Heat Pumps&lt;/h4&gt;
+                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;High-coefficient heating &amp; cooling systems designed to reduce monthly utility costs.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 3: Air Purification (Controls Fan Mode) --&gt;
-                &lt;div onclick="selectCardAction(&apos;fan&apos;)" class="hvac-project-card card-glow-emerald cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex justify-between items-center"&gt;
-                        &lt;div class="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400"&gt;
-                            &lt;iconify-icon icon="solar:wind-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;fan&apos;)" class="hvac-project-card card-glow-emerald cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
+                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:wind-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-3" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase"&gt;99.9% Pure&lt;/span&gt;
+                        &lt;span id="card-badge-3" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 tracking-wider uppercase w-max"&gt;99.9% Pure&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Air Purification&lt;/h4&gt;
-                        &lt;p class="text-[10px] text-muted-theme leading-normal mt-1 font-light"&gt;Multi-stage HEPA filtration, proactive humidity control, and active UV sanitization.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Air Purification&lt;/h4&gt;
+                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Multi-stage HEPA filtration, proactive humidity control, and active UV sanitization.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
                 &lt;!-- Info Card 4: Home Automation (Triggers Sync Status) --&gt;
-                &lt;div onclick="selectCardAction(&apos;sync&apos;)" class="hvac-project-card card-glow-blue cursor-pointer rounded-2xl p-4 flex flex-col gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
-                    &lt;div class="flex justify-between items-center"&gt;
-                        &lt;div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400"&gt;
-                            &lt;iconify-icon icon="solar:cpu-bold-duotone" width="18"&gt;&lt;/iconify-icon&gt;
+                &lt;div onclick="selectCardAction(&apos;sync&apos;)" class="hvac-project-card card-glow-blue cursor-pointer rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5 text-left border border-white/5 relative overflow-hidden backdrop-blur-md transition-all duration-300"&gt;
+                    &lt;div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 sm:gap-2"&gt;
+                        &lt;div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400 shrink-0"&gt;
+                            &lt;iconify-icon icon="solar:cpu-bold-duotone" class="text-sm sm:text-lg"&gt;&lt;/iconify-icon&gt;
                         &lt;/div&gt;
-                        &lt;span id="card-badge-4" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase"&gt;Sync Active&lt;/span&gt;
+                        &lt;span id="card-badge-4" class="text-[7px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 tracking-wider uppercase w-max"&gt;Sync Active&lt;/span&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
-                        &lt;h4 class="text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Home Sync&lt;/h4&gt;
-                        &lt;p class="text-[10px] text-muted-theme leading-normal mt-1 font-light"&gt;Full integration with smart assistant ecosystems for voice-activated profiles.&lt;/p&gt;
+                        &lt;h4 class="text-[9px] sm:text-[11px] font-bold text-main-theme uppercase tracking-wider"&gt;Smart Home Sync&lt;/h4&gt;
+                        &lt;p class="text-[8px] sm:text-[10px] text-muted-theme leading-normal mt-0.5 sm:mt-1 font-light"&gt;Full integration with smart assistant ecosystems for voice-activated profiles.&lt;/p&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
 
             &lt;/div&gt;
             
             &lt;!-- Arrow Next --&gt;
-            &lt;button id="hvac-next-arrow" class="w-10 h-10 rounded-full border border-white/10 hover:border-[#00f2ea]/40 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
+            &lt;button id="hvac-next-arrow" class="hidden sm:flex w-10 h-10 shrink-0 rounded-full border border-white/10 hover:border-[#00f2ea]/40 items-center justify-center text-muted-theme hover:text-[#00f2ea] transition-all bg-white/5 shadow-lg hover:scale-110 active:scale-90"&gt;
                 &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
                     &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
                 &lt;/svg&gt;
             &lt;/button&gt;
+
+            &lt;!-- Mobile Slider Controls --&gt;
+            &lt;div class="flex sm:hidden items-center justify-center gap-4 py-1"&gt;
+                &lt;button id="hvac-prev-arrow-mobile" class="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] active:scale-90"&gt;
+                    &lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
+                        &lt;polyline points="15 18 9 12 15 6"&gt;&lt;/polyline&gt;
+                    &lt;/svg&gt;
+                &lt;/button&gt;
+                &lt;span class="text-[8px] font-bold text-muted-theme uppercase tracking-widest px-2 select-none"&gt;Switch Mockup&lt;/span&gt;
+                &lt;button id="hvac-next-arrow-mobile" class="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-muted-theme hover:text-[#00f2ea] active:scale-90"&gt;
+                    &lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"&gt;
+                        &lt;polyline points="9 18 15 12 9 6"&gt;&lt;/polyline&gt;
+                    &lt;/svg&gt;
+                &lt;/button&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 
@@ -3114,6 +3129,11 @@
         btnNextMedspa.addEventListener(&apos;click&apos;, showHvac);
         btnPrevHvac.addEventListener(&apos;click&apos;, showMedspa);
         btnNextHvac.addEventListener(&apos;click&apos;, showMedspa);
+
+        const btnPrevHvacMobile = document.getElementById(&apos;hvac-prev-arrow-mobile&apos;);
+        const btnNextHvacMobile = document.getElementById(&apos;hvac-next-arrow-mobile&apos;);
+        if (btnPrevHvacMobile) btnPrevHvacMobile.addEventListener(&apos;click&apos;, showMedspa);
+        if (btnNextHvacMobile) btnNextHvacMobile.addEventListener(&apos;click&apos;, showMedspa);
 
         // Toast Helper
         let toastTimeout = null;
@@ -3459,6 +3479,8 @@
             switchTheme(isParentDark);
         } catch(e) {}
 
+        // Only initialize custom cursor on devices with fine pointer (desktop mouse)
+        if (window.matchMedia(&apos;(pointer: fine)&apos;).matches) {
         // Custom Cursor Render System
         const pCanvas = document.createElement(&apos;canvas&apos;);
         pCanvas.style.position = &apos;fixed&apos;;
@@ -3657,9 +3679,12 @@
             requestAnimationFrame(pLoop);
         }
         pLoop();
+        }
     &lt;/script&gt;
     &lt;style&gt;
-        * { cursor: none !important; }
+        @media (pointer: fine) {
+            * { cursor: none !important; }
+        }
     &lt;/style&gt;
 &lt;/body&gt;
 &lt;/html&gt;'></iframe>
@@ -3667,7 +3692,7 @@
             </div>
           </section>
                   <!-- Interactive Showcase Section -->
-          <section id="interactive-showcase-section" class="w-full py-32 relative flex flex-col items-center justify-center z-20">
+          <section id="interactive-showcase-section" class="w-full py-32 relative flex flex-col items-center justify-center z-20 overflow-hidden">
             <!-- Ambient Background Glows -->
             <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-[#46d4c6]/10 to-transparent rounded-full blur-[100px] pointer-events-none z-0"></div>
             <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-[#ff9146]/10 to-transparent rounded-full blur-[100px] pointer-events-none z-0"></div>
@@ -4134,7 +4159,7 @@
           </section>
           
           <section id="reviews-section"
-            class="w-full pt-32 pb-40 px-6 relative flex flex-col items-center justify-center min-h-screen">
+            class="w-full pt-32 pb-40 px-6 relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
             <div class="text-center mb-16 relative z-10">
               <div
                 class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-medium uppercase tracking-widest mb-6 relative z-10">
@@ -4340,7 +4365,7 @@
 
           <!-- Discovery Call Section -->
           <section id="discovery-call"
-            class="w-full py-32 px-6 relative flex flex-col items-center justify-center min-h-[80vh] z-20">
+            class="w-full py-32 px-6 relative flex flex-col items-center justify-center min-h-[80vh] z-20 overflow-hidden">
             <div
               class="max-w-6xl w-full bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-2xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row gap-12 z-10">
               <!-- Left side -->
