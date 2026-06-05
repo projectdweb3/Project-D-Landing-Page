@@ -2929,6 +2929,7 @@ const getBasketballStatsAndBio = (card) => {
 
       const handleMouseEnter = () => {
         if (!interactive) return;
+        if (window.innerWidth < 768) return;
         const cardEl = cardRef.current;
         if (!cardEl) return;
         rectRef.current = cardEl.getBoundingClientRect();
@@ -2937,6 +2938,7 @@ const getBasketballStatsAndBio = (card) => {
       // Handle Mouse/Touch tilt controls (direct DOM manipulation style updates)
       const handleMouseMove = (e) => {
         if (!interactive) return;
+        if (window.innerWidth < 768) return;
         
         let rect = rectRef.current;
         if (!rect) {
@@ -2990,6 +2992,7 @@ const getBasketballStatsAndBio = (card) => {
       };
 
       const handleMouseLeave = () => {
+        if (window.innerWidth < 768) return;
         rectRef.current = null;
         if (frameIdRef.current) {
           cancelAnimationFrame(frameIdRef.current);
@@ -7813,7 +7816,13 @@ const getBasketballStatsAndBio = (card) => {
         if (selectedCardId === null) {
           setShowRemoveConfirm(false);
           setRemoveConfirmInput('');
+          document.body.style.overflow = '';
+        } else {
+          document.body.style.overflow = 'hidden';
         }
+        return () => {
+          document.body.style.overflow = '';
+        };
       }, [selectedCardId]);
 
       // Synchronize temp inputs when modal opens
@@ -9980,7 +9989,7 @@ const getBasketballStatsAndBio = (card) => {
           )}
           {selectedCardId && activeCard && (
             <div 
-              className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-xl bg-black/85 transition-opacity duration-300 ease-out hide-scrollbar"
+              className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-sm sm:backdrop-blur-xl bg-black/90 sm:bg-black/85 transition-opacity duration-300 ease-out hide-scrollbar"
             >
               <div 
                 className="min-h-full w-full flex items-center justify-center p-4 md:p-6 pt-16 md:pt-16"

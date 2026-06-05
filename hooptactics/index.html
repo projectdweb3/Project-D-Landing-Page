@@ -1248,6 +1248,44 @@
         height: 160px !important;
       }
     }
+
+    /* Mobile Performance & Smooth Scrolling Overrides */
+    @media (max-width: 768px) {
+      /* Disable the constant background-position sweep animation on mobile to prevent CPU/GPU repaint lag */
+      .holo-shimmer {
+        animation: none !important;
+        background-position: 50% 50% !important;
+        opacity: 0.6 !important;
+      }
+      
+      /* Disable mouse-tilt 3D effects on mobile card wrapper and inner elements to prevent scroll stutter */
+      .card-3d-wrapper,
+      .card-3d-inner,
+      .card-face {
+        transform: none !important;
+        transform-style: flat !important;
+        transition: none !important;
+      }
+      
+      /* Provide soft, hardware-accelerated static values for refractor and glare overlays on mobile */
+      .holo-refractor {
+        opacity: 0.35 !important;
+        transform: none !important;
+        background-position: 50% 50% !important;
+      }
+      
+      .holo-glare {
+        opacity: 0.25 !important;
+        transform: none !important;
+        background-position: 50% 50% !important;
+      }
+      
+      /* Disable heavy SVG noise filter / sparkle animation on mobile */
+      .holo-shimmer.is-emerald-shimmer ~ .holo-refractor::before {
+        animation: none !important;
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
