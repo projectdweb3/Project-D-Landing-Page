@@ -2797,13 +2797,29 @@ const getBasketballStatsAndBio = (card) => {
       );
     };
 
+    // Global image cache to prevent image reload flicker during list scroll/re-renders
+    const loadedImagesCache = new Set();
+
     // Card component rendering single-sided interactive 3D card
     const HoloCard = ({ card, size = 'md', interactive = true, hideAttributes = false, onClick }) => {
       const { theme } = React.useContext(ThemeContext) || { theme: 'dark' };
       const cardRef = useRef(null);
       const [frontImgErr, setFrontImgErr] = React.useState(false);
       const [frontImgSrc, setFrontImgSrc] = React.useState('');
-      const [imageLoaded, setImageLoaded] = React.useState(false);
+      const [imageLoaded, setImageLoaded] = React.useState(() => {
+        const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
+        const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
+        
+        let fileSuffix = parallelName.toLowerCase().replace(/ /g, '-');
+        if (fileSuffix === 'base-card') fileSuffix = 'base';
+        if (fileSuffix === 'refractor-parallel' || fileSuffix === 'refractor' || fileSuffix === 'silver-prizm') fileSuffix = 'silver';
+        if (fileSuffix === 'prismatic-patch') fileSuffix = 'prismatic';
+        if (fileSuffix.includes('1/1') || fileSuffix.includes('one-of-one') || fileSuffix.includes('1-of-1')) {
+          fileSuffix = 'one-of-one';
+        }
+        const initialSrc = `assets/cards/${baseId}_${fileSuffix}_front.png`;
+        return loadedImagesCache.has(initialSrc);
+      });
 
       const cardStats = getCardGameStats(card);
       const displaySta = typeof card.currentSta === 'number' ? card.currentSta : cardStats.sta;
@@ -2821,9 +2837,15 @@ const getBasketballStatsAndBio = (card) => {
           fileSuffix = 'one-of-one';
         }
         
-        setFrontImgSrc(`assets/cards/${baseId}_${fileSuffix}_front.png`);
+        const nextSrc = `assets/cards/${baseId}_${fileSuffix}_front.png`;
+        setFrontImgSrc(prev => {
+          if (prev !== nextSrc) {
+            setImageLoaded(loadedImagesCache.has(nextSrc));
+            return nextSrc;
+          }
+          return prev;
+        });
         setFrontImgErr(false);
-        setImageLoaded(false); // Reset loaded state on card/parallel change
       }, [card.id, card.parallel]);
 
       const handleFrontError = () => {
@@ -2831,7 +2853,7 @@ const getBasketballStatsAndBio = (card) => {
         const baseSrc = `assets/cards/${baseId}_base_front.png`;
         if (frontImgSrc !== baseSrc) {
           setFrontImgSrc(baseSrc);
-          setImageLoaded(false); // Reset loaded state for fallback base image load
+          setImageLoaded(loadedImagesCache.has(baseSrc));
         } else {
           setFrontImgErr(true);
         }
@@ -3089,7 +3111,10 @@ const getBasketballStatsAndBio = (card) => {
                   <img 
                     src={frontImgSrc} 
                     onError={handleFrontError}
-                    onLoad={() => setImageLoaded(true)}
+                    onLoad={() => {
+                      loadedImagesCache.add(frontImgSrc);
+                      setImageLoaded(true);
+                    }}
                     className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
                     loading="lazy"
                     decoding="async"
@@ -7667,6 +7692,7 @@ const getBasketballStatsAndBio = (card) => {
       });
       const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
       const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+      const [isBriefingModalOpen, setIsBriefingModalOpen] = useState(false);
       const [wasOvertime, setWasOvertime] = useState(false);
       const [profileTab, setProfileTab] = useState('edit');
       const [tempUsername, setTempUsername] = useState('');
@@ -9497,6 +9523,31 @@ const getBasketballStatsAndBio = (card) => {
             {/* TAB 7: SETTINGS VIEW */}
             {activeTab === 'settings' && (
               <div className="space-y-8 animate-modal-entry text-left max-w-2xl mx-auto">
+                {/* Welcome & Info Card */}
+                <div className={`p-6 rounded-3xl border relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300 ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-neutral-100 via-neutral-50/50 to-neutral-100 border-neutral-200/80 shadow-sm'
+                    : 'bg-gradient-to-r from-neutral-900 via-white/5 to-neutral-900 border-white/5 shadow-xl'
+                }`}>
+                  <div className="text-left space-y-1">
+                    <h3 className="text-lg font-bold text-white">Welcome to HoopTactics!</h3>
+                    <p className="text-[10px] text-neutral-400 uppercase font-semibold">
+                      Your premium digital sports card binder & tactical arena.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsBriefingModalOpen(true)}
+                    className="conic-btn primary dramatic-hover py-2.5 px-4"
+                  >
+                    <div className="conic-spin-bg"></div>
+                    <div className="conic-btn-mask"></div>
+                    <span className="relative z-10 flex items-center gap-1.5 text-[10px] font-bold uppercase text-white">
+                      <iconify-icon icon="solar:info-square-linear" width="14"></iconify-icon>
+                      Platform Briefing
+                    </span>
+                  </button>
+                </div>
+
                 <div className="bg-neutral-900/50 border border-white/5 p-6 rounded-3xl space-y-6">
                   <h3 className="text-xl font-bold text-white border-b border-white/5 pb-3">Reconfigure Profile Settings</h3>
                   
@@ -9987,6 +10038,101 @@ const getBasketballStatsAndBio = (card) => {
               </div>
             </div>
           )}
+
+          {/* PLATFORM BRIEFING MODAL */}
+          {isBriefingModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
+              <div 
+                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
+              >
+                {/* Close Button */}
+                <button 
+                  onClick={() => setIsBriefingModalOpen(false)}
+                  className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors cursor-pointer"
+                >
+                  <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
+                </button>
+
+                {/* Modal Title */}
+                <div className="border-b border-white/5 pb-3">
+                  <h3 className="text-sm md:text-base font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <iconify-icon icon="solar:info-square-bold" className="text-orange-500"></iconify-icon>
+                    Hoop Tactics Platform Briefing
+                  </h3>
+                  <p className="text-[9px] md:text-[10px] text-neutral-500 uppercase mt-0.5">Learn how collecting meets strategic basketball card gameplay</p>
+                </div>
+
+                {/* Purpose and Gamification */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-3">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">🎯 Gamified Card Collecting</h4>
+                  <p className="text-[11px] leading-relaxed text-neutral-300">
+                    <strong>Hoop Tactics</strong> is a digital sports card binder that gamifies your collection. Instead of just admiring your cards, you can field them in high-stakes tactical matchups! 
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-neutral-300">
+                    By expanding your vault, scanning new physical or digital slabs, and securing rare parallel finishes, you earn experience points (XP) that boost your overall <strong>Curator Level</strong>. Maximize your status, earn prestige achievements, and show off your legendary basketball binder.
+                  </p>
+                </div>
+
+                {/* The Game Section */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-3">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">🏀 The Matchup Arena</h4>
+                  <p className="text-[11px] leading-relaxed text-neutral-300">
+                    Each card features physical specs, team registries, and custom game attributes: <strong>Offense (OFF)</strong>, <strong>Defense (DEF)</strong>, and <strong>Stamina (STA)</strong>. 
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-neutral-300">
+                    In the <strong>Play Now (Arena)</strong>, you select a 5-card deck to match up against opposing players. Manage your squad's stamina depletion, execute strategic timeouts to swap tired players, and leverage special roster perks (like scoring boosts, defense anchors, or playmaking engines) to dominate the court.
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-neutral-300">
+                    Want a deeper breakdown? Navigate to the <strong className="text-orange-400 cursor-pointer hover:underline" onClick={() => { setActiveTab('guide'); setIsBriefingModalOpen(false); }}>Gameplay Guide</strong> tab for full formulas, coin flip mechanics, and specialized perk explanations.
+                  </p>
+                </div>
+
+                {/* Channels Grid */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">navigation channels & directories</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { icon: 'solar:home-2-linear', label: 'My Collection / Vault', desc: 'Manage your owned digital card collection, track vault values, and view curator stats.' },
+                      { icon: 'solar:magnifer-linear', label: 'Card Index', desc: 'Browse the complete player card catalog, search sets, and check market values.' },
+                      { icon: 'solar:gamepad-linear', label: 'Play Now / Arena', desc: 'Launch into tactical 5v5 basketball matches against AI or other players.' },
+                      { icon: 'solar:notebook-linear', label: 'Gameplay Guide', desc: 'View complete rules, OVR math formula tools, and active card perks list.' },
+                      { icon: 'solar:shield-linear', label: 'Teams Directory', desc: 'Examine card checklists and track scanned card completion by franchise.' },
+                      { icon: 'solar:camera-linear', label: 'Camera Scanner', desc: 'Simulate scanning digital or physical card slabs into your digital binder.' },
+                      { icon: 'solar:calendar-date-linear', label: 'Drops & Releases', desc: 'Follow new pack releases, daily reward calendars, and drop schedules.' },
+                      { icon: 'solar:chart-square-linear', label: 'Market Analytics', desc: 'Monitor price trend graphs, historical valuation data, and player trends.' },
+                      { icon: 'solar:settings-linear', label: 'Settings', desc: 'Switch light/dark themes, specify your favorite franchise, or reset progress.' }
+                    ].map((ch, idx) => (
+                      <div key={idx} className="p-3 bg-white/[0.01] border border-white/5 rounded-xl flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-neutral-400 mt-0.5 flex-shrink-0">
+                          <iconify-icon icon={ch.icon} width="16"></iconify-icon>
+                        </div>
+                        <div className="space-y-0.5 text-left">
+                          <div className="text-[10px] font-black text-white uppercase tracking-wider">{ch.label}</div>
+                          <div className="text-[9.5px] leading-normal text-neutral-400 font-semibold">{ch.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Close Button at bottom */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => setIsBriefingModalOpen(false)}
+                    className="w-full conic-btn py-3"
+                  >
+                    <div className="conic-spin-bg"></div>
+                    <div className="conic-btn-mask bg-black"></div>
+                    <span className="relative z-10 flex items-center justify-center gap-1.5 text-[10px] font-bold text-white uppercase cursor-pointer">
+                      <iconify-icon icon="solar:check-circle-bold" width="14"></iconify-icon>
+                      Got it, thanks!
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {selectedCardId && activeCard && (
             <div 
               className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-sm sm:backdrop-blur-xl bg-black/90 sm:bg-black/85 transition-opacity duration-300 ease-out hide-scrollbar"

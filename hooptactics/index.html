@@ -1258,13 +1258,14 @@
         opacity: 0.6 !important;
       }
       
-      /* Disable mouse-tilt 3D effects on mobile card wrapper and inner elements to prevent scroll stutter */
+      /* Disable mouse-tilt 3D effects and resting float animations on mobile to prevent scroll stutter */
       .card-3d-wrapper,
       .card-3d-inner,
       .card-face {
         transform: none !important;
         transform-style: flat !important;
         transition: none !important;
+        animation: none !important;
       }
       
       /* Provide soft, hardware-accelerated static values for refractor and glare overlays on mobile */
