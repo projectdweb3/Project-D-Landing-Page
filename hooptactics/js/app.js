@@ -1881,238 +1881,118 @@ const getBasketballStatsAndBio = (card) => {
   let rows = [];
   let bio = "";
   
-  if (card.player.includes("Mikan")) {
-    rows = [
-      { yr: "1947-48", team: "MNL", gp: "11", pts: "21.3", reb: "N/A", ast: "1.7" },
-      { yr: "1948-49", team: "MNL", gp: "60", pts: "28.3", reb: "N/A", ast: "3.6" }
-    ];
+  const nameLower = card.player.toLowerCase();
+  
+  // Set Biography
+  if (nameLower.includes("mikan")) {
     bio = "The first true superstar of professional basketball, Mikan dominated the key so thoroughly that the league eventually widened it from 6 to 12 feet.";
-  } else if (card.player.includes("Russell")) {
-    rows = [
-      { yr: "1956-57", team: "BOS", gp: "48", pts: "14.7", reb: "19.6", ast: "1.8" },
-      { yr: "1957-58", team: "BOS", gp: "69", pts: "16.6", reb: "22.7", ast: "2.3" }
-    ];
+  } else if (nameLower.includes("russell")) {
     bio = "In his rookie campaign, Russell revolutionized defensive basketball, leading the Celtics to their first NBA Championship and launching the greatest dynasty in sports history.";
-  } else if (card.player.includes("Chamberlain")) {
-    rows = [
-      { yr: "1959-60", team: "PHW", gp: "72", pts: "37.6", reb: "27.0", ast: "2.3" },
-      { yr: "1960-61", team: "PHW", gp: "79", pts: "38.4", reb: "27.2", ast: "1.9" }
-    ];
+  } else if (nameLower.includes("chamberlain")) {
     bio = "Wilt took the league by storm in 1959, averaging 37.6 points as a rookie. By 1961, his dominant scoring and rebounding had rewritten every single record in the books.";
-  } else if (card.player.includes("West")) {
-    rows = [
-      { yr: "1960-61", team: "LAL", gp: "74", pts: "17.6", reb: "7.7", ast: "4.2" },
-      { yr: "1961-62", team: "LAL", gp: "75", pts: "30.8", reb: "7.9", ast: "5.4" }
-    ];
+  } else if (nameLower.includes("west")) {
     bio = "Known as 'Mr. Clutch' for his late-game heroics, West made his first of 14 consecutive All-Star appearances as a rookie and eventually became the silhouette of the NBA logo.";
-  } else if (card.player.includes("Kareem") || card.player.includes("Alcindor")) {
-    rows = [
-      { yr: "1969-70", team: "MIL", gp: "82", pts: "28.8", reb: "14.5", ast: "4.1" },
-      { yr: "1970-71", team: "MIL", gp: "82", pts: "31.7", reb: "16.0", ast: "3.3" }
-    ];
+  } else if (nameLower.includes("kareem") || nameLower.includes("alcindor")) {
     bio = "Entering the league as Lew Alcindor, Kareem immediately established himself as a force, capturing the ROTY award and leading Milwaukee to a 56-win season.";
-  } else if (card.player.includes("Havlicek")) {
-    rows = [
-      { yr: "1962-63", team: "BOS", gp: "80", pts: "14.3", reb: "6.7", ast: "2.2" },
-      { yr: "1963-64", team: "BOS", gp: "80", pts: "19.9", reb: "5.4", ast: "3.0" }
-    ];
+  } else if (nameLower.includes("havlicek")) {
     bio = "'Hondo' was the ultimate sixth man, combining relentless energy with defensive tenacity. He would lead the Celtics to 8 NBA titles during his Hall of Fame career.";
-  } else if (card.player.includes("Bird")) {
-    rows = [
-      { yr: "1979-80", team: "BOS", gp: "82", pts: "21.3", reb: "10.4", ast: "4.5" },
-      { yr: "1980-81", team: "BOS", gp: "82", pts: "21.2", reb: "10.9", ast: "5.5" }
-    ];
+  } else if (nameLower.includes("bird")) {
     bio = "Larry Legend's 1980 Topps rookie marks the arrival of one of the greatest shooters and fiercest competitors in basketball history, leading Boston to a title in 1981.";
-  } else if (card.player.includes("Erving")) {
-    rows = [
-      { yr: "1972-73", team: "VIR", gp: "84", pts: "31.9", reb: "12.2", ast: "4.2" },
-      { yr: "1973-74", team: "NYN", gp: "84", pts: "27.4", reb: "10.7", ast: "5.2" }
-    ];
+  } else if (nameLower.includes("erving")) {
     bio = "Dr. J's high-flying style and artistic dunks captivated fans and revolutionized the sport, paving the way for the modern athletic wing player.";
-  } else if (card.player.includes("Magic")) {
-    rows = [
-      { yr: "1979-80", team: "LAL", gp: "77", pts: "18.0", reb: "7.7", ast: "7.3" },
-      { yr: "1980-81", team: "LAL", gp: "37", pts: "21.6", reb: "8.6", ast: "8.6" }
-    ];
+  } else if (nameLower.includes("magic")) {
     bio = "Magic's 1980 Topps rookie showcases the revolutionary 6'9 point guard who defined 'Showtime' and led the Lakers to the 1980 championship as a rookie.";
-  } else if (card.player.includes("Jordan")) {
+  } else if (nameLower.includes("jordan")) {
     if (card.year === 1986) {
-      rows = [
-        { yr: "1984-85", team: "CHI", gp: "82", pts: "28.2", reb: "6.5", ast: "5.9" },
-        { yr: "1985-86", team: "CHI", gp: "18", pts: "22.7", reb: "3.6", ast: "2.9" }
-      ];
       bio = "The most iconic card in basketball history. Jordan's 1986 Fleer rookie captures his raw athletic brilliance, highlighted by his historic 63-point playoff game against Boston.";
     } else if (card.year === 1990) {
-      rows = [
-        { yr: "1988-89", team: "CHI", gp: "81", pts: "32.5", reb: "8.0", ast: "8.0" },
-        { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" }
-      ];
       bio = "Following his fourth consecutive scoring title, Jordan led the Bulls to the threshold of their historic championship run, averaging 33.6 points per game.";
     } else if (card.year === 1991) {
-      rows = [
-        { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" },
-        { yr: "1990-91", team: "CHI", gp: "82", pts: "31.5", reb: "6.0", ast: "5.5" }
-      ];
       bio = "Fresh off his first NBA Championship, Jordan's Upper Deck release captured the global phenomenon at his absolute athletic and competitive peak.";
     } else if (card.year === 1993) {
-      rows = [
-        { yr: "1991-92", team: "CHI", gp: "80", pts: "30.1", reb: "6.4", ast: "6.1" },
-        { yr: "1992-93", team: "CHI", gp: "78", pts: "32.6", reb: "6.7", ast: "5.5" }
-      ];
       bio = "Topps Finest introduced Chromium technology to the hobby, featuring this stunning refractor of Jordan just as he completed his first historic Three-Peat.";
     } else if (card.year === 1997) {
-      rows = [
-        { yr: "1995-96", team: "CHI", gp: "82", pts: "30.4", reb: "6.6", ast: "4.3" },
-        { yr: "1996-97", team: "CHI", gp: "82", pts: "29.6", reb: "5.9", ast: "4.3" }
-      ];
       bio = "Precious Metal Gems represents the pinnacle of 90s insert collecting. The Red PMG Jordan is a legendary masterpiece from the Bulls' second championship run.";
+    } else {
+      bio = "Relentless competitor, global icon, and widely considered the greatest of all time, Jordan dominated both ends of the floor with historic scoring and elite defense.";
     }
-  } else if (card.player.includes("Barkley")) {
-    rows = [
-      { yr: "1984-85", team: "PHI", gp: "82", pts: "14.0", reb: "8.6", ast: "1.9" },
-      { yr: "1985-86", team: "PHI", gp: "80", pts: "20.0", reb: "12.8", ast: "3.9" }
-    ];
+  } else if (nameLower.includes("barkley")) {
     bio = "The 'Round Mound of Rebound' proved that height was no barrier to dominance in the paint, averaging a double-double and earning All-Rookie honors in Philly.";
-  } else if (card.player.includes("Olajuwon")) {
-    rows = [
-      { yr: "1984-85", team: "HOU", gp: "82", pts: "20.6", reb: "11.9", ast: "1.4" },
-      { yr: "1985-86", team: "HOU", gp: "68", pts: "23.5", reb: "11.5", ast: "2.0" }
-    ];
+  } else if (nameLower.includes("olajuwon")) {
     bio = "Drafted #1 overall in the legendary 1984 draft class, 'The Dream' anchored the Rockets' Twin Towers, showcasing his signature 'Dream Shake' footwork.";
-  } else if (card.player.includes("Robinson")) {
-    rows = [
-      { yr: "1989-90", team: "SAS", gp: "82", pts: "24.3", reb: "12.0", ast: "2.0" },
-      { yr: "1990-91", team: "SAS", gp: "82", pts: "25.6", reb: "13.0", ast: "2.5" }
-    ];
+  } else if (nameLower.includes("robinson")) {
     bio = "'The Admiral' served two years in the U.S. Navy before joining the Spurs. He immediately turned the franchise around, winning Rookie of the Year by unanimous vote.";
-  } else if (card.player.includes("Bryant")) {
+  } else if (nameLower.includes("bryant")) {
     if (card.year === 1996) {
-      rows = [
-        { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
-        { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
-      ];
       bio = "Straight out of Lower Merion High School, Kobe's Chrome rookie marks the beginning of the Mamba era, featuring his legendary vertical leap and scoring instincts.";
     } else if (card.year === 1997) {
-      rows = [
-        { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
-        { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
-      ];
       bio = "This ultra-rare green PMG is one of the most coveted modern cards in existence, capturing Kobe in his second season as the league's youngest All-Star starter.";
+    } else {
+      bio = "The Black Mamba, a 5-time Champion and 18-time All-Star, inspired a generation with his unmatched work ethic, scoring wizardry, and elite competitive drive.";
     }
-  } else if (card.player.includes("LeBron") || card.player.includes("James")) {
-    rows = [
-      { yr: "2003-04", team: "CLE", gp: "79", pts: "20.9", reb: "5.5", ast: "5.9" },
-      { yr: "2004-05", team: "CLE", gp: "80", pts: "27.2", reb: "7.4", ast: "7.2" }
-    ];
+  } else if (nameLower.includes("lebron") || nameLower.includes("james")) {
     bio = "The king of modern luxury trading cards. LeBron's Exquisite RPA is the holy grail of 21st-century collecting, marking his debut as the Chosen One.";
-  } else if (card.player.includes("Wade")) {
-    rows = [
-      { yr: "2003-04", team: "MIA", gp: "61", pts: "16.2", reb: "4.0", ast: "4.5" },
-      { yr: "2004-05", team: "MIA", gp: "77", pts: "24.1", reb: "5.2", ast: "6.8" }
-    ];
+  } else if (nameLower.includes("wade")) {
     bio = "'Flash' emerged from Marquette to lead the Heat back to relevance, showcasing elite slashing ability that would soon yield three NBA championships.";
-  } else if (card.player.includes("Davis")) {
-    rows = [
-      { yr: "2012-13", team: "NOH", gp: "64", pts: "13.5", reb: "8.2", ast: "1.0" },
-      { yr: "2013-14", team: "NOP", gp: "67", pts: "20.8", reb: "10.0", ast: "1.6" }
-    ];
+  } else if (nameLower.includes("davis")) {
     bio = "AD joined the league as the consensus #1 overall pick and Olympic gold medalist, launching a career defined by defensive dominance and elite post scoring.";
-  } else if (card.player.includes("Irving")) {
-    rows = [
-      { yr: "2011-12", team: "CLE", gp: "51", pts: "18.5", reb: "3.7", ast: "5.4" },
-      { yr: "2012-13", team: "CLE", gp: "59", pts: "22.5", reb: "3.7", ast: "5.9" }
-    ];
+  } else if (nameLower.includes("irving")) {
     bio = "Irving's rookie campaign was highlighted by his dazzling handles and clutch play, taking home Rookie of the Year honors for Cleveland.";
-  } else if (card.player.includes("Giannis")) {
-    rows = [
-      { yr: "2013-14", team: "MIL", gp: "77", pts: "6.8", reb: "4.4", ast: "1.9" },
-      { yr: "2014-15", team: "MIL", gp: "81", pts: "12.7", reb: "6.7", ast: "2.6" }
-    ];
+  } else if (nameLower.includes("giannis")) {
     bio = "Entering as a raw, skinny teenager from Greece, Giannis's National Treasures RPA traces the humble beginnings of the future two-time MVP and champion.";
-  } else if (card.player.includes("Embiid")) {
-    rows = [
-      { yr: "2016-17", team: "PHI", gp: "31", pts: "20.2", reb: "7.8", ast: "2.1" },
-      { yr: "2017-18", team: "PHI", gp: "63", pts: "22.9", reb: "11.0", ast: "3.2" }
-    ];
+  } else if (nameLower.includes("embiid")) {
     bio = "Despite missing his first two seasons to injury, 'The Process' proved well worth the wait, displaying historic per-minute scoring and defensive dominance.";
-  } else if (card.player.includes("Zion")) {
-    rows = [
-      { yr: "2019-20", team: "NOP", gp: "24", pts: "22.5", reb: "6.3", ast: "2.1" },
-      { yr: "2020-21", team: "NOP", gp: "61", pts: "27.0", reb: "7.2", ast: "3.7" }
-    ];
+  } else if (nameLower.includes("zion")) {
     bio = "Zion's high-flying rookie campaign matched the unprecedented hype, showing historic efficiency and paint dominance for the Pelicans.";
-  } else if (card.player.includes("Gilgeous-Alexander")) {
-    rows = [
-      { yr: "2023-24", team: "OKC", gp: "75", pts: "30.1", reb: "5.5", ast: "6.2" },
-      { yr: "2024-25", team: "OKC", gp: "78", pts: "31.2", reb: "5.8", ast: "6.5" }
-    ];
+  } else if (nameLower.includes("gilgeous-alexander") || nameLower.includes("shai")) {
     bio = "Topps Now captured Shai's opening night masterclass in real-time, commemorating the OKC superstar's campaign for MVP honors.";
-  } else if (card.player.includes("Wembanyama")) {
-    rows = [
-      { yr: "2023-24", team: "SAS", gp: "71", pts: "21.4", reb: "10.6", ast: "3.9" },
-      { yr: "2024-25", team: "SAS", gp: "74", pts: "23.8", reb: "11.2", ast: "4.2" }
-    ];
+  } else if (nameLower.includes("wembanyama") || nameLower.includes("wemby")) {
     bio = "Celebrating the official return of licensed Topps basketball cards, this release captures the alien-like dominance of Wemby in his sophomore campaign.";
-  } else if (card.player.includes("Flagg")) {
-    rows = [
-      { yr: "2024-25", team: "DUK", gp: "34", pts: "16.5", reb: "7.8", ast: "4.2" },
-      { yr: "2025-26", team: "NBA", gp: "78", pts: "18.2", reb: "8.5", ast: "4.8" }
-    ];
+  } else if (nameLower.includes("flagg")) {
     bio = "The most anticipated rookie in over two decades, Flagg's Topps debut marks his arrival on the hardwood, combining elite playmaking and defensive instincts.";
-  } else if (card.player.includes("Frazier")) {
-    rows = [
-      { yr: "1967-68", team: "NYK", gp: "74", pts: "9.0", reb: "4.2", ast: "4.1" },
-      { yr: "1968-69", team: "NYK", gp: "80", pts: "17.5", reb: "6.2", ast: "7.9" }
-    ];
+  } else if (nameLower.includes("frazier")) {
     bio = "Known as 'Clyde', Frazier was the ultimate cool point guard, combining flashy style off the court with tenacious defense and elite playmaking on it. He led the Knicks to two NBA titles.";
-  } else if (card.player.includes("Ewing")) {
-    rows = [
-      { yr: "1985-86", team: "NYK", gp: "50", pts: "20.0", reb: "9.0", ast: "2.0" },
-      { yr: "1986-87", team: "NYK", gp: "63", pts: "21.5", reb: "8.8", ast: "1.7" }
-    ];
+  } else if (nameLower.includes("ewing")) {
     bio = "Ewing was the cornerstone of the Knicks franchise for fifteen seasons. The 1985 #1 pick immediately established himself as an elite shot-blocker and post scorer, winning Rookie of the Year.";
-  } else if (card.player.includes("Carmelo") || card.player.includes("Anthony")) {
-    rows = [
-      { yr: "2011-12", team: "NYK", gp: "55", pts: "22.6", reb: "6.3", ast: "3.6" },
-      { yr: "2012-13", team: "NYK", gp: "67", pts: "28.7", reb: "6.9", ast: "2.6" }
-    ];
+  } else if (nameLower.includes("carmelo") || nameLower.includes("anthony")) {
     bio = "One of the most lethal scorers in NBA history, Anthony captured the 2012-13 NBA scoring title while leading the Knicks to 54 wins and the Atlantic Division title.";
-  } else if (card.player.includes("Brunson")) {
-    rows = [
-      { yr: "2023-24", team: "NYK", gp: "77", pts: "28.7", reb: "3.6", ast: "6.7" },
-      { yr: "2024-25", team: "NYK", gp: "76", pts: "27.4", reb: "3.4", ast: "7.2" }
-    ];
+  } else if (nameLower.includes("brunson")) {
     bio = "Brunson took New York by storm, transforming the Knicks with his crafty footwork, elite mid-range scoring, and leadership, earning back-to-back All-NBA and All-Star honors.";
   } else {
-    // For non-hardcoded players, if they are active, we can generate dynamic career-like stats
-    const isActive = window.isActivePlayer(card.player);
-    if (isActive) {
-      const hash = window.hashString(card.player);
-      const yr1 = window.getSeasonStr(card.year - 2);
-      const yr2 = window.getSeasonStr(card.year - 1);
-      const ppg1 = (14 + (Math.abs(hash) % 10) + (Math.abs(hash) % 10) / 10).toFixed(1);
-      const rpg1 = (3 + (Math.abs(hash >> 2) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
-      const apg1 = (2 + (Math.abs(hash >> 3) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
-      
-      const ppg2 = (parseFloat(ppg1) + 1.5).toFixed(1);
-      const rpg2 = (parseFloat(rpg1) + 0.4).toFixed(1);
-      const apg2 = (parseFloat(apg1) + 0.6).toFixed(1);
-      
-      rows = [
-        { yr: yr1, team: "NBA", gp: String(72 + (Math.abs(hash) % 8)), pts: ppg1, reb: rpg1, ast: apg1 },
-        { yr: yr2, team: "NBA", gp: String(75 + (Math.abs(hash >> 1) % 7)), pts: ppg2, reb: rpg2, ast: apg2 }
-      ];
-    } else {
-      rows = [
-        { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
-        { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
-      ];
-    }
     bio = "A standout performer whose skill and court vision make him a critical asset and fan favorite in the modern league.";
   }
-
-  // Active vs Retired post-processing
+  
+  // Set Rows
   const isActive = window.isActivePlayer(card.player);
+  if (isActive) {
+    const yr1 = card.year - 2;
+    const yr2 = card.year - 1;
+    const isOneSeason = card.type.includes('Rookie') || card.year - card.specs.draftYear <= 1;
+    const statYears = isOneSeason ? [yr2] : [yr1, yr2];
+    
+    rows = statYears.map(yr => {
+      const stats = window.getActivePlayerSeasonStats(card.player, yr);
+      const yrStr = window.getSeasonStr(yr);
+      if (stats) {
+        return { yr: yrStr, team: stats.team, gp: String(stats.gp), pts: String(stats.pts), reb: String(stats.reb), ast: String(stats.ast) };
+      } else {
+        const hash = window.hashString(card.player) + yr;
+        const gp = String(70 + (Math.abs(hash) % 12));
+        const ppg = (14 + (Math.abs(hash) % 12) + (Math.abs(hash) % 10) / 10).toFixed(1);
+        const rpg = (3 + (Math.abs(hash >> 2) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
+        const apg = (2 + (Math.abs(hash >> 3) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
+        return { yr: yrStr, team: "NBA", gp, pts: ppg, reb: rpg, ast: apg };
+      }
+    });
+  } else {
+    // Retired player fallback placeholder (will be overwritten by window.getRetiredPlayerSeasonStatsRow in post-processing anyway)
+    rows = [
+      { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
+      { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
+    ];
+  }
+  
+  // Active vs Retired post-processing
   if (!isActive) {
     // Retired player: simply showcase the season that the card/set came out.
     const row = window.getRetiredPlayerSeasonStatsRow(card);
@@ -3775,14 +3655,14 @@ const getBasketballStatsAndBio = (card) => {
 
       const getTutorialAlignmentClass = () => {
         switch (tutorialStep) {
-          case 1: return "fixed top-[35%] left-1/2 -translate-x-1/2";
-          case 2: return "fixed bottom-[28%] left-1/2 -translate-x-1/2 md:left-[35%]";
-          case 3: return "fixed bottom-[32%] right-4 lg:right-[22%] z-50";
-          case 4: return "fixed top-[35%] left-1/2 -translate-x-1/2";
-          case 5: return "fixed bottom-[32%] right-4 lg:right-[22%] z-50";
-          case 6: return "fixed top-[28%] right-4 lg:right-[22%] z-50";
-          case 7: return "fixed bottom-[18%] left-1/2 -translate-x-1/2 md:left-[35%]";
-          default: return "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2";
+          case 1: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 2: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-[20%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 3: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 4: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-[30%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 5: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 6: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 7: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          default: return "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-sm lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 z-50";
         }
       };
 
@@ -5844,6 +5724,13 @@ const getBasketballStatsAndBio = (card) => {
                                   <span className="text-[8px] font-black uppercase text-red-500 font-mono tracking-widest rotate-[-12deg]">GASSED</span>
                                 </div>
                               )}
+
+                              {/* Tutorial Select Card Badge */}
+                              {isHighlighted && (
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[7px] font-black px-2 py-0.5 rounded-full shadow-lg z-30 tracking-widest uppercase animate-bounce pointer-events-none">
+                                  SELECT
+                                </div>
+                              )}
                             </div>
 
                             {/* Name & Stamina Gauge */}
@@ -6000,24 +5887,42 @@ const getBasketballStatsAndBio = (card) => {
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={handleProceedToAttack}
-                            className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 1 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
+                            className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 1 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
                           >
-                            <div className="conic-spin-bg"></div>
+                            <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 1 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                             <div className="conic-btn-mask"></div>
                             <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                              {isTutorialMatch && tutorialStep === 1 && (
+                                <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                              )}
                               {playerPossession ? 'Go to Attack Phase' : 'Defend Play'} 
                               <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
                             </span>
+                            {isTutorialMatch && tutorialStep === 1 && (
+                              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                              </span>
+                            )}
                           </button>
 
                           {/* Timeout button */}
                           <button
                             onClick={() => callTimeout(true)}
                             disabled={playerTimeouts <= 0 || (!playerPossession && lastScorer !== 'opponent')}
-                            className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 ${isTutorialMatch && tutorialStep === 7 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
+                            className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 relative ${isTutorialMatch && tutorialStep === 7 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-[1.02] z-50' : ''}`}
                           >
                             <iconify-icon icon="solar:stopwatch-linear" width="12"></iconify-icon>
+                            {isTutorialMatch && tutorialStep === 7 && (
+                              <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                            )}
                             Call Timeout (Rest Bench)
+                            {isTutorialMatch && tutorialStep === 7 && (
+                              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                              </span>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -6043,15 +5948,21 @@ const getBasketballStatsAndBio = (card) => {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 2)}
-                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 relative' : ''}`}
+                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-105 z-50' : ''}`}
                                   >
+                                    {isTutorialMatch && tutorialStep === 3 && (
+                                      <span className="text-amber-400 animate-pulse font-sans">👉</span>
+                                    )}
                                     Shoot 2-Pointer
                                   </button>
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 3)}
                                     disabled={attCard.currentSta <= 20 || (attCard.threesAttempted || 0) >= limit}
-                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 relative' : ''}`}
+                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-105 z-50' : ''}`}
                                   >
+                                    {isTutorialMatch && tutorialStep === 3 && (
+                                      <span className="text-amber-400 animate-pulse font-sans">👉</span>
+                                    )}
                                     {isShooter ? 'Shoot 3-Pointer' : 'Attempt 3-Point Play'}
                                   </button>
                                 </div>
@@ -6152,13 +6063,22 @@ const getBasketballStatsAndBio = (card) => {
                                     }
                                   }}
                                   disabled={coinFlipping}
-                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
+                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
                                 >
-                                  <div className="conic-spin-bg"></div>
+                                  <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 5 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                                   <div className="conic-btn-mask"></div>
                                   <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                                    {isTutorialMatch && tutorialStep === 5 && (
+                                      <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                                    )}
                                     Flip Coin to Resolve
                                   </span>
+                                  {isTutorialMatch && tutorialStep === 5 && (
+                                    <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                                    </span>
+                                  )}
                                 </button>
 
                                 {/* Hall of Fame Aura active trigger */}
@@ -6190,14 +6110,23 @@ const getBasketballStatsAndBio = (card) => {
                         
                         <button
                           onClick={handleNextPossession}
-                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
+                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
                         >
-                          <div className="conic-spin-bg"></div>
+                          <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 6 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                           <div className="conic-btn-mask"></div>
                           <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                             Advance Play 
+                            {isTutorialMatch && tutorialStep === 6 && (
+                              <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                            )}
+                            Advance Play 
                             <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
                           </span>
+                          {isTutorialMatch && tutorialStep === 6 && (
+                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                            </span>
+                          )}
                         </button>
                       </div>
                     )}
@@ -6983,9 +6912,9 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Tutorial Overlay Modal/Popup */}
           {tutorialStep !== null && (
-            <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center pointer-events-none">
+            <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center pointer-events-none lg:absolute lg:inset-0 lg:bg-transparent">
               <div 
-                className={`glass-panel p-5 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.2)] max-w-xs sm:max-w-sm pointer-events-auto animate-scale-up ${getTutorialAlignmentClass()}`}
+                className={`glass-panel p-5 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.2)] pointer-events-auto animate-scale-up ${getTutorialAlignmentClass()}`}
                 style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
               >
                 <div className="flex items-center justify-between gap-2 mb-2.5 border-b border-white/10 pb-2 flex-shrink-0">

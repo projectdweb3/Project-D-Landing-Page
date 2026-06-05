@@ -765,6 +765,146 @@ window.isActivePlayer = (playerName) => {
   return activeSubstrings.some(sub => nameLower.includes(sub));
 };
 
+window.getActivePlayerSeasonStats = (playerName, yr) => {
+  if (!playerName) return null;
+  const nameLower = playerName.toLowerCase();
+  
+  if (nameLower.includes("james") || nameLower.includes("lebron")) {
+    if (yr === 2024) return { gp: 71, team: "LAL", pts: 24.3, reb: 7.3, ast: 8.1 };
+    if (yr === 2023) return { gp: 71, team: "LAL", pts: 25.7, reb: 7.3, ast: 8.3 };
+    if (yr === 2018) return { gp: 55, team: "LAL", pts: 27.4, reb: 8.5, ast: 8.3 };
+    if (yr === 2017) return { gp: 82, team: "CLE", pts: 27.5, reb: 8.6, ast: 9.1 };
+    if (yr === 2013) return { gp: 77, team: "MIA", pts: 27.1, reb: 6.9, ast: 6.3 };
+    if (yr === 2012) return { gp: 76, team: "MIA", pts: 26.8, reb: 8.0, ast: 7.3 };
+    if (yr === 2011) return { gp: 62, team: "MIA", pts: 27.1, reb: 7.9, ast: 6.2 };
+    if (yr === 2010) return { gp: 79, team: "MIA", pts: 26.7, reb: 7.5, ast: 7.0 };
+    if (yr === 2002) return { gp: 79, team: "CLE", pts: 20.9, reb: 5.5, ast: 5.9 };
+  }
+  if (nameLower.includes("curry")) {
+    if (yr === 2024) return { gp: 74, team: "GSW", pts: 26.4, reb: 4.5, ast: 6.1 };
+    if (yr === 2023) return { gp: 74, team: "GSW", pts: 26.4, reb: 4.5, ast: 5.1 };
+    if (yr === 2018) return { gp: 69, team: "GSW", pts: 27.3, reb: 5.3, ast: 5.2 };
+    if (yr === 2017) return { gp: 51, team: "GSW", pts: 26.4, reb: 5.1, ast: 6.1 };
+    if (yr === 2013) return { gp: 78, team: "GSW", pts: 24.0, reb: 4.3, ast: 8.5 };
+    if (yr === 2012) return { gp: 78, team: "GSW", pts: 22.9, reb: 4.0, ast: 6.9 };
+    if (yr === 2011) return { gp: 26, team: "GSW", pts: 14.7, reb: 3.4, ast: 5.3 };
+    if (yr === 2010) return { gp: 74, team: "GSW", pts: 18.6, reb: 3.9, ast: 5.8 };
+  }
+  if (nameLower.includes("durant")) {
+    if (yr === 2024) return { gp: 72, team: "PHO", pts: 25.4, reb: 6.4, ast: 4.5 };
+    if (yr === 2023) return { gp: 75, team: "PHO", pts: 27.1, reb: 6.6, ast: 5.0 };
+    if (yr === 2013) return { gp: 81, team: "OKC", pts: 32.0, reb: 7.4, ast: 5.5 };
+    if (yr === 2012) return { gp: 81, team: "OKC", pts: 28.1, reb: 7.9, ast: 4.6 };
+    if (yr === 2011) return { gp: 66, team: "OKC", pts: 28.0, reb: 8.0, ast: 3.5 };
+    if (yr === 2010) return { gp: 78, team: "OKC", pts: 27.7, reb: 6.8, ast: 2.7 };
+  }
+  if (nameLower.includes("doncic")) {
+    if (yr === 2024) return { gp: 70, team: "DAL", pts: 32.4, reb: 9.2, ast: 8.8 };
+    if (yr === 2023) return { gp: 70, team: "DAL", pts: 33.9, reb: 9.2, ast: 9.8 };
+    if (yr === 2018) return { gp: 72, team: "DAL", pts: 21.2, reb: 7.8, ast: 6.0 };
+    if (yr === 2017) return { gp: 33, team: "RMA", pts: 16.0, reb: 4.8, ast: 4.3 };
+  }
+  if (nameLower.includes("brunson")) {
+    if (yr === 2024) return { gp: 76, team: "NYK", pts: 27.4, reb: 3.4, ast: 7.2 };
+    if (yr === 2023) return { gp: 77, team: "NYK", pts: 28.7, reb: 3.6, ast: 6.7 };
+  }
+  if (nameLower.includes("wembanyama") || nameLower.includes("wemby")) {
+    if (yr === 2024) return { gp: 74, team: "SAS", pts: 23.8, reb: 11.2, ast: 4.2 };
+    if (yr === 2023) return { gp: 71, team: "SAS", pts: 21.4, reb: 10.6, ast: 3.9 };
+  }
+  if (nameLower.includes("flagg")) {
+    if (yr === 2024) return { gp: 34, team: "DUK", pts: 16.5, reb: 7.8, ast: 4.2 };
+  }
+  if (nameLower.includes("jokic")) {
+    if (yr === 2018) return { gp: 80, team: "DEN", pts: 20.1, reb: 10.8, ast: 7.3 };
+    if (yr === 2017) return { gp: 75, team: "DEN", pts: 18.5, reb: 10.7, ast: 6.1 };
+  }
+  if (nameLower.includes("antetokounmpo")) {
+    if (yr === 2018) return { gp: 72, team: "MIL", pts: 27.7, reb: 12.5, ast: 5.9 };
+    if (yr === 2017) return { gp: 75, team: "MIL", pts: 26.9, reb: 10.0, ast: 4.8 };
+  }
+  if (nameLower.includes("alexander") || nameLower.includes("shai")) {
+    if (yr === 2024) return { gp: 78, team: "OKC", pts: 31.2, reb: 5.8, ast: 6.5 };
+    if (yr === 2023) return { gp: 75, team: "OKC", pts: 30.1, reb: 5.5, ast: 6.2 };
+  }
+  if (nameLower.includes("davis")) {
+    if (yr === 2018) return { gp: 56, team: "NOP", pts: 25.9, reb: 12.0, ast: 3.9 };
+    if (yr === 2017) return { gp: 75, team: "NOP", pts: 28.1, reb: 11.1, ast: 2.3 };
+  }
+  if (nameLower.includes("tatum")) {
+    if (yr === 2024) return { gp: 74, team: "BOS", pts: 26.9, reb: 8.1, ast: 4.9 };
+    if (yr === 2023) return { gp: 74, team: "BOS", pts: 26.9, reb: 8.1, ast: 4.9 };
+  }
+  if (nameLower.includes("towns")) {
+    if (yr === 2024) return { gp: 73, team: "NYK", pts: 21.8, reb: 8.3, ast: 3.0 };
+    if (yr === 2023) return { gp: 62, team: "MIN", pts: 21.8, reb: 8.3, ast: 3.0 };
+  }
+  if (nameLower.includes("bridges")) {
+    if (yr === 2024) return { gp: 82, team: "NYK", pts: 19.6, reb: 4.5, ast: 3.6 };
+    if (yr === 2023) return { gp: 82, team: "BKN", pts: 19.6, reb: 4.5, ast: 3.6 };
+  }
+  if (nameLower.includes("adebayo")) {
+    if (yr === 2024) return { gp: 71, team: "MIA", pts: 19.3, reb: 10.4, ast: 3.9 };
+    if (yr === 2023) return { gp: 71, team: "MIA", pts: 19.3, reb: 10.4, ast: 3.9 };
+  }
+  if (nameLower.includes("miller")) {
+    if (yr === 2024) return { gp: 74, team: "CHA", pts: 21.4, reb: 4.8, ast: 3.2 };
+    if (yr === 2023) return { gp: 74, team: "CHA", pts: 17.3, reb: 4.3, ast: 2.4 };
+  }
+  if (nameLower.includes("ball")) {
+    if (yr === 2024) return { gp: 58, team: "CHA", pts: 24.1, reb: 5.9, ast: 8.2 };
+    if (yr === 2023) return { gp: 22, team: "CHA", pts: 23.9, reb: 5.1, ast: 8.0 };
+  }
+  if (nameLower.includes("lillard")) {
+    if (yr === 2012) return { gp: 82, team: "POR", pts: 19.0, reb: 3.1, ast: 6.5 };
+    if (yr === 2011) return { gp: 32, team: "WEB", pts: 24.5, reb: 5.0, ast: 4.0 };
+  }
+  if (nameLower.includes("leonard")) {
+    if (yr === 2013) return { gp: 66, team: "SAS", pts: 12.8, reb: 6.2, ast: 2.0 };
+    if (yr === 2012) return { gp: 58, team: "SAS", pts: 11.9, reb: 6.0, ast: 1.6 };
+  }
+  if (nameLower.includes("williamson")) {
+    if (yr === 2018) return { gp: 33, team: "DUK", pts: 22.6, reb: 8.9, ast: 2.1 };
+    if (yr === 2017) return { gp: 30, team: "SDS", pts: 36.8, reb: 13.0, ast: 3.0 };
+  }
+  if (nameLower.includes("irving")) {
+    if (yr === 2012) return { gp: 59, team: "CLE", pts: 22.5, reb: 3.7, ast: 5.9 };
+    if (yr === 2011) return { gp: 51, team: "CLE", pts: 18.5, reb: 3.7, ast: 5.4 };
+    if (yr === 2010) return { gp: 11, team: "DUK", pts: 17.5, reb: 3.4, ast: 4.3 };
+  }
+  if (nameLower.includes("brown")) {
+    if (yr === 2024) return { gp: 75, team: "BOS", pts: 23.4, reb: 5.5, ast: 3.6 };
+    if (yr === 2023) return { gp: 70, team: "BOS", pts: 23.0, reb: 5.5, ast: 3.6 };
+  }
+  if (nameLower.includes("white")) {
+    if (yr === 2024) return { gp: 79, team: "BOS", pts: 15.6, reb: 4.2, ast: 5.0 };
+    if (yr === 2023) return { gp: 73, team: "BOS", pts: 15.2, reb: 4.2, ast: 5.2 };
+  }
+  if (nameLower.includes("harper")) {
+    if (yr === 2024) return { gp: 32, team: "RUT", pts: 17.5, reb: 4.6, ast: 5.2 };
+  }
+  if (nameLower.includes("bailey")) {
+    if (yr === 2024) return { gp: 32, team: "RUT", pts: 18.0, reb: 6.2, ast: 3.0 };
+  }
+  if (nameLower.includes("queen")) {
+    if (yr === 2024) return { gp: 32, team: "UMD", pts: 14.5, reb: 8.2, ast: 2.1 };
+  }
+  if (nameLower.includes("knueppel")) {
+    if (yr === 2024) return { gp: 32, team: "DUK", pts: 15.2, reb: 4.1, ast: 2.8 };
+  }
+  if (nameLower.includes("castle")) {
+    if (yr === 2024) return { gp: 75, team: "SAS", pts: 15.8, reb: 4.2, ast: 4.8 };
+  }
+  if (nameLower.includes("edgecomb")) {
+    if (yr === 2024) return { gp: 32, team: "BAY", pts: 16.2, reb: 4.8, ast: 3.2 };
+  }
+  if (nameLower.includes("edwards")) {
+    if (yr === 2018) return { gp: 32, team: "UGA", pts: 19.1, reb: 5.2, ast: 2.8 };
+  }
+  
+  return null;
+};
+
 window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
   const nameLower = playerName.toLowerCase();
   const yr = isYearDashFormat ? "2025-26" : 2025;
@@ -870,63 +1010,141 @@ window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
 
 window.getRetiredPlayerSeasonStatsRow = (card) => {
   const yr = window.getSeasonStr(card.year);
-  const hash = card.player.charCodeAt(0) + card.year;
-  const gp = 70 + (hash % 12);
-  
-  let pts = (15 + (hash % 15) + (hash % 10) / 10).toFixed(1);
-  let reb = (3 + (hash % 8) + (hash % 10) / 10).toFixed(1);
-  let ast = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
-  
   const nameLower = card.player.toLowerCase();
+  const yrNum = card.year;
+  
+  let gp = 75;
+  let pts = "20.0";
+  let reb = "5.0";
+  let ast = "5.0";
+  let team = card.team;
+  
   if (nameLower.includes("jordan")) {
-    pts = card.year === 1986 ? "37.1" : card.year === 1989 ? "33.6" : card.year === 1990 ? "31.5" : card.year === 1991 ? "30.1" : card.year === 1993 ? "32.6" : card.year === 1997 ? "28.7" : "20.0";
-    reb = card.year === 1986 ? "5.2" : card.year === 1989 ? "6.9" : card.year === 1990 ? "6.0" : card.year === 1991 ? "6.4" : card.year === 1993 ? "6.7" : card.year === 1997 ? "5.8" : "6.1";
-    ast = card.year === 1986 ? "4.6" : card.year === 1989 ? "6.3" : card.year === 1990 ? "5.5" : card.year === 1991 ? "6.1" : card.year === 1993 ? "5.5" : card.year === 1997 ? "3.5" : "3.8";
+    if (yrNum === 1986) { gp = 82; pts = "28.2"; reb = "6.5"; ast = "5.9"; }
+    else if (yrNum === 1989) { gp = 82; pts = "33.6"; reb = "6.9"; ast = "6.3"; }
+    else if (yrNum === 1990) { gp = 82; pts = "31.5"; reb = "6.0"; ast = "5.5"; }
+    else if (yrNum === 1991) { gp = 80; pts = "30.1"; reb = "6.4"; ast = "6.1"; }
+    else if (yrNum === 1993) { gp = 78; pts = "32.6"; reb = "6.7"; ast = "5.5"; }
+    else if (yrNum === 1997) { gp = 82; pts = "29.6"; reb = "5.9"; ast = "4.3"; }
+    else if (yrNum === 2003) { gp = 82; pts = "20.0"; reb = "6.1"; ast = "3.8"; }
+    else { gp = 82; pts = "30.1"; reb = "6.2"; ast = "5.3"; }
   } else if (nameLower.includes("kobe") || nameLower.includes("bryant")) {
-    pts = card.year === 1996 ? "7.6" : card.year === 1997 ? "15.4" : card.year === 2012 ? "27.3" : "22.3";
-    reb = card.year === 1996 ? "1.9" : card.year === 1997 ? "3.1" : card.year === 2012 ? "5.6" : "5.7";
-    ast = card.year === 1996 ? "1.3" : card.year === 1997 ? "2.5" : card.year === 2012 ? "6.0" : "5.6";
+    if (yrNum === 1996) { gp = 71; pts = "7.6"; reb = "1.9"; ast = "1.3"; }
+    else if (yrNum === 1997) { gp = 79; pts = "15.4"; reb = "3.1"; ast = "2.5"; }
+    else if (yrNum === 2012) { gp = 78; pts = "27.3"; reb = "5.6"; ast = "6.0"; }
+    else if (yrNum === 2013) { gp = 6; pts = "13.8"; reb = "4.3"; ast = "6.3"; }
+    else if (yrNum === 2014) { gp = 35; pts = "22.3"; reb = "5.7"; ast = "5.6"; }
+    else { gp = 75; pts = "25.0"; reb = "5.2"; ast = "4.7"; }
   } else if (nameLower.includes("magic")) {
-    pts = card.year === 1980 ? "21.6" : card.year === 1989 ? "22.3" : "19.4";
-    reb = card.year === 1980 ? "8.6" : card.year === 1989 ? "6.6" : "7.0";
-    ast = card.year === 1980 ? "8.6" : card.year === 1989 ? "11.5" : "12.5";
+    if (yrNum === 1980) { gp = 37; pts = "21.6"; reb = "8.6"; ast = "8.6"; }
+    else if (yrNum === 1989) { gp = 79; pts = "22.3"; reb = "6.6"; ast = "11.5"; }
+    else if (yrNum === 1990) { gp = 79; pts = "19.4"; reb = "7.0"; ast = "12.5"; }
+    else if (yrNum === 1991) { gp = 79; pts = "19.4"; reb = "7.0"; ast = "12.5"; }
+    else { gp = 75; pts = "19.5"; reb = "7.2"; ast = "11.2"; }
   } else if (nameLower.includes("bird")) {
-    pts = card.year === 1980 ? "21.2" : card.year === 1989 ? "27.3" : "19.4";
-    reb = card.year === 1980 ? "10.9" : card.year === 1989 ? "9.5" : "8.5";
-    ast = card.year === 1980 ? "5.5" : card.year === 1989 ? "7.5" : "7.2";
+    if (yrNum === 1980) { gp = 82; pts = "21.2"; reb = "10.9"; ast = "5.5"; }
+    else if (yrNum === 1989) { gp = 75; pts = "27.3"; reb = "9.5"; ast = "7.5"; }
+    else if (yrNum === 1990) { gp = 60; pts = "19.4"; reb = "8.5"; ast = "7.2"; }
+    else { gp = 75; pts = "24.3"; reb = "10.0"; ast = "6.3"; }
   } else if (nameLower.includes("chamberlain")) {
-    pts = "27.3"; reb = "18.4"; ast = "4.1";
+    gp = 12; pts = "27.3"; reb = "18.4"; ast = "4.1";
   } else if (nameLower.includes("russell")) {
-    pts = "16.6"; reb = "22.7"; ast = "2.3";
+    gp = 69; pts = "16.6"; reb = "22.7"; ast = "2.3";
   } else if (nameLower.includes("mikan")) {
-    pts = "28.3"; reb = "N/A"; ast = "3.6";
+    gp = 60; pts = "28.3"; reb = "N/A"; ast = "3.6";
   } else if (nameLower.includes("cousy")) {
-    pts = "18.0"; reb = "5.0"; ast = "7.1";
+    gp = 65; pts = "18.0"; reb = "5.0"; ast = "7.1";
   } else if (nameLower.includes("pettit")) {
-    pts = "24.6"; reb = "17.4"; ast = "2.2";
+    gp = 70; pts = "24.6"; reb = "17.4"; ast = "2.2";
   } else if (nameLower.includes("olajuwon")) {
-    pts = card.year === 1986 ? "23.4" : card.year === 1989 ? "24.3" : "21.2";
-    reb = card.year === 1986 ? "11.4" : card.year === 1989 ? "14.0" : "13.8";
-    ast = "2.9";
+    if (yrNum === 1986) { gp = 75; pts = "23.4"; reb = "11.4"; ast = "2.9"; }
+    else if (yrNum === 1989) { gp = 82; pts = "24.3"; reb = "14.0"; ast = "2.9"; }
+    else if (yrNum === 1990) { gp = 56; pts = "21.2"; reb = "13.8"; ast = "2.3"; }
+    else if (yrNum === 1991) { gp = 70; pts = "21.6"; reb = "12.1"; ast = "2.2"; }
+    else if (yrNum === 1993) { gp = 80; pts = "27.3"; reb = "11.9"; ast = "3.6"; }
+    else { gp = 75; pts = "21.8"; reb = "11.1"; ast = "2.5"; }
   } else if (nameLower.includes("barkley")) {
-    pts = card.year === 1986 ? "23.0" : card.year === 1989 ? "25.2" : "27.6";
-    reb = card.year === 1986 ? "14.6" : card.year === 1989 ? "11.5" : "10.1";
-    ast = "3.9";
+    if (yrNum === 1986) { gp = 68; pts = "23.0"; reb = "14.6"; ast = "4.9"; }
+    else if (yrNum === 1989) { gp = 79; pts = "25.2"; reb = "11.5"; ast = "3.9"; }
+    else if (yrNum === 1990) { gp = 67; pts = "27.6"; reb = "10.1"; ast = "4.2"; }
+    else if (yrNum === 1991) { gp = 75; pts = "23.1"; reb = "11.1"; ast = "4.1"; }
+    else if (yrNum === 1993) { gp = 65; pts = "21.6"; reb = "11.2"; ast = "4.6"; }
+    else { gp = 70; pts = "22.1"; reb = "11.7"; ast = "3.9"; }
   } else if (nameLower.includes("duncan")) {
-    pts = card.year === 1996 ? "21.1" : card.year === 2003 ? "22.3" : "17.8";
-    reb = card.year === 1996 ? "11.9" : card.year === 2003 ? "12.4" : "9.9";
-    ast = "2.7";
+    if (yrNum === 1996) { gp = 82; pts = "21.1"; reb = "11.9"; ast = "2.7"; }
+    else if (yrNum === 2003) { gp = 69; pts = "22.3"; reb = "12.4"; ast = "3.1"; }
+    else if (yrNum === 2012) { gp = 69; pts = "17.8"; reb = "9.9"; ast = "2.7"; }
+    else { gp = 75; pts = "19.0"; reb = "10.8"; ast = "3.0"; }
   } else if (nameLower.includes("wade")) {
-    pts = card.year === 2003 ? "16.2" : "24.1";
-    reb = card.year === 2003 ? "4.0" : "5.2";
-    ast = card.year === 2003 ? "4.5" : "6.8";
+    if (yrNum === 2003) { gp = 61; pts = "16.2"; reb = "4.0"; ast = "4.5"; }
+    else if (yrNum === 2012) { gp = 69; pts = "21.2"; reb = "5.0"; ast = "5.1"; }
+    else { gp = 70; pts = "22.0"; reb = "4.7"; ast = "5.4"; }
   } else if (nameLower.includes("shaq") || nameLower.includes("oneal")) {
-    pts = card.year === 1993 ? "29.3" : "21.5";
-    reb = card.year === 1993 ? "13.2" : "11.5";
-    ast = "2.9";
+    if (yrNum === 1993) { gp = 81; pts = "29.3"; reb = "13.2"; ast = "2.4"; }
+    else if (yrNum === 2003) { gp = 67; pts = "21.5"; reb = "11.5"; ast = "2.9"; }
+    else { gp = 75; pts = "23.7"; reb = "10.9"; ast = "2.5"; }
+  } else if (nameLower.includes("iverson")) {
+    gp = 76; pts = "23.5"; reb = "4.1"; ast = "7.5";
+  } else if (nameLower.includes("bradley")) {
+    gp = 82; pts = "12.4"; reb = "4.3"; ast = "3.7";
+  } else if (nameLower.includes("griffin")) {
+    if (yrNum === 2012) { gp = 80; pts = "18.0"; reb = "8.3"; ast = "3.7"; }
+    else if (yrNum === 2013) { gp = 80; pts = "24.1"; reb = "9.5"; ast = "3.9"; }
+  } else if (nameLower.includes("carmelo") || nameLower.includes("anthony")) {
+    if (yrNum === 2003) { gp = 82; pts = "21.0"; reb = "6.1"; ast = "2.8"; }
+    else if (yrNum === 2012) { gp = 67; pts = "28.7"; reb = "6.9"; ast = "2.6"; }
+    else if (yrNum === 2013) { gp = 77; pts = "27.4"; reb = "8.1"; ast = "3.1"; }
+    else if (yrNum === 2014) { gp = 40; pts = "24.2"; reb = "6.6"; ast = "3.1"; }
+  } else if (nameLower.includes("drexler")) {
+    if (yrNum === 1989) { gp = 73; pts = "23.3"; reb = "6.9"; ast = "5.9"; }
+    else if (yrNum === 1990) { gp = 82; pts = "21.5"; reb = "6.7"; ast = "6.0"; }
+    else if (yrNum === 1991) { gp = 76; pts = "25.0"; reb = "6.6"; ast = "6.7"; }
+  } else if (nameLower.includes("debusschere")) {
+    gp = 80; pts = "14.4"; reb = "8.7"; ast = "2.6";
+  } else if (nameLower.includes("robinson")) {
+    if (yrNum === 1989) { gp = 82; pts = "24.3"; reb = "12.0"; ast = "2.0"; }
+    else if (yrNum === 1990) { gp = 82; pts = "25.6"; reb = "13.0"; ast = "2.5"; }
+  } else if (nameLower.includes("rose")) {
+    gp = 81; pts = "25.0"; reb = "4.1"; ast = "7.7";
+  } else if (nameLower.includes("nowitzki")) {
+    if (yrNum === 2003) { gp = 77; pts = "21.8"; reb = "8.7"; ast = "2.7"; }
+    else if (yrNum === 2012) { gp = 53; pts = "17.3"; reb = "6.8"; ast = "2.5"; }
+  } else if (nameLower.includes("hill")) {
+    gp = 80; pts = "21.4"; reb = "9.0"; ast = "7.3";
+  } else if (nameLower.includes("stackhouse")) {
+    gp = 81; pts = "20.7"; reb = "4.2"; ast = "3.1";
+  } else if (nameLower.includes("west")) {
+    if (yrNum === 1961) { gp = 75; pts = "30.8"; reb = "7.9"; ast = "5.4"; }
+    else if (yrNum === 1969) { gp = 74; pts = "31.2"; reb = "4.6"; ast = "7.5"; }
+  } else if (nameLower.includes("havlicek")) {
+    gp = 80; pts = "14.3"; reb = "6.7"; ast = "2.2";
+  } else if (nameLower.includes("starks")) {
+    gp = 59; pts = "19.0"; reb = "3.1"; ast = "5.9";
+  } else if (nameLower.includes("erving")) {
+    gp = 82; pts = "24.6"; reb = "8.0"; ast = "4.4";
+  } else if (nameLower.includes("robertson")) {
+    gp = 79; pts = "30.8"; reb = "12.5"; ast = "11.4";
+  } else if (nameLower.includes("ewing")) {
+    if (yrNum === 1991) { gp = 82; pts = "24.0"; reb = "11.2"; ast = "1.9"; }
+    else if (yrNum === 1993) { gp = 79; pts = "24.5"; reb = "11.2"; ast = "2.3"; }
+  } else if (nameLower.includes("allen")) {
+    if (yrNum === 1996) { gp = 82; pts = "13.4"; reb = "4.0"; ast = "2.6"; }
+    else if (yrNum === 2003) { gp = 56; pts = "23.0"; reb = "4.8"; ast = "4.8"; }
+  } else if (nameLower.includes("pippen")) {
+    gp = 72; pts = "22.0"; reb = "8.7"; ast = "5.6";
+  } else if (nameLower.includes("marbury")) {
+    gp = 67; pts = "15.8"; reb = "2.7"; ast = "7.8";
+  } else if (nameLower.includes("frazier")) {
+    gp = 74; pts = "9.0"; reb = "4.2"; ast = "4.1";
+  } else {
+    // Deterministic fallback for any other retired players
+    const hash = card.player.charCodeAt(0) + card.year;
+    gp = 70 + (hash % 12);
+    pts = (15 + (hash % 15) + (hash % 10) / 10).toFixed(1);
+    reb = (3 + (hash % 8) + (hash % 10) / 10).toFixed(1);
+    ast = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
   }
   
-  let team = card.team;
   if (team.includes("/")) {
     team = team.split("/")[0].trim();
   }
@@ -937,7 +1155,7 @@ window.getRetiredPlayerSeasonStatsRow = (card) => {
     "Orlando Magic": "ORL", "Milwaukee Bucks": "MIL", "Dallas Mavericks": "DAL",
     "Minnesota Timberwolves": "MIN", "Portland Trail Blazers": "POR",
     "L.A. Lakers": "LAL", "L.A. Lakers / Chicago Bulls": "LAL",
-    "Los Angeles Lakers": "LAL", "Detroit Pistons": "DET"
+    "Detroit Pistons": "DET"
   };
   const teamAbbr = teamMap[team] || "NBA";
   
@@ -987,6 +1205,18 @@ window.getPlayerStats = (card) => {
       const gp = card.sport === 'Baseball' ? 140 + (hash % 22) : 70 + (hash % 12);
       
       if (card.sport === 'Basketball') {
+        const realStats = window.getActivePlayerSeasonStats(card.player, yr);
+        if (realStats) {
+          return {
+            yr,
+            gp: String(realStats.gp),
+            team: realStats.team,
+            col1: String(realStats.pts),
+            col2: String(realStats.reb),
+            col3: String(realStats.ast),
+            labels: ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST']
+          };
+        }
         const ppg = (15 + (hash % 20) + (hash % 10) / 10).toFixed(1);
         const rpg = (3 + (hash % 10) + (hash % 10) / 10).toFixed(1);
         const apg = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
