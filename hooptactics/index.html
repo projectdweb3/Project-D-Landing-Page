@@ -374,9 +374,7 @@
 
     /* 2. Specular Glass Cards (Card Holders & Collection Containers) */
     .amp-card {
-      background: rgba(255, 255, 255, 0.02);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.035);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 20px;
       position: relative;
@@ -400,6 +398,9 @@
     .amp-card:hover {
       transform: translateY(-4px);
       border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       box-shadow: 0 10px 30px -10px rgba(255, 255, 255, 0.08);
     }
 
@@ -446,8 +447,6 @@
     /* 3D Translucent Digital Toploader */
     .digital-toploader {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)) !important;
-      backdrop-filter: blur(12px) saturate(120%);
-      -webkit-backdrop-filter: blur(12px) saturate(120%);
       border: 3.5px solid rgba(255, 255, 255, 0.08) !important;
       border-radius: 14px !important;
       box-shadow: 
@@ -456,6 +455,12 @@
         0 10px 30px rgba(0, 0, 0, 0.5),
         0 0 15px rgba(56, 189, 248, 0.05) !important; /* Subtle blue UV protection tint */
       transition: all 0.3s ease;
+    }
+
+    .card-3d-wrapper:hover .digital-toploader,
+    .card-3d-wrapper.is-xl .digital-toploader {
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
     }
 
     html.light .digital-toploader {
@@ -475,6 +480,7 @@
       transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
       animation: card-float-resting 7s ease-in-out infinite;
+      will-change: transform;
     }
 
     .card-3d-wrapper:hover .card-3d-inner {

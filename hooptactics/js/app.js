@@ -1874,232 +1874,231 @@ const { useState, useEffect, useRef, useMemo } = React;
 
 // getPlayerStats moved to js/data.js
 
-    // HoopTactics global card stats & perks mapper
 // getCardGameStats moved to js/data.js
+
+// Helper for authentic basketball stats and bio
+const getBasketballStatsAndBio = (card) => {
+  let rows = [];
+  let bio = "";
+  
+  if (card.player.includes("Mikan")) {
+    rows = [
+      { yr: "1947-48", team: "MNL", gp: "11", pts: "21.3", reb: "N/A", ast: "1.7" },
+      { yr: "1948-49", team: "MNL", gp: "60", pts: "28.3", reb: "N/A", ast: "3.6" }
+    ];
+    bio = "The first true superstar of professional basketball, Mikan dominated the key so thoroughly that the league eventually widened it from 6 to 12 feet.";
+  } else if (card.player.includes("Russell")) {
+    rows = [
+      { yr: "1956-57", team: "BOS", gp: "48", pts: "14.7", reb: "19.6", ast: "1.8" },
+      { yr: "1957-58", team: "BOS", gp: "69", pts: "16.6", reb: "22.7", ast: "2.3" }
+    ];
+    bio = "In his rookie campaign, Russell revolutionized defensive basketball, leading the Celtics to their first NBA Championship and launching the greatest dynasty in sports history.";
+  } else if (card.player.includes("Chamberlain")) {
+    rows = [
+      { yr: "1959-60", team: "PHW", gp: "72", pts: "37.6", reb: "27.0", ast: "2.3" },
+      { yr: "1960-61", team: "PHW", gp: "79", pts: "38.4", reb: "27.2", ast: "1.9" }
+    ];
+    bio = "Wilt took the league by storm in 1959, averaging 37.6 points as a rookie. By 1961, his dominant scoring and rebounding had rewritten every single record in the books.";
+  } else if (card.player.includes("West")) {
+    rows = [
+      { yr: "1960-61", team: "LAL", gp: "74", pts: "17.6", reb: "7.7", ast: "4.2" },
+      { yr: "1961-62", team: "LAL", gp: "75", pts: "30.8", reb: "7.9", ast: "5.4" }
+    ];
+    bio = "Known as 'Mr. Clutch' for his late-game heroics, West made his first of 14 consecutive All-Star appearances as a rookie and eventually became the silhouette of the NBA logo.";
+  } else if (card.player.includes("Kareem") || card.player.includes("Alcindor")) {
+    rows = [
+      { yr: "1969-70", team: "MIL", gp: "82", pts: "28.8", reb: "14.5", ast: "4.1" },
+      { yr: "1970-71", team: "MIL", gp: "82", pts: "31.7", reb: "16.0", ast: "3.3" }
+    ];
+    bio = "Entering the league as Lew Alcindor, Kareem immediately established himself as a force, capturing the ROTY award and leading Milwaukee to a 56-win season.";
+  } else if (card.player.includes("Havlicek")) {
+    rows = [
+      { yr: "1962-63", team: "BOS", gp: "80", pts: "14.3", reb: "6.7", ast: "2.2" },
+      { yr: "1963-64", team: "BOS", gp: "80", pts: "19.9", reb: "5.4", ast: "3.0" }
+    ];
+    bio = "'Hondo' was the ultimate sixth man, combining relentless energy with defensive tenacity. He would lead the Celtics to 8 NBA titles during his Hall of Fame career.";
+  } else if (card.player.includes("Bird")) {
+    rows = [
+      { yr: "1979-80", team: "BOS", gp: "82", pts: "21.3", reb: "10.4", ast: "4.5" },
+      { yr: "1980-81", team: "BOS", gp: "82", pts: "21.2", reb: "10.9", ast: "5.5" }
+    ];
+    bio = "Larry Legend's 1980 Topps rookie marks the arrival of one of the greatest shooters and fiercest competitors in basketball history, leading Boston to a title in 1981.";
+  } else if (card.player.includes("Erving")) {
+    rows = [
+      { yr: "1972-73", team: "VIR", gp: "84", pts: "31.9", reb: "12.2", ast: "4.2" },
+      { yr: "1973-74", team: "NYN", gp: "84", pts: "27.4", reb: "10.7", ast: "5.2" }
+    ];
+    bio = "Dr. J's high-flying style and artistic dunks captivated fans and revolutionized the sport, paving the way for the modern athletic wing player.";
+  } else if (card.player.includes("Magic")) {
+    rows = [
+      { yr: "1979-80", team: "LAL", gp: "77", pts: "18.0", reb: "7.7", ast: "7.3" },
+      { yr: "1980-81", team: "LAL", gp: "37", pts: "21.6", reb: "8.6", ast: "8.6" }
+    ];
+    bio = "Magic's 1980 Topps rookie showcases the revolutionary 6'9 point guard who defined 'Showtime' and led the Lakers to the 1980 championship as a rookie.";
+  } else if (card.player.includes("Jordan")) {
+    if (card.year === 1986) {
+      rows = [
+        { yr: "1984-85", team: "CHI", gp: "82", pts: "28.2", reb: "6.5", ast: "5.9" },
+        { yr: "1985-86", team: "CHI", gp: "18", pts: "22.7", reb: "3.6", ast: "2.9" }
+      ];
+      bio = "The most iconic card in basketball history. Jordan's 1986 Fleer rookie captures his raw athletic brilliance, highlighted by his historic 63-point playoff game against Boston.";
+    } else if (card.year === 1990) {
+      rows = [
+        { yr: "1988-89", team: "CHI", gp: "81", pts: "32.5", reb: "8.0", ast: "8.0" },
+        { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" }
+      ];
+      bio = "Following his fourth consecutive scoring title, Jordan led the Bulls to the threshold of their historic championship run, averaging 33.6 points per game.";
+    } else if (card.year === 1991) {
+      rows = [
+        { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" },
+        { yr: "1990-91", team: "CHI", gp: "82", pts: "31.5", reb: "6.0", ast: "5.5" }
+      ];
+      bio = "Fresh off his first NBA Championship, Jordan's Upper Deck release captured the global phenomenon at his absolute athletic and competitive peak.";
+    } else if (card.year === 1993) {
+      rows = [
+        { yr: "1991-92", team: "CHI", gp: "80", pts: "30.1", reb: "6.4", ast: "6.1" },
+        { yr: "1992-93", team: "CHI", gp: "78", pts: "32.6", reb: "6.7", ast: "5.5" }
+      ];
+      bio = "Topps Finest introduced Chromium technology to the hobby, featuring this stunning refractor of Jordan just as he completed his first historic Three-Peat.";
+    } else if (card.year === 1997) {
+      rows = [
+        { yr: "1995-96", team: "CHI", gp: "82", pts: "30.4", reb: "6.6", ast: "4.3" },
+        { yr: "1996-97", team: "CHI", gp: "82", pts: "29.6", reb: "5.9", ast: "4.3" }
+      ];
+      bio = "Precious Metal Gems represents the pinnacle of 90s insert collecting. The Red PMG Jordan is a legendary masterpiece from the Bulls' second championship run.";
+    }
+  } else if (card.player.includes("Barkley")) {
+    rows = [
+      { yr: "1984-85", team: "PHI", gp: "82", pts: "14.0", reb: "8.6", ast: "1.9" },
+      { yr: "1985-86", team: "PHI", gp: "80", pts: "20.0", reb: "12.8", ast: "3.9" }
+    ];
+    bio = "The 'Round Mound of Rebound' proved that height was no barrier to dominance in the paint, averaging a double-double and earning All-Rookie honors in Philly.";
+  } else if (card.player.includes("Olajuwon")) {
+    rows = [
+      { yr: "1984-85", team: "HOU", gp: "82", pts: "20.6", reb: "11.9", ast: "1.4" },
+      { yr: "1985-86", team: "HOU", gp: "68", pts: "23.5", reb: "11.5", ast: "2.0" }
+    ];
+    bio = "Drafted #1 overall in the legendary 1984 draft class, 'The Dream' anchored the Rockets' Twin Towers, showcasing his signature 'Dream Shake' footwork.";
+  } else if (card.player.includes("Robinson")) {
+    rows = [
+      { yr: "1989-90", team: "SAS", gp: "82", pts: "24.3", reb: "12.0", ast: "2.0" },
+      { yr: "1990-91", team: "SAS", gp: "82", pts: "25.6", reb: "13.0", ast: "2.5" }
+    ];
+    bio = "'The Admiral' served two years in the U.S. Navy before joining the Spurs. He immediately turned the franchise around, winning Rookie of the Year by unanimous vote.";
+  } else if (card.player.includes("Bryant")) {
+    if (card.year === 1996) {
+      rows = [
+        { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
+        { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
+      ];
+      bio = "Straight out of Lower Merion High School, Kobe's Chrome rookie marks the beginning of the Mamba era, featuring his legendary vertical leap and scoring instincts.";
+    } else if (card.year === 1997) {
+      rows = [
+        { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
+        { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
+      ];
+      bio = "This ultra-rare green PMG is one of the most coveted modern cards in existence, capturing Kobe in his second season as the league's youngest All-Star starter.";
+    }
+  } else if (card.player.includes("LeBron") || card.player.includes("James")) {
+    rows = [
+      { yr: "2003-04", team: "CLE", gp: "79", pts: "20.9", reb: "5.5", ast: "5.9" },
+      { yr: "2004-05", team: "CLE", gp: "80", pts: "27.2", reb: "7.4", ast: "7.2" }
+    ];
+    bio = "The king of modern luxury trading cards. LeBron's Exquisite RPA is the holy grail of 21st-century collecting, marking his debut as the Chosen One.";
+  } else if (card.player.includes("Wade")) {
+    rows = [
+      { yr: "2003-04", team: "MIA", gp: "61", pts: "16.2", reb: "4.0", ast: "4.5" },
+      { yr: "2004-05", team: "MIA", gp: "77", pts: "24.1", reb: "5.2", ast: "6.8" }
+    ];
+    bio = "'Flash' emerged from Marquette to lead the Heat back to relevance, showcasing elite slashing ability that would soon yield three NBA championships.";
+  } else if (card.player.includes("Davis")) {
+    rows = [
+      { yr: "2012-13", team: "NOH", gp: "64", pts: "13.5", reb: "8.2", ast: "1.0" },
+      { yr: "2013-14", team: "NOP", gp: "67", pts: "20.8", reb: "10.0", ast: "1.6" }
+    ];
+    bio = "AD joined the league as the consensus #1 overall pick and Olympic gold medalist, launching a career defined by defensive dominance and elite post scoring.";
+  } else if (card.player.includes("Irving")) {
+    rows = [
+      { yr: "2011-12", team: "CLE", gp: "51", pts: "18.5", reb: "3.7", ast: "5.4" },
+      { yr: "2012-13", team: "CLE", gp: "59", pts: "22.5", reb: "3.7", ast: "5.9" }
+    ];
+    bio = "Irving's rookie campaign was highlighted by his dazzling handles and clutch play, taking home Rookie of the Year honors for Cleveland.";
+  } else if (card.player.includes("Giannis")) {
+    rows = [
+      { yr: "2013-14", team: "MIL", gp: "77", pts: "6.8", reb: "4.4", ast: "1.9" },
+      { yr: "2014-15", team: "MIL", gp: "81", pts: "12.7", reb: "6.7", ast: "2.6" }
+    ];
+    bio = "Entering as a raw, skinny teenager from Greece, Giannis's National Treasures RPA traces the humble beginnings of the future two-time MVP and champion.";
+  } else if (card.player.includes("Embiid")) {
+    rows = [
+      { yr: "2016-17", team: "PHI", gp: "31", pts: "20.2", reb: "7.8", ast: "2.1" },
+      { yr: "2017-18", team: "PHI", gp: "63", pts: "22.9", reb: "11.0", ast: "3.2" }
+    ];
+    bio = "Despite missing his first two seasons to injury, 'The Process' proved well worth the wait, displaying historic per-minute scoring and defensive dominance.";
+  } else if (card.player.includes("Zion")) {
+    rows = [
+      { yr: "2019-20", team: "NOP", gp: "24", pts: "22.5", reb: "6.3", ast: "2.1" },
+      { yr: "2020-21", team: "NOP", gp: "61", pts: "27.0", reb: "7.2", ast: "3.7" }
+    ];
+    bio = "Zion's high-flying rookie campaign matched the unprecedented hype, showing historic efficiency and paint dominance for the Pelicans.";
+  } else if (card.player.includes("Gilgeous-Alexander")) {
+    rows = [
+      { yr: "2023-24", team: "OKC", gp: "75", pts: "30.1", reb: "5.5", ast: "6.2" },
+      { yr: "2024-25", team: "OKC", gp: "78", pts: "31.2", reb: "5.8", ast: "6.5" }
+    ];
+    bio = "Topps Now captured Shai's opening night masterclass in real-time, commemorating the OKC superstar's campaign for MVP honors.";
+  } else if (card.player.includes("Wembanyama")) {
+    rows = [
+      { yr: "2023-24", team: "SAS", gp: "71", pts: "21.4", reb: "10.6", ast: "3.9" },
+      { yr: "2024-25", team: "SAS", gp: "74", pts: "23.8", reb: "11.2", ast: "4.2" }
+    ];
+    bio = "Celebrating the official return of licensed Topps basketball cards, this release captures the alien-like dominance of Wemby in his sophomore campaign.";
+  } else if (card.player.includes("Flagg")) {
+    rows = [
+      { yr: "2024-25", team: "DUK", gp: "34", pts: "16.5", reb: "7.8", ast: "4.2" },
+      { yr: "2025-26", team: "NBA", gp: "78", pts: "18.2", reb: "8.5", ast: "4.8" }
+    ];
+    bio = "The most anticipated rookie in over two decades, Flagg's Topps debut marks his arrival on the hardwood, combining elite playmaking and defensive instincts.";
+  } else if (card.player.includes("Frazier")) {
+    rows = [
+      { yr: "1967-68", team: "NYK", gp: "74", pts: "9.0", reb: "4.2", ast: "4.1" },
+      { yr: "1968-69", team: "NYK", gp: "80", pts: "17.5", reb: "6.2", ast: "7.9" }
+    ];
+    bio = "Known as 'Clyde', Frazier was the ultimate cool point guard, combining flashy style off the court with tenacious defense and elite playmaking on it. He led the Knicks to two NBA titles.";
+  } else if (card.player.includes("Ewing")) {
+    rows = [
+      { yr: "1985-86", team: "NYK", gp: "50", pts: "20.0", reb: "9.0", ast: "2.0" },
+      { yr: "1986-87", team: "NYK", gp: "63", pts: "21.5", reb: "8.8", ast: "1.7" }
+    ];
+    bio = "Ewing was the cornerstone of the Knicks franchise for fifteen seasons. The 1985 #1 pick immediately established himself as an elite shot-blocker and post scorer, winning Rookie of the Year.";
+  } else if (card.player.includes("Carmelo") || card.player.includes("Anthony")) {
+    rows = [
+      { yr: "2011-12", team: "NYK", gp: "55", pts: "22.6", reb: "6.3", ast: "3.6" },
+      { yr: "2012-13", team: "NYK", gp: "67", pts: "28.7", reb: "6.9", ast: "2.6" }
+    ];
+    bio = "One of the most lethal scorers in NBA history, Anthony captured the 2012-13 NBA scoring title while leading the Knicks to 54 wins and the Atlantic Division title.";
+  } else if (card.player.includes("Brunson")) {
+    rows = [
+      { yr: "2023-24", team: "NYK", gp: "77", pts: "28.7", reb: "3.6", ast: "6.7" },
+      { yr: "2024-25", team: "NYK", gp: "76", pts: "27.4", reb: "3.4", ast: "7.2" }
+    ];
+    bio = "Brunson took New York by storm, transforming the Knicks with his crafty footwork, elite mid-range scoring, and leadership, earning back-to-back All-NBA and All-Star honors.";
+  } else {
+    rows = [
+      { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
+      { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
+    ];
+    bio = "A standout performer whose skill and court vision make him a critical asset and fan favorite in the modern league.";
+  }
+
+  return { rows, bio };
+};
 
     // Helper to render high-fidelity custom digital card back
     const renderCardBackContent = (card, size = 'md', theme = 'dark') => {
       const c = TEAM_COLORS[card.team] || { primary: '#222222', secondary: '#111111', accent: '#FFFFFF', text: '#FFFFFF' };
       const stats = getPlayerStats(card);
       const labels = stats[0]?.labels || ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST'];
-
-      // Helper for authentic basketball stats
-      const getBasketballStatsAndBio = (card) => {
-        let rows = [];
-        let bio = "";
-        
-        if (card.player.includes("Mikan")) {
-          rows = [
-            { yr: "1947-48", team: "MNL", gp: "11", pts: "21.3", reb: "N/A", ast: "1.7" },
-            { yr: "1948-49", team: "MNL", gp: "60", pts: "28.3", reb: "N/A", ast: "3.6" }
-          ];
-          bio = "The first true superstar of professional basketball, Mikan dominated the key so thoroughly that the league eventually widened it from 6 to 12 feet.";
-        } else if (card.player.includes("Russell")) {
-          rows = [
-            { yr: "1956-57", team: "BOS", gp: "48", pts: "14.7", reb: "19.6", ast: "1.8" },
-            { yr: "1957-58", team: "BOS", gp: "69", pts: "16.6", reb: "22.7", ast: "2.3" }
-          ];
-          bio = "In his rookie campaign, Russell revolutionized defensive basketball, leading the Celtics to their first NBA Championship and launching the greatest dynasty in sports history.";
-        } else if (card.player.includes("Chamberlain")) {
-          rows = [
-            { yr: "1959-60", team: "PHW", gp: "72", pts: "37.6", reb: "27.0", ast: "2.3" },
-            { yr: "1960-61", team: "PHW", gp: "79", pts: "38.4", reb: "27.2", ast: "1.9" }
-          ];
-          bio = "Wilt took the league by storm in 1959, averaging 37.6 points as a rookie. By 1961, his dominant scoring and rebounding had rewritten every single record in the books.";
-        } else if (card.player.includes("West")) {
-          rows = [
-            { yr: "1960-61", team: "LAL", gp: "79", pts: "17.6", reb: "7.7", ast: "4.2" },
-            { yr: "1961-62", team: "LAL", gp: "75", pts: "30.8", reb: "7.9", ast: "5.4" }
-          ];
-          bio = "Known as 'Mr. Clutch' for his late-game heroics, West made his first of 14 consecutive All-Star appearances as a rookie and eventually became the silhouette of the NBA logo.";
-        } else if (card.player.includes("Abdul-Jabbar")) {
-          rows = [
-            { yr: "1969-70", team: "MIL", gp: "82", pts: "28.8", reb: "14.5", ast: "4.1" },
-            { yr: "1970-71", team: "MIL", gp: "82", pts: "31.7", reb: "16.0", ast: "3.3" }
-          ];
-          bio = "Entering the league as Lew Alcindor, Kareem immediately established himself as a force, capturing the ROTY award and leading Milwaukee to a 56-win season.";
-        } else if (card.player.includes("Havlicek")) {
-          rows = [
-            { yr: "1962-63", team: "BOS", gp: "80", pts: "14.3", reb: "6.7", ast: "2.2" },
-            { yr: "1968-69", team: "BOS", gp: "82", pts: "21.6", reb: "7.0", ast: "5.4" }
-          ];
-          bio = "'Hondo' was the ultimate sixth man, combining relentless energy with defensive tenacity. He would lead the Celtics to 8 NBA titles during his Hall of Fame career.";
-        } else if (card.player.includes("Bird")) {
-          rows = [
-            { yr: "1979-80", team: "BOS", gp: "82", pts: "21.3", reb: "10.4", ast: "4.5" },
-            { yr: "1980-81", team: "BOS", gp: "82", pts: "21.2", reb: "10.9", ast: "5.5" }
-          ];
-          bio = "Larry Legend's 1980 Topps rookie marks the arrival of one of the greatest shooters and fiercest competitors in basketball history, leading Boston to a title in 1981.";
-        } else if (card.player.includes("Erving")) {
-          rows = [
-            { yr: "1978-79", team: "PHI", gp: "78", pts: "23.1", reb: "7.2", ast: "4.6" },
-            { yr: "1979-80", team: "PHI", gp: "78", pts: "26.9", reb: "7.4", ast: "4.6" }
-          ];
-          bio = "Dr. J's high-flying style and artistic dunks captivated fans and revolutionized the sport, paving the way for the modern athletic wing player.";
-        } else if (card.player.includes("Magic") || card.player.includes("Johnson")) {
-          rows = [
-            { yr: "1979-80", team: "LAL", gp: "77", pts: "18.0", reb: "7.7", ast: "7.3" },
-            { yr: "1980-81", team: "LAL", gp: "37", pts: "21.6", reb: "8.6", ast: "8.6" }
-          ];
-          bio = "Magic's 1980 Topps rookie showcases the revolutionary 6'9 point guard who defined 'Showtime' and led the Lakers to the 1980 championship as a rookie.";
-        } else if (card.player.includes("Jordan")) {
-          if (card.setId === '1986-fleer') {
-            rows = [
-              { yr: "1984-85", team: "CHI", gp: "82", pts: "28.2", reb: "6.5", ast: "5.9" },
-              { yr: "1985-86", team: "CHI", gp: "18", pts: "22.7", reb: "3.6", ast: "2.9" }
-            ];
-            bio = "The most iconic card in basketball history. Jordan's 1986 Fleer rookie captures his raw athletic brilliance, highlighted by his historic 63-point playoff game against Boston.";
-          } else if (card.setId === '1990-skybox') {
-            rows = [
-              { yr: "1988-89", team: "CHI", gp: "81", pts: "32.5", reb: "8.0", ast: "8.0" },
-              { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" }
-            ];
-            bio = "Following his fourth consecutive scoring title, Jordan led the Bulls to the threshold of their historic championship run, averaging 33.6 points per game.";
-          } else if (card.setId === '1991-upper-deck') {
-            rows = [
-              { yr: "1989-90", team: "CHI", gp: "82", pts: "33.6", reb: "6.9", ast: "6.3" },
-              { yr: "1990-91", team: "CHI", gp: "82", pts: "31.5", reb: "6.0", ast: "5.5" }
-            ];
-            bio = "Fresh off his first NBA Championship, Jordan's Upper Deck release captured the global phenomenon at his absolute athletic and competitive peak.";
-          } else if (card.setId === '1993-finest') {
-            rows = [
-              { yr: "1991-92", team: "CHI", gp: "80", pts: "30.1", reb: "6.4", ast: "6.1" },
-              { yr: "1992-93", team: "CHI", gp: "78", pts: "32.6", reb: "6.7", ast: "5.5" }
-            ];
-            bio = "Topps Finest introduced Chromium technology to the hobby, featuring this stunning refractor of Jordan just as he completed his first historic Three-Peat.";
-          } else {
-            rows = [
-              { yr: "1995-96", team: "CHI", gp: "82", pts: "30.4", reb: "6.6", ast: "4.3" },
-              { yr: "1996-97", team: "CHI", gp: "82", pts: "29.6", reb: "5.9", ast: "4.3" }
-            ];
-            bio = "Precious Metal Gems represents the pinnacle of 90s insert collecting. The Red PMG Jordan is a legendary masterpiece from the Bulls' second championship run.";
-          }
-        } else if (card.player.includes("Barkley")) {
-          rows = [
-            { yr: "1984-85", team: "PHI", gp: "82", pts: "14.0", reb: "8.6", ast: "1.9" },
-            { yr: "1985-86", team: "PHI", gp: "80", pts: "20.0", reb: "12.8", ast: "3.9" }
-          ];
-          bio = "The 'Round Mound of Rebound' proved that height was no barrier to dominance in the paint, averaging a double-double and earning All-Rookie honors in Philly.";
-        } else if (card.player.includes("Olajuwon")) {
-          rows = [
-            { yr: "1984-85", team: "HOU", gp: "82", pts: "20.6", reb: "11.9", ast: "1.4" },
-            { yr: "1985-86", team: "HOU", gp: "68", pts: "23.5", reb: "11.5", ast: "2.0" }
-          ];
-          bio = "Drafted #1 overall in the legendary 1984 draft class, 'The Dream' anchored the Rockets' Twin Towers, showcasing his signature 'Dream Shake' footwork.";
-        } else if (card.player.includes("Robinson")) {
-          rows = [
-            { yr: "1989-90", team: "SAS", gp: "82", pts: "24.3", reb: "12.0", ast: "2.0" },
-            { yr: "1990-91", team: "SAS", gp: "82", pts: "25.6", reb: "13.0", ast: "2.5" }
-          ];
-          bio = "'The Admiral' served two years in the U.S. Navy before joining the Spurs. He immediately turned the franchise around, winning Rookie of the Year by unanimous vote.";
-        } else if (card.player.includes("Bryant")) {
-          if (card.setId === '1996-topps-chrome') {
-            rows = [
-              { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
-              { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
-            ];
-            bio = "Straight out of Lower Merion High School, Kobe's Chrome rookie marks the beginning of the Mamba era, featuring his legendary vertical leap and scoring instincts.";
-          } else {
-            rows = [
-              { yr: "1996-97", team: "LAL", gp: "71", pts: "7.6", reb: "1.9", ast: "1.3" },
-              { yr: "1997-98", team: "LAL", gp: "79", pts: "15.4", reb: "3.1", ast: "2.5" }
-            ];
-            bio = "This ultra-rare green PMG is one of the most coveted modern cards in existence, capturing Kobe in his second season as the league's youngest All-Star starter.";
-          }
-        } else if (card.player.includes("James")) {
-          rows = [
-            { yr: "2003-04", team: "CLE", gp: "79", pts: "20.9", reb: "5.5", ast: "5.9" },
-            { yr: "2004-05", team: "CLE", gp: "80", pts: "27.2", reb: "7.4", ast: "7.2" }
-          ];
-          bio = "The king of modern luxury trading cards. LeBron's Exquisite RPA is the holy grail of 21st-century collecting, marking his debut as the Chosen One.";
-        } else if (card.player.includes("Wade")) {
-          rows = [
-            { yr: "2003-04", team: "MIA", gp: "61", pts: "16.2", reb: "4.0", ast: "4.5" },
-            { yr: "2004-05", team: "MIA", gp: "77", pts: "24.1", reb: "5.2", ast: "6.8" }
-          ];
-          bio = "'Flash' emerged from Marquette to lead the Heat back to relevance, showcasing elite slashing ability that would soon yield three NBA championships.";
-        } else if (card.player.includes("Davis")) {
-          rows = [
-            { yr: "2012-13", team: "NOP", gp: "64", pts: "13.5", reb: "8.2", ast: "1.0" },
-            { yr: "2013-14", team: "NOP", gp: "67", pts: "20.8", reb: "10.0", ast: "1.6" }
-          ];
-          bio = "AD joined the league as the consensus #1 overall pick and Olympic gold medalist, launching a career defined by defensive dominance and elite post scoring.";
-        } else if (card.player.includes("Irving")) {
-          rows = [
-            { yr: "2011-12", team: "CLE", gp: "51", pts: "18.5", reb: "3.7", ast: "5.4" },
-            { yr: "2012-13", team: "CLE", gp: "59", pts: "22.5", reb: "3.7", ast: "5.9" }
-          ];
-          bio = "Irving's rookie campaign was highlighted by his dazzling handles and clutch play, taking home Rookie of the Year honors for Cleveland.";
-        } else if (card.player.includes("Antetokounmpo")) {
-          rows = [
-            { yr: "2013-14", team: "MIL", gp: "77", pts: "6.8", reb: "4.4", ast: "1.9" },
-            { yr: "2014-15", team: "MIL", gp: "81", pts: "12.7", reb: "6.7", ast: "2.6" }
-          ];
-          bio = "Entering as a raw, skinny teenager from Greece, Giannis's National Treasures RPA traces the humble beginnings of the future two-time MVP and champion.";
-        } else if (card.player.includes("Embiid")) {
-          rows = [
-            { yr: "2016-17", team: "PHI", gp: "31", pts: "20.2", reb: "7.8", ast: "2.1" },
-            { yr: "2017-18", team: "PHI", gp: "63", pts: "22.9", reb: "11.0", ast: "3.2" }
-          ];
-          bio = "Despite missing his first two seasons to injury, 'The Process' proved well worth the wait, displaying historic per-minute scoring and defensive dominance.";
-        } else if (card.player.includes("Williamson")) {
-          rows = [
-            { yr: "2019-20", team: "NOP", gp: "24", pts: "22.5", reb: "6.3", ast: "2.1" },
-            { yr: "2020-21", team: "NOP", gp: "61", pts: "27.0", reb: "7.2", ast: "3.7" }
-          ];
-          bio = "Zion's high-flying rookie campaign matched the unprecedented hype, showing historic efficiency and paint dominance for the Pelicans.";
-        } else if (card.player.includes("Alexander")) {
-          rows = [
-            { yr: "2023-24", team: "OKC", gp: "75", pts: "30.1", reb: "5.5", ast: "6.2" },
-            { yr: "2024-25", team: "OKC", gp: "78", pts: "31.2", reb: "5.8", ast: "6.5" }
-          ];
-          bio = "Topps Now captured Shai's opening night masterclass in real-time, commemorating the OKC superstar's campaign for MVP honors.";
-        } else if (card.player.includes("Wembanyama")) {
-          rows = [
-            { yr: "2023-24", team: "SAS", gp: "71", pts: "21.4", reb: "10.6", ast: "3.9" },
-            { yr: "2024-25", team: "SAS", gp: "75", pts: "23.5", reb: "11.2", ast: "4.2" }
-          ];
-          bio = "Celebrating the official return of licensed Topps basketball cards, this release captures the alien-like dominance of Wemby in his sophomore campaign.";
-        } else if (card.player.includes("Flagg")) {
-          rows = [
-            { yr: "2024-25", team: "DUK", gp: "36", pts: "16.5", reb: "7.8", ast: "4.2" },
-            { yr: "2025-26", team: "BKN", gp: "25", pts: "18.2", reb: "8.0", ast: "4.5" }
-          ];
-          bio = "The most anticipated rookie in over two decades, Flagg's Topps debut marks his arrival on the hardwood, combining elite playmaking and defensive instincts.";
-        } else if (card.player.includes("Frazier")) {
-          rows = [
-            { yr: "1967-68", team: "NYK", gp: "74", pts: "9.0", reb: "4.2", ast: "4.1" },
-            { yr: "1969-70", team: "NYK", gp: "77", pts: "20.9", reb: "6.0", ast: "8.2" }
-          ];
-          bio = "Known as 'Clyde', Frazier was the ultimate cool point guard, combining flashy style off the court with tenacious defense and elite playmaking on it. He led the Knicks to two NBA titles.";
-        } else if (card.player.includes("Ewing")) {
-          rows = [
-            { yr: "1985-86", team: "NYK", gp: "50", pts: "20.0", reb: "9.0", ast: "2.0" },
-            { yr: "1989-90", team: "NYK", gp: "82", pts: "28.6", reb: "10.9", ast: "2.2" }
-          ];
-          bio = "Ewing was the cornerstone of the Knicks franchise for fifteen seasons. The 1985 #1 pick immediately established himself as an elite shot-blocker and post scorer, winning Rookie of the Year.";
-        } else if (card.player.includes("Anthony")) {
-          rows = [
-            { yr: "2011-12", team: "NYK", gp: "55", pts: "22.6", reb: "6.3", ast: "3.6" },
-            { yr: "2012-13", team: "NYK", gp: "67", pts: "28.7", reb: "6.9", ast: "2.6" }
-          ];
-          bio = "One of the most lethal scorers in NBA history, Anthony captured the 2012-13 NBA scoring title while leading the Knicks to 54 wins and the Atlantic Division title.";
-        } else if (card.player.includes("Brunson")) {
-          rows = [
-            { yr: "2023-24", team: "NYK", gp: "77", pts: "28.7", reb: "3.6", ast: "6.7" },
-            { yr: "2024-25", team: "NYK", gp: "76", pts: "27.4", reb: "3.4", ast: "7.2" }
-          ];
-          bio = "Brunson took New York by storm, transforming the Knicks with his crafty footwork, elite mid-range scoring, and leadership, earning back-to-back All-NBA and All-Star honors.";
-        } else {
-          rows = [
-            { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
-            { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
-          ];
-          bio = "A standout performer whose skill and court vision make him a critical asset and fan favorite in the modern league.";
-        }
-
-        return { rows, bio };
-      };
 
       // Basketball Custom Card Back Render (HoopTactics ratings and attributes)
       if (card.sport === 'Basketball') {
@@ -2741,58 +2740,68 @@ const { useState, useEffect, useRef, useMemo } = React;
           <div className={`text-[6.5px] leading-snug ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
             Certificate: This authentic chrome refractor card features state-of-the-art metallic coatings reflecting the player's performance. Certified by Topps slab registry.
           </div>
-          
           <div className={`flex justify-between items-center border-t pt-2 text-[7px] font-mono ${isLight ? 'border-neutral-200 text-neutral-400' : 'border-white/10 text-neutral-500'}`}>
             <span>OFFICIAL LICENSEE • TOPPS CHROME REGISTRY</span>
             <div className="w-8 h-4 bg-gradient-to-r from-emerald-500 via-cyan-500 to-indigo-500 rounded border border-white/20 animate-pulse shadow-lg" />
           </div>
         </div>
       );
-    };;
+    };
 
-    // Card component rendering double-sided interactive 3D card
-    const HoloCard = ({ card, size = 'md', interactive = true, isFlipped = false, setFlipped, hideAttributes = false, onClick }) => {
+    // Card component rendering single-sided interactive 3D card
+    const HoloCard = ({ card, size = 'md', interactive = true, hideAttributes = false, onClick }) => {
       const { theme } = React.useContext(ThemeContext) || { theme: 'dark' };
       const cardRef = useRef(null);
-  const [frontImgErr, setFrontImgErr] = React.useState(false);
-  const [backImgErr, setBackImgErr] = React.useState(false);
-  const [frontImgSrc, setFrontImgSrc] = React.useState('');
+      const [frontImgErr, setFrontImgErr] = React.useState(false);
+      const [frontImgSrc, setFrontImgSrc] = React.useState('');
+      const [imageLoaded, setImageLoaded] = React.useState(false);
 
-  const cardStats = getCardGameStats(card);
-  const displaySta = typeof card.currentSta === 'number' ? card.currentSta : cardStats.sta;
+      const cardStats = getCardGameStats(card);
+      const displaySta = typeof card.currentSta === 'number' ? card.currentSta : cardStats.sta;
 
-  React.useEffect(() => {
-    const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
-    const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
-    
-    // Normalize parallel name for filenames
-    let fileSuffix = parallelName.toLowerCase().replace(/ /g, '-');
-    if (fileSuffix === 'base-card') fileSuffix = 'base';
-    if (fileSuffix === 'refractor-parallel' || fileSuffix === 'refractor' || fileSuffix === 'silver-prizm') fileSuffix = 'silver';
-    if (fileSuffix === 'prismatic-patch') fileSuffix = 'prismatic';
-    if (fileSuffix.includes('1/1') || fileSuffix.includes('one-of-one') || fileSuffix.includes('1-of-1')) {
-      fileSuffix = 'one-of-one';
-    }
-    
-    setFrontImgSrc(`assets/cards/${baseId}_${fileSuffix}_front.png`);
-    setFrontImgErr(false);
-    setBackImgErr(false);
-  }, [card.id, card.parallel]);
+      React.useEffect(() => {
+        const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
+        const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
+        
+        // Normalize parallel name for filenames
+        let fileSuffix = parallelName.toLowerCase().replace(/ /g, '-');
+        if (fileSuffix === 'base-card') fileSuffix = 'base';
+        if (fileSuffix === 'refractor-parallel' || fileSuffix === 'refractor' || fileSuffix === 'silver-prizm') fileSuffix = 'silver';
+        if (fileSuffix === 'prismatic-patch') fileSuffix = 'prismatic';
+        if (fileSuffix.includes('1/1') || fileSuffix.includes('one-of-one') || fileSuffix.includes('1-of-1')) {
+          fileSuffix = 'one-of-one';
+        }
+        
+        setFrontImgSrc(`assets/cards/${baseId}_${fileSuffix}_front.png`);
+        setFrontImgErr(false);
+        setImageLoaded(false); // Reset loaded state on card/parallel change
+      }, [card.id, card.parallel]);
 
-  const handleFrontError = () => {
-    const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
-    const baseSrc = `assets/cards/${baseId}_base_front.png`;
-    if (frontImgSrc !== baseSrc) {
-      setFrontImgSrc(baseSrc);
-    } else {
-      setFrontImgErr(true);
-    }
-  };
+      const handleFrontError = () => {
+        const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
+        const baseSrc = `assets/cards/${baseId}_base_front.png`;
+        if (frontImgSrc !== baseSrc) {
+          setFrontImgSrc(baseSrc);
+          setImageLoaded(false); // Reset loaded state for fallback base image load
+        } else {
+          setFrontImgErr(true);
+        }
+      };
       // Refs for direct DOM style animations to prevent React state re-render lag
       const cardInnerRef = React.useRef(null);
       const shimmerRef = React.useRef(null);
       const refractorRef = React.useRef(null);
       const glareRef = React.useRef(null);
+      const rectRef = React.useRef(null);
+      const frameIdRef = React.useRef(null);
+
+      React.useEffect(() => {
+        return () => {
+          if (frameIdRef.current) {
+            cancelAnimationFrame(frameIdRef.current);
+          }
+        };
+      }, []);
 
       const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
       const isParallel = parallelName && !parallelName.toLowerCase().includes('base');
@@ -2869,12 +2878,25 @@ const { useState, useEffect, useRef, useMemo } = React;
           )
         );
 
+      const handleMouseEnter = () => {
+        if (!interactive) return;
+        const cardEl = cardRef.current;
+        if (!cardEl) return;
+        rectRef.current = cardEl.getBoundingClientRect();
+      };
+
       // Handle Mouse/Touch tilt controls (direct DOM manipulation style updates)
       const handleMouseMove = (e) => {
-        if (!interactive || isFlipped) return;
-        const card = cardRef.current;
-        if (!card) return;
-        const rect = card.getBoundingClientRect();
+        if (!interactive) return;
+        
+        let rect = rectRef.current;
+        if (!rect) {
+          const cardEl = cardRef.current;
+          if (!cardEl) return;
+          rect = cardEl.getBoundingClientRect();
+          rectRef.current = rect;
+        }
+
         const width = rect.width;
         const height = rect.height;
         const mouseX = e.clientX - rect.left - width / 2;
@@ -2883,34 +2905,46 @@ const { useState, useEffect, useRef, useMemo } = React;
         // Normalize rotation to max 22 degrees
         const rotX = -(mouseY / (height / 2)) * 22;
         const rotY = (mouseX / (width / 2)) * 22;
-        
-        if (cardInnerRef.current) {
-          cardInnerRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-        }
 
         // Map glare coordinates
         const glareX = ((e.clientX - rect.left) / width) * 100;
         const glareY = ((e.clientY - rect.top) / height) * 100;
-        if (glareRef.current) {
-          glareRef.current.style.setProperty('--glare-x', `${glareX}%`);
-          glareRef.current.style.setProperty('--glare-y', `${glareY}%`);
-        }
 
         // Map shimmer shift
         const shimmerX = ((e.clientX - rect.left) / width) * 140 - 20;
         const shimmerY = ((e.clientY - rect.top) / height) * 140 - 20;
-        if (shimmerRef.current) {
-          shimmerRef.current.style.setProperty('--shimmer-x', `${shimmerX}%`);
-          shimmerRef.current.style.setProperty('--shimmer-y', `${shimmerY}%`);
+
+        // Cancel previous frame if it's still pending
+        if (frameIdRef.current) {
+          cancelAnimationFrame(frameIdRef.current);
         }
-        if (refractorRef.current) {
-          refractorRef.current.style.setProperty('--refractor-opacity', '0.8');
-          refractorRef.current.style.setProperty('--refractor-x', `${shimmerX * 2}%`);
-          refractorRef.current.style.setProperty('--refractor-y', `${shimmerY * 2}%`);
-        }
+
+        // Run updates inside requestAnimationFrame for maximum FPS
+        frameIdRef.current = requestAnimationFrame(() => {
+          if (cardInnerRef.current) {
+            cardInnerRef.current.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+          }
+          if (glareRef.current) {
+            glareRef.current.style.setProperty('--glare-x', `${glareX}%`);
+            glareRef.current.style.setProperty('--glare-y', `${glareY}%`);
+          }
+          if (shimmerRef.current) {
+            shimmerRef.current.style.setProperty('--shimmer-x', `${shimmerX}%`);
+            shimmerRef.current.style.setProperty('--shimmer-y', `${shimmerY}%`);
+          }
+          if (refractorRef.current) {
+            refractorRef.current.style.setProperty('--refractor-opacity', '0.8');
+            refractorRef.current.style.setProperty('--refractor-x', `${shimmerX * 2}%`);
+            refractorRef.current.style.setProperty('--refractor-y', `${shimmerY * 2}%`);
+          }
+        });
       };
 
       const handleMouseLeave = () => {
+        rectRef.current = null;
+        if (frameIdRef.current) {
+          cancelAnimationFrame(frameIdRef.current);
+        }
         if (cardInnerRef.current) {
           cardInnerRef.current.style.transform = 'rotateX(0deg) rotateY(0deg)';
         }
@@ -2972,47 +3006,43 @@ const { useState, useEffect, useRef, useMemo } = React;
       return (
         <div 
           ref={cardRef}
+          onMouseEnter={handleMouseEnter}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          onClick={(e) => {
-            if (onClick) {
-              onClick(e);
-            } else if (setFlipped) {
-              setFlipped(!isFlipped);
-            }
-          }}
-          className={`card-3d-wrapper ${sizeClasses} cursor-pointer select-none`}
+          onClick={onClick}
+          className={`card-3d-wrapper ${sizeClasses} cursor-pointer select-none ${size === 'xl' ? 'is-xl' : ''}`}
         >
           <div 
             ref={cardInnerRef}
-            className={`card-3d-inner ${isFlipped ? 'is-flipped' : ''}`}
+            className="card-3d-inner"
             style={{
-              transform: isFlipped 
-                ? 'rotateY(180deg)' 
-                : 'rotateX(0deg) rotateY(0deg)'
+              transform: 'rotateX(0deg) rotateY(0deg)'
             }}
           >
             {/* Front Face - digital toploader frame */}
             <div 
-              className="card-face absolute flex flex-col justify-between overflow-hidden digital-toploader p-2 bg-[#060608]/40"
+              className="card-face absolute inset-0 w-full h-full flex flex-col justify-between overflow-hidden digital-toploader p-2 bg-[#060608]/40"
               style={rarityStyle}
             >
               {/* Inner card container simulating inset cavity of physical protector */}
               <div className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between">
-                {!frontImgErr ? (
+                {/* Render fallback CSS content in the background while loading or on error */}
+                {(!imageLoaded || frontImgErr) && (
+                  <div className="absolute inset-0 flex flex-col justify-between z-0">
+                    {renderCardFrontContent(card)}
+                  </div>
+                )}
+
+                {!frontImgErr && (
                   <img 
                     src={frontImgSrc} 
                     onError={handleFrontError}
-                    className="w-full h-full object-cover absolute inset-0 z-0" 
+                    onLoad={() => setImageLoaded(true)}
+                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+                    loading="lazy"
+                    decoding="async"
                     alt={card.player}
                   />
-                ) : null}
-                
-                {/* Fallback to CSS Render when image fails or is missing */}
-                {frontImgErr && (
-                  <div className="absolute inset-0 flex flex-col justify-between z-10">
-                    {renderCardFrontContent(card)}
-                  </div>
                 )}
 
                 {/* Overlaid Attributes for Basketball Cards */}
@@ -3078,49 +3108,12 @@ const { useState, useEffect, useRef, useMemo } = React;
                 className="holo-glare"
               />
             </div>
-
-            {/* Back Face - digital toploader frame */}
-            <div 
-              className={`card-face card-face-back absolute flex flex-col justify-between overflow-hidden digital-toploader p-2 ${theme === 'light' ? 'bg-white/40' : 'bg-[#060608]/40'}`}
-              style={rarityStyle}
-              onClick={(e) => {
-                if (size === 'xl') {
-                  e.stopPropagation(); // Prevent card flip on scroll/interaction in detail view
-                }
-              }}
-            >
-              {/* Inner card container simulating inset cavity of physical protector */}
-              <div className={`w-full h-full relative rounded-[8px] overflow-hidden ${theme === 'light' ? 'bg-white border border-neutral-200' : 'bg-black/60 border border-white/5'} flex flex-col justify-between`}>
-                {card.sport === 'Basketball' ? (
-                  <div className="absolute inset-0 z-10">
-                    {renderCardBackContent(card, size, theme)}
-                  </div>
-                ) : (
-                  <>
-                    {!backImgErr ? (
-                      <img 
-                        src={`assets/cards/${card.id}_${(card.parallel || 'base').toLowerCase()}_back.png`} 
-                        onError={() => setBackImgErr(true)}
-                        className="w-full h-full object-cover absolute inset-0 z-0" 
-                        alt={`${card.player} Back`}
-                      />
-                    ) : null}
-                    {backImgErr && (
-                      <div className="absolute inset-0 z-10">
-                        {renderCardBackContent(card, size, theme)}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       );
     };
 
     const CatalogCard = ({ card, isOwned, onToggle, onOpenDetail, className = "", hideAttributes = false, showAnalyticsButton = false }) => {
-      const [isFlipped, setIsFlipped] = React.useState(false);
       return (
         <div className={`amp-card p-2.5 min-[400px]:p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 bg-black/60 relative ${className} ${!isOwned ? 'unowned-card-style' : ''}`}>
           {/* Badge showing if this specific card is owned */}
@@ -3132,7 +3125,13 @@ const { useState, useEffect, useRef, useMemo } = React;
             )}
           </div>
 
-          <HoloCard card={card} size="md" interactive={true} isFlipped={isFlipped} setFlipped={setIsFlipped} hideAttributes={hideAttributes} />
+          <HoloCard 
+            card={card} 
+            size="md" 
+            interactive={true} 
+            hideAttributes={hideAttributes} 
+            onClick={() => onOpenDetail && onOpenDetail(card.id, showAnalyticsButton ? 'analytics' : 'attributes')}
+          />
 
           {/* Simple header info for the specific parallel card */}
           <div className="w-full text-center leading-tight">
@@ -3144,13 +3143,13 @@ const { useState, useEffect, useRef, useMemo } = React;
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onOpenDetail && onOpenDetail(card.id);
+                onOpenDetail && onOpenDetail(card.id, 'analytics');
               }}
               className="conic-btn primary dramatic-hover w-full py-1.5 mt-2"
             >
               <div className="conic-spin-bg"></div>
               <div className="conic-btn-mask bg-[#0c0c0c]/85"></div>
-              <span className="relative z-10 text-[9px] font-black uppercase tracking-wider text-white flex items-center justify-center gap-1.5">
+              <span className="relative z-10 text-[8px] min-[400px]:text-[9px] font-black uppercase tracking-wider text-white flex items-center justify-center gap-1">
                 <iconify-icon icon="solar:chart-square-linear" width="12"></iconify-icon>
                 View Analytics
               </span>
@@ -3160,15 +3159,15 @@ const { useState, useEffect, useRef, useMemo } = React;
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onOpenDetail(card.id);
+                  onOpenDetail(card.id, 'attributes');
                 }}
                 className="conic-btn primary dramatic-hover w-full py-1.5 mt-2"
               >
                 <div className="conic-spin-bg"></div>
                 <div className="conic-btn-mask bg-[#0c0c0c]/85"></div>
-                <span className="relative z-10 text-[9px] font-black uppercase tracking-wider text-white flex items-center justify-center gap-1.5">
+                <span className="relative z-10 text-[8px] min-[400px]:text-[9px] font-black uppercase tracking-wider text-white flex items-center justify-center gap-1">
                   <iconify-icon icon="solar:eye-bold" width="12"></iconify-icon>
-                  View Details
+                  View Attributes
                 </span>
               </button>
             )
@@ -3523,6 +3522,7 @@ const { useState, useEffect, useRef, useMemo } = React;
 
     // HoopTactics Arena Turn-Based Tabletop Basketball Card Game Component
     const HoopTacticsArenaContainer = ({ 
+      onOpenDetail,
       collection, 
       userCollection, 
       activeCards, 
@@ -3566,7 +3566,6 @@ const { useState, useEffect, useRef, useMemo } = React;
       const [bench, setBench] = useState([]); // 5 card IDs
       const [vaultSearchQuery, setVaultSearchQuery] = useState('');
       const [vaultOwnedOnly, setVaultOwnedOnly] = useState(false);
-      const [flippedVaultCards, setFlippedVaultCards] = useState({});
       
       // Live game card states (dynamic stamina, gassed, custom stats)
       const [playerCards, setPlayerCards] = useState([]); // 10 cards with stamina, gassed, position
@@ -5080,8 +5079,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                             card={c} 
                             size="sm" 
                             interactive={true} 
-                            isFlipped={!!flippedVaultCards[c.id]} 
-                            setFlipped={(val) => setFlippedVaultCards(prev => ({ ...prev, [c.id]: val }))} 
+                            onClick={() => onOpenDetail && onOpenDetail(c.id, 'attributes')}
                           />
                           <button
                             onClick={() => setStarters(starters.filter(x => x !== id))}
@@ -5089,7 +5087,10 @@ const { useState, useEffect, useRef, useMemo } = React;
                           >
                             ✕
                           </button>
-                          <div className="text-center text-[9px] font-bold text-neutral-400 mt-1 truncate">
+                          <div 
+                            onClick={() => onOpenDetail && onOpenDetail(c.id, 'attributes')}
+                            className="text-center text-[9px] font-bold text-neutral-400 mt-1 truncate cursor-pointer hover:text-white"
+                          >
                             {c.player.split(' ').pop()} ({getCardGameStats(c).pos})
                           </div>
                         </div>
@@ -5124,8 +5125,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                             card={c} 
                             size="sm" 
                             interactive={true} 
-                            isFlipped={!!flippedVaultCards[c.id]} 
-                            setFlipped={(val) => setFlippedVaultCards(prev => ({ ...prev, [c.id]: val }))} 
+                            onClick={() => onOpenDetail && onOpenDetail(c.id, 'attributes')}
                           />
                           <button
                             onClick={() => setBench(bench.filter(x => x !== id))}
@@ -5133,7 +5133,10 @@ const { useState, useEffect, useRef, useMemo } = React;
                           >
                             ✕
                           </button>
-                          <div className="text-center text-[9px] font-bold text-neutral-400 mt-1 truncate">
+                          <div 
+                            onClick={() => onOpenDetail && onOpenDetail(c.id, 'attributes')}
+                            className="text-center text-[9px] font-bold text-neutral-400 mt-1 truncate cursor-pointer hover:text-white"
+                          >
                             {c.player.split(' ').pop()} ({getCardGameStats(c).pos})
                           </div>
                         </div>
@@ -5276,8 +5279,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                                       card={c} 
                                       size="md" 
                                       interactive={true} 
-                                      isFlipped={!!flippedVaultCards[c.id]} 
-                                      setFlipped={(val) => setFlippedVaultCards(prev => ({ ...prev, [c.id]: val }))} 
+                                      onClick={() => onOpenDetail && onOpenDetail(c.id, 'attributes')}
                                     />
                                     
                                     {/* Player Name and Brand label */}
@@ -5286,8 +5288,24 @@ const { useState, useEffect, useRef, useMemo } = React;
                                       <div className="text-[8.5px] text-neutral-400 font-semibold truncate mt-0.5">{c.brand} - {c.parallel}{c.number && c.number !== '#1' && c.setId === '2025-topps-now' ? ` (${c.number.replace('#', '').replace(/-Auto$/, '')})` : ''}</div>
                                     </div>
                                     
+                                    {/* View Attributes Button */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onOpenDetail && onOpenDetail(c.id, 'attributes');
+                                      }}
+                                      className="conic-btn primary dramatic-hover w-full py-1.5 mt-1"
+                                    >
+                                      <div className="conic-spin-bg"></div>
+                                      <div className="conic-btn-mask bg-[#0c0c0c]/85"></div>
+                                      <span className="relative z-10 text-[8px] min-[400px]:text-[9px] font-black uppercase tracking-wider text-white flex items-center justify-center gap-1">
+                                        <iconify-icon icon="solar:eye-bold" width="12"></iconify-icon>
+                                        View Attributes
+                                      </span>
+                                    </button>
+                                    
                                     {/* Action Buttons */}
-                                    <div className="flex gap-2 w-full mt-1">
+                                    <div className="flex gap-2 w-full">
                                       <button
                                         onClick={() => {
                                           if (isStarter) {
@@ -7497,7 +7515,7 @@ const { useState, useEffect, useRef, useMemo } = React;
       const [focusMode, setFocusMode] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedCardId, setSelectedCardId] = useState(null);
-      const [isFlipped, setFlipped] = useState(false);
+      const [modalMode, setModalMode] = useState('attributes'); // 'attributes' or 'analytics'
       const [favorites, setFavorites] = useState(() => {
         const saved = localStorage.getItem('ht_favorites');
         if (saved) {
@@ -7876,6 +7894,11 @@ const { useState, useEffect, useRef, useMemo } = React;
           setUnlockedAchievements(newUnlocked);
           localStorage.setItem('ht_unlocked_achievements', JSON.stringify(newUnlocked));
         }
+      };
+
+      const handleOpenDetail = (id, mode = 'attributes') => {
+        setSelectedCardId(id);
+        setModalMode(mode);
       };
 
       // Add to collection triggers achievement checks (scratched XP gain)
@@ -8721,6 +8744,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                     // HoopTactics Arena inner state manager
                     return (
                       <HoopTacticsArenaContainer 
+                        onOpenDetail={handleOpenDetail}
                         collection={basketballCardsInCollection} 
                         userCollection={userCollection}
                         activeCards={activeCards}
@@ -9905,23 +9929,21 @@ const { useState, useEffect, useRef, useMemo } = React;
               </div>
             </div>
           )}
-
-          {/* CARD DETAIL POPUP OVERLAY (EXPANDED VIEW MODAL) */}
           {selectedCardId && activeCard && (
             <div 
               className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-xl bg-black/85 transition-opacity duration-300 ease-out hide-scrollbar"
             >
               <div 
                 className="min-h-full w-full flex items-center justify-center p-4 md:p-6 pt-16 md:pt-16"
-                onClick={() => { setSelectedCardId(null); setFlipped(false); setSelectedTimeline('1D'); }}
+                onClick={() => { setSelectedCardId(null); setSelectedTimeline('1D'); }}
               >
                 <div 
                   className="relative w-full max-w-5xl bg-[#0c0c0c] border border-white/10 rounded-3xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4 md:gap-8 shadow-[0_0_50px_rgba(255,255,255,0.05)] transform transition-all duration-300 scale-95 opacity-0 animate-modal-entry"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {/* Close Button (Repositioned inside modal bounds as a circular glass button to prevent viewport squeezing/stretching) */}
+                  {/* Close Button */}
                   <button 
-                    onClick={() => { setSelectedCardId(null); setFlipped(false); setSelectedTimeline('1D'); }}
+                    onClick={() => { setSelectedCardId(null); setSelectedTimeline('1D'); }}
                     className="absolute top-4 right-4 md:top-6 md:right-6 z-50 conic-btn circle orange dramatic-hover"
                     style={{ position: 'absolute' }}
                   >
@@ -9932,204 +9954,257 @@ const { useState, useEffect, useRef, useMemo } = React;
                     </span>
                   </button>
 
-                  {/* Left Column: Enlarged 3D Flippable Card */}
+                  {/* Left Column: Enlarged 3D Card */}
                   <div className="w-full md:w-auto flex flex-col items-center gap-4 flex-shrink-0 md:self-start">
                     <div className="flex justify-between w-full max-w-[280px]">
                       <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
                         {detailedActiveCard.brand}
                       </span>
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setFlipped(!isFlipped);
-                        }}
-                        className="conic-btn primary dramatic-hover"
-                      >
-                        <div className="conic-spin-bg"></div>
-                        <div className="conic-btn-mask bg-[#0c0c0c]"></div>
-                        <span className="relative z-10 text-[10px] uppercase font-bold tracking-widest text-neutral-400 hover:text-white flex items-center gap-1.5 px-3 py-1 transition-colors">
-                          Flip Card <iconify-icon icon="solar:round-transfer-linear" width="12"></iconify-icon>
-                        </span>
-                      </button>
                     </div>
 
-                    <HoloCard card={detailedActiveCard} size="xl" interactive={true} isFlipped={isFlipped} setFlipped={setFlipped} hideAttributes={true} />
+                    <HoloCard card={detailedActiveCard} size="xl" interactive={true} hideAttributes={false} />
                     
                     <p className="text-[9px] text-neutral-500 uppercase tracking-widest text-center mt-2">
-                      Tilt card to reflect. Click to flip.
+                      Tilt card to reflect.
                     </p>
                   </div>
 
                   {/* Right Column: UI Card with Price charts, grades, specs */}
                   <div className="game-detail-right flex-1 w-full flex flex-col gap-6 text-left md:overflow-y-auto md:max-h-[75vh] hide-scrollbar pr-1">
                     
-                    {/* Detailed Spec Drawer */}
+                    {/* Header Details */}
                     <div className="glass-panel border border-white/5 p-6 rounded-2xl">
-                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                        <div className="text-left flex-1">
-                          <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded text-white font-mono uppercase tracking-wider">
-                            {detailedActiveCard.sport}
-                          </span>
-                          <h1 className="text-2xl md:text-3xl font-extrabold mt-2 text-white">{detailedActiveCard.player}</h1>
-                          <p className="text-xs text-neutral-400 mt-1">{detailedActiveCard.year} {detailedActiveCard.brand} {detailedActiveCard.number} • <span className="text-white font-semibold">{detailedActiveCard.parallel}</span></p>
-                          
-                          {/* Vault Status Badge (Replaced manual Add/Remove button to enforce scanning rule) */}
-                          <div className="mt-3 flex items-center gap-2">
-                            {isAnyParallelOwned(userCollection, detailedActiveCard.id) ? (
-                              <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.1)]">
-                                  <iconify-icon icon="solar:shield-check-bold" width="12"></iconify-icon>
-                                  In Vault Collection
-                                </span>
-                                {!showRemoveConfirm && (
-                                  <button
-                                    onClick={() => setShowRemoveConfirm(true)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 shadow-md transition-all duration-300 cursor-pointer"
-                                  >
-                                    <iconify-icon icon="solar:trash-bin-trash-bold" width="12"></iconify-icon>
-                                    Remove Card
-                                  </button>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-white/5 text-neutral-400 border border-white/5">
-                                <iconify-icon icon="solar:shield-unique-linear" width="12"></iconify-icon>
-                                Not in Vault (Catalog)
-                              </span>
-                            )}
-                          </div>
-
-                          {showRemoveConfirm && (
-                            <div className="mt-4 p-4 rounded-2xl bg-red-950/20 border border-red-500/30 text-left space-y-3 animate-fade-in">
-                              <div className="flex items-start gap-2.5">
-                                <iconify-icon icon="solar:shield-warning-bold" width="20" className="text-red-500 flex-shrink-0 mt-0.5"></iconify-icon>
-                                <div className="space-y-1">
-                                  <h4 className="text-[10px] font-black uppercase tracking-wider text-red-400">Confirm Vault Card Removal</h4>
-                                  <p className="text-[9.5px] text-neutral-400 leading-normal font-semibold">
-                                    Hey Tommy, are you sure that you want to remove this card from your collection? Did you sell it or trade it? This action cannot be undone!
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="space-y-2">
-                                <label className="text-[8.5px] uppercase font-bold text-neutral-400 tracking-wider block">
-                                  Type <span className="text-red-400 font-mono">confirm</span> to authorize removal:
-                                </label>
-                                <input 
-                                  type="text"
-                                  value={removeConfirmInput}
-                                  onChange={(e) => setRemoveConfirmInput(e.target.value)}
-                                  placeholder="Type confirm"
-                                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-red-500/50 transition-all text-white font-semibold"
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => {
-                                    if (removeConfirmInput.toLowerCase() === 'confirm') {
-                                      toggleCollection(detailedActiveCard.id);
-                                      setShowRemoveConfirm(false);
-                                      setRemoveConfirmInput('');
-                                      setSelectedCardId(null);
-                                    }
-                                  }}
-                                  disabled={removeConfirmInput.toLowerCase() !== 'confirm'}
-                                  className={`px-4 py-2 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${
-                                    removeConfirmInput.toLowerCase() === 'confirm'
-                                      ? 'bg-red-600 hover:bg-red-500 text-white cursor-pointer'
-                                      : 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
-                                  }`}
-                                >
-                                  <iconify-icon icon="solar:trash-bin-trash-bold" width="12"></iconify-icon>
-                                  Confirm Removal
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setShowRemoveConfirm(false);
-                                    setRemoveConfirmInput('');
-                                  }}
-                                  className="px-4 py-2 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white text-[9px] font-bold uppercase transition-all"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Cleaned metrics grid styling for consistent alignment and sizes */}
-                      <div className="grid grid-cols-3 gap-4 mt-6 border-t border-white/5 pt-4">
-                        <div>
-                          <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Market Value</div>
-                          <div className="text-lg md:text-xl font-bold mt-1 text-white">${detailedActiveCard.value.toLocaleString()}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">{selectedTimeline} Change</div>
-                          <div className={`text-lg md:text-xl font-bold mt-1 flex items-center gap-0.5 ${timelinePctChange >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                            <iconify-icon icon={timelinePctChange >= 0 ? "solar:arrow-right-up-bold" : "solar:arrow-right-down-bold"} width="14"></iconify-icon>
-                            {timelinePctChange >= 0 ? '+' : ''}{timelinePctChange}%
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Volume</div>
-                          <div className="text-lg md:text-xl font-bold mt-1 text-neutral-300 truncate">{detailedActiveCard.volume}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Pricing line chart (UI Card) */}
-                    <div className="glass-panel border border-white/5 p-6 rounded-2xl">
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                        <h3 className="text-xs uppercase font-extrabold text-neutral-400 tracking-wider">Historical Price Trend (PSA 10 Comps)</h3>
-                        
-                        {/* Timeline Selector Tabs */}
-                        <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-white/5">
-                          {['1D', '1M', '6M', '1Y', '5Y'].map(t => (
-                            <button
-                              key={t}
-                              onClick={() => setSelectedTimeline(t)}
-                              className={`px-2 py-1 rounded text-[8px] font-bold uppercase transition-all ${
-                                selectedTimeline === t
-                                  ? 'bg-white text-black'
-                                  : 'text-neutral-400 hover:text-white'
-                              }`}
-                            >
-                              {t}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="w-full bg-black/40 p-4 rounded-xl border border-white/5">
-                        <PriceChart card={detailedActiveCard} timeline={selectedTimeline} data={chartDataPoints} />
-                      </div>
-                    </div>
-
-                    {/* Grading Slab Value Index */}
-                    <div className="glass-panel border border-white/5 p-6 rounded-2xl">
-                      <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">PSA / BGS / Raw Grading Index</h3>
-                      <div className="grid grid-cols-3 gap-3">
-                        {Object.entries(detailedActiveCard.grades).map(([grade, val]) => (
-                          <div key={grade} className="bg-black/30 border border-white/5 p-3 rounded-xl flex flex-col justify-between">
-                            <span className="font-mono text-[9px] text-neutral-500 uppercase">{grade}</span>
-                            <span className="font-bold text-white text-xs sm:text-sm mt-1">{typeof val === 'number' ? `$${val.toLocaleString()}` : val}</span>
-                          </div>
+                      <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded text-white font-mono uppercase tracking-wider">
+                        {detailedActiveCard.sport}
+                      </span>
+                      <h1 className="text-2xl md:text-3xl font-extrabold mt-2 text-white">{detailedActiveCard.player}</h1>
+                      <p className="text-xs text-neutral-400 mt-1">{detailedActiveCard.year} {detailedActiveCard.brand} {detailedActiveCard.number} • <span className="text-white font-semibold">{detailedActiveCard.parallel}</span></p>
+                      
+                      {/* Modal Mode Tabs */}
+                      <div className="flex bg-neutral-900/60 p-1 rounded-xl border border-white/5 mt-4">
+                        {['analytics', 'attributes'].map(mode => (
+                          <button
+                            key={mode}
+                            onClick={() => setModalMode(mode)}
+                            className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                              modalMode === mode ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'
+                            }`}
+                          >
+                            {mode}
+                          </button>
                         ))}
                       </div>
                     </div>
 
-                    {/* Slab Details */}
-                    <div className="glass-panel border border-white/5 p-6 rounded-2xl">
-                      <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">Physical Registry Specifications</h3>
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[10px] text-neutral-300">
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">CARD NUM:</span><span className="text-white">{detailedActiveCard.specs.cardNum}</span></div>
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">POSITION:</span><span className="text-white">{detailedActiveCard.specs.position}</span></div>
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">HEIGHT:</span><span className="text-white">{detailedActiveCard.specs.height}</span></div>
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">WEIGHT:</span><span className="text-white">{detailedActiveCard.specs.weight}</span></div>
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">DRAFT YR:</span><span className="text-white">{detailedActiveCard.specs.draftYear}</span></div>
-                        <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">VERIFIED:</span><span className="text-green-500">YES</span></div>
-                      </div>
-                    </div>
+                    {modalMode === 'analytics' && (
+                      <>
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Market Value</div>
+                              <div className="text-lg md:text-xl font-bold mt-1 text-white">${detailedActiveCard.value.toLocaleString()}</div>
+                            </div>
+                            <div>
+                              <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">{selectedTimeline} Change</div>
+                              <div className={`text-lg md:text-xl font-bold mt-1 flex items-center gap-0.5 ${timelinePctChange >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                <iconify-icon icon={timelinePctChange >= 0 ? "solar:arrow-right-up-bold" : "solar:arrow-right-down-bold"} width="14"></iconify-icon>
+                                {timelinePctChange >= 0 ? '+' : ''}{timelinePctChange}%
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Volume</div>
+                              <div className="text-lg md:text-xl font-bold mt-1 text-neutral-300 truncate">{detailedActiveCard.volume}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                            <h3 className="text-xs uppercase font-extrabold text-neutral-400 tracking-wider">Historical Price Trend (PSA 10 Comps)</h3>
+                            <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-white/5">
+                              {['1D', '1M', '6M', '1Y', '5Y'].map(t => (
+                                <button
+                                  key={t}
+                                  onClick={() => setSelectedTimeline(t)}
+                                  className={`px-2 py-1 rounded text-[8px] font-bold uppercase transition-all ${
+                                    selectedTimeline === t ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'
+                                  }`}
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="w-full bg-black/40 p-4 rounded-xl border border-white/5">
+                            <PriceChart card={detailedActiveCard} timeline={selectedTimeline} data={chartDataPoints} />
+                          </div>
+                        </div>
+
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">PSA / BGS / Raw Grading Index</h3>
+                          <div className="grid grid-cols-3 gap-3">
+                            {Object.entries(detailedActiveCard.grades).map(([grade, val]) => (
+                              <div key={grade} className="bg-black/30 border border-white/5 p-3 rounded-xl flex flex-col justify-between">
+                                <span className="font-mono text-[9px] text-neutral-500 uppercase">{grade}</span>
+                                <span className="font-bold text-white text-xs sm:text-sm mt-1">{typeof val === 'number' ? `$${val.toLocaleString()}` : val}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">Physical Registry Specifications</h3>
+                          <div className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[10px] text-neutral-300">
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">CARD NUM:</span><span className="text-white">{detailedActiveCard.specs.cardNum}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">POSITION:</span><span className="text-white">{detailedActiveCard.specs.position}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">HEIGHT:</span><span className="text-white">{detailedActiveCard.specs.height}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">WEIGHT:</span><span className="text-white">{detailedActiveCard.specs.weight}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">DRAFT YR:</span><span className="text-white">{detailedActiveCard.specs.draftYear}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">VERIFIED:</span><span className="text-green-500">YES</span></div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {modalMode === 'attributes' && (
+                      <>
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl space-y-4">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 border-b border-white/5 pb-2 tracking-wider flex items-center justify-between">
+                            <span>HoopTactics Game Ratings</span>
+                            <span className="text-[9px] font-mono text-neutral-500 font-normal">Slab Attributes & Playstyle</span>
+                          </h3>
+                          <div className="flex justify-between items-center bg-black/30 p-3 rounded-xl border border-white/5">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-mono font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 px-3 py-1 rounded-md">
+                                Position: {getCardGameStats(detailedActiveCard).pos}
+                              </span>
+                              {getCardGameStats(detailedActiveCard).primaryBadge && (
+                                <div className="flex items-center gap-1.5 text-xs font-extrabold text-white">
+                                  <iconify-icon 
+                                    icon={getCardGameStats(detailedActiveCard).primaryBadge.icon} 
+                                    width="16" 
+                                    className={getCardGameStats(detailedActiveCard).primaryBadge.type === 'three_pointer' ? 'text-amber-500' : 'text-purple-500'}
+                                  ></iconify-icon>
+                                  <span>{getCardGameStats(detailedActiveCard).primaryBadge.name}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="ovr-avatar lg shadow-xl">
+                              <div className="ovr-avatar-spin"></div>
+                              <div className="ovr-avatar-mask"></div>
+                              <div className="ovr-avatar-content">
+                                <span className="ovr-val text-[16px]">{getCardGameStats(detailedActiveCard).ovr}</span>
+                                <span className="ovr-lbl text-[6px] -mt-0.5">OVR</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs text-neutral-300">
+                            <div>
+                              <div className="flex justify-between font-bold mb-1">
+                                <span>OFFENSE (OFF)</span>
+                                <span className="text-orange-400 font-black">{getCardGameStats(detailedActiveCard).off}</span>
+                              </div>
+                              <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).off}%` }}></div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="flex justify-between font-bold mb-1">
+                                <span>DEFENSE (DEF)</span>
+                                <span className="text-blue-400 font-black">{getCardGameStats(detailedActiveCard).def}</span>
+                              </div>
+                              <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).def}%` }}></div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="flex justify-between font-bold mb-1">
+                                <span>STAMINA (STA)</span>
+                                <span className="text-emerald-400 font-black">{getCardGameStats(detailedActiveCard).sta}</span>
+                              </div>
+                              <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full" style={{ width: `${Math.min(100, (getCardGameStats(detailedActiveCard).sta / 110) * 100)}%` }}></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">⚡ Active Gameplay Perks</h3>
+                          {getCardGameStats(detailedActiveCard).perks.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {getCardGameStats(detailedActiveCard).perks.map((p, idx) => (
+                                <div key={idx} className="bg-black/30 border border-white/5 p-3 rounded-xl flex flex-col">
+                                  <span className="font-extrabold text-[10px] text-amber-400 uppercase">⚡ {p.name}</span>
+                                  <span className="text-[9.5px] leading-normal text-neutral-400 mt-1 font-semibold">{p.desc}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-xs italic text-neutral-500 bg-black/20 rounded-xl border border-dashed border-white/5">
+                              No special perks active (Standard Roster player)
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">📊 Career Statistics Table</h3>
+                          {(() => {
+                            const statsRows = getPlayerStats(detailedActiveCard);
+                            const headers = statsRows[0]?.labels || ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST'];
+                            return (
+                              <div className="overflow-x-auto rounded-xl border border-white/5 bg-black/40 p-4">
+                                <table className="w-full text-[9.5px] font-mono text-neutral-300 text-center border-collapse">
+                                  <thead>
+                                    <tr className="border-b border-white/10 uppercase text-neutral-400 font-extrabold">
+                                      {headers.map(h => <th key={h} className="pb-2 font-bold">{h}</th>)}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {statsRows.map((r, idx) => (
+                                      <tr key={idx} className="hover:bg-white/5 transition-all">
+                                        <td className="py-2 font-bold text-white">{r.yr}</td>
+                                        <td className="py-2 font-semibold text-neutral-200">{r.team || 'NBA'}</td>
+                                        <td className="py-2">{r.gp}</td>
+                                        <td className="py-2 font-bold text-white">{r.col1}</td>
+                                        <td className="py-2">{r.col2}</td>
+                                        <td className="py-2">{r.col3}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            );
+                          })()}
+                        </div>
+
+                        {(() => {
+                          const { bio } = getBasketballStatsAndBio(detailedActiveCard);
+                          if (!bio) return null;
+                          return (
+                            <div className="glass-panel border border-white/5 p-6 rounded-2xl text-[10px] leading-relaxed text-neutral-300">
+                              <span className="font-extrabold block uppercase tracking-wider text-neutral-400 mb-2">Highlights & Biography</span>
+                              <p className="font-semibold">{bio}</p>
+                            </div>
+                          );
+                        })()}
+
+                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                          <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">Physical Specifications</h3>
+                          <div className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[10px] text-neutral-300">
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">CARD NUM:</span><span className="text-white">{detailedActiveCard.specs.cardNum}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">POSITION:</span><span className="text-white">{detailedActiveCard.specs.position}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">HEIGHT:</span><span className="text-white">{detailedActiveCard.specs.height}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">WEIGHT:</span><span className="text-white">{detailedActiveCard.specs.weight}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">DRAFT YR:</span><span className="text-white">{detailedActiveCard.specs.draftYear}</span></div>
+                            <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">VERIFIED:</span><span className="text-green-500">YES</span></div>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
