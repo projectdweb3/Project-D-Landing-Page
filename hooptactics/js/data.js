@@ -58,8 +58,8 @@ window.RAW_CARDS = [
   ["Basketball", "1996-topps-chrome", "ray-allen-1996-topps-chrome-youthquake", "Ray Allen", "Milwaukee Bucks", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 800, 2.4, "5 sold / wk", "Guard", "6'5\"", "205 lbs", "1996"],
   ["Basketball", "1996-topps-chrome", "stephon-marbury-1996-topps-chrome-youthquake", "Stephon Marbury", "Minnesota Timberwolves", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 600, 2.4, "5 sold / wk", "Guard", "6'2\"", "180 lbs", "1996"],
   ["Basketball", "1996-topps-chrome", "tim-duncan-1996-topps-chrome", "Tim Duncan", "San Antonio Spurs", 1996, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Center", "6'11\"", "250 lbs", "1997"],
-  ["Basketball", "1997-pmg", "kobe-bryant-1997-pmg", "Kobe Bryant", "Los Angeles Lakers", 1997, "Precious Metal Gems", "#1", "Star Card", "Base Card", "base", 45000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
-  ["Basketball", "1997-pmg", "michael-jordan-1997-pmg", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Base Card", "base", 24000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
+  ["Basketball", "1997-pmg", "kobe-bryant-1997-pmg", "Kobe Bryant", "Los Angeles Lakers", 1997, "Precious Metal Gems", "#1", "Star Card", "Universe Parallel", "base", 45000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
+  ["Basketball", "1997-pmg", "michael-jordan-1997-pmg", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Universe Parallel", "base", 24000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
   ["Basketball", "1997-pmg", "michael-jordan-1997-pmg-green", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Green PMG Parallel", "one-of-one", 300000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
   ["Basketball", "1997-pmg", "michael-jordan-1997-pmg-red", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Red PMG Parallel", "gold", 75000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
   ["Basketball", "2003-exquisite", "carmelo-anthony-2003-exquisite-limited", "Carmelo Anthony", "Denver Nuggets", 2003, "Exquisite Collection", "#1", "Star Card", "Limited Parallel", "gold", 1800, 2.4, "5 sold / wk", "Forward", "6'7", "238 lbs", "2003"],
@@ -153,7 +153,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-chrome", "jayson-tatum-2025-topps-chrome-limited", "Jayson Tatum", "Boston Celtics", 2025, "Topps Chrome", "#1", "Star Card", "Limited Parallel", "gold", 800, 2.4, "5 sold / wk", "Forward", "6'8", "210 lbs", "2017"],
   ["Basketball", "2025-topps-chrome", "jayson-tatum-2025-topps-chrome-patented", "Jayson Tatum", "Boston Celtics", 2025, "Topps Chrome", "#1", "Star Card", "Patented Parallel", "base", 250, 2.4, "5 sold / wk", "Forward", "6'8", "210 lbs", "2017"],
   ["Basketball", "2025-topps-chrome", "jayson-tatum-2025-topps-chrome-serenity", "Jayson Tatum", "Boston Celtics", 2025, "Topps Chrome", "#1", "Star Card", "Serenity Parallel", "pink", 500, 2.4, "5 sold / wk", "Forward", "6'8", "210 lbs", "2017"],
-  ["Basketball", "2025-topps-chrome", "kevin-durant-2025-topps-chrome", "Kevin Durant", "Phoenix Suns", 2025, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward", "6'11", "240 lbs", "2007"],
+  ["Basketball", "2025-topps-chrome", "kevin-durant-2025-topps-chrome", "Kevin Durant", "Houston Rockets", 2025, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward", "6'11", "240 lbs", "2007"],
   ["Basketball", "2025-topps-chrome", "kon-knueppel-2025-topps-chrome-limited", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Chrome", "#1", "Rookie Card", "Limited Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-chrome", "kon-knueppel-2025-topps-chrome-limited-auto", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Chrome", "#1", "Autograph Card", "Autograph Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-chrome", "kon-knueppel-2025-topps-chrome-sleek-finishers", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Chrome", "#1", "Rookie Card", "Sleek Finishers Parallel", "base", 1200, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
@@ -172,13 +172,13 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-comic-court", "jalen-brunson-2025-topps-comic-court", "Jalen Brunson", "New York Knicks", 2025, "Topps Comic Court", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-comic-court", "lebron-james-2025-topps-comic-court", "LeBron James", "Los Angeles Lakers", 2025, "Topps Comic Court", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Forward", "6'9", "250 lbs", "2003"],
   ["Basketball", "2025-topps-comic-court", "stephen-curry-2025-topps-comic-court", "Stephen Curry", "Golden State Warriors", 2025, "Topps Comic Court", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
-  ["Basketball", "2025-topps-finest", "derrick-white-2025-topps-finest", "Derrick White", "Boston Celtics", 2025, "Topps Finest", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'4\"", "190 lbs", "2017"],
-  ["Basketball", "2025-topps-finest", "dylan-harper-2025-topps-finest", "Dylan Harper", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Guard", "6'6\"", "215 lbs", "2025"],
+  ["Basketball", "2025-topps-finest", "derrick-white-2025-topps-finest", "Derrick White", "Boston Celtics", 2025, "Topps Finest", "#1", "Star Card", "Base Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'4\"", "190 lbs", "2017"],
+  ["Basketball", "2025-topps-finest", "dylan-harper-2025-topps-finest", "Dylan Harper", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Rookie Card", "Base Parallel", "base", 1200, 2.4, "5 sold / wk", "Guard", "6'6\"", "215 lbs", "2025"],
   ["Basketball", "2025-topps-finest", "dylan-harper-2025-topps-finest-2", "Dylan Harper", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Rookie Card", "Limited Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard", "6'6\"", "215 lbs", "2025"],
-  ["Basketball", "2025-topps-finest", "jalen-brunson-2025-topps-finest", "Jalen Brunson", "New York Knicks", 2025, "Topps Finest", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-finest", "jalen-brunson-2025-topps-finest", "Jalen Brunson", "New York Knicks", 2025, "Topps Finest", "#1", "Star Card", "Base Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-finest", "jalen-brunson-2025-topps-finest-2", "Jalen Brunson", "New York Knicks", 2025, "Topps Finest", "#1", "Star Card", "Checkerboard Refractor Parallel", "gold", 800, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-finest", "stephen-curry-2025-topps-finest-2", "Stephen Curry", "Golden State Warriors", 2025, "Topps Finest", "#1", "Star Card", "Limited Parallel", "gold", 7500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
-  ["Basketball", "2025-topps-finest", "victor-wembanyama-2025-topps-finest", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2025-topps-finest", "victor-wembanyama-2025-topps-finest", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Star Card", "Base Parallel", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-finest", "victor-wembanyama-2025-topps-finest-2", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Finest", "#1", "Star Card", "Limited Parallel", "gold", 2500, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-flagship", "ace-bailey-2025-topps-flagship", "Ace Bailey", "Rutgers / Rookie", 2025, "Topps Flagship", "#1", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Forward", "6'10\"", "200 lbs", "2025"],
   ["Basketball", "2025-topps-flagship", "cooper-flagg-2025-topps-flagship", "Cooper Flagg", "Dallas Mavericks", 2025, "Topps Flagship", "#1", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Forward", "6'9\"", "205 lbs", "2025"],
@@ -201,7 +201,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "cooper-flagg-2025-topps-now-youngest-25-5-5", "Cooper Flagg", "Dallas Mavericks", 2025, "Topps Now", "#Youngest-25/5/5", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Forward", "6'9\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-now", "cooper-flagg-2025-topps-now-youngest-35-pt", "Cooper Flagg", "Dallas Mavericks", 2025, "Topps Now", "#Youngest-35pt", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Forward", "6'9\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-now", "dylan-harper-2025-topps-now-2nd-pick-auto", "Dylan Harper", "San Antonio Spurs", 2025, "Topps Now", "#2nd-Pick-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'6\"", "215 lbs", "2025"],
-  ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-comeback", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Comeback-Auto", "Star Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-comeback", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Comeback", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-cup", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Topps-Cup", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-cup-auto", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Topps-Cup-Auto", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-ecf-mvp", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#ECF-MVP", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
@@ -914,14 +914,17 @@ window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
                nameLower.includes("curry") ? "GSW" :
                nameLower.includes("brunson") || nameLower.includes("towns") || nameLower.includes("bridges") ? "NYK" :
                nameLower.includes("jokic") ? "DEN" :
-               nameLower.includes("antetokounmpo") ? "MIL" :
+               nameLower.includes("antetokounmpo") || nameLower.includes("lillard") ? "MIL" :
                nameLower.includes("wembanyama") || nameLower.includes("wemby") || nameLower.includes("harper") || nameLower.includes("castle") ? "SAS" :
-               nameLower.includes("flagg") ? "DAL" :
+               nameLower.includes("flagg") || nameLower.includes("irving") ? "DAL" :
                nameLower.includes("alexander") || nameLower.includes("shai") ? "OKC" :
                nameLower.includes("tatum") || nameLower.includes("brown") || nameLower.includes("white") ? "BOS" :
                nameLower.includes("miller") || nameLower.includes("ball") || nameLower.includes("knueppel") ? "CHA" :
                nameLower.includes("adebayo") ? "MIA" :
-               nameLower.includes("williamson") ? "NOP" : "NBA";
+               nameLower.includes("williamson") ? "NOP" :
+               nameLower.includes("durant") ? "HOU" :
+               nameLower.includes("edwards") ? "MIN" :
+               nameLower.includes("leonard") ? "LAC" : "NBA";
                
   let gp = 75;
   let pts = 20.0;
@@ -1656,7 +1659,7 @@ window.getCardGameStats = (card) => {
 
   const isAutoOrPatch = isAuto || isPatch;
   const isParallel = isRarityParallel && !isAutoOrPatch;
-  const isLegendarySet = card.year <= 1993;
+  const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg';
 
   let finalOvr = unscaledOvr;
 
@@ -1667,6 +1670,16 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 99, 99);
     tpt = scaleAttribute(tpt, 99, 99);
     ath = scaleAttribute(ath, 99, 99);
+    
+    // Explicit override for Precious Metal Gems OVR
+    if (card.setId === '1997-pmg') {
+      const isUniverse = !parallelLower.includes('red') && !parallelLower.includes('green');
+      if (isUniverse) {
+        finalOvr = 99;
+      } else {
+        finalOvr = 98;
+      }
+    }
   } else if (isAutoOrPatch) {
     const clampedPower = Math.max(85, Math.min(115, unscaledOvr));
     finalOvr = 96 + ((clampedPower - 85) / 30) * 3;

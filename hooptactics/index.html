@@ -1327,17 +1327,20 @@
       /* Provide soft, hardware-accelerated static values for overlays on mobile */
       .holo-shimmer {
         background-position: 50% 50% !important;
-        opacity: 0.6 !important;
+        opacity: 0.75 !important;
+        z-index: 15 !important;
       }
 
       .holo-refractor {
-        opacity: 0.35 !important;
+        opacity: 0.55 !important;
         background-position: 50% 50% !important;
+        z-index: 14 !important;
       }
 
       .holo-glare {
-        opacity: 0.25 !important;
+        opacity: 0.35 !important;
         background-position: 50% 50% !important;
+        z-index: 16 !important;
       }
 
       /* Disable heavy SVG noise filter / sparkle animation on mobile */

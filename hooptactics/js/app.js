@@ -2756,7 +2756,7 @@ const getBasketballStatsAndBio = (card) => {
 
       const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
       const isParallel = parallelName && !parallelName.toLowerCase().includes('base');
-      const isLegendarySet = card.year <= 1993;
+      const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg';
 
       const typeLower = (card.type || '').toLowerCase();
       const parallelLower = (parallelName || '').toLowerCase();
@@ -5183,9 +5183,14 @@ const getBasketballStatsAndBio = (card) => {
                       grouped[brand].push(c);
                     });
 
-                    // Sort cards within each brand: rarity priority first, then year descending, then value descending
+                    // Sort cards within each brand: OVR descending first, then rarity priority, then year descending, then value descending
                     Object.keys(grouped).forEach(brand => {
                       grouped[brand].sort((a, b) => {
+                        const ovrA = getCardGameStats(a).ovr;
+                        const ovrB = getCardGameStats(b).ovr;
+                        if (ovrB !== ovrA) {
+                          return ovrB - ovrA;
+                        }
                         const pA = window.getCardRarityPriority ? window.getCardRarityPriority(a) : 5;
                         const pB = window.getCardRarityPriority ? window.getCardRarityPriority(b) : 5;
                         if (pA !== pB) {
@@ -7974,6 +7979,12 @@ const getBasketballStatsAndBio = (card) => {
       // Sort a flat list of cards dynamically based on sortBy state
       const sortCardsList = (cardsList, sortVal = sortBy) => {
         return [...cardsList].sort((a, b) => {
+          const ovrA = window.getCardGameStats ? window.getCardGameStats(a).ovr : 0;
+          const ovrB = window.getCardGameStats ? window.getCardGameStats(b).ovr : 0;
+          if (ovrB !== ovrA) {
+            return ovrB - ovrA;
+          }
+
           const pA = getCardRarityPriority(a);
           const pB = getCardRarityPriority(b);
           if (pA !== pB) {
@@ -8023,7 +8034,17 @@ const getBasketballStatsAndBio = (card) => {
           if (era !== 'All' && (!set || set.era !== era)) return false;
 
           // Team filter
-          if (team !== 'All' && card.team !== team) return false;
+          if (team !== 'All') {
+            if (card.team !== team) {
+              const cardTeams = card.team.split(' / ');
+              const match = cardTeams.some(ct => {
+                const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                const cleanTn = team.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+              });
+              if (!match) return false;
+            }
+          }
 
           return true;
         });
@@ -8097,7 +8118,12 @@ const getBasketballStatsAndBio = (card) => {
             sports.includes(card.sport)
           );
         }
-        return [...cards].sort((a, b) => b.value - a.value);
+        return [...cards].sort((a, b) => {
+          const ovrA = getCardGameStats(a).ovr;
+          const ovrB = getCardGameStats(b).ovr;
+          if (ovrB !== ovrA) return ovrB - ovrA;
+          return b.value - a.value;
+        });
       };
 
       const chronologicalSets = getChronologicalSetsWithCards();
@@ -8449,7 +8475,17 @@ const getBasketballStatsAndBio = (card) => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6">
-                        {activeUserCollection.map((item, idx) => {
+                        {[...activeUserCollection].sort((a, b) => {
+                          const cardA = activeCards.find(c => c.id === a) || SPORTS_CARDS.find(c => c.id === a);
+                          const cardB = activeCards.find(c => c.id === b) || SPORTS_CARDS.find(c => c.id === b);
+                          const ovrA = cardA ? getCardGameStats(cardA).ovr : 0;
+                          const ovrB = cardB ? getCardGameStats(cardB).ovr : 0;
+                          if (ovrB !== ovrA) return ovrB - ovrA;
+                          const valA = cardA ? cardA.value : 0;
+                          const valB = cardB ? cardB.value : 0;
+                          if (valB !== valA) return valB - valA;
+                          return (cardA?.player || '').localeCompare(cardB?.player || '');
+                        }).map((item, idx) => {
                           const card = activeCards.find(c => c.id === item) || SPORTS_CARDS.find(c => c.id === item);
                           if (!card) return null;
                           return (
@@ -8607,7 +8643,17 @@ const getBasketballStatsAndBio = (card) => {
                               }
                               if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
                               if (activeEraFilter !== 'All' && (!set || set.era !== activeEraFilter)) return false;
-                              if (activeTeamFilter !== 'All' && card.team !== activeTeamFilter) return false;
+                              if (activeTeamFilter !== 'All') {
+                                if (card.team !== activeTeamFilter) {
+                                  const cardTeams = card.team.split(' / ');
+                                  const match = cardTeams.some(ct => {
+                                    const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                                    const cleanTn = activeTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                                    return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+                                  });
+                                  if (!match) return false;
+                                }
+                              }
                               return true;
                             })
                           ).length
@@ -8631,7 +8677,17 @@ const getBasketballStatsAndBio = (card) => {
                             }
                             if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
                             if (activeEraFilter !== 'All' && (!set || set.era !== activeEraFilter)) return false;
-                            if (activeTeamFilter !== 'All' && card.team !== activeTeamFilter) return false;
+                            if (activeTeamFilter !== 'All') {
+                              if (card.team !== activeTeamFilter) {
+                                const cardTeams = card.team.split(' / ');
+                                const match = cardTeams.some(ct => {
+                                  const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                                  const cleanTn = activeTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                                  return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+                                });
+                                if (!match) return false;
+                              }
+                            }
                             return true;
                           })
                         ).map(card => (
@@ -9092,7 +9148,17 @@ const getBasketballStatsAndBio = (card) => {
                               }
                               if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
                               if (marketActiveEraFilter !== 'All' && (!set || set.era !== marketActiveEraFilter)) return false;
-                              if (marketActiveTeamFilter !== 'All' && card.team !== marketActiveTeamFilter) return false;
+                              if (marketActiveTeamFilter !== 'All') {
+                                if (card.team !== marketActiveTeamFilter) {
+                                  const cardTeams = card.team.split(' / ');
+                                  const match = cardTeams.some(ct => {
+                                    const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                                    const cleanTn = marketActiveTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                                    return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+                                  });
+                                  if (!match) return false;
+                                }
+                              }
                               return true;
                             }),
                             marketSortBy
@@ -9117,7 +9183,17 @@ const getBasketballStatsAndBio = (card) => {
                             }
                             if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
                             if (marketActiveEraFilter !== 'All' && (!set || set.era !== marketActiveEraFilter)) return false;
-                            if (marketActiveTeamFilter !== 'All' && card.team !== marketActiveTeamFilter) return false;
+                            if (marketActiveTeamFilter !== 'All') {
+                              if (card.team !== marketActiveTeamFilter) {
+                                const cardTeams = card.team.split(' / ');
+                                const match = cardTeams.some(ct => {
+                                  const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                                  const cleanTn = marketActiveTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                                  return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+                                });
+                                if (!match) return false;
+                              }
+                            }
                             return true;
                           }),
                           marketSortBy
@@ -9243,7 +9319,15 @@ const getBasketballStatsAndBio = (card) => {
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
                                 {allTeams.map(teamName => {
                                   const c = TEAM_COLORS[teamName] || { primary: '#222222', secondary: '#111111', accent: '#FFFFFF', text: '#FFFFFF' };
-                                  const teamCards = activeCards.filter(card => card.team === teamName);
+                                  const teamCards = activeCards.filter(card => {
+                                    if (card.team === teamName) return true;
+                                    const cardTeams = card.team.split(' / ');
+                                    return cardTeams.some(ct => {
+                                      const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
+                                      const cleanTn = teamName.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
+                                      return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
+                                    });
+                                  });
                                   const ownedCardsCount = teamCards.filter(card => isAnyParallelOwned(userCollection, card.id)).length;
                           const completionPercent = teamCards.length > 0 ? Math.round((ownedCardsCount / teamCards.length) * 100) : 0;
                           
