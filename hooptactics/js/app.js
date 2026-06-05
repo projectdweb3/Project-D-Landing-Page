@@ -1026,6 +1026,104 @@ const { useState, useEffect, useRef, useMemo } = React;
         );
       }
 
+      // 21b. 2025-26 Topps Woven Wonders Set
+      if (card.setId === '2025-topps-woven-wonders') {
+        return (
+          <div className="absolute inset-0 w-full h-full p-2.5 flex flex-col justify-between bg-gradient-to-br from-[#2D1F17] via-[#1A110B] to-[#120B07]" style={{ border: '3px solid #D4AF37', borderRadius: '14px', boxShadow: 'inset 0 0 12px rgba(212,175,55,0.2)' }}>
+            <div className="border border-white/5 p-1 flex-1 flex flex-col justify-between relative overflow-hidden bg-black/60 rounded-lg">
+              <div className="flex justify-between items-center text-[7px] text-[#D4AF37] font-mono tracking-widest relative z-10 font-black">
+                <span>WOVEN WONDERS</span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              <div className="w-[85%] aspect-[5/4] mx-auto my-auto relative border border-[#D4AF37]/30 bg-neutral-950 overflow-hidden shadow-2xl rounded">
+                {renderPlayerSilhouette()}
+              </div>
+
+              <div className="grid grid-cols-5 gap-2 items-center px-1 my-1">
+                <div className="col-span-2 aspect-[4/3] bg-neutral-900 border border-[#D4AF37]/40 p-1 flex items-center justify-center relative overflow-hidden rounded shadow-inner">
+                  <div className="w-full h-full flex flex-col">
+                    <div className="h-1/2 w-full" style={{ backgroundColor: c.primary }} />
+                    <div className="h-1/2 w-full" style={{ backgroundColor: c.secondary || c.primary }} />
+                  </div>
+                  <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,0,0,0.15)_25%,transparent_25%,transparent_75%,rgba(0,0,0,0.15)_75%),linear-gradient(45deg,rgba(0,0,0,0.15)_25%,transparent_25%,transparent_75%,rgba(0,0,0,0.15)_75%)] bg-[size:4px_4px] bg-[position:0_0,2px_2px]" />
+                  <span className="absolute bottom-0.5 right-1 text-[4px] font-mono text-white/50 tracking-wider">PATCH</span>
+                </div>
+                <div className="col-span-3 text-left pl-1">
+                  <span className="text-[5px] font-mono uppercase text-[#D4AF37] tracking-widest block leading-none">MEMORABILIA</span>
+                  <span className="text-[6.5px] font-mono font-bold text-white uppercase block leading-tight mt-0.5">GAME-WORN RELIC</span>
+                </div>
+              </div>
+
+              <div className="bg-[#1C130E] border-t border-[#D4AF37]/40 p-1 text-center relative z-10 shadow-lg rounded">
+                <div className="text-[9px] font-black uppercase text-[#D4AF37] tracking-widest leading-none">{card.player}</div>
+                <div className="text-[5.5px] text-neutral-400 font-extrabold uppercase mt-1 leading-none">{card.team}</div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // 21c. 2025-26 Topps Signature Series Set
+      if (card.setId === '2025-topps-signature-series') {
+        const teamAbbrev = card.team.split(' ').pop().toUpperCase();
+        return (
+          <div className="absolute inset-0 w-full h-full p-2.5 flex flex-col justify-between bg-gradient-to-b from-[#F9F6F0] to-[#EAE3D2]" style={{ border: '3.5px solid #C5A059', borderRadius: '14px', boxShadow: '0 0 10px rgba(0,0,0,0.15)' }}>
+            <div className="border border-[#C5A059]/30 p-1 flex-1 flex flex-col justify-between relative overflow-hidden bg-white/40 rounded-lg">
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(197,160,89,0.04)_1px,transparent_1px),linear-gradient(rgba(197,160,89,0.04)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+
+              <div className="flex justify-between items-center text-[7px] text-[#C5A059] font-serif font-black tracking-wider relative z-10">
+                <span>SIGNATURE SERIES</span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              <div className="w-[85%] aspect-[4/5] mx-auto my-auto relative border border-[#C5A059]/30 bg-neutral-900 rounded overflow-hidden shadow-md z-10">
+                {renderPlayerSilhouette()}
+              </div>
+
+              <div className="h-10 border-b border-[#C5A059]/40 flex flex-col justify-end items-center relative pb-1 my-1">
+                <span className="text-[4px] font-mono uppercase text-neutral-400 absolute top-0 tracking-widest select-none">OFFICIAL AUTOGRAPH</span>
+                <span className="text-sm rotate-[-2deg] font-medium tracking-wide" style={{ fontFamily: "'Dancing Script', cursive", color: '#1B264F' }}>
+                  {card.player}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center text-[6px] font-mono font-bold mt-1 border-t border-[#C5A059]/20 pt-1 text-neutral-500">
+                <span className="uppercase">{card.team}</span>
+                <span className="font-extrabold text-[#C5A059] tracking-widest">{teamAbbrev.substring(0, 3)}</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // 21d. 2025-26 Topps Finest Basketball
+      if (card.setId === '2025-topps-finest') {
+        return (
+          <div className="absolute inset-0 w-full h-full p-2 flex flex-col justify-between bg-gradient-to-b from-[#111] to-[#000]" style={{ border: '2.5px solid #EAA824', borderRadius: '12px', boxShadow: 'inset 0 0 10px rgba(234,168,36,0.1)' }}>
+            <div className="border border-white/5 p-1 flex-1 flex flex-col justify-between relative overflow-hidden bg-black/60 rounded-lg">
+              <div className="absolute top-2 right-2 w-16 h-16 rounded-full bg-pink-500/20 blur-md pointer-events-none" />
+              <div className="absolute bottom-6 left-2 w-20 h-20 rounded-full bg-cyan-500/20 blur-md pointer-events-none" />
+              <div className="absolute top-1/3 left-1/4 w-12 h-12 rounded-full bg-yellow-500/15 blur-sm pointer-events-none" />
+              
+              <div className="flex justify-between items-center text-[7px] text-[#EAA824] font-mono tracking-widest relative z-10 font-extrabold">
+                <span>FINEST '25</span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              <div className="w-[85%] aspect-[4/5] mx-auto my-auto relative border border-white/10 bg-neutral-900 rounded overflow-hidden shadow-2xl z-10">
+                {renderPlayerSilhouette()}
+              </div>
+
+              <div className="bg-[#121212]/90 border-2 border-[#EAA824]/85 rounded text-white p-1 text-center font-bold tracking-tight relative z-10 shadow-[2px_2px_0px_#000] mt-1">
+                <div className="text-[9px] uppercase font-black leading-none text-[#EAA824]">{card.player}</div>
+                <div className="text-[5.5px] uppercase tracking-wider opacity-85 leading-none mt-0.5">{card.team}</div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       // --- Football Custom Front Face Renderers ---
       
       // 1. Goodwin Champions (1888)
@@ -3614,36 +3712,20 @@ const { useState, useEffect, useRef, useMemo } = React;
 
       const getTutorialBtnText = () => {
         switch (tutorialStep) {
-          case 1: return playerPossession ? "Go to Attack Phase" : "Defend Play";
-          case 2: return "Got It";
-          case 3: return "Got It";
-          case 4: return "Got It";
-          case 5: return "Flip Coin!";
-          case 6: return "Advance Play";
+          case 4: return "See Contest Matchup";
           case 7: return "End Tutorial";
-          default: return "Got It";
+          default: return null;
         }
       };
 
       const handleTutorialBtnAction = () => {
-        if (tutorialStep === 1) {
-          handleProceedToAttack();
-        } else if (tutorialStep === 5) {
-          const att = playerPossession 
-            ? playerCards.find(x => x.id === selectedAttackerId) 
-            : opponentCards.slice(0, 5).find(x => x.id === selectedAttackerId);
-          const attStats = getCardGameStats(att);
-          const def = playerPossession
-            ? opponentCards.slice(0, 5).find(x => x.id === selectedDefenderId)
-            : playerCards.find(x => x.id === selectedDefenderId);
-          const defStats = getCardGameStats(def);
-          const canOpponentUseGrail = !playerPossession ? (attStats.perks.some(p => p.name === 'Hall of Fame Aura') && !oppGrailUsed) : (defStats.perks.some(p => p.name === 'Hall of Fame Aura') && !oppGrailUsed);
-          const shouldCpuUseGrail = canOpponentUseGrail && (possessionCount >= 20 || Math.abs(playerScore - opponentScore) <= 2) && Math.random() > 0.5;
-          resolveShotPlay(shouldCpuUseGrail ? 'opponent' : false);
-        } else if (tutorialStep === 6) {
-          handleNextPossession();
-        } else {
-          setTutorialStep(prev => (prev === 7 ? null : prev + 1));
+        if (tutorialStep === 4) {
+          const attCard = playerCards.find(x => x.id === selectedAttackerId);
+          if (attCard) {
+            makeCpuDefensiveContest(attCard);
+          }
+        } else if (tutorialStep === 7) {
+          setTutorialStep(null);
         }
       };
       
@@ -4244,10 +4326,15 @@ const { useState, useEffect, useRef, useMemo } = React;
         if (!playerPossession) {
           // should not happen since player is on offense
         } else {
-          // Run CPU defender contest choice after a 600ms tactical delay
-          setTimeout(() => {
-            makeCpuDefensiveContest(card);
-          }, 600);
+          if (isTutorialMatch) {
+            // In the tutorial, do not trigger CPU contest choice automatically.
+            // Let the player read step 4 and click "See Contest Matchup".
+          } else {
+            // Run CPU defender contest choice after a 600ms tactical delay
+            setTimeout(() => {
+              makeCpuDefensiveContest(card);
+            }, 600);
+          }
         }
       };
 
@@ -5609,8 +5696,11 @@ const { useState, useEffect, useRef, useMemo } = React;
                           }
                         }
 
+                        const isHighlighted = isTutorialMatch && tutorialStep === 2 && (playerPossession ? canBeShooter : canBeDefender);
                         const borderStyle = isAttacker ? 'ring-4 ring-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.6)]'
                           : isDefender ? 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]'
+                          : isHighlighted
+                            ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 shadow-[0_0_20px_rgba(245,158,11,0.8)] cursor-pointer relative bg-amber-500/10'
                           : subsActive 
                             ? (selectedSubId === c.id 
                                 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
@@ -5815,7 +5905,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={handleProceedToAttack}
-                            className="w-full conic-btn py-3.5"
+                            className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 1 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
                           >
                             <div className="conic-spin-bg"></div>
                             <div className="conic-btn-mask"></div>
@@ -5829,7 +5919,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                           <button
                             onClick={() => callTimeout(true)}
                             disabled={playerTimeouts <= 0 || (!playerPossession && lastScorer !== 'opponent')}
-                            className="w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5"
+                            className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 ${isTutorialMatch && tutorialStep === 7 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
                           >
                             <iconify-icon icon="solar:stopwatch-linear" width="12"></iconify-icon>
                             Call Timeout (Rest Bench)
@@ -5858,14 +5948,14 @@ const { useState, useEffect, useRef, useMemo } = React;
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 2)}
-                                    className="flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all"
+                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 relative' : ''}`}
                                   >
                                     Shoot 2-Pointer
                                   </button>
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 3)}
                                     disabled={attCard.currentSta <= 20 || (attCard.threesAttempted || 0) >= limit}
-                                    className="flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 relative' : ''}`}
                                   >
                                     {isShooter ? 'Shoot 3-Pointer' : 'Attempt 3-Point Play'}
                                   </button>
@@ -5967,7 +6057,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                                     }
                                   }}
                                   disabled={coinFlipping}
-                                  className="w-full conic-btn py-3.5"
+                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
                                 >
                                   <div className="conic-spin-bg"></div>
                                   <div className="conic-btn-mask"></div>
@@ -6005,7 +6095,7 @@ const { useState, useEffect, useRef, useMemo } = React;
                         
                         <button
                           onClick={handleNextPossession}
-                          className="w-full conic-btn py-3.5"
+                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 ? 'ring-4 ring-amber-400 animate-pulse scale-[1.02] z-50 relative' : ''}`}
                         >
                           <div className="conic-spin-bg"></div>
                           <div className="conic-btn-mask"></div>
@@ -6798,7 +6888,7 @@ const { useState, useEffect, useRef, useMemo } = React;
 
           {/* Tutorial Overlay Modal/Popup */}
           {tutorialStep !== null && (
-            <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center pointer-events-none">
+            <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center pointer-events-none">
               <div 
                 className={`glass-panel p-5 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.2)] max-w-xs sm:max-w-sm pointer-events-auto animate-scale-up ${getTutorialAlignmentClass()}`}
                 style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
@@ -6810,21 +6900,31 @@ const { useState, useEffect, useRef, useMemo } = React;
                   </div>
                   <button 
                     onClick={() => setTutorialStep(null)}
-                    className="text-[8px] font-bold text-neutral-500 hover:text-white uppercase transition-all"
+                    className="text-[8px] font-bold text-neutral-500 hover:text-white uppercase transition-all animate-pulse"
                   >
                     Skip
                   </button>
                 </div>
                 <h4 className="text-[10px] font-extrabold text-white uppercase mb-1">{getTutorialTitle()}</h4>
                 <p className="text-[9.5px] text-neutral-300 leading-normal font-sans font-medium">{getTutorialText()}</p>
-                <div className="flex justify-end items-center mt-3 border-t border-white/5 pt-2.5">
-                  <button
-                    onClick={handleTutorialBtnAction}
-                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black text-[8px] font-black uppercase transition-all shadow-lg border border-amber-400/20"
-                  >
-                    {getTutorialBtnText()}
-                  </button>
-                </div>
+                
+                {getTutorialBtnText() ? (
+                  <div className="flex justify-end items-center mt-3 border-t border-white/5 pt-2.5">
+                    <button
+                      onClick={handleTutorialBtnAction}
+                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black text-[8px] font-black uppercase transition-all shadow-lg border border-amber-400/20"
+                    >
+                      {getTutorialBtnText()}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-end items-center mt-3 border-t border-white/5 pt-2.5">
+                    <span className="text-[7.5px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5 animate-pulse">
+                      <iconify-icon icon="solar:cursor-bold" width="10"></iconify-icon>
+                      Action Required on Screen
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
