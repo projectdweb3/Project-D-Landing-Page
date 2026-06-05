@@ -2084,11 +2084,60 @@ const getBasketballStatsAndBio = (card) => {
     ];
     bio = "Brunson took New York by storm, transforming the Knicks with his crafty footwork, elite mid-range scoring, and leadership, earning back-to-back All-NBA and All-Star honors.";
   } else {
-    rows = [
-      { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
-      { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
-    ];
+    // For non-hardcoded players, if they are active, we can generate dynamic career-like stats
+    const isActive = window.isActivePlayer(card.player);
+    if (isActive) {
+      const hash = window.hashString(card.player);
+      const yr1 = window.getSeasonStr(card.year - 2);
+      const yr2 = window.getSeasonStr(card.year - 1);
+      const ppg1 = (14 + (Math.abs(hash) % 10) + (Math.abs(hash) % 10) / 10).toFixed(1);
+      const rpg1 = (3 + (Math.abs(hash >> 2) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
+      const apg1 = (2 + (Math.abs(hash >> 3) % 6) + (Math.abs(hash) % 10) / 10).toFixed(1);
+      
+      const ppg2 = (parseFloat(ppg1) + 1.5).toFixed(1);
+      const rpg2 = (parseFloat(rpg1) + 0.4).toFixed(1);
+      const apg2 = (parseFloat(apg1) + 0.6).toFixed(1);
+      
+      rows = [
+        { yr: yr1, team: "NBA", gp: String(72 + (Math.abs(hash) % 8)), pts: ppg1, reb: rpg1, ast: apg1 },
+        { yr: yr2, team: "NBA", gp: String(75 + (Math.abs(hash >> 1) % 7)), pts: ppg2, reb: rpg2, ast: apg2 }
+      ];
+    } else {
+      rows = [
+        { yr: "Career-1", team: "NBA", gp: "72", pts: "18.5", reb: "6.2", ast: "4.5" },
+        { yr: "Career-2", team: "NBA", gp: "75", pts: "20.1", reb: "6.8", ast: "5.1" }
+      ];
+    }
     bio = "A standout performer whose skill and court vision make him a critical asset and fan favorite in the modern league.";
+  }
+
+  // Active vs Retired post-processing
+  const isActive = window.isActivePlayer(card.player);
+  if (!isActive) {
+    // Retired player: simply showcase the season that the card/set came out.
+    const row = window.getRetiredPlayerSeasonStatsRow(card);
+    rows = [{
+      yr: row.yr,
+      team: row.team,
+      gp: row.gp,
+      pts: row.pts,
+      reb: row.reb,
+      ast: row.ast
+    }];
+  } else {
+    // Active player: show the latest 2025-26 season as well.
+    const alreadyHas2025 = rows.some(r => r.yr === "2025-26" || r.yr === 2025);
+    if (!alreadyHas2025) {
+      const newRow = window.get2025_26StatsRow(card.player, true);
+      rows.push({
+        yr: newRow.yr,
+        team: newRow.team,
+        gp: newRow.gp,
+        pts: newRow.pts,
+        reb: newRow.reb,
+        ast: newRow.ast
+      });
+    }
   }
 
   return { rows, bio };
@@ -2958,7 +3007,7 @@ const getBasketballStatsAndBio = (card) => {
         sm: 'w-24 h-32 min-[400px]:w-28 min-[400px]:h-38 sm:w-32 sm:h-44',
         md: 'w-[130px] h-[190px] min-[400px]:w-[160px] min-[400px]:h-[230px] sm:w-44 sm:h-64',
         lg: 'w-44 h-64 min-[400px]:w-52 min-[400px]:h-72 sm:w-60 sm:h-84',
-        xl: 'w-[240px] h-[340px] min-[400px]:w-[280px] min-[400px]:h-[400px] sm:w-72 sm:h-[410px]',
+        xl: 'w-[180px] h-[260px] min-[400px]:w-[220px] min-[400px]:h-[310px] sm:w-[260px] sm:h-[370px] md:w-72 md:h-[410px]',
         game: 'w-full aspect-[3/4]'
       }[size];
 
@@ -2966,10 +3015,10 @@ const getBasketballStatsAndBio = (card) => {
       const selectedRarity = isLegendarySet ? 'legendary' : (card.rarity || 'base');
       const rarityStyle = {
         legendary: {
-          '--toploader-border': 'rgba(244, 63, 94, 0.4)',
-          '--toploader-glow': '0 0 20px rgba(244, 63, 94, 0.25)',
-          '--toploader-border-light': 'rgba(244, 63, 94, 0.3)',
-          '--toploader-glow-light': '0 0 15px rgba(244, 63, 94, 0.15)'
+          '--toploader-border': 'rgba(16, 185, 129, 0.4)',
+          '--toploader-glow': '0 0 20px rgba(16, 185, 129, 0.25)',
+          '--toploader-border-light': 'rgba(16, 185, 129, 0.3)',
+          '--toploader-glow-light': '0 0 15px rgba(16, 185, 129, 0.15)'
         },
         base: {
           '--toploader-border': 'rgba(255, 255, 255, 0.08)',
@@ -3095,7 +3144,7 @@ const getBasketballStatsAndBio = (card) => {
               {/* Gloss Shimmer overlays */}
               <div 
                 ref={shimmerRef}
-                className={`holo-shimmer ${isLegendarySet ? 'is-pink-diamond' : isAutoPatchParallel ? 'is-gold' : hasParallelEffect ? 'is-iridescent' : isGoldShimmer ? 'is-gold' : ''}`}
+                className={`holo-shimmer ${isLegendarySet ? 'is-emerald-shimmer' : isAutoPatchParallel ? 'is-gold' : hasParallelEffect ? 'is-iridescent' : isGoldShimmer ? 'is-gold' : ''}`}
               />
               {(isParallel || hasParallelEffect || isLegendarySet) && (
                 <div 
@@ -9973,7 +10022,7 @@ const getBasketballStatsAndBio = (card) => {
                   <div className="game-detail-right flex-1 w-full flex flex-col gap-6 text-left md:overflow-y-auto md:max-h-[75vh] hide-scrollbar pr-1">
                     
                     {/* Header Details */}
-                    <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                    <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                       <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded text-white font-mono uppercase tracking-wider">
                         {detailedActiveCard.sport}
                       </span>
@@ -9998,7 +10047,7 @@ const getBasketballStatsAndBio = (card) => {
 
                     {modalMode === 'analytics' && (
                       <>
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <div className="grid grid-cols-3 gap-4">
                             <div>
                               <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Market Value</div>
@@ -10018,7 +10067,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
 
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                             <h3 className="text-xs uppercase font-extrabold text-neutral-400 tracking-wider">Historical Price Trend (PSA 10 Comps)</h3>
                             <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-white/5">
@@ -10040,7 +10089,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
 
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">PSA / BGS / Raw Grading Index</h3>
                           <div className="grid grid-cols-3 gap-3">
                             {Object.entries(detailedActiveCard.grades).map(([grade, val]) => (
@@ -10052,7 +10101,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
 
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">Physical Registry Specifications</h3>
                           <div className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[10px] text-neutral-300">
                             <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">CARD NUM:</span><span className="text-white">{detailedActiveCard.specs.cardNum}</span></div>
@@ -10068,18 +10117,18 @@ const getBasketballStatsAndBio = (card) => {
 
                     {modalMode === 'attributes' && (
                       <>
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl space-y-4">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl space-y-4">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 border-b border-white/5 pb-2 tracking-wider flex items-center justify-between">
                             <span>HoopTactics Game Ratings</span>
                             <span className="text-[9px] font-mono text-neutral-500 font-normal">Slab Attributes & Playstyle</span>
                           </h3>
-                          <div className="flex justify-between items-center bg-black/30 p-3 rounded-xl border border-white/5">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xs font-mono font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 px-3 py-1 rounded-md">
+                          <div className="flex justify-between items-center bg-black/30 p-3 rounded-xl border border-white/5 gap-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                              <span className="text-xs font-mono font-bold bg-neutral-800 text-neutral-300 border border-neutral-700 px-3 py-1 rounded-md inline-block whitespace-nowrap">
                                 Position: {getCardGameStats(detailedActiveCard).pos}
                               </span>
                               {getCardGameStats(detailedActiveCard).primaryBadge && (
-                                <div className="flex items-center gap-1.5 text-xs font-extrabold text-white">
+                                <div className="flex items-center gap-1.5 text-xs font-extrabold text-white whitespace-nowrap">
                                   <iconify-icon 
                                     icon={getCardGameStats(detailedActiveCard).primaryBadge.icon} 
                                     width="16" 
@@ -10132,7 +10181,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
                         
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">⚡ Active Gameplay Perks</h3>
                           {getCardGameStats(detailedActiveCard).perks.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -10150,7 +10199,7 @@ const getBasketballStatsAndBio = (card) => {
                           )}
                         </div>
 
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">📊 Career Statistics Table</h3>
                           {(() => {
                             const statsRows = getPlayerStats(detailedActiveCard);
@@ -10185,14 +10234,14 @@ const getBasketballStatsAndBio = (card) => {
                           const { bio } = getBasketballStatsAndBio(detailedActiveCard);
                           if (!bio) return null;
                           return (
-                            <div className="glass-panel border border-white/5 p-6 rounded-2xl text-[10px] leading-relaxed text-neutral-300">
+                            <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl text-[10px] leading-relaxed text-neutral-300">
                               <span className="font-extrabold block uppercase tracking-wider text-neutral-400 mb-2">Highlights & Biography</span>
                               <p className="font-semibold">{bio}</p>
                             </div>
                           );
                         })()}
 
-                        <div className="glass-panel border border-white/5 p-6 rounded-2xl">
+                        <div className="glass-panel border border-white/5 p-4 sm:p-6 rounded-2xl">
                           <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-wider">Physical Specifications</h3>
                           <div className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[10px] text-neutral-300">
                             <div className="flex justify-between border-b border-white/5 pb-1"><span className="text-neutral-500">CARD NUM:</span><span className="text-white">{detailedActiveCard.specs.cardNum}</span></div>

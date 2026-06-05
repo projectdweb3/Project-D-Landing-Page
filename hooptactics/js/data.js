@@ -164,7 +164,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-chrome", "shai-gilgeous-alexander-2025-topps-chrome-ball-of-duty", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Chrome", "#1", "Star Card", "Ball of Duty Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
   ["Basketball", "2025-topps-chrome", "shai-gilgeous-alexander-2025-topps-chrome-paradox", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Chrome", "#1", "Star Card", "Paradox Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
   ["Basketball", "2025-topps-chrome", "shai-gilgeous-alexander-2025-topps-chrome-patented", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Chrome", "#1", "Star Card", "Patented Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
-  ["Basketball", "2025-topps-chrome", "stephen-curry-2025-topps-chrome", "Stephen Curry", "Golden State Warriors", 2025, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2025-topps-chrome", "stephen-curry-2025-topps-chrome", "Stephen Curry", "Golden State Warriors", 2025, "Topps Chrome", "#1", "Star Card", "Cactus Jack Parallel", "base", 750, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
   ["Basketball", "2025-topps-chrome", "stephen-curry-2025-topps-chrome-limited-auto", "Stephen Curry", "Golden State Warriors", 2025, "Topps Chrome", "#1", "Autograph Card", "Autograph Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
   ["Basketball", "2025-topps-chrome", "victor-wembanyama-2025-topps-chrome-limited", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Chrome", "#1", "Star Card", "Limited Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-chrome", "victor-wembanyama-2025-topps-chrome-limited-auto", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Chrome", "#1", "Autograph Card", "Autograph Parallel", "gold", 2500, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
@@ -747,51 +747,297 @@ window.AVATAR_GRADIENTS = [
   { id: 'from-neutral-800 to-neutral-950', name: 'Obsidian' }
 ];
 
-window.getPlayerStats = (card) => {
-  const years = [card.year - 2, card.year - 1];
-  const isOneSeason = card.type.includes('Rookie') || card.year - card.specs.draftYear <= 1;
-  const statYears = isOneSeason ? [card.year - 1] : years;
+// Active vs Retired helper functions for career stats
+window.getSeasonStr = (year) => {
+  const nextYearShort = String(year + 1).slice(-2);
+  return `${year}-${nextYearShort}`;
+};
+
+window.isActivePlayer = (playerName) => {
+  if (!playerName) return false;
+  const nameLower = playerName.toLowerCase();
+  const activeSubstrings = [
+    'bailey', 'davis', 'edwards', 'adebayo', 'miller', 'flagg', 'lillard', 'queen', 'white',
+    'harper', 'antetokounmpo', 'brunson', 'brown', 'tatum', 'towns', 'leonard', 'durant',
+    'knueppel', 'irving', 'ball', 'james', 'lebron', 'doncic', 'bridges', 'jokic', 'alexander',
+    'shai', 'curry', 'castle', 'edgecomb', 'wembanyama', 'wemby', 'williamson'
+  ];
+  return activeSubstrings.some(sub => nameLower.includes(sub));
+};
+
+window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
+  const nameLower = playerName.toLowerCase();
+  const yr = isYearDashFormat ? "2025-26" : 2025;
   
-  return statYears.map(yr => {
-    const hash = card.player.charCodeAt(0) + yr;
-    const gp = card.sport === 'Baseball' ? 140 + (hash % 22) : 70 + (hash % 12);
+  // Abbreviate team names for clean display
+  const team = nameLower.includes("james") || nameLower.includes("lebron") || nameLower.includes("davis") || nameLower.includes("doncic") || nameLower.includes("comic") ? "LAL" :
+               nameLower.includes("curry") ? "GSW" :
+               nameLower.includes("brunson") || nameLower.includes("towns") || nameLower.includes("bridges") ? "NYK" :
+               nameLower.includes("jokic") ? "DEN" :
+               nameLower.includes("antetokounmpo") ? "MIL" :
+               nameLower.includes("wembanyama") || nameLower.includes("wemby") || nameLower.includes("harper") || nameLower.includes("castle") ? "SAS" :
+               nameLower.includes("flagg") ? "DAL" :
+               nameLower.includes("alexander") || nameLower.includes("shai") ? "OKC" :
+               nameLower.includes("tatum") || nameLower.includes("brown") || nameLower.includes("white") ? "BOS" :
+               nameLower.includes("miller") || nameLower.includes("ball") || nameLower.includes("knueppel") ? "CHA" :
+               nameLower.includes("adebayo") ? "MIA" :
+               nameLower.includes("williamson") ? "NOP" : "NBA";
+               
+  let gp = 75;
+  let pts = 20.0;
+  let reb = 5.0;
+  let ast = 5.0;
+  
+  if (nameLower.includes("james") || nameLower.includes("lebron")) {
+    gp = 71; pts = 24.3; reb = 7.3; ast = 8.1;
+  } else if (nameLower.includes("curry")) {
+    gp = 74; pts = 26.4; reb = 4.5; ast = 6.1;
+  } else if (nameLower.includes("brunson")) {
+    gp = 78; pts = 28.2; reb = 3.6; ast = 7.4;
+  } else if (nameLower.includes("wembanyama") || nameLower.includes("wemby")) {
+    gp = 76; pts = 25.4; reb = 11.8; ast = 4.5;
+  } else if (nameLower.includes("flagg")) {
+    gp = 78; pts = 18.2; reb = 8.5; ast = 4.8;
+  } else if (nameLower.includes("jokic")) {
+    gp = 77; pts = 26.1; reb = 12.2; ast = 9.0;
+  } else if (nameLower.includes("doncic")) {
+    gp = 70; pts = 32.4; reb = 9.2; ast = 8.8;
+  } else if (nameLower.includes("antetokounmpo")) {
+    gp = 73; pts = 29.8; reb = 11.5; ast = 5.8;
+  } else if (nameLower.includes("alexander") || nameLower.includes("shai")) {
+    gp = 75; pts = 30.5; reb = 5.6; ast = 6.4;
+  } else if (nameLower.includes("davis")) {
+    gp = 76; pts = 24.7; reb = 12.2; ast = 3.5;
+  } else if (nameLower.includes("tatum")) {
+    gp = 74; pts = 27.2; reb = 8.1; ast = 4.9;
+  } else if (nameLower.includes("towns")) {
+    gp = 73; pts = 21.8; reb = 8.3; ast = 3.0;
+  } else if (nameLower.includes("bridges")) {
+    gp = 82; pts = 19.6; reb = 4.5; ast = 3.6;
+  } else if (nameLower.includes("adebayo")) {
+    gp = 75; pts = 19.3; reb = 10.4; ast = 3.9;
+  } else if (nameLower.includes("miller")) {
+    gp = 74; pts = 21.4; reb = 4.8; ast = 3.2;
+  } else if (nameLower.includes("harper")) {
+    gp = 78; pts = 17.5; reb = 4.6; ast = 5.2;
+  } else if (nameLower.includes("bailey")) {
+    gp = 76; pts = 18.0; reb = 6.2; ast = 3.0;
+  } else if (nameLower.includes("queen")) {
+    gp = 74; pts = 14.5; reb = 8.2; ast = 2.1;
+  } else if (nameLower.includes("knueppel")) {
+    gp = 75; pts = 15.2; reb = 4.1; ast = 2.8;
+  } else if (nameLower.includes("white")) {
+    gp = 79; pts = 15.6; reb = 4.2; ast = 5.0;
+  } else if (nameLower.includes("brown")) {
+    gp = 75; pts = 23.4; reb = 5.5; ast = 3.6;
+  } else if (nameLower.includes("ball")) {
+    gp = 58; pts = 24.1; reb = 5.9; ast = 8.2;
+  } else if (nameLower.includes("durant")) {
+    gp = 72; pts = 27.1; reb = 6.6; ast = 5.0;
+  } else if (nameLower.includes("irving")) {
+    gp = 70; pts = 25.6; reb = 5.0; ast = 5.2;
+  } else if (nameLower.includes("lillard")) {
+    gp = 73; pts = 24.3; reb = 4.4; ast = 7.0;
+  } else if (nameLower.includes("leonard")) {
+    gp = 68; pts = 23.8; reb = 6.1; ast = 3.6;
+  } else if (nameLower.includes("castle")) {
+    gp = 75; pts = 15.8; reb = 4.2; ast = 4.8;
+  } else if (nameLower.includes("edgecomb")) {
+    gp = 76; pts = 16.2; reb = 4.8; ast = 3.2;
+  } else if (nameLower.includes("williamson")) {
+    gp = 65; pts = 23.5; reb = 6.4; ast = 4.1;
+  } else {
+    // Deterministic fallback for other active players
+    const hash = window.hashString(playerName);
+    gp = 65 + (Math.abs(hash) % 15);
+    pts = (14 + (Math.abs(hash) % 12) + (Math.abs(hash) % 10) / 10).toFixed(1);
+    reb = (3 + (Math.abs(hash >> 2) % 8) + (Math.abs(hash) % 10) / 10).toFixed(1);
+    ast = (2 + (Math.abs(hash >> 3) % 7) + (Math.abs(hash) % 10) / 10).toFixed(1);
+  }
+  
+  return {
+    yr,
+    team,
+    gp: String(gp),
+    pts: String(pts),
+    reb: String(reb),
+    ast: String(ast),
+    col1: String(pts),
+    col2: String(reb),
+    col3: String(ast)
+  };
+};
+
+window.getRetiredPlayerSeasonStatsRow = (card) => {
+  const yr = window.getSeasonStr(card.year);
+  const hash = card.player.charCodeAt(0) + card.year;
+  const gp = 70 + (hash % 12);
+  
+  let pts = (15 + (hash % 15) + (hash % 10) / 10).toFixed(1);
+  let reb = (3 + (hash % 8) + (hash % 10) / 10).toFixed(1);
+  let ast = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
+  
+  const nameLower = card.player.toLowerCase();
+  if (nameLower.includes("jordan")) {
+    pts = card.year === 1986 ? "37.1" : card.year === 1989 ? "33.6" : card.year === 1990 ? "31.5" : card.year === 1991 ? "30.1" : card.year === 1993 ? "32.6" : card.year === 1997 ? "28.7" : "20.0";
+    reb = card.year === 1986 ? "5.2" : card.year === 1989 ? "6.9" : card.year === 1990 ? "6.0" : card.year === 1991 ? "6.4" : card.year === 1993 ? "6.7" : card.year === 1997 ? "5.8" : "6.1";
+    ast = card.year === 1986 ? "4.6" : card.year === 1989 ? "6.3" : card.year === 1990 ? "5.5" : card.year === 1991 ? "6.1" : card.year === 1993 ? "5.5" : card.year === 1997 ? "3.5" : "3.8";
+  } else if (nameLower.includes("kobe") || nameLower.includes("bryant")) {
+    pts = card.year === 1996 ? "7.6" : card.year === 1997 ? "15.4" : card.year === 2012 ? "27.3" : "22.3";
+    reb = card.year === 1996 ? "1.9" : card.year === 1997 ? "3.1" : card.year === 2012 ? "5.6" : "5.7";
+    ast = card.year === 1996 ? "1.3" : card.year === 1997 ? "2.5" : card.year === 2012 ? "6.0" : "5.6";
+  } else if (nameLower.includes("magic")) {
+    pts = card.year === 1980 ? "21.6" : card.year === 1989 ? "22.3" : "19.4";
+    reb = card.year === 1980 ? "8.6" : card.year === 1989 ? "6.6" : "7.0";
+    ast = card.year === 1980 ? "8.6" : card.year === 1989 ? "11.5" : "12.5";
+  } else if (nameLower.includes("bird")) {
+    pts = card.year === 1980 ? "21.2" : card.year === 1989 ? "27.3" : "19.4";
+    reb = card.year === 1980 ? "10.9" : card.year === 1989 ? "9.5" : "8.5";
+    ast = card.year === 1980 ? "5.5" : card.year === 1989 ? "7.5" : "7.2";
+  } else if (nameLower.includes("chamberlain")) {
+    pts = "27.3"; reb = "18.4"; ast = "4.1";
+  } else if (nameLower.includes("russell")) {
+    pts = "16.6"; reb = "22.7"; ast = "2.3";
+  } else if (nameLower.includes("mikan")) {
+    pts = "28.3"; reb = "N/A"; ast = "3.6";
+  } else if (nameLower.includes("cousy")) {
+    pts = "18.0"; reb = "5.0"; ast = "7.1";
+  } else if (nameLower.includes("pettit")) {
+    pts = "24.6"; reb = "17.4"; ast = "2.2";
+  } else if (nameLower.includes("olajuwon")) {
+    pts = card.year === 1986 ? "23.4" : card.year === 1989 ? "24.3" : "21.2";
+    reb = card.year === 1986 ? "11.4" : card.year === 1989 ? "14.0" : "13.8";
+    ast = "2.9";
+  } else if (nameLower.includes("barkley")) {
+    pts = card.year === 1986 ? "23.0" : card.year === 1989 ? "25.2" : "27.6";
+    reb = card.year === 1986 ? "14.6" : card.year === 1989 ? "11.5" : "10.1";
+    ast = "3.9";
+  } else if (nameLower.includes("duncan")) {
+    pts = card.year === 1996 ? "21.1" : card.year === 2003 ? "22.3" : "17.8";
+    reb = card.year === 1996 ? "11.9" : card.year === 2003 ? "12.4" : "9.9";
+    ast = "2.7";
+  } else if (nameLower.includes("wade")) {
+    pts = card.year === 2003 ? "16.2" : "24.1";
+    reb = card.year === 2003 ? "4.0" : "5.2";
+    ast = card.year === 2003 ? "4.5" : "6.8";
+  } else if (nameLower.includes("shaq") || nameLower.includes("oneal")) {
+    pts = card.year === 1993 ? "29.3" : "21.5";
+    reb = card.year === 1993 ? "13.2" : "11.5";
+    ast = "2.9";
+  }
+  
+  let team = card.team;
+  if (team.includes("/")) {
+    team = team.split("/")[0].trim();
+  }
+  const teamMap = {
+    "Los Angeles Lakers": "LAL", "Boston Celtics": "BOS", "Chicago Bulls": "CHI",
+    "Philadelphia 76ers": "PHI", "Houston Rockets": "HOU", "San Antonio Spurs": "SAS",
+    "New York Knicks": "NYK", "Phoenix Suns": "PHO", "Miami Heat": "MIA",
+    "Orlando Magic": "ORL", "Milwaukee Bucks": "MIL", "Dallas Mavericks": "DAL",
+    "Minnesota Timberwolves": "MIN", "Portland Trail Blazers": "POR",
+    "L.A. Lakers": "LAL", "L.A. Lakers / Chicago Bulls": "LAL",
+    "Los Angeles Lakers": "LAL", "Detroit Pistons": "DET"
+  };
+  const teamAbbr = teamMap[team] || "NBA";
+  
+  return {
+    yr,
+    team: teamAbbr,
+    gp: String(gp),
+    pts: String(pts),
+    reb: String(reb),
+    ast: String(ast),
+    col1: String(pts),
+    col2: String(reb),
+    col3: String(ast)
+  };
+};
+
+window.getPlayerStats = (card) => {
+  const isActive = window.isActivePlayer(card.player);
+  
+  if (!isActive) {
+    // Retired player: simply showcase the season that the card/set came out.
+    const row = window.getRetiredPlayerSeasonStatsRow(card);
+    const yrNum = parseInt(row.yr);
+    return [{
+      yr: yrNum,
+      gp: row.gp,
+      team: row.team,
+      col1: row.pts,
+      col2: row.reb,
+      col3: row.ast,
+      labels: card.sport === 'Baseball' && card.specs.position === 'Pitcher' 
+              ? ['YR', 'TEAM', 'W-L', 'ERA', 'SO', 'POS']
+              : card.sport === 'Baseball' 
+              ? ['YR', 'TEAM', 'G', 'HR', 'RBI', 'AVG']
+              : card.sport === 'Basketball'
+              ? ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST']
+              : ['YR', 'TEAM', 'G', 'COL1', 'COL2', 'COL3']
+    }];
+  } else {
+    // Active player: existing seasons plus the latest 2025-26 season as well
+    const years = [card.year - 2, card.year - 1];
+    const isOneSeason = card.type.includes('Rookie') || card.year - card.specs.draftYear <= 1;
+    const statYears = isOneSeason ? [card.year - 1] : years;
     
-    if (card.sport === 'Basketball') {
-      const ppg = (15 + (hash % 20) + (hash % 10) / 10).toFixed(1);
-      const rpg = (3 + (hash % 10) + (hash % 10) / 10).toFixed(1);
-      const apg = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
-      return { yr, gp, col1: ppg, col2: rpg, col3: apg, labels: ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST'] };
-    } else if (card.sport === 'Baseball') {
-      if (card.specs.position === 'Pitcher') {
-        const era = (2.2 + (hash % 3) + (hash % 10) / 10).toFixed(2);
-        const so = 150 + (hash % 100);
-        const wins = 10 + (hash % 12);
-        return { yr, gp: wins, col1: era, col2: so, col3: 'P', labels: ['YR', 'TEAM', 'W-L', 'ERA', 'SO', 'POS'] };
-      } else {
-        const hr = 15 + (hash % 35);
-        const rbi = 60 + (hash % 60);
-        const avg = '.' + (250 + (hash % 90));
-        return { yr, gp, col1: hr, col2: rbi, col3: avg, labels: ['YR', 'TEAM', 'G', 'HR', 'RBI', 'AVG'] };
+    const rows = statYears.map(yr => {
+      const hash = card.player.charCodeAt(0) + yr;
+      const gp = card.sport === 'Baseball' ? 140 + (hash % 22) : 70 + (hash % 12);
+      
+      if (card.sport === 'Basketball') {
+        const ppg = (15 + (hash % 20) + (hash % 10) / 10).toFixed(1);
+        const rpg = (3 + (hash % 10) + (hash % 10) / 10).toFixed(1);
+        const apg = (2 + (hash % 8) + (hash % 10) / 10).toFixed(1);
+        return { yr, gp, team: 'NBA', col1: ppg, col2: rpg, col3: apg, labels: ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST'] };
+      } else if (card.sport === 'Baseball') {
+        if (card.specs.position === 'Pitcher') {
+          const era = (2.2 + (hash % 3) + (hash % 10) / 10).toFixed(2);
+          const so = 150 + (hash % 100);
+          const wins = 10 + (hash % 12);
+          return { yr, gp: wins, col1: era, col2: so, col3: 'P', labels: ['YR', 'TEAM', 'W-L', 'ERA', 'SO', 'POS'] };
+        } else {
+          const hr = 15 + (hash % 35);
+          const rbi = 60 + (hash % 60);
+          const avg = '.' + (250 + (hash % 90));
+          return { yr, gp, col1: hr, col2: rbi, col3: avg, labels: ['YR', 'TEAM', 'G', 'HR', 'RBI', 'AVG'] };
+        }
+      } else { 
+        if (card.specs.position === 'Quarterback') {
+          const yds = 3000 + (hash % 1800);
+          const td = 20 + (hash % 25);
+          const int = 5 + (hash % 12);
+          return { yr, gp: 16, col1: yds, col2: td, col3: int, labels: ['YR', 'TEAM', 'G', 'YDS', 'TD', 'INT'] };
+        } else if (card.specs.position === 'Running Back') {
+          const yds = 800 + (hash % 1000);
+          const avg = (3.8 + (hash % 20) / 10).toFixed(1);
+          const td = 6 + (hash % 12);
+          return { yr, gp: 16, col1: yds, col2: avg, col3: td, labels: ['YR', 'TEAM', 'G', 'YDS', 'AVG', 'TD'] };
+        } else {
+          const rec = 60 + (hash % 60);
+          const yds = 800 + (hash % 800);
+          const td = 4 + (hash % 12);
+          return { yr, gp: 16, col1: rec, col2: yds, col3: td, labels: ['YR', 'TEAM', 'G', 'REC', 'YDS', 'TD'] };
+        }
       }
-    } else { 
-      if (card.specs.position === 'Quarterback') {
-        const yds = 3000 + (hash % 1800);
-        const td = 20 + (hash % 25);
-        const int = 5 + (hash % 12);
-        return { yr, gp: 16, col1: yds, col2: td, col3: int, labels: ['YR', 'TEAM', 'G', 'YDS', 'TD', 'INT'] };
-      } else if (card.specs.position === 'Running Back') {
-        const yds = 800 + (hash % 1000);
-        const avg = (3.8 + (hash % 20) / 10).toFixed(1);
-        const td = 6 + (hash % 12);
-        return { yr, gp: 16, col1: yds, col2: avg, col3: td, labels: ['YR', 'TEAM', 'G', 'YDS', 'AVG', 'TD'] };
-      } else {
-        const rec = 60 + (hash % 60);
-        const yds = 800 + (hash % 800);
-        const td = 4 + (hash % 12);
-        return { yr, gp: 16, col1: rec, col2: yds, col3: td, labels: ['YR', 'TEAM', 'G', 'REC', 'YDS', 'TD'] };
-      }
+    });
+
+    const alreadyHas2025 = rows.some(r => r.yr === 2025);
+    if (!alreadyHas2025) {
+      const newRow = window.get2025_26StatsRow(card.player, false);
+      rows.push({
+        yr: 2025,
+        gp: newRow.gp,
+        team: newRow.team,
+        col1: newRow.pts,
+        col2: newRow.reb,
+        col3: newRow.ast,
+        labels: ['YR', 'TEAM', 'GP', 'PTS', 'REB', 'AST']
+      });
     }
-  });
+    return rows;
+  }
 };
 
 window.getCardGameStats = (card) => {
