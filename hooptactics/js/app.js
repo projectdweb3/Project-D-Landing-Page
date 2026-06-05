@@ -2755,7 +2755,7 @@ const getBasketballStatsAndBio = (card) => {
       }, []);
 
       const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
-      const isParallel = parallelName && !parallelName.toLowerCase().includes('base');
+      const isParallel = (parallelName && !parallelName.toLowerCase().includes('base')) || card.setId === '2025-topps-finest';
       const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg';
 
       const typeLower = (card.type || '').toLowerCase();
@@ -2793,12 +2793,15 @@ const getBasketballStatsAndBio = (card) => {
         card.setId === '2025-topps-chrome' && 
         card.rarity && 
         card.rarity !== 'base';
+      
+      const isToppsFinestParallel = card.setId === '2025-topps-finest';
 
       const hasParallelEffect = 
         (card.frontImg && card.frontImg.toLowerCase().includes('parallel')) ||
         (frontImgSrc && frontImgSrc.toLowerCase().includes('parallel')) || 
         isMosaicParallel ||
         isToppsChromeParallel ||
+        isToppsFinestParallel ||
         (card.parallel && (
           card.parallel.toLowerCase().includes('parallel') ||
           card.parallel.toLowerCase().includes('refractor') ||
