@@ -5930,7 +5930,7 @@ const getBasketballStatsAndBio = (card) => {
                   </div>
                   <div 
                     ref={setLogScrollRef}
-                    className="flex-1 overflow-y-auto font-mono text-[8px] leading-relaxed text-neutral-400 space-y-1.5 pr-2 hide-scrollbar"
+                    className="flex-1 overflow-y-auto font-mono text-[8px] leading-relaxed text-neutral-400 space-y-1.5 pr-2"
                   >
                     {gameLog.map((log, idx) => {
                       let color = 'text-neutral-400';
@@ -6110,19 +6110,7 @@ const getBasketballStatsAndBio = (card) => {
                             : "CONTEST PLAY: Select a starting defender from your floor to contest the shot. Matchup rules apply!"}
                         </p>
                         
-                        {isTutorialMatch && tutorialStep === 4 && !tutorialPopupOpen && (
-                          <button
-                            onClick={handleTutorialBtnAction}
-                            className="w-full py-3.5 conic-btn primary tutorial-highlight-orange scale-[1.02] z-50 relative mt-2"
-                          >
-                            <div className="conic-spin-bg opacity-100 animate-[spin_1.8s_linear_infinite]"></div>
-                            <div className="conic-btn-mask"></div>
-                            <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                              <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
-                              See Contest Matchup
-                            </span>
-                          </button>
-                        )}
+
 
                         {!playerPossession && (
                           <div className="py-6 border border-dashed border-blue-500/30 rounded-2xl flex items-center justify-center bg-blue-950/5">
@@ -6183,22 +6171,13 @@ const getBasketballStatsAndBio = (card) => {
                                     }
                                   }}
                                   disabled={coinFlipping}
-                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''}`}
+                                  className="w-full conic-btn py-3.5"
                                 >
-                                  <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
+                                  <div className="conic-spin-bg"></div>
                                   <div className="conic-btn-mask"></div>
                                   <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                                    {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
-                                      <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
-                                    )}
                                     Flip Coin to Resolve
                                   </span>
-                                  {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
-                                    <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
-                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
-                                    </span>
-                                  )}
                                 </button>
 
                                 {/* Hall of Fame Aura active trigger */}
@@ -6230,23 +6209,14 @@ const getBasketballStatsAndBio = (card) => {
                         
                         <button
                           onClick={handleNextPossession}
-                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''}`}
+                          className="w-full conic-btn py-3.5"
                         >
-                          <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
+                          <div className="conic-spin-bg"></div>
                           <div className="conic-btn-mask"></div>
                           <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                            {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
-                              <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
-                            )}
                             Advance Play 
                             <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
                           </span>
-                          {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
-                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
-                            </span>
-                          )}
                         </button>
                       </div>
                     )}
@@ -6525,6 +6495,22 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         )}
 
+                        {gamePhase === 'contest' && isTutorialMatch && tutorialStep === 4 && !tutorialPopupOpen && (
+                          <div className="w-full max-w-[500px] mt-4 z-10 animate-scale-up">
+                            <button
+                              onClick={handleTutorialBtnAction}
+                              className="w-full py-3.5 conic-btn primary tutorial-highlight-orange scale-[1.02] z-50 relative mt-2"
+                            >
+                              <div className="conic-spin-bg opacity-100 animate-[spin_1.8s_linear_infinite]"></div>
+                              <div className="conic-btn-mask"></div>
+                              <span className="relative z-10 text-[10px] sm:text-xs font-black text-white uppercase flex items-center justify-center gap-1.5 font-mono">
+                                <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                                See Contest Matchup
+                              </span>
+                            </button>
+                          </div>
+                        )}
+
                         {gamePhase === 'resolve' && (
                           <div className="w-full max-w-[500px] mt-4 flex flex-col gap-2 z-10 animate-scale-up">
                             <button
@@ -6536,13 +6522,24 @@ const getBasketballStatsAndBio = (card) => {
                                   }
                               }}
                               disabled={coinFlipping}
-                              className="w-full conic-btn py-4 shadow-[0_0_20px_rgba(255,145,70,0.2)]"
+                              className={`w-full conic-btn py-4 shadow-[0_0_20px_rgba(255,145,70,0.2)] ${
+                                isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''
+                              }`}
                             >
-                              <div className="conic-spin-bg"></div>
+                              <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                               <div className="conic-btn-mask"></div>
                               <span className="relative z-10 text-[10px] sm:text-xs font-black text-white uppercase flex items-center justify-center gap-2">
+                                {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
+                                  <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                                )}
                                 🪙 {coinFlipping ? 'Flipping Coin...' : 'Flip Coin to Resolve Matchup'}
                               </span>
+                              {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
+                                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                                </span>
+                              )}
                             </button>
 
                             {canPlayerUseGrail && (
@@ -6567,14 +6564,25 @@ const getBasketballStatsAndBio = (card) => {
                           <div className="w-full max-w-[500px] mt-4 z-10 animate-scale-up">
                             <button
                               onClick={handleNextPossession}
-                              className="w-full conic-btn py-4 shadow-[0_0_20px_rgba(70,212,198,0.2)] animate-bounce"
+                              className={`w-full conic-btn py-4 shadow-[0_0_20px_rgba(70,212,198,0.2)] animate-bounce ${
+                                isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''
+                              }`}
                             >
-                              <div className="conic-spin-bg"></div>
+                              <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                               <div className="conic-btn-mask"></div>
                               <span className="relative z-10 text-[10px] sm:text-xs font-black text-white uppercase flex items-center justify-center gap-2">
+                                {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
+                                  <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                                )}
                                 Advance Play
                                 <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
                               </span>
+                              {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
+                                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                                </span>
+                              )}
                             </button>
                           </div>
                         )}
@@ -6621,7 +6629,7 @@ const getBasketballStatsAndBio = (card) => {
                   </div>
 
                   {/* Coaching chalkboard visual banner */}
-                  <div className="text-center space-y-3 max-w-4xl w-full relative z-10 flex flex-col items-center">
+                  <div className="w-full h-full overflow-y-auto relative z-10 flex flex-col items-center justify-start gap-4 py-4 pb-16 pr-1 hide-scrollbar max-w-4xl text-center">
                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-bounce">
                       <iconify-icon icon="solar:stopwatch-bold" width="28" className="text-white"></iconify-icon>
                     </div>
@@ -6943,6 +6951,7 @@ const getBasketballStatsAndBio = (card) => {
                 </div>
               )}
             </div>
+            <div className="h-24 md:hidden" /> {/* Spacer to allow scrolling past mobile browser navigation bar */}
           </div>
         )}
 
