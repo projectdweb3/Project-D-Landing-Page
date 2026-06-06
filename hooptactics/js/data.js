@@ -48,16 +48,16 @@ window.RAW_CARDS = [
   ["Basketball", "1993-finest", "scottie-pippen-1993-finest", "Scottie Pippen", "Chicago Bulls", 1993, "Topps Finest", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward", "6'8", "210 lbs", "1987"],
   ["Basketball", "1993-finest", "shaquille-oneal-1993-finest", "Shaquille O'Neal", "Orlando Magic", 1993, "Topps Finest", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Center", "7'1", "325 lbs", "1992"],
   ["Basketball", "1996-topps-chrome", "allen-iverson-1996-topps-chrome", "Allen Iverson", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 1500, 2.4, "5 sold / wk", "Guard", "6'0\"", "165 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "allen-iverson-1996-topps-chrome-refractor", "Allen Iverson", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Refractor Parallel", "silver", 5000, 2.4, "5 sold / wk", "Guard", "6'0\"", "165 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "allen-iverson-1996-topps-chrome-youthquake", "Allen Iverson", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 1200, 2.4, "5 sold / wk", "Guard", "6'0\"", "165 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "jerry-stackhouse-1996-topps-chrome-youthquake", "Jerry Stackhouse", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 500, 2.4, "5 sold / wk", "Guard-Forward", "6'6\"", "218 lbs", "1995"],
   ["Basketball", "1996-topps-chrome", "kobe-bryant-1996-topps-chrome", "Kobe Bryant", "Los Angeles Lakers", 1996, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 255000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "kobe-bryant-1996-topps-chrome-youthquake", "Kobe Bryant", "Los Angeles Lakers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 24000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "kobe-bryant-1996-topps-chrome-youthquake-refractor", "Kobe Bryant", "Los Angeles Lakers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Refractor Parallel", "silver", 105000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "ray-allen-1996-topps-chrome", "Ray Allen", "Milwaukee Bucks", 1996, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Guard", "6'5\"", "205 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "ray-allen-1996-topps-chrome-youthquake", "Ray Allen", "Milwaukee Bucks", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 800, 2.4, "5 sold / wk", "Guard", "6'5\"", "205 lbs", "1996"],
-  ["Basketball", "1996-topps-chrome", "stephon-marbury-1996-topps-chrome-youthquake", "Stephon Marbury", "Minnesota Timberwolves", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Parallel", "base", 600, 2.4, "5 sold / wk", "Guard", "6'2\"", "180 lbs", "1996"],
   ["Basketball", "1996-topps-chrome", "tim-duncan-1996-topps-chrome", "Tim Duncan", "San Antonio Spurs", 1996, "Topps Chrome", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Center", "6'11\"", "250 lbs", "1997"],
+  ["Basketball", "1996-topps-chrome", "allen-iverson-1996-topps-chrome-youthquake-silver", "Allen Iverson", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Silver Parallel", "silver", 1200, 2.4, "5 sold / wk", "Guard", "6'0\"", "165 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "allen-iverson-1996-topps-chrome-youthquake-gold", "Allen Iverson", "Philadelphia 76ers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Gold Parallel", "gold", 2400, 2.4, "5 sold / wk", "Guard", "6'0\"", "165 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "kobe-bryant-1996-topps-chrome-youthquake-silver", "Kobe Bryant", "Los Angeles Lakers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Silver Parallel", "silver", 24000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "kobe-bryant-1996-topps-chrome-youthquake-gold", "Kobe Bryant", "Los Angeles Lakers", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Gold Parallel", "gold", 48000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "ray-allen-1996-topps-chrome-youthquake-silver", "Ray Allen", "Milwaukee Bucks", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Silver Parallel", "silver", 800, 2.4, "5 sold / wk", "Guard", "6'5\"", "205 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "ray-allen-1996-topps-chrome-youthquake-gold", "Ray Allen", "Milwaukee Bucks", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Gold Parallel", "gold", 1600, 2.4, "5 sold / wk", "Guard", "6'5\"", "205 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "stephon-marbury-1996-topps-chrome-youthquake-silver", "Stephon Marbury", "Minnesota Timberwolves", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Silver Parallel", "silver", 600, 2.4, "5 sold / wk", "Guard", "6'2\"", "180 lbs", "1996"],
+  ["Basketball", "1996-topps-chrome", "stephon-marbury-1996-topps-chrome-youthquake-gold", "Stephon Marbury", "Minnesota Timberwolves", 1996, "Topps Chrome", "#1", "Star Card", "Youthquake Gold Parallel", "gold", 1200, 2.4, "5 sold / wk", "Guard", "6'2\"", "180 lbs", "1996"],
   ["Basketball", "1997-pmg", "kobe-bryant-1997-pmg", "Kobe Bryant", "Los Angeles Lakers", 1997, "Precious Metal Gems", "#1", "Star Card", "Universe Parallel", "base", 45000, 2.4, "5 sold / wk", "Guard", "6'6\"", "200 lbs", "1996"],
   ["Basketball", "1997-pmg", "michael-jordan-1997-pmg", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Universe Parallel", "base", 24000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
   ["Basketball", "1997-pmg", "michael-jordan-1997-pmg-green", "Michael Jordan", "Chicago Bulls", 1997, "Precious Metal Gems", "#1", "Star Card", "Green PMG Parallel", "one-of-one", 300000, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
@@ -189,8 +189,29 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-flagship", "lebron-james-2025-topps-flagship", "LeBron James", "Los Angeles Lakers", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Forward", "6'9", "250 lbs", "2003"],
   ["Basketball", "2025-topps-flagship", "mikal-bridges-2025-topps-flagship", "Mikal Bridges", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Guard", "6'6", "209 lbs", "2018"],
   ["Basketball", "2025-topps-flagship", "shai-gilgeous-alexander-2025-topps-flagship", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
-  ["Basketball", "2025-topps-flagship", "shai-gilgeous-alexander-2025-topps-flagship-parallel", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Flagship", "#1", "Star Card", "Flagship Parallel", "base", 250, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
   ["Basketball", "2025-topps-flagship", "stephen-curry-2025-topps-flagship", "Stephen Curry", "Golden State Warriors", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2025-topps-flagship", "jaylen-brown-2025-topps-flagship", "Jaylen Brown", "Boston Celtics", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Guard", "6'6\"", "223 lbs", "2016"],
+  ["Basketball", "2025-topps-flagship", "lamelo-ball-2025-topps-flagship", "LaMelo Ball", "Charlotte Hornets", 2025, "Topps Flagship", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'7\"", "180 lbs", "2020"],
+  ["Basketball", "2025-topps-flagship", "shai-gilgeous-alexander-2025-topps-flagship-checker-parallel", "Shai Gilgeous-Alexander", "Oklahoma City Thunder", 2025, "Topps Flagship", "#1", "Star Card", "Checker Parallel", "base", 400, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "2018"],
+  ["Basketball", "2025-topps-flagship", "jaylen-brown-2025-topps-flagship-christmas-parallel", "Jaylen Brown", "Boston Celtics", 2025, "Topps Flagship", "#1", "Star Card", "Christmas Parallel", "base", 400, 2.4, "5 sold / wk", "Forward-Guard", "6'6\"", "223 lbs", "2016"],
+  ["Basketball", "2025-topps-flagship", "jayson-tatum-2025-topps-flagship-christmas-parallel", "Jayson Tatum", "Boston Celtics", 2025, "Topps Flagship", "#1", "Star Card", "Christmas Parallel", "base", 400, 2.4, "5 sold / wk", "Forward", "6'8", "210 lbs", "2017"],
+  ["Basketball", "2025-topps-flagship", "stephen-curry-2025-topps-flagship-frostbite-parallel", "Stephen Curry", "Golden State Warriors", 2025, "Topps Flagship", "#1", "Star Card", "Frostbite Parallel", "base", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2025-topps-flagship", "lamelo-ball-2025-topps-flagship-green-parallel", "LaMelo Ball", "Charlotte Hornets", 2025, "Topps Flagship", "#1", "Star Card", "Green Parallel", "base", 500, 2.4, "5 sold / wk", "Guard", "6'7\"", "180 lbs", "2020"],
+  ["Basketball", "2025-topps-flagship", "cooper-flagg-2025-topps-flagship-limited", "Cooper Flagg", "Dallas Mavericks", 2025, "Topps Flagship", "#1", "Rookie Card", "Limited Parallel", "gold", 2500, 2.4, "5 sold / wk", "Forward", "6'9\"", "205 lbs", "2025"],
+  ["Basketball", "2025-topps-flagship", "kon-knueppel-2025-topps-flagship-limited-auto-patch", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Flagship", "#1", "Autograph Patch Card", "Limited Autograph Patch Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
+  ["Basketball", "2025-topps-flagship", "lamelo-ball-2025-topps-flagship-logo-parallel", "LaMelo Ball", "Charlotte Hornets", 2025, "Topps Flagship", "#1", "Star Card", "Logo Parallel", "base", 500, 2.4, "5 sold / wk", "Guard", "6'7\"", "180 lbs", "2020"],
+  ["Basketball", "2025-topps-flagship", "lebron-james-2025-topps-flagship-logo-parallel", "LeBron James", "Los Angeles Lakers", 2025, "Topps Flagship", "#1", "Star Card", "Logo Parallel", "base", 1500, 2.4, "5 sold / wk", "Forward", "6'9", "250 lbs", "2003"],
+  ["Basketball", "2025-topps-flagship", "stephen-curry-2025-topps-flagship-midnight-parallel", "Stephen Curry", "Golden State Warriors", 2025, "Topps Flagship", "#1", "Star Card", "Midnight Parallel", "base", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2025-topps-flagship", "kon-knueppel-2025-topps-flagship-no-limit-parallel", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Flagship", "#1", "Rookie Card", "No Limit Parallel", "base", 1200, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
+  ["Basketball", "2025-topps-flagship", "jalen-brunson-2025-topps-flagship-number-parallel", "Jalen Brunson", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Number Parallel", "base", 800, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-flagship", "victor-wembanyama-2025-topps-flagship-power-player-parallel", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Flagship", "#1", "Star Card", "Power Player Parallel", "base", 2000, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2025-topps-flagship", "jaylen-brown-2025-topps-flagship-pruple-parallel", "Jaylen Brown", "Boston Celtics", 2025, "Topps Flagship", "#1", "Star Card", "Pruple Parallel", "base", 500, 2.4, "5 sold / wk", "Forward-Guard", "6'6\"", "223 lbs", "2016"],
+  ["Basketball", "2025-topps-flagship", "karl-anthony-towns-2025-topps-flagship-purple-parallel", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Purple Parallel", "base", 500, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
+  ["Basketball", "2025-topps-flagship", "karl-anthony-towns-2025-topps-flagship-refractor-parallel", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Refractor Parallel", "silver", 600, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
+  ["Basketball", "2025-topps-flagship", "mikal-bridges-2025-topps-flagship-refractor-parallel", "Mikal Bridges", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Refractor Parallel", "silver", 600, 2.4, "5 sold / wk", "Forward-Guard", "6'6", "209 lbs", "2018"],
+  ["Basketball", "2025-topps-flagship", "karl-anthony-towns-2025-topps-flagship-silver-parallel", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Silver Parallel", "silver", 600, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
+  ["Basketball", "2025-topps-flagship", "jalen-brunson-2025-topps-flagship-star-parallel", "Jalen Brunson", "New York Knicks", 2025, "Topps Flagship", "#1", "Star Card", "Star Parallel", "base", 600, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-flagship", "stephen-curry-2025-topps-flagship-star-parallel", "Stephen Curry", "Golden State Warriors", 2025, "Topps Flagship", "#1", "Star Card", "Star Parallel", "base", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
   ["Basketball", "2025-topps-flagship", "stephen-curry-2025-topps-flagship-patch", "Stephen Curry", "Golden State Warriors", 2025, "Topps Flagship", "#1", "Patch Card", "Patch Parallel", "base", 4500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
   ["Basketball", "2025-topps-flagship", "victor-wembanyama-2025-topps-flagship-auto", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Flagship", "#1", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-now", "bam-adebayo-2025-topps-now", "Bam Adebayo", "Miami Heat", 2025, "Topps Now", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "6'9", "255 lbs", "2017"],
@@ -1659,7 +1680,7 @@ window.getCardGameStats = (card) => {
 
   const isAutoOrPatch = isAuto || isPatch;
   const isParallel = isRarityParallel && !isAutoOrPatch;
-  const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg';
+  const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg' || card.setId === '1996-topps-chrome';
 
   let finalOvr = unscaledOvr;
 
@@ -1671,6 +1692,17 @@ window.getCardGameStats = (card) => {
     tpt = scaleAttribute(tpt, 99, 99);
     ath = scaleAttribute(ath, 99, 99);
     
+    // Explicit override for Topps Chrome 96-97 Set (treated as legendary emerald set)
+    if (card.setId === '1996-topps-chrome') {
+      if (parallelLower.includes('gold')) {
+        finalOvr = 98;
+      } else if (parallelLower.includes('silver') || parallelLower.includes('refractor')) {
+        finalOvr = 97;
+      } else {
+        finalOvr = 96;
+      }
+    }
+
     // Explicit override for Precious Metal Gems OVR
     if (card.setId === '1997-pmg') {
       const isUniverse = !parallelLower.includes('red') && !parallelLower.includes('green');

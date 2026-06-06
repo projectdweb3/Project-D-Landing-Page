@@ -2756,7 +2756,7 @@ const getBasketballStatsAndBio = (card) => {
 
       const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
       const isParallel = (parallelName && !parallelName.toLowerCase().includes('base')) || card.setId === '2025-topps-finest';
-      const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg';
+      const isLegendarySet = card.year <= 1993 || card.setId === '1997-pmg' || card.setId === '1996-topps-chrome';
 
       const typeLower = (card.type || '').toLowerCase();
       const parallelLower = (parallelName || '').toLowerCase();
