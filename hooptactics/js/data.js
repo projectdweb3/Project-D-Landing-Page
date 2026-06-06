@@ -234,6 +234,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-ecf-mvp", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#ECF-MVP", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-ecf-mvp-red", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#ECF-MVP-Auto", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-most-40-5-5", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Most-40/5/5", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-finals-patch-auto", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Center", "7'0\"", "248 lbs", "2015"],
   ["Basketball", "2025-topps-now", "kon-knueppel-2025-topps-now-lead-league-auto", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Now", "#3pm-Lead-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard-Forward", "6'7", "205 lbs", "2025"],
   ["Basketball", "2025-topps-now", "lebron-james-2025-topps-now-2nd-most-wins", "LeBron James", "Los Angeles Lakers", 2025, "Topps Now", "#2nd-Most-Wins", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Forward", "6'9", "250 lbs", "2003"],
@@ -809,7 +810,7 @@ window.getActivePlayerSeasonStats = (playerName, yr) => {
     if (yr === 2002) return { gp: 79, team: "CLE", pts: 20.9, reb: 5.5, ast: 5.9 };
   }
   if (nameLower.includes("curry")) {
-    if (yr === 2024) return { gp: 74, team: "GSW", pts: 26.4, reb: 4.5, ast: 6.1 };
+    if (yr === 2024) return { gp: 70, team: "GSW", pts: 24.5, reb: 4.4, ast: 6.0 };
     if (yr === 2023) return { gp: 74, team: "GSW", pts: 26.4, reb: 4.5, ast: 5.1 };
     if (yr === 2018) return { gp: 69, team: "GSW", pts: 27.3, reb: 5.3, ast: 5.2 };
     if (yr === 2017) return { gp: 51, team: "GSW", pts: 26.4, reb: 5.1, ast: 6.1 };
@@ -827,13 +828,13 @@ window.getActivePlayerSeasonStats = (playerName, yr) => {
     if (yr === 2010) return { gp: 78, team: "OKC", pts: 27.7, reb: 6.8, ast: 2.7 };
   }
   if (nameLower.includes("doncic")) {
-    if (yr === 2024) return { gp: 70, team: "DAL", pts: 32.4, reb: 9.2, ast: 8.8 };
+    if (yr === 2024) return { gp: 50, team: "DAL", pts: 28.2, reb: 8.2, ast: 7.7 };
     if (yr === 2023) return { gp: 70, team: "DAL", pts: 33.9, reb: 9.2, ast: 9.8 };
     if (yr === 2018) return { gp: 72, team: "DAL", pts: 21.2, reb: 7.8, ast: 6.0 };
     if (yr === 2017) return { gp: 33, team: "RMA", pts: 16.0, reb: 4.8, ast: 4.3 };
   }
   if (nameLower.includes("brunson")) {
-    if (yr === 2024) return { gp: 76, team: "NYK", pts: 27.4, reb: 3.4, ast: 7.2 };
+    if (yr === 2024) return { gp: 65, team: "NYK", pts: 26.0, reb: 2.9, ast: 7.3 };
     if (yr === 2023) return { gp: 77, team: "NYK", pts: 28.7, reb: 3.6, ast: 6.7 };
   }
   if (nameLower.includes("wembanyama") || nameLower.includes("wemby")) {
@@ -841,7 +842,7 @@ window.getActivePlayerSeasonStats = (playerName, yr) => {
     if (yr === 2023) return { gp: 71, team: "SAS", pts: 21.4, reb: 10.6, ast: 3.9 };
   }
   if (nameLower.includes("flagg")) {
-    if (yr === 2024) return { gp: 34, team: "DUK", pts: 16.5, reb: 7.8, ast: 4.2 };
+    if (yr === 2024) return { gp: 37, team: "DUK", pts: 19.2, reb: 7.5, ast: 4.2 };
   }
   if (nameLower.includes("jokic")) {
     if (yr === 2018) return { gp: 80, team: "DEN", pts: 20.1, reb: 10.8, ast: 7.3 };
@@ -860,27 +861,27 @@ window.getActivePlayerSeasonStats = (playerName, yr) => {
     if (yr === 2017) return { gp: 75, team: "NOP", pts: 28.1, reb: 11.1, ast: 2.3 };
   }
   if (nameLower.includes("tatum")) {
-    if (yr === 2024) return { gp: 74, team: "BOS", pts: 26.9, reb: 8.1, ast: 4.9 };
+    if (yr === 2024) return { gp: 72, team: "BOS", pts: 26.8, reb: 8.7, ast: 6.0 };
     if (yr === 2023) return { gp: 74, team: "BOS", pts: 26.9, reb: 8.1, ast: 4.9 };
   }
   if (nameLower.includes("towns")) {
-    if (yr === 2024) return { gp: 73, team: "NYK", pts: 21.8, reb: 8.3, ast: 3.0 };
+    if (yr === 2024) return { gp: 72, team: "NYK", pts: 24.4, reb: 12.8, ast: 3.1 };
     if (yr === 2023) return { gp: 62, team: "MIN", pts: 21.8, reb: 8.3, ast: 3.0 };
   }
   if (nameLower.includes("bridges")) {
-    if (yr === 2024) return { gp: 82, team: "NYK", pts: 19.6, reb: 4.5, ast: 3.6 };
+    if (yr === 2024) return { gp: 82, team: "NYK", pts: 17.6, reb: 3.2, ast: 3.7 };
     if (yr === 2023) return { gp: 82, team: "BKN", pts: 19.6, reb: 4.5, ast: 3.6 };
   }
   if (nameLower.includes("adebayo")) {
-    if (yr === 2024) return { gp: 71, team: "MIA", pts: 19.3, reb: 10.4, ast: 3.9 };
+    if (yr === 2024) return { gp: 78, team: "MIA", pts: 18.1, reb: 9.6, ast: 4.3 };
     if (yr === 2023) return { gp: 71, team: "MIA", pts: 19.3, reb: 10.4, ast: 3.9 };
   }
   if (nameLower.includes("miller")) {
-    if (yr === 2024) return { gp: 74, team: "CHA", pts: 21.4, reb: 4.8, ast: 3.2 };
+    if (yr === 2024) return { gp: 27, team: "CHA", pts: 21.0, reb: 4.9, ast: 3.6 };
     if (yr === 2023) return { gp: 74, team: "CHA", pts: 17.3, reb: 4.3, ast: 2.4 };
   }
   if (nameLower.includes("ball")) {
-    if (yr === 2024) return { gp: 58, team: "CHA", pts: 24.1, reb: 5.9, ast: 8.2 };
+    if (yr === 2024) return { gp: 47, team: "CHA", pts: 25.2, reb: 4.9, ast: 7.4 };
     if (yr === 2023) return { gp: 22, team: "CHA", pts: 23.9, reb: 5.1, ast: 8.0 };
   }
   if (nameLower.includes("lillard")) {
@@ -901,30 +902,30 @@ window.getActivePlayerSeasonStats = (playerName, yr) => {
     if (yr === 2010) return { gp: 11, team: "DUK", pts: 17.5, reb: 3.4, ast: 4.3 };
   }
   if (nameLower.includes("brown")) {
-    if (yr === 2024) return { gp: 75, team: "BOS", pts: 23.4, reb: 5.5, ast: 3.6 };
+    if (yr === 2024) return { gp: 63, team: "BOS", pts: 22.2, reb: 5.8, ast: 4.5 };
     if (yr === 2023) return { gp: 70, team: "BOS", pts: 23.0, reb: 5.5, ast: 3.6 };
   }
   if (nameLower.includes("white")) {
-    if (yr === 2024) return { gp: 79, team: "BOS", pts: 15.6, reb: 4.2, ast: 5.0 };
+    if (yr === 2024) return { gp: 76, team: "BOS", pts: 16.4, reb: 4.5, ast: 4.8 };
     if (yr === 2023) return { gp: 73, team: "BOS", pts: 15.2, reb: 4.2, ast: 5.2 };
   }
   if (nameLower.includes("harper")) {
-    if (yr === 2024) return { gp: 32, team: "RUT", pts: 17.5, reb: 4.6, ast: 5.2 };
+    if (yr === 2024) return { gp: 29, team: "RUT", pts: 19.4, reb: 4.6, ast: 4.0 };
   }
   if (nameLower.includes("bailey")) {
-    if (yr === 2024) return { gp: 32, team: "RUT", pts: 18.0, reb: 6.2, ast: 3.0 };
+    if (yr === 2024) return { gp: 30, team: "RUT", pts: 17.6, reb: 7.2, ast: 1.3 };
   }
   if (nameLower.includes("queen")) {
-    if (yr === 2024) return { gp: 32, team: "UMD", pts: 14.5, reb: 8.2, ast: 2.1 };
+    if (yr === 2024) return { gp: 36, team: "UMD", pts: 16.5, reb: 9.0, ast: 1.9 };
   }
   if (nameLower.includes("knueppel")) {
-    if (yr === 2024) return { gp: 32, team: "DUK", pts: 15.2, reb: 4.1, ast: 2.8 };
+    if (yr === 2024) return { gp: 39, team: "DUK", pts: 14.4, reb: 4.0, ast: 2.7 };
   }
   if (nameLower.includes("castle")) {
-    if (yr === 2024) return { gp: 75, team: "SAS", pts: 15.8, reb: 4.2, ast: 4.8 };
+    if (yr === 2024) return { gp: 81, team: "SAS", pts: 14.7, reb: 3.7, ast: 4.1 };
   }
   if (nameLower.includes("edgecomb")) {
-    if (yr === 2024) return { gp: 32, team: "BAY", pts: 16.2, reb: 4.8, ast: 3.2 };
+    if (yr === 2024) return { gp: 33, team: "BAY", pts: 15.0, reb: 5.6, ast: 3.2 };
   }
   if (nameLower.includes("edwards")) {
     if (yr === 2018) return { gp: 32, team: "UGA", pts: 19.1, reb: 5.2, ast: 2.8 };
@@ -938,21 +939,23 @@ window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
   const yr = isYearDashFormat ? "2025-26" : 2025;
   
   // Abbreviate team names for clean display
-  const team = nameLower.includes("james") || nameLower.includes("lebron") || nameLower.includes("davis") || nameLower.includes("doncic") || nameLower.includes("comic") ? "LAL" :
+  const team = nameLower.includes("james") || nameLower.includes("lebron") || nameLower.includes("doncic") || nameLower.includes("comic") ? "LAL" :
                nameLower.includes("curry") ? "GSW" :
                nameLower.includes("brunson") || nameLower.includes("towns") || nameLower.includes("bridges") ? "NYK" :
                nameLower.includes("jokic") ? "DEN" :
                nameLower.includes("antetokounmpo") || nameLower.includes("lillard") ? "MIL" :
                nameLower.includes("wembanyama") || nameLower.includes("wemby") || nameLower.includes("harper") || nameLower.includes("castle") ? "SAS" :
-               nameLower.includes("flagg") || nameLower.includes("irving") ? "DAL" :
+               nameLower.includes("flagg") || nameLower.includes("irving") || nameLower.includes("davis") ? "DAL" :
                nameLower.includes("alexander") || nameLower.includes("shai") ? "OKC" :
                nameLower.includes("tatum") || nameLower.includes("brown") || nameLower.includes("white") ? "BOS" :
                nameLower.includes("miller") || nameLower.includes("ball") || nameLower.includes("knueppel") ? "CHA" :
                nameLower.includes("adebayo") ? "MIA" :
-               nameLower.includes("williamson") ? "NOP" :
+               nameLower.includes("williamson") || nameLower.includes("queen") ? "NOP" :
                nameLower.includes("durant") ? "HOU" :
                nameLower.includes("edwards") ? "MIN" :
-               nameLower.includes("leonard") ? "LAC" : "NBA";
+               nameLower.includes("leonard") ? "LAC" :
+               nameLower.includes("bailey") ? "UTA" :
+               nameLower.includes("edgecomb") ? "PHI" : "NBA";
                
   let gp = 75;
   let pts = 20.0;
@@ -960,63 +963,65 @@ window.get2025_26StatsRow = (playerName, isYearDashFormat = false) => {
   let ast = 5.0;
   
   if (nameLower.includes("james") || nameLower.includes("lebron")) {
-    gp = 71; pts = 24.3; reb = 7.3; ast = 8.1;
+    gp = 60; pts = 20.9; reb = 6.1; ast = 7.2;
   } else if (nameLower.includes("curry")) {
-    gp = 74; pts = 26.4; reb = 4.5; ast = 6.1;
+    gp = 43; pts = 26.6; reb = 3.6; ast = 4.7;
   } else if (nameLower.includes("brunson")) {
-    gp = 78; pts = 28.2; reb = 3.6; ast = 7.4;
+    gp = 74; pts = 26.0; reb = 3.3; ast = 6.8;
   } else if (nameLower.includes("wembanyama") || nameLower.includes("wemby")) {
-    gp = 76; pts = 25.4; reb = 11.8; ast = 4.5;
+    gp = 64; pts = 25.0; reb = 11.5; ast = 3.1;
   } else if (nameLower.includes("flagg")) {
-    gp = 78; pts = 18.2; reb = 8.5; ast = 4.8;
+    gp = 70; pts = 21.0; reb = 6.7; ast = 4.5;
   } else if (nameLower.includes("jokic")) {
-    gp = 77; pts = 26.1; reb = 12.2; ast = 9.0;
+    gp = 65; pts = 27.7; reb = 12.9; ast = 10.7;
   } else if (nameLower.includes("doncic")) {
-    gp = 70; pts = 32.4; reb = 9.2; ast = 8.8;
+    gp = 64; pts = 33.5; reb = 7.7; ast = 8.3;
   } else if (nameLower.includes("antetokounmpo")) {
-    gp = 73; pts = 29.8; reb = 11.5; ast = 5.8;
+    gp = 36; pts = 27.6; reb = 9.8; ast = 5.4;
   } else if (nameLower.includes("alexander") || nameLower.includes("shai")) {
-    gp = 75; pts = 30.5; reb = 5.6; ast = 6.4;
+    gp = 68; pts = 31.1; reb = 4.3; ast = 6.6;
   } else if (nameLower.includes("davis")) {
-    gp = 76; pts = 24.7; reb = 12.2; ast = 3.5;
+    gp = 20; pts = 20.4; reb = 11.1; ast = 2.8;
   } else if (nameLower.includes("tatum")) {
-    gp = 74; pts = 27.2; reb = 8.1; ast = 4.9;
+    gp = 16; pts = 21.8; reb = 10.0; ast = 5.3;
   } else if (nameLower.includes("towns")) {
-    gp = 73; pts = 21.8; reb = 8.3; ast = 3.0;
+    gp = 75; pts = 20.1; reb = 11.9; ast = 3.0;
   } else if (nameLower.includes("bridges")) {
-    gp = 82; pts = 19.6; reb = 4.5; ast = 3.6;
+    gp = 82; pts = 14.4; reb = 3.8; ast = 3.7;
   } else if (nameLower.includes("adebayo")) {
-    gp = 75; pts = 19.3; reb = 10.4; ast = 3.9;
+    gp = 73; pts = 20.1; reb = 10.0; ast = 3.2;
   } else if (nameLower.includes("miller")) {
-    gp = 74; pts = 21.4; reb = 4.8; ast = 3.2;
+    gp = 65; pts = 20.2; reb = 4.9; ast = 3.3;
   } else if (nameLower.includes("harper")) {
-    gp = 78; pts = 17.5; reb = 4.6; ast = 5.2;
+    gp = 69; pts = 11.8; reb = 3.4; ast = 3.9;
   } else if (nameLower.includes("bailey")) {
-    gp = 76; pts = 18.0; reb = 6.2; ast = 3.0;
+    gp = 72; pts = 13.8; reb = 4.2; ast = 1.8;
   } else if (nameLower.includes("queen")) {
-    gp = 74; pts = 14.5; reb = 8.2; ast = 2.1;
+    gp = 78; pts = 11.7; reb = 7.1; ast = 3.7;
   } else if (nameLower.includes("knueppel")) {
-    gp = 75; pts = 15.2; reb = 4.1; ast = 2.8;
+    gp = 81; pts = 18.5; reb = 5.3; ast = 3.4;
   } else if (nameLower.includes("white")) {
-    gp = 79; pts = 15.6; reb = 4.2; ast = 5.0;
+    gp = 77; pts = 16.5; reb = 4.4; ast = 5.4;
   } else if (nameLower.includes("brown")) {
-    gp = 75; pts = 23.4; reb = 5.5; ast = 3.6;
+    gp = 71; pts = 28.7; reb = 6.9; ast = 5.1;
   } else if (nameLower.includes("ball")) {
-    gp = 58; pts = 24.1; reb = 5.9; ast = 8.2;
+    gp = 72; pts = 20.1; reb = 4.8; ast = 7.1;
   } else if (nameLower.includes("durant")) {
-    gp = 72; pts = 27.1; reb = 6.6; ast = 5.0;
+    gp = 78; pts = 26.0; reb = 5.5; ast = 4.8;
   } else if (nameLower.includes("irving")) {
-    gp = 70; pts = 25.6; reb = 5.0; ast = 5.2;
+    gp = 0; pts = 0.0; reb = 0.0; ast = 0.0;
   } else if (nameLower.includes("lillard")) {
-    gp = 73; pts = 24.3; reb = 4.4; ast = 7.0;
+    gp = 78; pts = 29.7; reb = 4.1; ast = 8.4;
   } else if (nameLower.includes("leonard")) {
-    gp = 68; pts = 23.8; reb = 6.1; ast = 3.6;
+    gp = 65; pts = 27.9; reb = 6.4; ast = 3.6;
   } else if (nameLower.includes("castle")) {
-    gp = 75; pts = 15.8; reb = 4.2; ast = 4.8;
+    gp = 68; pts = 16.7; reb = 5.3; ast = 7.4;
   } else if (nameLower.includes("edgecomb")) {
-    gp = 76; pts = 16.2; reb = 4.8; ast = 3.2;
+    gp = 75; pts = 16.0; reb = 5.6; ast = 4.2;
   } else if (nameLower.includes("williamson")) {
-    gp = 65; pts = 23.5; reb = 6.4; ast = 4.1;
+    gp = 62; pts = 21.0; reb = 5.7; ast = 3.2;
+  } else if (nameLower.includes("edwards")) {
+    gp = 61; pts = 28.8; reb = 5.0; ast = 3.7;
   } else {
     // Deterministic fallback for other active players
     const hash = window.hashString(playerName);

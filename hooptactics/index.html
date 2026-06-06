@@ -447,13 +447,13 @@
     /* 3D Translucent Digital Toploader */
     .digital-toploader {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)) !important;
-      border: 3.5px solid rgba(255, 255, 255, 0.08) !important;
+      border: var(--toploader-border-width, 3.5px) solid var(--toploader-border, rgba(255, 255, 255, 0.08)) !important;
       border-radius: 14px !important;
       box-shadow: 
         inset 0 0 10px rgba(255, 255, 255, 0.05),
         inset 0 0 1px 1px rgba(255, 255, 255, 0.1),
         0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 15px rgba(56, 189, 248, 0.05) !important; /* Subtle blue UV protection tint */
+        var(--toploader-glow, 0 0 15px rgba(56, 189, 248, 0.05)) !important; /* Subtle blue UV protection tint */
       transition: all 0.3s ease;
     }
 
@@ -465,12 +465,24 @@
 
     html.light .digital-toploader {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3)) !important;
-      border: 3.5px solid rgba(0, 0, 0, 0.08) !important;
+      border: var(--toploader-border-width, 3.5px) solid var(--toploader-border-light, rgba(0, 0, 0, 0.08)) !important;
       box-shadow: 
         inset 0 0 10px rgba(0, 0, 0, 0.02),
         inset 0 0 1px 1px rgba(0, 0, 0, 0.05),
         0 10px 25px rgba(0, 0, 0, 0.1),
-        0 0 12px rgba(56, 189, 248, 0.03) !important;
+        var(--toploader-glow-light, 0 0 12px rgba(56, 189, 248, 0.03)) !important;
+    }
+
+    /* Miniature Gameplay Card style overrides */
+    .digital-toploader.is-game-card {
+      border: var(--toploader-border-width, 1.5px) solid var(--toploader-border, rgba(255, 255, 255, 0.08)) !important;
+      box-shadow: var(--toploader-glow, 0 0 8px rgba(56, 189, 248, 0.05)) !important;
+      padding: 3px !important; /* Thinner padding cavity */
+    }
+
+    .digital-toploader.is-game-card img {
+      transform: none !important; /* Display full card image without Z-depth scaling */
+      border-radius: 6px !important;
     }
 
     .card-3d-inner {
@@ -1317,11 +1329,12 @@
 
       html:not(.light) .digital-toploader {
         background: #08080a !important;
+        border: var(--toploader-border-width, 3.5px) solid var(--toploader-border, rgba(255, 255, 255, 0.08)) !important;
       }
 
       html.light .digital-toploader {
         background: #F3F4F6 !important;
-        border: 3.5px solid rgba(0, 0, 0, 0.08) !important;
+        border: var(--toploader-border-width, 3.5px) solid var(--toploader-border-light, rgba(0, 0, 0, 0.08)) !important;
       }
 
       /* Provide soft, hardware-accelerated static values for overlays on mobile */
@@ -1347,6 +1360,38 @@
       .holo-shimmer.is-emerald-shimmer ~ .holo-refractor::before {
         display: none !important;
       }
+    }
+
+    /* Tutorial Highlight Animations */
+    @keyframes pulse-beam-teal {
+      0%, 100% {
+        box-shadow: 0 0 0 2px rgba(70, 212, 198, 0.4), 0 0 15px 4px rgba(70, 212, 198, 0.6);
+        border-color: rgba(70, 212, 198, 1) !important;
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(70, 212, 198, 0.1), 0 0 30px 10px rgba(70, 212, 198, 0.2);
+        border-color: rgba(70, 212, 198, 0.4) !important;
+      }
+    }
+    @keyframes pulse-beam-orange {
+      0%, 100% {
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4), 0 0 15px 4px rgba(245, 158, 11, 0.6);
+        border-color: rgba(245, 158, 11, 1) !important;
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.1), 0 0 30px 10px rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.4) !important;
+      }
+    }
+    .tutorial-highlight-teal {
+      animation: pulse-beam-teal 1.5s infinite ease-in-out !important;
+      border: 2px solid rgba(70, 212, 198, 1) !important;
+      position: relative;
+    }
+    .tutorial-highlight-orange {
+      animation: pulse-beam-orange 1.5s infinite ease-in-out !important;
+      border: 2px solid rgba(245, 158, 11, 1) !important;
+      position: relative;
     }
   </style>
 </head>

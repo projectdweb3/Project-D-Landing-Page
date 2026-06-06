@@ -2920,45 +2920,100 @@ const getBasketballStatsAndBio = (card) => {
       }[size];
 
       // Define toploader border/glow variables based on card parallel rarity
-      const selectedRarity = isLegendarySet ? 'legendary' : (card.rarity || 'base');
-      const rarityStyle = {
-        legendary: {
-          '--toploader-border': 'rgba(16, 185, 129, 0.4)',
-          '--toploader-glow': '0 0 20px rgba(16, 185, 129, 0.25)',
-          '--toploader-border-light': 'rgba(16, 185, 129, 0.3)',
-          '--toploader-glow-light': '0 0 15px rgba(16, 185, 129, 0.15)'
-        },
-        base: {
-          '--toploader-border': 'rgba(255, 255, 255, 0.08)',
-          '--toploader-glow': '0 0 15px rgba(56, 189, 248, 0.05)',
-          '--toploader-border-light': 'rgba(0, 0, 0, 0.08)',
-          '--toploader-glow-light': '0 0 12px rgba(56, 189, 248, 0.03)'
-        },
-        silver: {
-          '--toploader-border': 'rgba(255, 255, 255, 0.3)',
-          '--toploader-glow': '0 0 20px rgba(255, 255, 255, 0.15)',
-          '--toploader-border-light': 'rgba(0, 0, 0, 0.2)',
-          '--toploader-glow-light': '0 0 15px rgba(0, 0, 0, 0.08)'
-        },
-        gold: {
-          '--toploader-border': 'rgba(255, 214, 10, 0.3)',
-          '--toploader-glow': '0 0 20px rgba(255, 214, 10, 0.15)',
-          '--toploader-border-light': 'rgba(218, 165, 32, 0.25)',
-          '--toploader-glow-light': '0 0 15px rgba(218, 165, 32, 0.1)'
-        },
-        prismatic: {
-          '--toploader-border': 'rgba(236, 72, 153, 0.25)',
-          '--toploader-glow': '0 0 20px rgba(236, 72, 153, 0.18)',
-          '--toploader-border-light': 'rgba(236, 72, 153, 0.2)',
-          '--toploader-glow-light': '0 0 15px rgba(236, 72, 153, 0.1)'
-        },
-        'one-of-one': {
-          '--toploader-border': 'rgba(251, 191, 36, 0.4)',
-          '--toploader-glow': '0 0 25px rgba(251, 191, 36, 0.25)',
-          '--toploader-border-light': 'rgba(245, 158, 11, 0.3)',
-          '--toploader-glow-light': '0 0 18px rgba(245, 158, 11, 0.15)'
+      const isGameSize = size === 'game';
+      const shouldHideAttributes = hideAttributes || isGameSize;
+      
+      let finalRarityStyle;
+      if (isGameSize) {
+        // Determine gameplay miniature card rarity category (emerald, gold, iridescent, base)
+        let gameRarity = 'base';
+        if (isLegendarySet || 
+            (card.rarity && (card.rarity.includes('green') || card.rarity.includes('emerald'))) || 
+            (parallelName && (parallelName.toLowerCase().includes('green') || parallelName.toLowerCase().includes('emerald')))) {
+          gameRarity = 'emerald';
+        } else if (
+            (card.rarity && (card.rarity.includes('gold') || card.rarity.includes('one-of-one'))) || 
+            (parallelName && (parallelName.toLowerCase().includes('gold') || parallelName.toLowerCase().includes('one-of-one') || parallelName.toLowerCase().includes('1/1'))) ||
+            isAutoPatchParallel || isGoldShimmer) {
+          gameRarity = 'gold';
+        } else if (
+            hasParallelEffect || isParallel ||
+            (card.rarity && (card.rarity.includes('silver') || card.rarity.includes('prismatic') || card.rarity.includes('cosmic') || card.rarity.includes('pink'))) ||
+            (parallelName && (parallelName.toLowerCase().includes('silver') || parallelName.toLowerCase().includes('prismatic') || parallelName.toLowerCase().includes('cosmic') || parallelName.toLowerCase().includes('pink') || parallelName.toLowerCase().includes('refractor') || parallelName.toLowerCase().includes('prizm')))) {
+          gameRarity = 'iridescent';
         }
-      }[selectedRarity];
+
+        finalRarityStyle = {
+          emerald: {
+            '--toploader-border': 'rgba(16, 185, 129, 0.85)',
+            '--toploader-glow': '0 0 10px rgba(16, 185, 129, 0.5)',
+            '--toploader-border-light': 'rgba(16, 185, 129, 0.75)',
+            '--toploader-glow-light': '0 0 8px rgba(16, 185, 129, 0.35)',
+            '--toploader-border-width': '1.5px'
+          },
+          gold: {
+            '--toploader-border': 'rgba(255, 214, 10, 0.85)',
+            '--toploader-glow': '0 0 10px rgba(255, 214, 10, 0.5)',
+            '--toploader-border-light': 'rgba(218, 165, 32, 0.8)',
+            '--toploader-glow-light': '0 0 8px rgba(218, 165, 32, 0.35)',
+            '--toploader-border-width': '1.5px'
+          },
+          iridescent: {
+            '--toploader-border': 'rgba(192, 132, 252, 0.85)',
+            '--toploader-glow': '0 0 10px rgba(192, 132, 252, 0.5)',
+            '--toploader-border-light': 'rgba(236, 72, 153, 0.8)',
+            '--toploader-glow-light': '0 0 8px rgba(236, 72, 153, 0.35)',
+            '--toploader-border-width': '1.5px'
+          },
+          base: {
+            '--toploader-border': 'rgba(255, 255, 255, 0.15)',
+            '--toploader-glow': '0 0 5px rgba(255, 255, 255, 0.05)',
+            '--toploader-border-light': 'rgba(0, 0, 0, 0.15)',
+            '--toploader-glow-light': '0 0 5px rgba(0, 0, 0, 0.03)',
+            '--toploader-border-width': '1.5px'
+          }
+        }[gameRarity];
+      } else {
+        const selectedRarity = isLegendarySet ? 'legendary' : (card.rarity || 'base');
+        finalRarityStyle = {
+          legendary: {
+            '--toploader-border': 'rgba(16, 185, 129, 0.4)',
+            '--toploader-glow': '0 0 20px rgba(16, 185, 129, 0.25)',
+            '--toploader-border-light': 'rgba(16, 185, 129, 0.3)',
+            '--toploader-glow-light': '0 0 15px rgba(16, 185, 129, 0.15)'
+          },
+          base: {
+            '--toploader-border': 'rgba(255, 255, 255, 0.08)',
+            '--toploader-glow': '0 0 15px rgba(56, 189, 248, 0.05)',
+            '--toploader-border-light': 'rgba(0, 0, 0, 0.08)',
+            '--toploader-glow-light': '0 0 12px rgba(56, 189, 248, 0.03)'
+          },
+          silver: {
+            '--toploader-border': 'rgba(255, 255, 255, 0.3)',
+            '--toploader-glow': '0 0 20px rgba(255, 255, 255, 0.15)',
+            '--toploader-border-light': 'rgba(0, 0, 0, 0.2)',
+            '--toploader-glow-light': '0 0 15px rgba(0, 0, 0, 0.08)'
+          },
+          gold: {
+            '--toploader-border': 'rgba(255, 214, 10, 0.3)',
+            '--toploader-glow': '0 0 20px rgba(255, 214, 10, 0.15)',
+            '--toploader-border-light': 'rgba(218, 165, 32, 0.25)',
+            '--toploader-glow-light': '0 0 15px rgba(218, 165, 32, 0.1)'
+          },
+          prismatic: {
+            '--toploader-border': 'rgba(236, 72, 153, 0.25)',
+            '--toploader-glow': '0 0 20px rgba(236, 72, 153, 0.18)',
+            '--toploader-border-light': 'rgba(236, 72, 153, 0.2)',
+            '--toploader-glow-light': '0 0 15px rgba(236, 72, 153, 0.1)'
+          },
+          'one-of-one': {
+            '--toploader-border': 'rgba(251, 191, 36, 0.4)',
+            '--toploader-glow': '0 0 25px rgba(251, 191, 36, 0.25)',
+            '--toploader-border-light': 'rgba(245, 158, 11, 0.3)',
+            '--toploader-glow-light': '0 0 18px rgba(245, 158, 11, 0.15)'
+          }
+        }[selectedRarity];
+      }
 
       return (
         <div 
@@ -2978,8 +3033,8 @@ const getBasketballStatsAndBio = (card) => {
           >
             {/* Front Face - digital toploader frame */}
             <div 
-              className="card-face absolute inset-0 w-full h-full flex flex-col justify-between overflow-hidden digital-toploader p-2 bg-[#060608]/40"
-              style={rarityStyle}
+              className={`card-face absolute inset-0 w-full h-full flex flex-col justify-between overflow-hidden digital-toploader bg-[#060608]/40 ${isGameSize ? 'p-1 is-game-card' : 'p-2'}`}
+              style={finalRarityStyle}
             >
               {/* Inner card container simulating inset cavity of physical protector */}
               <div className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between">
@@ -3006,7 +3061,7 @@ const getBasketballStatsAndBio = (card) => {
                 )}
 
                 {/* Overlaid Attributes for Basketball Cards */}
-                {card.sport === 'Basketball' && !hideAttributes && (
+                {card.sport === 'Basketball' && !shouldHideAttributes && (
                   <div className="absolute inset-0 z-20 flex flex-col justify-between pointer-events-none p-1.5 md:p-2">
                     {/* Top Row: POS & OVR */}
                     <div className="flex justify-between items-center w-full">
@@ -3575,6 +3630,13 @@ const getBasketballStatsAndBio = (card) => {
       // Tutorial overlay system
       const isTutorialMatch = level === 1 && xp === 0 && (matchStats.cpuMatches || 0) === 0 && (matchStats.onlineMatches || 0) === 0;
       const [tutorialStep, setTutorialStep] = useState(null);
+      const [tutorialPopupOpen, setTutorialPopupOpen] = useState(true);
+
+      useEffect(() => {
+        if (tutorialStep !== null) {
+          setTutorialPopupOpen(true);
+        }
+      }, [tutorialStep]);
 
       // Effect to auto-start tutorial when game begins
       useEffect(() => {
@@ -4082,6 +4144,10 @@ const getBasketballStatsAndBio = (card) => {
       const callTimeout = (isPlayer) => {
         if (isPlayer) {
           if (playerTimeouts <= 0) return;
+          
+          if (isTutorialMatch && tutorialStep === 7) {
+            setTutorialStep(null);
+          }
           
           // Check requirements: on Offense or entering Defense immediately after opponent scores
           const allowed = playerPossession || (!playerPossession && lastScorer === 'opponent');
@@ -5178,17 +5244,17 @@ const getBasketballStatsAndBio = (card) => {
                       );
                     }
 
-                    // Group by Set/Brand
+                    // Group by Set
                     const grouped = {};
                     pool.forEach(c => {
-                      const brand = c.brand || 'Other Sets';
-                      if (!grouped[brand]) grouped[brand] = [];
-                      grouped[brand].push(c);
+                      const setId = c.setId || 'other';
+                      if (!grouped[setId]) grouped[setId] = [];
+                      grouped[setId].push(c);
                     });
 
-                    // Sort cards within each brand: OVR descending first, then rarity priority, then year descending, then value descending
-                    Object.keys(grouped).forEach(brand => {
-                      grouped[brand].sort((a, b) => {
+                    // Sort cards within each set: OVR descending first, then rarity priority, then year descending, then value descending
+                    Object.keys(grouped).forEach(setId => {
+                      grouped[setId].sort((a, b) => {
                         const ovrA = getCardGameStats(a).ovr;
                         const ovrB = getCardGameStats(b).ovr;
                         if (ovrB !== ovrA) {
@@ -5206,24 +5272,40 @@ const getBasketballStatsAndBio = (card) => {
                       });
                     });
 
-                    // Sort brands by the maximum year of their cards in descending order (newer sets first)
-                    const sortedBrands = Object.keys(grouped).sort((a, b) => {
-                      const maxYearA = Math.max(...grouped[a].map(c => c.year));
-                      const maxYearB = Math.max(...grouped[b].map(c => c.year));
-                      if (maxYearB !== maxYearA) {
-                        return maxYearB - maxYearA;
-                      }
-                      return a.localeCompare(b);
-                    });
+                    // Get basketball sets from SPORTS_SETS and sort them chronologically (year descending)
+                    const basketballSets = SPORTS_SETS.filter(s => s.sport === 'Basketball');
+                    const sortedSets = basketballSets
+                      .filter(s => grouped[s.id] && grouped[s.id].length > 0)
+                      .sort((a, b) => b.year - a.year);
 
-                    return sortedBrands.map(brand => {
-                      const setCards = grouped[brand];
+                    // Add a fallback for other sets if any cards don't match
+                    const matchedSetIds = new Set(basketballSets.map(s => s.id));
+                    const otherCards = pool.filter(c => !matchedSetIds.has(c.setId));
+                    if (otherCards.length > 0) {
+                      grouped['other'] = otherCards;
+                      sortedSets.push({
+                        id: 'other',
+                        name: 'Other Sets',
+                        year: 0,
+                        era: ''
+                      });
+                    }
+
+                    return sortedSets.map(set => {
+                      const setCards = grouped[set.id];
                       return (
-                        <div key={brand} className="space-y-3 border-b border-white/5 pb-6 last:border-b-0">
+                        <div key={set.id} className="space-y-3 border-b border-white/5 pb-6 last:border-b-0">
                           <div className="flex justify-between items-center pr-2">
-                            <h5 className="text-[10px] md:text-xs font-black uppercase tracking-wider text-white">
-                              {brand} ({setCards.length} {setCards.length === 1 ? 'Card' : 'Cards'})
-                            </h5>
+                            <div className="text-left font-sans">
+                              <h5 className="text-[10px] md:text-xs font-black uppercase tracking-wider text-white">
+                                {set.name} ({setCards.length} {setCards.length === 1 ? 'Card' : 'Cards'})
+                              </h5>
+                              {set.year > 0 && (
+                                <p className="text-[8px] text-neutral-500 uppercase font-semibold mt-0.5">
+                                  {set.year} • {set.era}
+                                </p>
+                              )}
+                            </div>
                           </div>
                           
                           {/* Carousel row */}
@@ -5613,7 +5695,9 @@ const getBasketballStatsAndBio = (card) => {
 
                             {/* Name & Stamina Gauge */}
                             <div className="w-full flex flex-col items-center leading-none gap-1">
-                              <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">{nameLabel}</span>
+                              <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">
+                                <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                              </span>
                               <div className="h-1.5 w-full max-w-[72px] bg-neutral-950 rounded-full overflow-hidden relative border border-white/5">
                                 <div 
                                   className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
@@ -5679,11 +5763,12 @@ const getBasketballStatsAndBio = (card) => {
                           }
                         }
 
-                        const isHighlighted = isTutorialMatch && tutorialStep === 2 && (playerPossession ? canBeShooter : canBeDefender);
+                        const isHighlighted = isTutorialMatch && tutorialStep === 2 && !tutorialPopupOpen && (playerPossession ? canBeShooter : canBeDefender);
+                        const highlightClass = playerPossession ? 'tutorial-highlight-orange' : 'tutorial-highlight-teal';
                         const borderStyle = isAttacker ? 'ring-4 ring-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.6)]'
                           : isDefender ? 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]'
                           : isHighlighted
-                            ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-50 shadow-[0_0_20px_rgba(245,158,11,0.8)] cursor-pointer relative bg-amber-500/10'
+                            ? `${highlightClass} scale-105 z-50 cursor-pointer relative`
                           : subsActive 
                             ? (selectedSubId === c.id 
                                 ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
@@ -5743,7 +5828,9 @@ const getBasketballStatsAndBio = (card) => {
 
                             {/* Name & Stamina Gauge */}
                             <div className="w-full flex flex-col items-center leading-none gap-1">
-                              <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">{nameLabel}</span>
+                              <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">
+                                <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                              </span>
                               <div className="h-1.5 w-full max-w-[72px] bg-neutral-950 rounded-full overflow-hidden relative border border-white/5">
                                 <div 
                                   className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
@@ -5817,7 +5904,9 @@ const getBasketballStatsAndBio = (card) => {
 
                           {/* Name & Stamina Gauge */}
                           <div className="w-full flex flex-col items-center leading-none gap-1">
-                            <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">{nameLabel}</span>
+                            <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">
+                              <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                            </span>
                             <div className="h-1.5 w-full max-w-[72px] bg-neutral-950 rounded-full overflow-hidden relative border border-white/5">
                               <div className="h-full bg-emerald-600" style={{ width: `${(c.currentSta/stats.sta)*100}%` }} />
                             </div>
@@ -5895,18 +5984,18 @@ const getBasketballStatsAndBio = (card) => {
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={handleProceedToAttack}
-                            className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 1 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
+                            className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 1 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''}`}
                           >
-                            <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 1 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
+                            <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 1 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                             <div className="conic-btn-mask"></div>
                             <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                              {isTutorialMatch && tutorialStep === 1 && (
+                              {isTutorialMatch && tutorialStep === 1 && !tutorialPopupOpen && (
                                 <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
                               )}
                               {playerPossession ? 'Go to Attack Phase' : 'Defend Play'} 
                               <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
                             </span>
-                            {isTutorialMatch && tutorialStep === 1 && (
+                            {isTutorialMatch && tutorialStep === 1 && !tutorialPopupOpen && (
                               <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
@@ -5918,20 +6007,29 @@ const getBasketballStatsAndBio = (card) => {
                           <button
                             onClick={() => callTimeout(true)}
                             disabled={playerTimeouts <= 0 || (!playerPossession && lastScorer !== 'opponent')}
-                            className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 relative ${isTutorialMatch && tutorialStep === 7 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-[1.02] z-50' : ''}`}
+                            className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 relative ${isTutorialMatch && tutorialStep === 7 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50' : ''}`}
                           >
                             <iconify-icon icon="solar:stopwatch-linear" width="12"></iconify-icon>
-                            {isTutorialMatch && tutorialStep === 7 && (
+                            {isTutorialMatch && tutorialStep === 7 && !tutorialPopupOpen && (
                               <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
                             )}
                             Call Timeout (Rest Bench)
-                            {isTutorialMatch && tutorialStep === 7 && (
+                            {isTutorialMatch && tutorialStep === 7 && !tutorialPopupOpen && (
                               <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
                               </span>
                             )}
                           </button>
+
+                          {isTutorialMatch && tutorialStep === 7 && !tutorialPopupOpen && (
+                            <button
+                              onClick={() => setTutorialStep(null)}
+                              className="w-full py-2 rounded-xl border border-dashed border-white/10 hover:border-white/20 text-[8px] font-bold text-neutral-500 hover:text-white uppercase transition-all flex items-center justify-center gap-1 mt-1 z-50 relative"
+                            >
+                              Skip / End Tutorial
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
@@ -5956,9 +6054,9 @@ const getBasketballStatsAndBio = (card) => {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 2)}
-                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-105 z-50' : ''}`}
+                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-105 z-50' : ''}`}
                                   >
-                                    {isTutorialMatch && tutorialStep === 3 && (
+                                    {isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen && (
                                       <span className="text-amber-400 animate-pulse font-sans">👉</span>
                                     )}
                                     Shoot 2-Pointer
@@ -5966,9 +6064,9 @@ const getBasketballStatsAndBio = (card) => {
                                   <button
                                     onClick={() => handleSelectShooter(selectedAttackerId, 3)}
                                     disabled={attCard.currentSta <= 20 || (attCard.threesAttempted || 0) >= limit}
-                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 ? 'ring-4 ring-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-105 z-50' : ''}`}
+                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-105 z-50' : ''}`}
                                   >
-                                    {isTutorialMatch && tutorialStep === 3 && (
+                                    {isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen && (
                                       <span className="text-amber-400 animate-pulse font-sans">👉</span>
                                     )}
                                     {isShooter ? 'Shoot 3-Pointer' : 'Attempt 3-Point Play'}
@@ -6012,6 +6110,20 @@ const getBasketballStatsAndBio = (card) => {
                             : "CONTEST PLAY: Select a starting defender from your floor to contest the shot. Matchup rules apply!"}
                         </p>
                         
+                        {isTutorialMatch && tutorialStep === 4 && !tutorialPopupOpen && (
+                          <button
+                            onClick={handleTutorialBtnAction}
+                            className="w-full py-3.5 conic-btn primary tutorial-highlight-orange scale-[1.02] z-50 relative mt-2"
+                          >
+                            <div className="conic-spin-bg opacity-100 animate-[spin_1.8s_linear_infinite]"></div>
+                            <div className="conic-btn-mask"></div>
+                            <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                              <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
+                              See Contest Matchup
+                            </span>
+                          </button>
+                        )}
+
                         {!playerPossession && (
                           <div className="py-6 border border-dashed border-blue-500/30 rounded-2xl flex items-center justify-center bg-blue-950/5">
                             <span className="text-[8px] uppercase tracking-widest text-blue-400 animate-pulse">Select defender from court (PG-PG/SG, C-PF/C, etc.)</span>
@@ -6071,17 +6183,17 @@ const getBasketballStatsAndBio = (card) => {
                                     }
                                   }}
                                   disabled={coinFlipping}
-                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
+                                  className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''}`}
                                 >
-                                  <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 5 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
+                                  <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                                   <div className="conic-btn-mask"></div>
                                   <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                                    {isTutorialMatch && tutorialStep === 5 && (
+                                    {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
                                       <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
                                     )}
                                     Flip Coin to Resolve
                                   </span>
-                                  {isTutorialMatch && tutorialStep === 5 && (
+                                  {isTutorialMatch && tutorialStep === 5 && !tutorialPopupOpen && (
                                     <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                       <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
@@ -6118,18 +6230,18 @@ const getBasketballStatsAndBio = (card) => {
                         
                         <button
                           onClick={handleNextPossession}
-                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 ? 'ring-4 ring-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)] scale-[1.02] z-50 relative' : ''}`}
+                          className={`w-full conic-btn py-3.5 ${isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50 relative' : ''}`}
                         >
-                          <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 6 ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
+                          <div className={`conic-spin-bg ${isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen ? 'opacity-100 animate-[spin_1.8s_linear_infinite]' : ''}`}></div>
                           <div className="conic-btn-mask"></div>
                           <span className="relative z-10 text-[10px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                            {isTutorialMatch && tutorialStep === 6 && (
+                            {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
                               <span className="text-amber-400 animate-pulse mr-1 font-sans">👉</span>
                             )}
                             Advance Play 
                             <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
                           </span>
-                          {isTutorialMatch && tutorialStep === 6 && (
+                          {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
                             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
@@ -6610,7 +6722,9 @@ const getBasketballStatsAndBio = (card) => {
                                         </div>
                                       )}
                                     </div>
-                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">{nameLabel}</span>
+                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
+                                      <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                    </span>
                                     {/* Animated progress bar */}
                                     <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
                                       <div 
@@ -6702,7 +6816,9 @@ const getBasketballStatsAndBio = (card) => {
                                         </div>
                                       )}
                                     </div>
-                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">{nameLabel}</span>
+                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
+                                      <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                    </span>
                                     {/* Animated progress bar */}
                                     <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
                                       <div 
@@ -6919,44 +7035,38 @@ const getBasketballStatsAndBio = (card) => {
           )}
 
           {/* Tutorial Overlay Modal/Popup */}
-          {tutorialStep !== null && (
-            <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center pointer-events-none lg:absolute lg:inset-0 lg:bg-transparent">
+          {tutorialStep !== null && tutorialPopupOpen && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
               <div 
-                className={`glass-panel p-5 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.2)] pointer-events-auto animate-scale-up ${getTutorialAlignmentClass()}`}
-                style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                className="glass-panel p-5 md:p-6 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.25)] w-full max-w-sm sm:max-w-md text-left flex flex-col justify-between max-h-[85vh] overflow-y-auto animate-scale-up"
+                style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
               >
-                <div className="flex items-center justify-between gap-2 mb-2.5 border-b border-white/10 pb-2 flex-shrink-0">
+                <div className="flex items-center justify-between gap-2 mb-3 border-b border-white/10 pb-2.5 flex-shrink-0">
                   <div className="flex items-center gap-1.5">
-                    <iconify-icon icon="solar:info-circle-bold-duotone" width="14" className="text-amber-400"></iconify-icon>
-                    <span className="text-[9px] font-black uppercase tracking-wider text-amber-300">Coach Tutorial ({tutorialStep}/7)</span>
+                    <iconify-icon icon="solar:info-circle-bold-duotone" width="16" className="text-amber-400"></iconify-icon>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Coach Tutorial ({tutorialStep}/7)</span>
                   </div>
                   <button 
                     onClick={() => setTutorialStep(null)}
-                    className="text-[8px] font-bold text-neutral-500 hover:text-white uppercase transition-all animate-pulse"
+                    className="text-[9px] font-bold text-neutral-500 hover:text-white uppercase transition-all"
                   >
                     Skip
                   </button>
                 </div>
-                <h4 className="text-[10px] font-extrabold text-white uppercase mb-1">{getTutorialTitle()}</h4>
-                <p className="text-[9.5px] text-neutral-300 leading-normal font-sans font-medium">{getTutorialText()}</p>
                 
-                {getTutorialBtnText() ? (
-                  <div className="flex justify-end items-center mt-3 border-t border-white/5 pt-2.5">
-                    <button
-                      onClick={handleTutorialBtnAction}
-                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black text-[8px] font-black uppercase transition-all shadow-lg border border-amber-400/20"
-                    >
-                      {getTutorialBtnText()}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex justify-end items-center mt-3 border-t border-white/5 pt-2.5">
-                    <span className="text-[7.5px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5 animate-pulse">
-                      <iconify-icon icon="solar:cursor-bold" width="10"></iconify-icon>
-                      Action Required on Screen
-                    </span>
-                  </div>
-                )}
+                <div className="space-y-2 mb-4 flex-1">
+                  <h4 className="text-xs font-extrabold text-white uppercase">{getTutorialTitle()}</h4>
+                  <p className="text-[10.5px] text-neutral-300 leading-relaxed font-sans font-medium">{getTutorialText()}</p>
+                </div>
+
+                <div className="flex justify-end items-center border-t border-white/5 pt-3 flex-shrink-0">
+                  <button
+                    onClick={() => setTutorialPopupOpen(false)}
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black text-[10px] font-black uppercase transition-all shadow-lg border border-amber-400/20 font-bold animate-pulse"
+                  >
+                    Got it, show me!
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -7668,7 +7778,7 @@ const getBasketballStatsAndBio = (card) => {
   const activeUserCollection = React.useMemo(() => {
     return userCollection.filter(item => {
       const baseId = item.includes('::') ? item.split('::')[0] : item;
-      return activeCards.some(c => c.id === baseId);
+      return activeCards.some(c => c.baseCardId === baseId);
     });
   }, [userCollection, activeCards]);
 
@@ -8196,7 +8306,7 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Mobile Hamburger Dropdown Menu */}
           {isMobileMenuOpen && (
-            <div className="fixed inset-0 z-50 md:hidden bg-black/90 backdrop-blur-xl flex flex-col justify-between p-6 animate-modal-entry text-left">
+            <div className="fixed inset-0 z-50 md:hidden bg-black flex flex-col justify-between p-6 animate-modal-entry text-left">
               <div className="space-y-6">
                 {/* Dropdown Header */}
                 <div className="flex justify-between items-center pb-4 border-b border-white/5">
@@ -8367,7 +8477,7 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Main Panel */}
           <main className="flex-1 bg-black/60 border border-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0">
-            <div className="p-2 sm:p-6 md:p-8 flex-1 overflow-y-auto hide-scrollbar">
+            <div className="p-2 pb-24 sm:p-6 sm:pb-16 md:p-8 flex-1 overflow-y-auto hide-scrollbar">
               
               {/* Top Action Row */}
               {!isGameActive && (
@@ -8804,12 +8914,8 @@ const getBasketballStatsAndBio = (card) => {
               {activeTab === 'play' && (
                 <div className="space-y-6 animate-modal-entry text-left">
                   {(() => {
-                    // Check deck eligibility
-                    // User needs exactly 10 Basketball cards in their collection to play.
-                    const basketballCardsInCollection = activeUserCollection.map(item => {
-                      return item.includes('::') ? item.split('::')[0] : item;
-                    }).filter(id => {
-                      const c = SPORTS_CARDS.find(x => x.id === id);
+                    const basketballCardsInCollection = activeUserCollection.filter(item => {
+                      const c = SPORTS_CARDS.find(x => x.id === item);
                       return c && c.sport === 'Basketball';
                     });
 
