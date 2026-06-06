@@ -1724,6 +1724,11 @@ window.getCardGameStats = (card) => {
         finalOvr = 98;
       }
     }
+
+    // Explicit override for 1961 Fleer Set to be all 96 OVR
+    if (card.setId === '1961-fleer') {
+      finalOvr = 96;
+    }
   } else if (isAutoOrPatch) {
     const clampedPower = Math.max(85, Math.min(115, unscaledOvr));
     finalOvr = 96 + ((clampedPower - 85) / 30) * 3;
