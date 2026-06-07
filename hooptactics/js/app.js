@@ -8641,13 +8641,13 @@ const getBasketballStatsAndBio = (card) => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-neutral-950/40 p-3 rounded-2xl border border-white/5 text-xs">
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-3 bg-neutral-950/40 p-2 sm:p-3 rounded-2xl border border-white/5 text-xs">
                       {/* Sort Dropdown */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Sort By</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Sort By</label>
                         <select 
                           value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="value-desc">Market Value: High to Low</option>
                           <option value="value-asc">Market Value: Low to High</option>
@@ -8660,10 +8660,10 @@ const getBasketballStatsAndBio = (card) => {
 
                       {/* Era Filter */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Era</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Era</label>
                         <select 
                           value={activeEraFilter} onChange={(e) => setActiveEraFilter(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="All">All Eras</option>
                           <option value="Pre-War & Tobacco Era">Pre-War & Tobacco Era</option>
@@ -8676,10 +8676,10 @@ const getBasketballStatsAndBio = (card) => {
 
                       {/* Team Filter */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Team</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Team</label>
                         <select 
                           value={activeTeamFilter} onChange={(e) => setActiveTeamFilter(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="All">All Teams</option>
                           {allTeams.map(t => (
@@ -8698,9 +8698,11 @@ const getBasketballStatsAndBio = (card) => {
                             setActiveTeamFilter('All');
                             setActiveSportFilter('All');
                           }}
-                          className="w-full bg-neutral-900 hover:bg-neutral-800 border border-white/10 rounded-lg py-2 font-bold text-white transition-colors"
+                          className="w-full bg-neutral-900 hover:bg-neutral-800 border border-white/10 rounded-lg py-1.5 sm:py-2 font-bold text-white transition-colors text-[10px] sm:text-xs flex items-center justify-center gap-1.5"
+                          title="Reset Filters"
                         >
-                          Reset Filters
+                          <iconify-icon icon="solar:restart-bold" width="14" className="text-white"></iconify-icon>
+                          <span className="hidden sm:inline">Reset Filters</span>
                         </button>
                       </div>
                     </div>
@@ -9180,13 +9182,13 @@ const getBasketballStatsAndBio = (card) => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-neutral-950/40 p-3 rounded-2xl border border-white/5 text-xs">
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-3 bg-neutral-950/40 p-2 sm:p-3 rounded-2xl border border-white/5 text-xs">
                       {/* Sort Dropdown */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Sort By</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Sort By</label>
                         <select 
                           value={marketSortBy} onChange={(e) => setMarketSortBy(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="value-desc">Market Value: High to Low</option>
                           <option value="value-asc">Market Value: Low to High</option>
@@ -9199,10 +9201,10 @@ const getBasketballStatsAndBio = (card) => {
 
                       {/* Era Filter */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Era</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Era</label>
                         <select 
                           value={marketActiveEraFilter} onChange={(e) => setMarketActiveEraFilter(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="All">All Eras</option>
                           <option value="Pre-War & Tobacco Era">Pre-War & Tobacco Era</option>
@@ -9215,10 +9217,10 @@ const getBasketballStatsAndBio = (card) => {
 
                       {/* Team Filter */}
                       <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[9px] uppercase text-neutral-500 font-bold">Team</label>
+                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Team</label>
                         <select 
                           value={marketActiveTeamFilter} onChange={(e) => setMarketActiveTeamFilter(e.target.value)}
-                          className="bg-neutral-900 border border-white/10 rounded-lg p-2 focus:outline-none text-white font-semibold cursor-pointer"
+                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
                         >
                           <option value="All">All Teams</option>
                           {allTeams.map(t => (
@@ -9236,9 +9238,11 @@ const getBasketballStatsAndBio = (card) => {
                             setMarketActiveEraFilter('All');
                             setMarketActiveTeamFilter('All');
                           }}
-                          className="w-full bg-neutral-900 hover:bg-neutral-800 border border-white/10 rounded-lg py-2 font-bold text-white transition-colors"
+                          className="w-full bg-neutral-900 hover:bg-neutral-800 border border-white/10 rounded-lg py-1.5 sm:py-2 font-bold text-white transition-colors text-[10px] sm:text-xs flex items-center justify-center gap-1.5"
+                          title="Reset Filters"
                         >
-                          Reset Filters
+                          <iconify-icon icon="solar:restart-bold" width="14" className="text-white"></iconify-icon>
+                          <span className="hidden sm:inline">Reset Filters</span>
                         </button>
                       </div>
                     </div>
