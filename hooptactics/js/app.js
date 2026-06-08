@@ -3283,26 +3283,6 @@ const getBasketballStatsAndBio = (card) => {
         };
       }
 
-      if (card.id && card.id.includes('victor-wembanyama-2025-topps-flagship-auto')) {
-        console.log("DIAGNOSTIC - Wemby flagship auto:", {
-          id: card.id,
-          rarity: card.rarity,
-          rawRarity: card.rarity || 'base',
-          selectedRarity: isLegendarySet ? 'legendary' : (card.rarity || 'base'),
-          isLegendarySet,
-          hasParallelEffect,
-          isParallel,
-          isAutoPatchParallel,
-          isGoldShimmer,
-          shimmerClass: isLegendarySet ? 'is-emerald-shimmer' : 
-            (card.rarity === 'prismatic' || card.rarity === 'gold' || card.rarity === 'one-of-one') ? 'is-gold' : 
-            isAutoPatchParallel ? 'is-gold' : 
-            hasParallelEffect ? 'is-iridescent' : 
-            isGoldShimmer ? 'is-gold' : '',
-          finalRarityStyle
-        });
-      }
-
       return (
         <div 
           ref={cardRef}
@@ -8292,24 +8272,67 @@ const getBasketballStatsAndBio = (card) => {
       const { theme, setTheme } = React.useContext(ThemeContext);
       // Initialize states from localStorage with sensible defaults
       const [screen, setScreen] = useState(() => {
-        return 'dashboard';
+        return localStorage.getItem('ht_screen') || 'onboarding';
       });
       const [expandedSets, setExpandedSets] = useState({});
       const [activeTab, setActiveTab] = useState(() => {
-        return 'home';
+        return localStorage.getItem('ht_activeTab') || 'home';
       });
       const [focusMode, setFocusMode] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedCardId, setSelectedCardId] = useState(null);
       const [modalMode, setModalMode] = useState('attributes'); // 'attributes' or 'analytics'
       const [favorites, setFavorites] = useState(() => {
-        return { sports: ['Basketball'], team: 'San Antonio Spurs', level: 'hobbyist', username: 'Collector', email: 'collector@hooptactics.com' };
+        const saved = localStorage.getItem('ht_favorites');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed && (!parsed.sports || !Array.isArray(parsed.sports))) {
+              parsed.sports = ['Basketball'];
+            }
+            return parsed;
+          } catch (e) {
+            // fallback
+          }
+        }
+        return { sports: ['Basketball'], team: '', level: '' };
       });
       const [userCollection, setUserCollection] = useState(() => {
-        return [
-          'victor-wembanyama-2025-topps-flagship-auto::Base',
-          'stephen-curry-2025-topps-flagship-patch::Base'
-        ];
+        const saved = localStorage.getItem('ht_userCollection');
+        if (saved) {
+          try {
+            let list = JSON.parse(saved);
+            let migrated = false;
+            let migratedList = list.map(item => {
+              if (item.startsWith('mikal-bridges-chrome-2025')) {
+                migrated = true;
+                item = item.replace('mikal-bridges-chrome-2025', 'mikal-bridges-flagship-2025');
+              }
+              if (item.includes('::')) {
+                const [baseId, pName] = item.split('::');
+                if (pName !== 'Base') {
+                  migrated = true;
+                  return `${baseId}::Base`;
+                }
+              } else {
+                migrated = true;
+                return `${item}::Base`;
+              }
+              return item;
+            });
+            const uniqueList = Array.from(new Set(migratedList));
+            if (uniqueList.length !== list.length) {
+              migrated = true;
+            }
+            if (migrated) {
+              localStorage.setItem('ht_userCollection', JSON.stringify(uniqueList));
+            }
+            return uniqueList;
+          } catch (e) {
+            return [];
+          }
+        }
+        return [];
       });
 
       const [activeSportFilter, setActiveSportFilter] = useState(() => {
@@ -8448,7 +8471,12 @@ const getBasketballStatsAndBio = (card) => {
 
       // Synchronize state changes to localStorage
       useEffect(() => {
-        // Temp disabled for testing
+        const cleared = localStorage.getItem('ht_cleared_mock_collection_v3');
+        if (!cleared) {
+          setUserCollection([]);
+          localStorage.setItem('ht_userCollection', JSON.stringify([]));
+          localStorage.setItem('ht_cleared_mock_collection_v3', 'true');
+        }
       }, []);
 
       useEffect(() => {
