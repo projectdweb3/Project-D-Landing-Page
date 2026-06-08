@@ -3181,14 +3181,14 @@ const getBasketballStatsAndBio = (card) => {
             (parallelName && (parallelName.toLowerCase().includes('green') || parallelName.toLowerCase().includes('emerald')))) {
           gameRarity = 'emerald';
         } else if (
-            (card.rarity && (card.rarity.includes('gold') || card.rarity.includes('one-of-one'))) || 
-            (parallelName && (parallelName.toLowerCase().includes('gold') || parallelName.toLowerCase().includes('one-of-one') || parallelName.toLowerCase().includes('1/1'))) ||
+            (card.rarity && (card.rarity.includes('gold') || card.rarity.includes('one-of-one') || card.rarity.includes('prismatic'))) || 
+            (parallelName && (parallelName.toLowerCase().includes('gold') || parallelName.toLowerCase().includes('one-of-one') || parallelName.toLowerCase().includes('prismatic') || parallelName.toLowerCase().includes('1/1'))) ||
             isAutoPatchParallel || isGoldShimmer) {
           gameRarity = 'gold';
         } else if (
             hasParallelEffect || isParallel ||
-            (card.rarity && (card.rarity.includes('silver') || card.rarity.includes('prismatic') || card.rarity.includes('cosmic') || card.rarity.includes('pink'))) ||
-            (parallelName && (parallelName.toLowerCase().includes('silver') || parallelName.toLowerCase().includes('prismatic') || parallelName.toLowerCase().includes('cosmic') || parallelName.toLowerCase().includes('pink') || parallelName.toLowerCase().includes('refractor') || parallelName.toLowerCase().includes('prizm')))) {
+            (card.rarity && (card.rarity.includes('silver') || card.rarity.includes('cosmic') || card.rarity.includes('pink'))) ||
+            (parallelName && (parallelName.toLowerCase().includes('silver') || parallelName.toLowerCase().includes('cosmic') || parallelName.toLowerCase().includes('pink') || parallelName.toLowerCase().includes('refractor') || parallelName.toLowerCase().includes('prizm')))) {
           gameRarity = 'iridescent';
         }
 
@@ -3223,7 +3223,15 @@ const getBasketballStatsAndBio = (card) => {
           }
         }[gameRarity];
       } else {
-        const selectedRarity = isLegendarySet ? 'legendary' : (card.rarity || 'base');
+        const rawRarity = card.rarity || 'base';
+        let selectedRarity = isLegendarySet ? 'legendary' : rawRarity;
+        
+        // Normalize rarity strings to ensure correct lookup
+        if (selectedRarity.includes('prismatic')) selectedRarity = 'prismatic';
+        if (selectedRarity.includes('gold')) selectedRarity = 'gold';
+        if (selectedRarity.includes('one-of-one') || selectedRarity.includes('1/1')) selectedRarity = 'one-of-one';
+        if (selectedRarity.includes('silver') || selectedRarity.includes('refractor') || selectedRarity.includes('prizm')) selectedRarity = 'silver';
+
         finalRarityStyle = {
           legendary: {
             '--toploader-border': 'rgba(16, 185, 129, 0.4)',
@@ -3250,18 +3258,49 @@ const getBasketballStatsAndBio = (card) => {
             '--toploader-glow-light': '0 0 15px rgba(218, 165, 32, 0.1)'
           },
           prismatic: {
-            '--toploader-border': 'rgba(236, 72, 153, 0.25)',
-            '--toploader-glow': '0 0 20px rgba(236, 72, 153, 0.18)',
-            '--toploader-border-light': 'rgba(236, 72, 153, 0.2)',
-            '--toploader-glow-light': '0 0 15px rgba(236, 72, 153, 0.1)'
+            '--toploader-border': 'rgba(255, 214, 10, 0.3)',
+            '--toploader-glow': '0 0 20px rgba(255, 214, 10, 0.15)',
+            '--toploader-border-light': 'rgba(218, 165, 32, 0.25)',
+            '--toploader-glow-light': '0 0 15px rgba(218, 165, 32, 0.1)'
           },
           'one-of-one': {
-            '--toploader-border': 'rgba(251, 191, 36, 0.4)',
-            '--toploader-glow': '0 0 25px rgba(251, 191, 36, 0.25)',
-            '--toploader-border-light': 'rgba(245, 158, 11, 0.3)',
-            '--toploader-glow-light': '0 0 18px rgba(245, 158, 11, 0.15)'
+            '--toploader-border': 'rgba(255, 214, 10, 0.3)',
+            '--toploader-glow': '0 0 20px rgba(255, 214, 10, 0.15)',
+            '--toploader-border-light': 'rgba(218, 165, 32, 0.25)',
+            '--toploader-glow-light': '0 0 15px rgba(218, 165, 32, 0.1)'
+          },
+          iridescent: {
+            '--toploader-border': 'rgba(192, 132, 252, 0.4)',
+            '--toploader-glow': '0 0 25px rgba(192, 132, 252, 0.25)',
+            '--toploader-border-light': 'rgba(236, 72, 153, 0.3)',
+            '--toploader-glow-light': '0 0 18px rgba(236, 72, 153, 0.15)'
           }
-        }[selectedRarity];
+        }[selectedRarity] || {
+          '--toploader-border': 'rgba(255, 255, 255, 0.08)',
+          '--toploader-glow': '0 0 15px rgba(56, 189, 248, 0.05)',
+          '--toploader-border-light': 'rgba(0, 0, 0, 0.08)',
+          '--toploader-glow-light': '0 0 12px rgba(56, 189, 248, 0.03)'
+        };
+      }
+
+      if (card.id && card.id.includes('victor-wembanyama-2025-topps-flagship-auto')) {
+        console.log("DIAGNOSTIC - Wemby flagship auto:", {
+          id: card.id,
+          rarity: card.rarity,
+          rawRarity: card.rarity || 'base',
+          selectedRarity: isLegendarySet ? 'legendary' : (card.rarity || 'base'),
+          isLegendarySet,
+          hasParallelEffect,
+          isParallel,
+          isAutoPatchParallel,
+          isGoldShimmer,
+          shimmerClass: isLegendarySet ? 'is-emerald-shimmer' : 
+            (card.rarity === 'prismatic' || card.rarity === 'gold' || card.rarity === 'one-of-one') ? 'is-gold' : 
+            isAutoPatchParallel ? 'is-gold' : 
+            hasParallelEffect ? 'is-iridescent' : 
+            isGoldShimmer ? 'is-gold' : '',
+          finalRarityStyle
+        });
       }
 
       return (
@@ -3359,7 +3398,13 @@ const getBasketballStatsAndBio = (card) => {
               {/* Gloss Shimmer overlays */}
               <div 
                 ref={shimmerRef}
-                className={`holo-shimmer ${isLegendarySet ? 'is-emerald-shimmer' : isAutoPatchParallel ? 'is-gold' : hasParallelEffect ? 'is-iridescent' : isGoldShimmer ? 'is-gold' : ''}`}
+                className={`holo-shimmer ${
+                  isLegendarySet ? 'is-emerald-shimmer' : 
+                  (card.rarity === 'prismatic' || card.rarity === 'gold' || card.rarity === 'one-of-one') ? 'is-gold' : 
+                  isAutoPatchParallel ? 'is-gold' : 
+                  hasParallelEffect ? 'is-iridescent' : 
+                  isGoldShimmer ? 'is-gold' : ''
+                }`}
               />
               {(isParallel || hasParallelEffect || isLegendarySet) && (
                 <div 
@@ -4481,7 +4526,7 @@ const getBasketballStatsAndBio = (card) => {
           }
           
           // Check requirements: on Offense or entering Defense immediately after opponent scores
-          const allowed = playerPossession || (!playerPossession && lastScorer === 'opponent');
+          const allowed = playerPossession || (!playerPossession && lastScorer === 'opponent') || (isTutorialMatch && tutorialStep === 7);
           if (!allowed) {
             triggerToast("Can only call timeout on Offense or immediately after opponent scores.");
             return;
@@ -4574,6 +4619,10 @@ const getBasketballStatsAndBio = (card) => {
       // CPU Offensive move selection
       const makeCpuOffensiveMove = () => {
         const oppStarters = opponentCards.slice(0, 5);
+        if (oppStarters.length === 0) {
+          console.warn("makeCpuOffensiveMove: opponent starters are empty!");
+          return;
+        }
         
         // Select shooter: best OVR/OFF starter that is not gassed
         const eligibleShooters = oppStarters.sort((a, b) => {
@@ -4584,6 +4633,7 @@ const getBasketballStatsAndBio = (card) => {
 
         // Pick the top shooter
         const shooter = eligibleShooters[0];
+        if (!shooter) return;
         const shooterStats = getCardGameStats(shooter);
         setSelectedAttackerId(shooter.id);
 
@@ -4642,6 +4692,10 @@ const getBasketballStatsAndBio = (card) => {
       // CPU Defensive Matchup selector
       const makeCpuDefensiveContest = (attackerCard) => {
         const oppStarters = opponentCards.slice(0, 5);
+        if (oppStarters.length === 0) {
+          console.warn("makeCpuDefensiveContest: opponent starters are empty!");
+          return;
+        }
         const attackerStats = getCardGameStats(attackerCard);
         const attPos = attackerStats.pos;
 
@@ -4671,6 +4725,11 @@ const getBasketballStatsAndBio = (card) => {
           // Pick defender with highest DEF stat
           defender = legalDefenders.sort((a, b) => getCardGameStats(b).def - getCardGameStats(a).def)[0];
         }
+
+        if (!defender) {
+          defender = oppStarters[0];
+        }
+        if (!defender) return;
 
         setSelectedDefenderId(defender.id);
         setGameLog(prev => [...prev, `🛡️ Opponent Contest: Coach ${opponentName} matches ${defender.player} (${getCardGameStats(defender).pos}) on defense.`]);
@@ -4711,7 +4770,7 @@ const getBasketballStatsAndBio = (card) => {
         if (!playerPossession) {
           // should not happen since player is on offense
         } else {
-          if (isTutorialMatch) {
+          if (isTutorialMatch && tutorialStep !== null) {
             // In the tutorial, do not trigger CPU contest choice automatically.
             // Let the player read step 4 and click "See Contest Matchup".
           } else {
@@ -6019,7 +6078,7 @@ const getBasketballStatsAndBio = (card) => {
           {/* 5. ACTIVE ARENA GAMEPLAY PANEL */}
           {gameState === 'playing' && (
             <div className="relative animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 items-start">
               
               {/* Left & Center: Scoreboard + Basketball Court */}
               <div className="lg:col-span-2 space-y-3 sm:space-y-6">
@@ -6434,7 +6493,7 @@ const getBasketballStatsAndBio = (card) => {
                           {/* Timeout button */}
                           <button
                             onClick={() => callTimeout(true)}
-                            disabled={playerTimeouts <= 0 || (!playerPossession && lastScorer !== 'opponent')}
+                            disabled={playerTimeouts <= 0 || (!playerPossession && lastScorer !== 'opponent' && !(isTutorialMatch && tutorialStep === 7))}
                             className={`w-full py-3 rounded-xl border border-white/10 hover:border-white/20 text-[9px] font-bold text-neutral-300 hover:text-white uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1.5 relative ${isTutorialMatch && tutorialStep === 7 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-[1.02] z-50' : ''}`}
                           >
                             <iconify-icon icon="solar:stopwatch-linear" width="12"></iconify-icon>
@@ -7171,7 +7230,7 @@ const getBasketballStatsAndBio = (card) => {
                             <div className="text-[9px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-1 text-left flex justify-between">
                               <span>🏀 Active On-Court Lineup (Starters)</span>
                             </div>
-                            <div className="flex gap-2 sm:gap-3 justify-center py-1 overflow-x-auto no-scrollbar">
+                            <div className="flex gap-2 sm:gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar">
                               {starters.map((id, sIdx) => {
                                 const c = playerCards.find(x => x.id === id);
                                 if (!c) return null;
@@ -7186,9 +7245,12 @@ const getBasketballStatsAndBio = (card) => {
                                     key={c.id + '_timeout_starter'}
                                     draggable="true"
                                     onDragStart={(e) => {
-                                      setDraggedCardId(c.id);
                                       e.dataTransfer.effectAllowed = "move";
                                       e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
                                     }}
                                     onDragOver={(e) => {
                                       e.preventDefault();
@@ -7220,35 +7282,47 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-200 flex-shrink-0 ${
-                                      isDragging ? 'opacity-40 scale-90' : ''
-                                    } ${
+                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
-                                        ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                                        ? 'ring-4 ring-amber-400 scale-105 z-20 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
                                         : isDragOver 
-                                          ? 'ring-4 ring-emerald-400 ring-dashed scale-105 z-20' 
+                                          ? 'ring-4 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_25px_rgba(16,185,129,0.8)] -rotate-1' 
                                           : 'hover:scale-[1.03]'
                                     }`}
                                   >
-                                    <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
-                                      <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                      {c.currentSta <= 20 && (
-                                        <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                          <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-xl border-2 border-dashed border-orange-500/40 bg-orange-950/20 flex flex-col items-center justify-center gap-1 shadow-[inset_0_0_15px_rgba(245,158,11,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="22" className="text-orange-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[5.5px] font-mono font-black text-orange-400/60 uppercase tracking-widest text-center px-1 leading-none">SWAPPING</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="20" className="text-emerald-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[6px] font-mono font-black text-emerald-400 uppercase tracking-wider text-center px-1 leading-none">SWAP PLAYERS</span>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
-                                    </div>
-                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
-                                      <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                    </span>
-                                    {/* Animated progress bar */}
-                                    <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
-                                      <div 
-                                        className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
-                                        style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                      />
-                                    </div>
-                                    <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
+                                        <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
+                                          <div 
+                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -7261,7 +7335,7 @@ const getBasketballStatsAndBio = (card) => {
                               <span>📋 Bench Reserves (Resting)</span>
                               <span className="text-[7px] text-emerald-400 font-normal">▲ +20 Stamina recovered!</span>
                             </div>
-                            <div className="flex gap-2 sm:gap-3 justify-center py-1 overflow-x-auto no-scrollbar">
+                            <div className="flex gap-2 sm:gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar">
                               {bench.map((id, bIdx) => {
                                 const c = playerCards.find(x => x.id === id);
                                 if (!c) return null;
@@ -7276,9 +7350,12 @@ const getBasketballStatsAndBio = (card) => {
                                     key={c.id + '_timeout_bench'}
                                     draggable="true"
                                     onDragStart={(e) => {
-                                      setDraggedCardId(c.id);
                                       e.dataTransfer.effectAllowed = "move";
                                       e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
                                     }}
                                     onDragOver={(e) => {
                                       e.preventDefault();
@@ -7310,39 +7387,51 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-200 flex-shrink-0 ${
-                                      isDragging ? 'opacity-40 scale-90' : ''
-                                    } ${
+                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
-                                        ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                                        ? 'ring-4 ring-amber-400 scale-105 z-20 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
                                         : isDragOver 
-                                          ? 'ring-4 ring-emerald-400 ring-dashed scale-105 z-20' 
+                                          ? 'ring-4 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_25px_rgba(16,185,129,0.8)] -rotate-1' 
                                           : 'hover:scale-[1.03]'
                                     }`}
                                   >
-                                    <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
-                                      <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                      {/* Stamina recovered badge */}
-                                      <span className="absolute top-1 right-1 text-[5px] font-extrabold text-emerald-400 bg-black/85 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
-                                        ▲ +20
-                                      </span>
-                                      {c.currentSta <= 20 && (
-                                        <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                          <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-xl border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center gap-1 shadow-[inset_0_0_15px_rgba(16,185,129,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="22" className="text-emerald-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[5.5px] font-mono font-black text-emerald-400/60 uppercase tracking-widest text-center px-1 leading-none">SWAPPING</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {/* Stamina recovered badge */}
+                                          <span className="absolute top-1 right-1 text-[5px] font-extrabold text-emerald-400 bg-black/85 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
+                                            ▲ +20
+                                          </span>
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-amber-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="20" className="text-amber-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[6px] font-mono font-black text-amber-400 uppercase tracking-wider text-center px-1 leading-none">SWAP PLAYERS</span>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
-                                    </div>
-                                    <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
-                                      <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                    </span>
-                                    {/* Animated progress bar */}
-                                    <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
-                                      <div 
-                                        className="h-full bg-emerald-500 animate-fill-stamina" 
-                                        style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                      />
-                                    </div>
-                                    <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
+                                        <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
+                                          <div 
+                                            className="h-full bg-emerald-500 animate-fill-stamina" 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -7355,7 +7444,7 @@ const getBasketballStatsAndBio = (card) => {
                             📋 Opponent Bench & Recovery Status
                           </div>
                           
-                          <div className="flex gap-3 sm:gap-4 justify-start sm:justify-center overflow-x-auto no-scrollbar w-full pb-1 relative">
+                          <div className="flex gap-3 sm:gap-4 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-1 relative">
                             {opponentCards.slice(5, 10).map((c, sIdx) => {
                               const stats = getCardGameStats(c);
                               return (
@@ -8203,68 +8292,26 @@ const getBasketballStatsAndBio = (card) => {
       const { theme, setTheme } = React.useContext(ThemeContext);
       // Initialize states from localStorage with sensible defaults
       const [screen, setScreen] = useState(() => {
-        return localStorage.getItem('ht_screen') || 'onboarding';
+        return 'dashboard';
       });
       const [expandedSets, setExpandedSets] = useState({});
       const [activeTab, setActiveTab] = useState(() => {
-        return localStorage.getItem('ht_activeTab') || 'home';
+        return 'home';
       });
       const [focusMode, setFocusMode] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedCardId, setSelectedCardId] = useState(null);
       const [modalMode, setModalMode] = useState('attributes'); // 'attributes' or 'analytics'
       const [favorites, setFavorites] = useState(() => {
-        const saved = localStorage.getItem('ht_favorites');
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            if (parsed && (!parsed.sports || !Array.isArray(parsed.sports))) {
-              parsed.sports = ['Basketball'];
-            }
-            return parsed;
-          } catch (e) {
-            // fallback
-          }
-        }
-        return { sports: ['Basketball'], team: '', level: '' };
+        return { sports: ['Basketball'], team: 'San Antonio Spurs', level: 'hobbyist', username: 'Collector', email: 'collector@hooptactics.com' };
       });
       const [userCollection, setUserCollection] = useState(() => {
-        const saved = localStorage.getItem('ht_userCollection');
-        if (saved) {
-          try {
-            let list = JSON.parse(saved);
-            let migrated = false;
-            let migratedList = list.map(item => {
-              if (item.startsWith('mikal-bridges-chrome-2025')) {
-                migrated = true;
-                item = item.replace('mikal-bridges-chrome-2025', 'mikal-bridges-flagship-2025');
-              }
-              if (item.includes('::')) {
-                const [baseId, pName] = item.split('::');
-                if (pName !== 'Base') {
-                  migrated = true;
-                  return `${baseId}::Base`;
-                }
-              } else {
-                migrated = true;
-                return `${item}::Base`;
-              }
-              return item;
-            });
-            const uniqueList = Array.from(new Set(migratedList));
-            if (uniqueList.length !== list.length) {
-              migrated = true;
-            }
-            if (migrated) {
-              localStorage.setItem('ht_userCollection', JSON.stringify(uniqueList));
-            }
-            return uniqueList;
-          } catch (e) {
-            return [];
-          }
-        }
-        return [];
+        return [
+          'victor-wembanyama-2025-topps-flagship-auto::Base',
+          'stephen-curry-2025-topps-flagship-patch::Base'
+        ];
       });
+
       const [activeSportFilter, setActiveSportFilter] = useState(() => {
         const saved = localStorage.getItem('ht_favorites');
         if (saved) {
@@ -8401,12 +8448,7 @@ const getBasketballStatsAndBio = (card) => {
 
       // Synchronize state changes to localStorage
       useEffect(() => {
-        const cleared = localStorage.getItem('ht_cleared_mock_collection_v3');
-        if (!cleared) {
-          setUserCollection([]);
-          localStorage.setItem('ht_userCollection', JSON.stringify([]));
-          localStorage.setItem('ht_cleared_mock_collection_v3', 'true');
-        }
+        // Temp disabled for testing
       }, []);
 
       useEffect(() => {

@@ -800,6 +800,11 @@
       background: rgba(255, 255, 255, 0.25);
     }
 
+    .safe-scroll-center {
+      justify-content: flex-start;
+      justify-content: safe center;
+    }
+
     .stagger-1 { animation-delay: 0.05s; }
     .stagger-2 { animation-delay: 0.1s; }
     .stagger-3 { animation-delay: 0.15s; }
@@ -1412,10 +1417,10 @@
   <div id="root" class="relative z-10 w-full h-screen overflow-hidden flex text-gray-200"></div>
 
   <!-- HoopTactics Static Data & Calculations (Pre-loaded, non-Babel parsed) -->
-  <script src="js/data.js"></script>
+  <script src="js/data.js?v=2"></script>
 
   <!-- HoopTactics React UI (Babel-compiled in-browser) -->
-  <script type="text/babel" src="js/app.js"></script>
+  <script type="text/babel" src="js/app.js?v=2"></script>
 </body>
 
 </html>
