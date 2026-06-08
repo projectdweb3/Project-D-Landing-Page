@@ -8290,10 +8290,12 @@ const getBasketballStatsAndBio = (card) => {
         if (saved) {
           try {
             const parsed = JSON.parse(saved);
-            if (parsed && (!parsed.sports || !Array.isArray(parsed.sports))) {
-              parsed.sports = ['Basketball'];
+            if (parsed) {
+              if (!parsed.sports || !Array.isArray(parsed.sports)) {
+                parsed.sports = ['Basketball'];
+              }
+              return parsed;
             }
-            return parsed;
           } catch (e) {
             // fallback
           }
@@ -8437,37 +8439,37 @@ const getBasketballStatsAndBio = (card) => {
   const activeDrops = React.useMemo(() => {
     return [
       {
-        id: 'cooper-flagg-2025-topps-now-debut',
+        id: 'jalen-brunson-2025-topps-now-finals-patch-auto-v2',
         sport: 'Basketball',
         brand: 'Topps Now Basketball',
-        title: 'Cooper Flagg NBA Debut Edition',
-        desc: "Exclusive 24-hour drop celebrating the first-round draft pick's highly anticipated professional debut.",
-        price: '$19.99',
-        printRun: 'MTO',
+        title: 'Jalen Brunson Finals Patch Auto',
+        desc: "1/1 on-card autograph patch card commemorating Jalen Brunson's clutch Finals Game 1 performance.",
+        price: '$29.99',
+        printRun: '1/1',
         timeKey: 'drop1',
-        toast: 'Pre-ordered! Cooper Flagg NBA Debut Edition has been added to your collection binder!'
+        toast: 'Pre-ordered! Jalen Brunson Finals Patch Auto has been added to your collection binder!'
       },
       {
-        id: 'victor-wembanyama-2025-topps-now-debut',
-        sport: 'Basketball',
-        brand: 'Topps Now Basketball',
-        title: 'Victor Wembanyama Unanimous ROTY',
-        desc: "Special release honoring Wembanyama's historic rookie accomplishment.",
-        price: '$14.99',
-        printRun: 'MTO',
-        timeKey: 'drop2',
-        toast: 'Pre-ordered! Victor Wembanyama ROTY Edition has been added to your collection binder!'
-      },
-      {
-        id: 'jalen-brunson-2025-topps-chrome-auto',
+        id: 'karl-anthony-towns-2025-topps-chrome-auto',
         sport: 'Basketball',
         brand: 'Topps Chrome Basketball',
-        title: 'Jalen Brunson All-Star Edition',
-        desc: "Limited edition refractor card honoring Jalen Brunson's career-high scoring performance in the playoffs.",
+        title: 'Karl-Anthony Towns "The Big Bodega"',
+        desc: 'Highest rated Karl-Anthony Towns autograph parallel card, nicknamed "The Big Bodega".',
         price: '$29.99',
         printRun: 'LTD /99',
+        timeKey: 'drop2',
+        toast: 'Pre-ordered! Karl-Anthony Towns "The Big Bodega" Edition has been added to your collection binder!'
+      },
+      {
+        id: 'victor-wembanyama-2025-topps-chrome-limited-auto',
+        sport: 'Basketball',
+        brand: 'Topps Chrome Basketball',
+        title: 'Victor Wembanyama Chrome Autograph',
+        desc: 'Special gold refractor autograph parallel card celebrating Wembanyama\'s stellar sophomore season.',
+        price: '$29.99',
+        printRun: 'LTD /25',
         timeKey: 'drop3',
-        toast: 'Pre-ordered! Jalen Brunson All-Star Edition has been added to your collection binder!'
+        toast: 'Pre-ordered! Victor Wembanyama Chrome Autograph has been added to your collection binder!'
       }
     ];
   }, []);
@@ -8578,9 +8580,9 @@ const getBasketballStatsAndBio = (card) => {
 
       // Real-time ticking countdown timers for Live Drops
       const [timeRemaining, setTimeRemaining] = useState({
-        drop1: 8 * 3600 + 14 * 60 + 20, // Topps Now Cooper Flagg (8h 14m 20s)
-        drop2: 14 * 3600 + 42 * 60 + 5, // Panini Instant Wemby (14h 42m 05s)
-        drop3: 3 * 3600 + 11 * 60 + 40  // Topps Chrome Jalen Brunson (3h 11m 40s)
+        drop1: 8 * 3600 + 14 * 60 + 20, // Jalen Brunson Finals Patch Auto (8h 14m 20s)
+        drop2: 14 * 3600 + 42 * 60 + 5, // Karl-Anthony Towns "The Big Bodega" Auto (14h 42m 05s)
+        drop3: 3 * 3600 + 11 * 60 + 40  // Victor Wembanyama Topps Chrome Auto (3h 11m 40s)
       });
 
       useEffect(() => {
@@ -9722,15 +9724,17 @@ const getBasketballStatsAndBio = (card) => {
 
       {/* Upcoming calendar section */}
                   <div className="space-y-6 pt-4">
-                    <h3 className="text-xs uppercase font-extrabold text-neutral-400 tracking-widest border-b border-white/5 pb-2">Upcoming Release Calendar (2025/2026 Sets)</h3>
+                    <h3 className="text-xs uppercase font-extrabold text-neutral-400 tracking-widest border-b border-white/5 pb-2">Topps Basketball Release Calendar (2025/2026 Sets)</h3>
                     
                     <div className="space-y-4">
                       {[
-                        { set: '2025 Topps Chrome Baseball Series 1', sport: 'Baseball', date: 'June 02, 2026', days: 4, msrp: 199.99, hype: 5 },
-                        { set: '2025-26 Panini Prizm Basketball', sport: 'Basketball', date: 'June 10, 2026', days: 12, msrp: 349.99, hype: 5 },
-                        { set: '2025 Panini Donruss Football', sport: 'Football', date: 'June 19, 2026', days: 21, msrp: 149.99, hype: 4 },
-                        { set: '2025 Topps Heritage Baseball', sport: 'Baseball', date: 'June 28, 2026', days: 30, msrp: 119.99, hype: 3 },
-                        { set: '2025 Leaf Metal Sports Draft', sport: 'Multi-Sport', date: 'July 13, 2026', days: 45, msrp: 129.99, hype: 3.5 }
+                        { set: '2025-26 Topps Motif Basketball', sport: 'Basketball', date: 'June 09, 2026', days: 1, msrp: 1399.99, hype: 5, released: false },
+                        { set: '2025-26 Topps Chrome Cactus Jack Basketball', sport: 'Basketball', date: 'June 19, 2026', days: 11, msrp: 249.99, hype: 5, released: false },
+                        { set: '2025-26 Topps NBL Basketball', sport: 'Basketball', date: 'June 25, 2026', days: 17, msrp: 119.99, hype: 3.5, released: false },
+                        { set: '2025-26 Topps Finest Basketball', sport: 'Basketball', date: 'July 08, 2026', days: 30, msrp: 299.99, hype: 4.5, released: false },
+                        { set: '2025-26 Topps Hoops Basketball', sport: 'Basketball', date: 'April 15, 2026', days: 0, msrp: 149.99, hype: 4, released: true },
+                        { set: '2025-26 Topps Chrome Basketball', sport: 'Basketball', date: 'December 18, 2025', days: 0, msrp: 269.99, hype: 5, released: true },
+                        { set: '2025-26 Topps Flagship Basketball', sport: 'Basketball', date: 'October 23, 2025', days: 0, msrp: 119.99, hype: 4.5, released: true }
                       ].map((item, idx) => {
                         const isSubscribed = subscribedDrops.includes(item.set);
                         return (
@@ -9742,7 +9746,9 @@ const getBasketballStatsAndBio = (card) => {
                               </div>
                               <div>
                                 <h4 className="text-sm font-bold text-white">{item.set}</h4>
-                                <p className="text-[10px] text-neutral-400 uppercase mt-0.5">LAUNCH: {item.date} • {item.days} days remaining</p>
+                                <p className="text-[10px] text-neutral-400 uppercase mt-0.5">
+                                  LAUNCH: {item.date} • {item.released ? <span className="text-emerald-400 font-semibold">RELEASED (RECENT)</span> : `${item.days} ${item.days === 1 ? 'day' : 'days'} remaining`}
+                                </p>
                               </div>
                             </div>
 
@@ -9765,14 +9771,20 @@ const getBasketballStatsAndBio = (card) => {
                               </div>
 
                               <button 
-                                onClick={() => toggleSubscribe(item.set)}
-                                className={`conic-btn dramatic-hover py-2 px-4 w-full md:w-auto ${isSubscribed ? 'orange' : 'primary'}`}
+                                onClick={() => {
+                                  if (item.released) {
+                                    window.open('https://www.topps.com', '_blank');
+                                  } else {
+                                    toggleSubscribe(item.set);
+                                  }
+                                }}
+                                className={`conic-btn dramatic-hover py-2 px-4 w-full md:w-auto ${item.released ? '' : (isSubscribed ? 'orange' : 'primary')}`}
                               >
                                 <div className="conic-spin-bg"></div>
                                 <div className="conic-btn-mask"></div>
                                 <span className="relative z-10 text-[9px] font-bold uppercase text-white flex items-center justify-center gap-1">
-                                  <iconify-icon icon={isSubscribed ? "solar:bell-bold" : "solar:bell-linear"} width="10"></iconify-icon> 
-                                  {isSubscribed ? 'Alert On 🔔' : 'Subscribe Alert'}
+                                  <iconify-icon icon={item.released ? "solar:square-share-line-linear" : (isSubscribed ? "solar:bell-bold" : "solar:bell-linear")} width="10"></iconify-icon> 
+                                  {item.released ? 'View on Topps' : (isSubscribed ? 'Alert On 🔔' : 'Subscribe Alert')}
                                 </span>
                               </button>
                             </div>
@@ -11093,7 +11105,7 @@ const getBasketballStatsAndBio = (card) => {
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs text-neutral-300">
+                          <div className="grid grid-cols-1 gap-4 font-mono text-xs text-neutral-300">
                             <div>
                               <div className="flex justify-between font-bold mb-1">
                                 <span>OFFENSE (OFF)</span>
@@ -11128,7 +11140,7 @@ const getBasketballStatsAndBio = (card) => {
                           {/* Expanded attributes section */}
                           <div className="border-t border-white/5 pt-4 mt-4">
                             <h4 className="text-[10px] uppercase font-bold text-neutral-500 mb-3 tracking-wider font-mono">Detailed Attributes</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 font-mono text-xs text-neutral-300">
+                            <div className="grid grid-cols-1 gap-3.5 font-mono text-xs text-neutral-300">
                               <div>
                                 <div className="flex justify-between font-bold mb-1">
                                   <span>3-POINT (3PT)</span>
