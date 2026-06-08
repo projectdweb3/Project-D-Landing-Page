@@ -33,6 +33,7 @@ window.RAW_CARDS = [
   ["Basketball", "1990-skybox", "larry-bird-1990-skybox", "Larry Bird", "Boston Celtics", 1990, "SkyBox", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Forward", "6'9", "220 lbs", "1979"],
   ["Basketball", "1990-skybox", "magic-johnson-1990-skybox", "Magic Johnson", "Los Angeles Lakers", 1990, "SkyBox", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Guard", "6'9", "220 lbs", "1979"],
   ["Basketball", "1990-skybox", "michael-jordan-1990-skybox", "Michael Jordan", "Chicago Bulls", 1990, "SkyBox", "#1", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Guard", "6'6", "195 lbs", "1984"],
+  ["Basketball", "1990-skybox", "patrick-ewing-1990-skybox", "Patrick Ewing", "New York Knicks", 1990, "SkyBox", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center", "7'0", "240 lbs", "1985"],
   ["Basketball", "1991-upper-deck", "charles-barkley-1991-upper-deck", "Charles Barkley", "Philadelphia 76ers", 1991, "Upper Deck", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward", "6'6", "252 lbs", "1984"],
   ["Basketball", "1991-upper-deck", "clyde-drexler-1991-upper-deck", "Clyde Drexler", "Portland Trail Blazers", 1991, "Upper Deck", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'7", "210 lbs", "1983"],
   ["Basketball", "1991-upper-deck", "hakeem-olajuwon-1991-upper-deck", "Hakeem Olajuwon", "Houston Rockets", 1991, "Upper Deck", "#1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center", "7'0", "255 lbs", "1984"],
