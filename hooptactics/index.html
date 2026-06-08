@@ -5,8 +5,8 @@
   <base href="/hooptactics/">
   <meta charset="UTF-8" />
   <script>
-    // Redirect /hooptact (no trailing slash) to /hooptact/ so that relative paths resolve correctly
-    if (window.location.pathname.endsWith('/hooptact')) {
+    // Redirect /hooptactics or /hooptact (no trailing slash) to trailing slash so that relative paths resolve correctly
+    if (window.location.pathname.endsWith('/hooptactics') || window.location.pathname.endsWith('/hooptact')) {
       window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
     }
 
