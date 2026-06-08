@@ -869,6 +869,201 @@ const { useState, useEffect, useRef, useMemo } = React;
         );
       }
 
+      // 18b. 2012-13 Panini Flawless (Basketball)
+      if (card.setId === '2012-flawless') {
+        return (
+          <div className="absolute inset-0 w-full h-full p-3 flex flex-col justify-between bg-gradient-to-b from-[#FCFAF8] to-[#F2EFE9]" style={{ border: '3px solid #D4AF37', borderRadius: '14px', boxShadow: '0 0 15px rgba(0,0,0,0.1)' }}>
+            <div className="border border-[#D4AF37]/30 p-1 flex-1 flex flex-col justify-between relative overflow-hidden bg-white/40 rounded-lg">
+              {/* Gemstone Badging */}
+              <div className="flex justify-between items-center text-[7px] text-[#A67C1E] font-serif font-black tracking-widest relative z-10 select-none">
+                <span className="flex items-center gap-1">
+                  <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-current text-cyan-500"><path d="M12 2L2 9l10 13 10-13L12 2zm0 3.8L17.8 9 12 16.5 6.2 9 12 5.8z"/></svg>
+                  FLAWLESS
+                </span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              {/* Player Image area with luxury frame */}
+              <div className="w-[85%] aspect-[5/4] mx-auto my-auto relative border border-neutral-300 bg-neutral-900 overflow-hidden rounded shadow-inner z-10">
+                {renderPlayerSilhouette()}
+              </div>
+
+              {/* Patch & Autograph Section */}
+              <div className="grid grid-cols-5 gap-2 items-center my-auto px-1">
+                {/* Patch */}
+                <div className="col-span-2 aspect-square bg-neutral-950 border border-neutral-300 p-0.5 flex items-center justify-center relative overflow-hidden rounded shadow-inner">
+                  <div className="w-full h-full flex flex-col">
+                    <div className="h-1/2 w-full" style={{ backgroundColor: c.primary }} />
+                    <div className="h-1/2 w-full" style={{ backgroundColor: c.secondary || c.primary }} />
+                  </div>
+                  <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,0,0,0.15)_25%,transparent_25%,transparent_75%,rgba(0,0,0,0.15)_75%),linear-gradient(45deg,rgba(0,0,0,0.15)_25%,transparent_25%,transparent_75%,rgba(0,0,0,0.15)_75%)] bg-[size:4px_4px]" />
+                  <span className="absolute bottom-0.5 right-1 text-[4px] font-mono text-white/50 tracking-wider">PATCH</span>
+                </div>
+                
+                {/* On-card Auto */}
+                <div className="col-span-3 h-10 border-b border-[#D4AF37]/50 flex flex-col justify-end items-center relative pb-1">
+                  <span className="text-[4px] font-mono uppercase text-neutral-400 absolute top-0 tracking-widest select-none">HAND-SIGNED</span>
+                  <span className="text-sm rotate-[-1deg] font-medium tracking-wide" style={{ fontFamily: "'Dancing Script', cursive", color: '#1A237E' }}>
+                    {card.player}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center text-[7px] font-mono font-bold mt-1 border-t border-[#D4AF37]/20 pt-1 text-neutral-500">
+                <span className="uppercase">{card.specs.position}</span>
+                <span className="font-bold text-[8px]" style={{ color: '#D4AF37', fontFamily: "'Space Mono', monospace" }}>
+                  15/25
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // 18c. 2012-13 Panini Gold Standard (Basketball)
+      if (card.setId === '2012-gold-standard') {
+        const isLimited = card.parallel.includes('Limited') || card.id.includes('-limited');
+        return (
+          <div className="absolute inset-0 w-full h-full p-2.5 flex flex-col justify-between" style={{ background: 'linear-gradient(135deg, #A37A2C 0%, #E6C687 25%, #B8903C 50%, #FDF3CD 75%, #926E25 100%)', border: '3px solid #6A4E1A', borderRadius: '12px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)' }}>
+            <div className="border-[1.5px] border-[#503A12]/40 p-1 flex-1 flex flex-col justify-between bg-black/10 rounded">
+              {/* Header */}
+              <div className="flex justify-between items-center text-[7.5px] text-[#503A12] font-black tracking-widest font-sans">
+                <span>GOLD STANDARD</span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              {/* Player Image with Golden Border */}
+              <div className="w-[85%] aspect-[4/5] mx-auto border-2 border-[#503A12] bg-[#FAF0CD]/10 overflow-hidden relative shadow-md my-auto">
+                {renderPlayerSilhouette()}
+                <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(ellipse_at_center,#000_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
+              </div>
+
+              {/* Bottom Card details / signature area */}
+              {isLimited ? (
+                <div className="bg-black/90 border border-[#503A12]/40 rounded text-center py-1 mt-1 shadow-lg">
+                  <div className="text-[9px] font-black uppercase text-[#E6C687] tracking-widest">{card.player}</div>
+                  <div className="text-[5.5px] text-[#FAF0CD]/60 font-extrabold uppercase mt-0.5 tracking-wider">{card.team}</div>
+                </div>
+              ) : (
+                <div className="h-11 border-b border-[#503A12]/60 flex flex-col justify-end items-center relative pb-1 my-1">
+                  <span className="text-[4px] font-mono uppercase text-[#503A12]/80 absolute top-0 tracking-widest select-none">GOLD INK AUTOGRAPH</span>
+                  <span className="text-sm font-semibold tracking-wide" style={{ fontFamily: "'Dancing Script', cursive", color: '#000000' }}>
+                    {card.player}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center text-[7px] font-mono font-bold mt-1 text-[#503A12]">
+                <span className="uppercase">{card.specs.position}</span>
+                <span className="font-bold text-[8px]" style={{ fontFamily: "'Space Mono', monospace" }}>
+                  {isLimited ? '07/79' : '21/99'}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // 18d. 2012-13 Panini Immaculate (Basketball)
+      if (card.setId === '2012-immaculate') {
+        const isAutoOnly = card.type === 'Autograph Card';
+        const isPatchOnly = card.type === 'Patch Card';
+        return (
+          <div className="absolute inset-0 w-full h-full p-3 flex flex-col justify-between bg-[#FCFAF5]" style={{ border: '3.5px solid #8E9499', borderRadius: '14px', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)' }}>
+            <div className="flex-1 flex flex-col justify-between relative overflow-hidden rounded-lg">
+              {/* Bold diagonal team stripe accent */}
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-80 pointer-events-none transform translate-x-4 -translate-y-4 rotate-45" style={{ background: `linear-gradient(to bottom, ${c.primary}, ${c.secondary || c.primary})` }} />
+              
+              <div className="flex justify-between items-center text-[7px] text-neutral-500 font-serif font-black tracking-widest relative z-10 select-none">
+                <span>IMMACULATE</span>
+                <span className="text-[#FCFAF5] drop-shadow">#{card.specs.cardNum}</span>
+              </div>
+
+              {/* Player Image / Relic layout */}
+              <div className="grid grid-cols-5 gap-2 my-auto items-center mt-1.5 z-10">
+                <div className={`${isAutoOnly ? 'col-span-5' : 'col-span-3'} aspect-[4/3] border border-neutral-300 bg-neutral-900 relative rounded overflow-hidden shadow-inner`}>
+                  {renderPlayerSilhouette()}
+                </div>
+                {!isAutoOnly && (
+                  <div className={`${isPatchOnly ? 'col-span-5 aspect-[4/3]' : 'col-span-2 aspect-square'} bg-neutral-950 border border-neutral-300 p-0.5 flex items-center justify-center relative overflow-hidden rounded shadow-inner`}>
+                    <div className="w-full h-full flex flex-col">
+                      <div className="h-1/3 w-full" style={{ backgroundColor: c.primary }} />
+                      <div className="h-1/3 w-full bg-white" />
+                      <div className="h-1/3 w-full" style={{ backgroundColor: c.secondary || c.primary }} />
+                    </div>
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:4px_4px]" />
+                    <span className="absolute bottom-0.5 right-1 text-[4px] font-mono text-white/50 tracking-wider">PATCH</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Autograph signature line */}
+              {!isPatchOnly ? (
+                <div className="h-11 border-b border-neutral-300 flex flex-col justify-end items-center relative pb-1 my-1">
+                  <span className="text-[4px] font-mono uppercase text-neutral-400 absolute top-0.5 tracking-widest select-none">IMMACULATE SIGNATURES</span>
+                  <span className="text-base rotate-[-1.5deg] font-medium tracking-wide" style={{ fontFamily: "'Dancing Script', cursive", color: '#1A237E' }}>
+                    {card.player}
+                  </span>
+                </div>
+              ) : (
+                <div className="bg-neutral-900/5 border border-neutral-300 rounded text-center py-1.5 my-1">
+                  <div className="text-[9px] font-black uppercase text-neutral-800 tracking-widest">{card.player}</div>
+                  <div className="text-[5.5px] text-neutral-400 font-extrabold uppercase mt-0.5 tracking-wider">{card.team}</div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center text-[7px] font-mono font-bold mt-1 border-t border-neutral-200 pt-1 text-neutral-500">
+                <span className="uppercase">{card.specs.position}</span>
+                <span className="font-bold text-[8px]" style={{ color: c.primary, fontFamily: "'Space Mono', monospace" }}>
+                  {isPatchOnly ? '10/99' : '05/99'}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // 18e. 2023-24 Panini Select (Basketball)
+      if (card.setId === '2023-select') {
+        return (
+          <div className="absolute inset-0 w-full h-full p-2.5 flex flex-col justify-between bg-neutral-950 text-white" style={{ border: '3px solid #5C6370', borderRadius: '12px', boxShadow: '0 0 10px rgba(0,0,0,0.8)' }}>
+            <div className="border border-white/10 p-1 flex-1 flex flex-col justify-between relative overflow-hidden bg-black/60 rounded-lg">
+              {/* Carbon fiber grid pattern */}
+              <div className="absolute inset-0 opacity-10 bg-[linear-gradient(45deg,#fff_25%,transparent_25%),linear-gradient(-45deg,#fff_25%,transparent_25%),linear-gradient(135deg,#fff_25%,transparent_25%)] bg-[size:6px_6px]" />
+              
+              {/* Glowing side neon lines */}
+              <div className="absolute top-4 left-0 w-1 h-[75%] rounded-r" style={{ backgroundColor: c.primary, boxShadow: `0 0 8px ${c.primary}` }} />
+              <div className="absolute top-4 right-0 w-1 h-[75%] rounded-l" style={{ backgroundColor: c.secondary || c.primary, boxShadow: `0 0 8px ${c.secondary || c.primary}` }} />
+
+              <div className="flex justify-between items-center text-[7px] text-neutral-400 font-mono tracking-widest relative z-10 font-bold select-none">
+                <span>SELECT '23</span>
+                <span>#{card.specs.cardNum}</span>
+              </div>
+
+              {/* Hexagonal Player Image container */}
+              <div className="w-[85%] aspect-[4/5] mx-auto my-auto relative border border-white/20 bg-neutral-900 overflow-hidden shadow-2xl z-10" style={{ clipPath: 'polygon(15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%, 0% 15%)' }}>
+                {renderPlayerSilhouette()}
+              </div>
+
+              {/* Signature Box */}
+              <div className="h-10 border-b border-white/20 flex flex-col justify-end items-center relative pb-1 my-1">
+                <span className="text-[4px] font-mono uppercase text-neutral-500 absolute top-0 tracking-widest select-none">SELECT SIGNATURES</span>
+                <span className="text-sm rotate-[-1deg] font-medium tracking-wide" style={{ fontFamily: "'Dancing Script', cursive", color: '#64B5F6' }}>
+                  {card.player}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center text-[7px] font-mono font-bold mt-1 border-t border-white/10 pt-1 text-neutral-400">
+                <span className="uppercase">{card.specs.position}</span>
+                <span className="font-bold text-[8px]" style={{ color: c.primary, fontFamily: "'Space Mono', monospace" }}>
+                  1/10
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       // 19. 2025-26 Topps Now Basketball (Basketball)
       if (card.setId === '2025-topps-now') {
         return (
@@ -1958,6 +2153,12 @@ const getBasketballStatsAndBio = (card) => {
     bio = "One of the most lethal scorers in NBA history, Anthony captured the 2012-13 NBA scoring title while leading the Knicks to 54 wins and the Atlantic Division title.";
   } else if (nameLower.includes("brunson")) {
     bio = "Brunson took New York by storm, transforming the Knicks with his crafty footwork, elite mid-range scoring, and leadership, earning back-to-back All-NBA and All-Star honors.";
+  } else if (nameLower.includes("butler")) {
+    bio = "Famous for his relentless work ethic, elite two-way play, and legendary playoff heroics, 'Jimmy Buckets' has established himself as one of the NBA's ultimate competitors and clutch performers.";
+  } else if (nameLower.includes("stoudemire")) {
+    bio = "One of the most explosive and athletic pick-and-roll finishers of his era, Stoudemire dominated the paint with thunderous dunks, earning Rookie of the Year and six All-Star nods.";
+  } else if (nameLower.includes("vucevic")) {
+    bio = "A highly skilled scoring center and double-double machine, Vucevic has anchored NBA frontcourts for over a decade with his smooth shooting touch, post moves, and elite rebounding.";
   } else {
     bio = "A standout performer whose skill and court vision make him a critical asset and fan favorite in the modern league.";
   }
@@ -2032,7 +2233,7 @@ const getBasketballStatsAndBio = (card) => {
       // Basketball Custom Card Back Render (HoopTactics ratings and attributes)
       if (card.sport === 'Basketball') {
         const { rows, bio } = getBasketballStatsAndBio(card);
-        const { off, def, sta, pos, ovr, perks, primaryBadge } = getCardGameStats(card);
+        const { off, def, sta, pos, ovr, perks, primaryBadge, tpt, mid, rim, ath, clu } = getCardGameStats(card);
         
         // Compact mini-card back for search index grids
         if (size === 'sm') {
@@ -2124,6 +2325,30 @@ const getBasketballStatsAndBio = (card) => {
                   </div>
                 </div>
 
+                {/* Detailed Attributes Strip */}
+                <div className={`grid grid-cols-5 gap-1 text-center font-mono text-[7px] border-t border-b py-1 ${isLight ? 'border-neutral-200 bg-neutral-50/50 text-neutral-600' : 'border-white/5 bg-white/5 text-neutral-300'} rounded-md`}>
+                  <div>
+                    <span className="block text-[5.5px] uppercase text-neutral-500 font-bold">3PT</span>
+                    <span className={`font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{tpt}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[5.5px] uppercase text-neutral-500 font-bold">MID</span>
+                    <span className={`font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{mid}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[5.5px] uppercase text-neutral-500 font-bold">RIM</span>
+                    <span className={`font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{rim}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[5.5px] uppercase text-neutral-500 font-bold">ATH</span>
+                    <span className={`font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{ath}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[5.5px] uppercase text-neutral-500 font-bold">CLU</span>
+                    <span className={`font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{clu}</span>
+                  </div>
+                </div>
+
                 <div className={`border-t ${isLight ? 'border-neutral-200' : 'border-white/5'} pt-1.5 mt-1`}>
                   <div className={`flex items-center justify-between border rounded-xl px-2.5 py-1.5 ${isLight ? 'bg-white border-neutral-200' : 'bg-white/5 border-white/10'}`}>
                     <div className="flex items-center gap-1.5">
@@ -2208,6 +2433,30 @@ const getBasketballStatsAndBio = (card) => {
                       <span className="text-neutral-500 font-bold block uppercase text-[7px]">Primary Style</span>
                       <span className={`text-[9.5px] font-black ${isLight ? 'text-neutral-900' : 'text-white'}`}>{primaryBadge.name}</span>
                     </div>
+                  </div>
+                </div>
+
+                {/* Detailed Attributes block */}
+                <div className="grid grid-cols-5 gap-1.5 my-2 font-mono text-[8px]">
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">3PT</span>
+                    <span className={`text-[13px] font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{tpt}</span>
+                  </div>
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">MID</span>
+                    <span className={`text-[13px] font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{mid}</span>
+                  </div>
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">RIM</span>
+                    <span className={`text-[13px] font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{rim}</span>
+                  </div>
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">ATH</span>
+                    <span className={`text-[13px] font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{ath}</span>
+                  </div>
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">CLU</span>
+                    <span className={`text-[13px] font-black ${isLight ? 'text-neutral-800' : 'text-white'}`}>{clu}</span>
                   </div>
                 </div>
 
@@ -3782,14 +4031,14 @@ const getBasketballStatsAndBio = (card) => {
             return "You are now in the Tactical Phase. Here you can inspect team chemistry, view bench depth, or call timeouts. At the start of a quarter, you can make substitutions without using a timeout. Click the button in the Action Console to start the play!";
           case 2:
             return playerPossession
-              ? "You have the ball! Click on one of your active starters on the court (the bottom row of cards) to designate them as the shooter. Tip: Pick a player with a high Offense (OFF) rating to beat the defender!"
+              ? "You have the ball! Click on one of your active starters on the court (the bottom row of cards) to designate them as the shooter. Tip: Pick a player with a high rating in the shot type you want to take (like 3PT or Rim) to beat the defender's contest!"
               : "Opponent has declared an attack! Click on one of your active starters to match up as the defender. Note the positional restriction (e.g. PG can only defend PG/SG; C defends PF/C). Select a card with a high Defense (DEF) rating!";
           case 3:
-            return "Now choose your shot in the Action Console: select a safe 2-Pointer, or attempt a high-reward 3-Pointer (or 3-Point Play drive). Note: Players have game limits on how many three-pointers/and-ones they can attempt.";
+            return "Now choose your shot in the Action Console: choose between a Mid-Range Pull-Up (2 pts, uses MID), an Attack to the Basket (2 pts, uses RIM), a 3-Pointer (3 pts, uses 3PT, limit 6), or a 3-Point Play (3 pts, uses ATH, limit 6). Pick a shooter with high attributes for that specific shot!";
           case 4:
             return "You selected your shot! Now the CPU is matching up a defender on court. Prepare for the contest roll in the center spotlight.";
           case 5:
-            return "It's time for the matchup roll! Attacker's OFF and Defender's DEF are compiled with active perks (like Stepback Maestro or Glove Defense). Then, a coin flip is spun: HEADS grants offense +4 (or +6), while TAILS grants defense +4. Highest final rating wins the bucket! Click the button to flip.";
+            return "It's time for the matchup roll! Attacker's shot rating and Defender's hybrid contest (70% DEF + 30% of shot rating) are compiled with active perks (like Stepback Maestro or Glove Defense). In the 4th Quarter, Clutch ratings add a boost! Then, a coin flip is spun: HEADS grants offense +4 (or +6), while TAILS grants defense +4. Highest final rating wins the bucket! Click the button to flip.";
           case 6:
             return "The play is resolved! Check the Play-by-Play Commentary log at the top right to see exactly which perks triggered and what scores were reached. Click the button in the Action Console to advance to the next possession.";
           case 7:
@@ -4091,7 +4340,8 @@ const getBasketballStatsAndBio = (card) => {
           currentSta: getCardGameStats(c).sta,
           gassed: false,
           usedGrailPerk: false,
-          threesAttempted: 0
+          threesAttempted: 0,
+          and1sAttempted: 0
         }));
       };
 
@@ -4103,11 +4353,11 @@ const getBasketballStatsAndBio = (card) => {
         // Form player deck dynamic state
         const pStarters = activeStarters.map(id => {
           const c = SPORTS_CARDS.find(x => x.id === id) || SPORTS_CARDS[0];
-          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0 };
+          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0 };
         });
         const pBench = activeBench.map(id => {
           const c = SPORTS_CARDS.find(x => x.id === id) || SPORTS_CARDS[1];
-          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0 };
+          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0 };
         });
         
         setPlayerCards([...pStarters, ...pBench]);
@@ -4337,33 +4587,55 @@ const getBasketballStatsAndBio = (card) => {
         const shooterStats = getCardGameStats(shooter);
         setSelectedAttackerId(shooter.id);
 
-        // Decide 2pt vs 3-point attempt (3-pointer or 3-point play)
+        const isGassed = shooter.currentSta <= 20 && !shooterStats.perks.some(p => p.name === 'Heavy Duty');
+
+        // Decide 2pt vs 3-point attempt
         let select3pt = false;
-        if (shooter.currentSta > 20) {
+        if (!isGassed) {
           const rate = cpuDifficulty === 'rookie' ? 0.2 : cpuDifficulty === 'veteran' ? 0.35 : 0.5;
           select3pt = Math.random() < rate;
         }
 
-        // Enforce attempt limits based on badge style
-        const limit = shooterStats.primaryBadge.type === 'three_pointer' 
-          ? (6 + (shooterStats.perks.some(p => p.name === 'Sniper Zone') ? 1 : 0)) 
-          : 6;
-        const attempted = shooter.threesAttempted || 0;
-        if (attempted >= limit) {
-          select3pt = false;
-        }
+        let chosenShotType = 'mid_range';
 
-        setShotType(select3pt ? 3 : 2);
-        setGamePhase('contest');
-        
         if (select3pt) {
           if (shooterStats.primaryBadge.type === 'three_pointer') {
-            setGameLog(prev => [...prev, `🏀 Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) fires a 3-Pointer.`]);
+            const limit = 6 + (shooterStats.perks.some(p => p.name === 'Sniper Zone') ? 1 : 0);
+            if ((shooter.threesAttempted || 0) < limit) {
+              chosenShotType = 'three_pointer';
+            } else {
+              select3pt = false;
+            }
           } else {
-            setGameLog(prev => [...prev, `⚡ Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) drives for a 3-Point Play opportunity.`]);
+            if ((shooter.and1sAttempted || 0) < 6) {
+              chosenShotType = 'three_point_play';
+            } else {
+              select3pt = false;
+            }
           }
+        }
+
+        // If 2pt (either chosen initially or fallback from 3pt limit)
+        if (!select3pt) {
+          // Choose between mid-range and rim attack based on higher rating
+          if (shooterStats.mid >= shooterStats.rim) {
+            chosenShotType = 'mid_range';
+          } else {
+            chosenShotType = 'attack_rim';
+          }
+        }
+
+        setShotType(chosenShotType);
+        setGamePhase('contest');
+        
+        if (chosenShotType === 'three_pointer') {
+          setGameLog(prev => [...prev, `🏀 Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) fires a 3-Pointer.`]);
+        } else if (chosenShotType === 'three_point_play') {
+          setGameLog(prev => [...prev, `⚡ Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) drives for a 3-Point Play opportunity.`]);
+        } else if (chosenShotType === 'mid_range') {
+          setGameLog(prev => [...prev, `🏀 Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) attempts a Mid-Range Pull-Up.`]);
         } else {
-          setGameLog(prev => [...prev, `🏀 Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) shoots a 2-Pointer.`]);
+          setGameLog(prev => [...prev, `🏀 Opponent Declares Attack: ${shooter.player} (${shooterStats.pos}) attacks the Basket.`]);
         }
       };
 
@@ -4424,7 +4696,14 @@ const getBasketballStatsAndBio = (card) => {
         setShotType(typeOfShot);
         
         const card = SPORTS_CARDS.find(x => x.id === cardId);
-        setGameLog(prev => [...prev, `🏀 Player Declares Attack: ${card.player} (${getCardGameStats(card).pos}) attempts a ${typeOfShot}-Pointer.`]);
+        const stats = getCardGameStats(card);
+        let shotText = '';
+        if (typeOfShot === 'three_pointer') shotText = 'fires a 3-Pointer';
+        else if (typeOfShot === 'three_point_play') shotText = 'drives for a 3-Point Play (And-1)';
+        else if (typeOfShot === 'mid_range') shotText = 'attempts a Mid-Range Pull-Up';
+        else shotText = 'attacks the Basket';
+
+        setGameLog(prev => [...prev, `🏀 Player Declares Attack: ${card.player} (${stats.pos}) ${shotText}.`]);
         
         setGamePhase('contest');
 
@@ -4472,6 +4751,93 @@ const getBasketballStatsAndBio = (card) => {
         setGamePhase('resolve');
       };
 
+      // Helper to compute matchup ratings including all bonuses/penalties
+      const getMatchupRatings = (attCard, defCard, activeShotType, possessionCount, playerPossession) => {
+        if (!attCard || !defCard) return { finalAtt: 0, finalDef: 0, isInteriorPlay: false, attClutchBoost: 0, defClutchBoost: 0, positionMatch: 0 };
+        
+        const attackerHT = getCardGameStats(attCard);
+        const defenderHT = getCardGameStats(defCard);
+
+        const attackerRoster = playerPossession ? playerCards.slice(0, 5) : opponentCards.slice(0, 5);
+        let floorGeneralBoost = 0;
+        attackerRoster.forEach(tm => {
+          if (tm.id !== attCard.id) {
+            const tmStats = getCardGameStats(tm);
+            if (tmStats.perks.some(p => p.name === 'Floor General')) {
+              floorGeneralBoost += 3;
+            }
+          }
+        });
+
+        const hasShinyReflector = defenderHT.perks.some(p => p.name === 'Shiny Reflector');
+        const hasEraser = defenderHT.perks.some(p => p.name === 'Eraser');
+        const hasAnkleBreaker = attackerHT.perks.some(p => p.name === 'Ankle Breaker');
+        const hasHeavyDutyAtt = attackerHT.perks.some(p => p.name === 'Heavy Duty');
+        const hasHeavyDutyDef = defenderHT.perks.some(p => p.name === 'Heavy Duty');
+
+        const pChem = playerPossession ? getChemistryPenalty(starters) : getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id));
+        const oChem = playerPossession ? getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id)) : getChemistryPenalty(starters);
+
+        const attGassed = attCard.currentSta <= 20 && !hasHeavyDutyAtt;
+        const defGassed = defCard.currentSta <= 20 && !hasHeavyDutyDef;
+
+        const isQ4 = possessionCount >= 25 && possessionCount <= 32;
+        const attClutch = isQ4 && attackerHT.perks.some(p => p.name === 'Clutch Gene');
+        const defClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Clutch Gene');
+        const attSigClutch = isQ4 && attackerHT.perks.some(p => p.name === 'Signature Clutch');
+        const defSigClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Signature Clutch');
+
+        let tnOffBonus = 0;
+        let tnDefBonus = 0;
+        if (isQ4) {
+          if (attackerHT.perks.some(p => p.name === 'Topps Now: Clutch Master')) tnOffBonus += 5;
+          if (defenderHT.perks.some(p => p.name === 'Topps Now: ECF MVP')) tnDefBonus += 10;
+        }
+
+        let cpuDifficultyModifier = 0;
+        if (cpuDifficulty === 'hall-famer') {
+          cpuDifficultyModifier = 2;
+        }
+
+        let attBaseVal = 0;
+        let defBaseVal = 0;
+        const isInteriorPlay = activeShotType === 'attack_rim' || activeShotType === 'three_point_play';
+
+        if (activeShotType === 'mid_range') {
+          attBaseVal = attackerHT.mid;
+          defBaseVal = defenderHT.def * 0.7 + defenderHT.mid * 0.3;
+        } else if (activeShotType === 'attack_rim') {
+          attBaseVal = attackerHT.rim;
+          defBaseVal = defenderHT.def * 0.7 + defenderHT.ath * 0.3;
+        } else if (activeShotType === 'three_pointer') {
+          attBaseVal = attackerHT.tpt;
+          defBaseVal = defenderHT.def * 0.7 + defenderHT.tpt * 0.3;
+        } else if (activeShotType === 'three_point_play') {
+          attBaseVal = attackerHT.ath;
+          defBaseVal = defenderHT.def * 0.7 + defenderHT.ath * 0.3;
+        }
+
+        const positionMatch = defenderHT.pos === attackerHT.pos ? 2 : 0;
+        const attClutchBoost = isQ4 ? Math.round((attackerHT.clu - 50) / 4) : 0;
+        const defClutchBoost = isQ4 ? Math.round((defenderHT.clu - 50) / 4) : 0;
+
+        let finalAtt = attBaseVal + (playerPossession ? pChem : oChem) + (attGassed ? -15 : 0) + (attClutch ? 10 : 0) + (attSigClutch ? 8 : 0) + attClutchBoost + floorGeneralBoost + tnOffBonus + (!playerPossession ? cpuDifficultyModifier : 0);
+        let finalDef = defBaseVal + (playerPossession ? oChem : pChem) + (defGassed ? -15 : 0) + (defClutch ? 10 : 0) + (defSigClutch ? 8 : 0) + defClutchBoost + positionMatch + (hasShinyReflector ? 5 : 0) + (hasEraser && isInteriorPlay ? 8 : 0) + tnDefBonus + (playerPossession ? cpuDifficultyModifier : 0);
+
+        if (hasAnkleBreaker) {
+          finalDef -= 8;
+        }
+
+        return {
+          finalAtt: Math.max(0, Math.round(finalAtt)),
+          finalDef: Math.max(0, Math.round(finalDef)),
+          isInteriorPlay,
+          attClutchBoost,
+          defClutchBoost,
+          positionMatch
+        };
+      };
+
       // Execute Shot Resolution
       const resolveShotPlay = (useGrailPerk = false) => {
         const grailUser = useGrailPerk === true ? (playerPossession ? 'player' : 'opponent') : useGrailPerk;
@@ -4489,7 +4855,6 @@ const getBasketballStatsAndBio = (card) => {
         const attackerHT = getCardGameStats(attacker);
         const defenderHT = getCardGameStats(defender);
 
-        // Team Floor General perk checks (+3 to teammates)
         const attackerRoster = playerPossession ? playerCards.slice(0, 5) : opponentCards.slice(0, 5);
         let floorGeneralBoost = 0;
         attackerRoster.forEach(tm => {
@@ -4509,65 +4874,31 @@ const getBasketballStatsAndBio = (card) => {
         const hasHeavyDutyAtt = attackerHT.perks.some(p => p.name === 'Heavy Duty');
         const hasHeavyDutyDef = defenderHT.perks.some(p => p.name === 'Heavy Duty');
 
-        const pChem = playerPossession 
-          ? getChemistryPenalty(starters) 
-          : getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id));
-          
-        const oChem = playerPossession
-          ? getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id))
-          : getChemistryPenalty(starters);
-
-        // Check gassed state (Heavy Duty shields from gassed penalties)
         const attGassed = attacker.currentSta <= 20 && !hasHeavyDutyAtt;
         const defGassed = defender.currentSta <= 20 && !hasHeavyDutyDef;
-
-        // Check Clutch Gene (Autographs in Q4) and Signature Clutch
         const isQ4 = possessionCount >= 25 && possessionCount <= 32;
-        const attClutch = isQ4 && attackerHT.perks.some(p => p.name === 'Clutch Gene');
-        const defClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Clutch Gene');
-        const attSigClutch = isQ4 && attackerHT.perks.some(p => p.name === 'Signature Clutch');
-        const defSigClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Signature Clutch');
-
-        // Check Topps Now perk boosts
-        let tnOffBonus = 0;
-        let tnDefBonus = 0;
-        if (isQ4) {
-          if (attackerHT.perks.some(p => p.name === 'Topps Now: Clutch Master')) tnOffBonus += 5;
-          if (defenderHT.perks.some(p => p.name === 'Topps Now: ECF MVP')) tnDefBonus += 10;
-        }
-
-        // Apply CPU difficulty modifier for defender/attacker
-        let cpuDifficultyModifier = 0;
-        if (cpuDifficulty === 'hall-famer') {
-          cpuDifficultyModifier = 2;
-        }
-
-        // Calculate final stats before coin flip
-        const isInteriorPlay = shotType === 2 || (shotType === 3 && attackerHT.primaryBadge.type === 'athletic');
-        let attackerFinalOff = attackerHT.off + (playerPossession ? pChem : oChem) + (attGassed ? -15 : 0) + (attClutch ? 10 : 0) + (attSigClutch ? 8 : 0) + floorGeneralBoost + tnOffBonus + (!playerPossession ? cpuDifficultyModifier : 0);
-        let defenderFinalDef = defenderHT.def + (playerPossession ? oChem : pChem) + (defGassed ? -15 : 0) + (defClutch ? 10 : 0) + (defSigClutch ? 8 : 0) + (hasShinyReflector ? 5 : 0) + (hasEraser && isInteriorPlay ? 8 : 0) + tnDefBonus + (playerPossession ? cpuDifficultyModifier : 0);
-
-        if (hasAnkleBreaker) {
-          defenderFinalDef -= 8;
-        }
 
         // Defensive Anchor restriction check
-        let activeShotValue = shotType;
+        let activeShotType = shotType;
         const hasDefensiveAnchor = defenderHT.perks.some(p => p.name === 'Defensive Anchor');
-        if (hasDefensiveAnchor && activeShotValue === 3) {
-          activeShotValue = 2;
-          if (attackerHT.primaryBadge.type === 'three_pointer') {
-            setGameLog(prev => [...prev, `🛡️ DEFENSIVE ANCHOR: ${defender.player} blocks the 3-point attempt! Shot downgraded to 2-Pointer.`]);
+        if (hasDefensiveAnchor && (activeShotType === 'three_pointer' || activeShotType === 'three_point_play')) {
+          if (activeShotType === 'three_pointer') {
+            activeShotType = 'mid_range';
+            setGameLog(prev => [...prev, `🛡️ DEFENSIVE ANCHOR: ${defender.player} locks down the perimeter! Shot downgraded to a Mid-Range Pull-Up.`]);
           } else {
-            setGameLog(prev => [...prev, `🛡️ DEFENSIVE ANCHOR: ${defender.player} prevents the and-one! Play downgraded to a 2-Point Shot.`]);
+            activeShotType = 'attack_rim';
+            setGameLog(prev => [...prev, `🛡️ DEFENSIVE ANCHOR: ${defender.player} prevents the drive and-one! Play downgraded to an Attack to the Basket.`]);
           }
         }
+
+        // Calculate matchup ratings using helper
+        const { finalAtt, finalDef, isInteriorPlay, attClutchBoost, defClutchBoost, positionMatch } = getMatchupRatings(attacker, defender, activeShotType, possessionCount, playerPossession);
 
         // Set delay for simulated coin spin
         setTimeout(() => {
           let scoreGained = false;
           let pointsScored = 0;
-          let isAnd1Opportunity = activeShotValue === 3 && attackerHT.primaryBadge.type === 'athletic';
+          let isAnd1Opportunity = activeShotType === 'three_point_play';
           let isFouled3ptOpportunity = false;
           let ftMade = false;
           let commentary = [];
@@ -4584,6 +4915,12 @@ const getBasketballStatsAndBio = (card) => {
           }
           if (hasShinyReflector) {
             commentary.push(`✨ SHINY REFLECTOR: Parallel card shimmer grants Defender DEF +5.`);
+          }
+          if (positionMatch > 0) {
+            commentary.push(`🛡️ POSITION MATCHUP: Exact matchup guards PG-PG / C-C! Defender DEF +${positionMatch}.`);
+          }
+          if (isQ4) {
+            commentary.push(`🕒 CLUTCH MOMENT (Q4): Attacker Clutch Boost +${attClutchBoost} | Defender Clutch Boost +${defClutchBoost}.`);
           }
           if (hasHeavyDutyAtt && attacker.currentSta <= 20) {
             commentary.push(`💪 HEAVY DUTY: Jersey patch shields ${attacker.player} from gassed penalty!`);
@@ -4620,8 +4957,8 @@ const getBasketballStatsAndBio = (card) => {
             const flip = Math.random() > 0.5 ? 'heads' : 'tails';
             setCoinResult(flip);
             
-            let attackerAdjusted = attackerFinalOff;
-            let defenderAdjusted = defenderFinalDef;
+            let attackerAdjusted = finalAtt;
+            let defenderAdjusted = finalDef;
 
             // Topps Now On Fire check / Glove Defense reduction
             const hasOnFire = attackerHT.perks.some(p => p.name === 'Topps Now: On Fire');
@@ -4640,26 +4977,26 @@ const getBasketballStatsAndBio = (card) => {
             }
 
             // Tie in 3-point Shot / Play Success Rate Scaling
-            if (activeShotValue === 3 && attackerHT.primaryBadge.type === 'three_pointer') {
+            if (activeShotType === 'three_pointer') {
               const hasSniper = attackerHT.perks.some(p => p.name === 'Sniper Zone');
-              let tptModifier = Math.round((attackerHT.off - 85) * 0.5) - 3;
+              let tptModifier = Math.round((attackerHT.tpt - 85) * 0.5) - 3;
               if (hasSniper && tptModifier < 0) {
                 tptModifier = Math.round(tptModifier / 2);
                 commentary.push(`🏀 SNIPER ZONE: 3-point shooting penalty halved for ${attacker.player}.`);
               }
               attackerAdjusted += tptModifier;
               if (tptModifier >= 0) {
-                commentary.push(`🏀 3-Point Shot: ${attacker.player} (OFF: ${attackerHT.off}) receives a +${tptModifier} bonus.`);
+                commentary.push(`🏀 3-Point Shot: ${attacker.player} (3PT: ${attackerHT.tpt}) receives a +${tptModifier} bonus.`);
               } else {
-                commentary.push(`🏀 3-Point Shot: ${attacker.player} (OFF: ${attackerHT.off}) receives a ${tptModifier} penalty.`);
+                commentary.push(`🏀 3-Point Shot: ${attacker.player} (3PT: ${attackerHT.tpt}) receives a ${tptModifier} penalty.`);
               }
-            } else if (activeShotValue === 3 && attackerHT.primaryBadge.type === 'athletic') {
-              commentary.push(`⚡ 3-Point Play Drive: ${attacker.player} (OFF: ${attackerHT.off}) charges the rim looking for contact.`);
+            } else if (activeShotType === 'three_point_play') {
+              commentary.push(`⚡ 3-Point Play Drive: ${attacker.player} (ATH: ${attackerHT.ath}) charges the rim looking for contact.`);
             }
 
             // Stepback Maestro perk check
             const hasStepback = attackerHT.perks.some(p => p.name === 'Stepback Maestro');
-            if (hasStepback && activeShotValue === 3 && attackerHT.primaryBadge.type === 'three_pointer') {
+            if (hasStepback && activeShotType === 'three_pointer') {
               attackerAdjusted += 6;
               commentary.push(`⚡ STEPBACK MAESTRO: ${attacker.player} creates space! Gains +6 OFF on the 3-point attempt.`);
             }
@@ -4678,6 +5015,8 @@ const getBasketballStatsAndBio = (card) => {
             const hasOffensiveSuperstar = attackerHT.perks.some(p => p.name === 'Offensive Superstar');
             const hasPosterizer = attackerHT.perks.some(p => p.name === 'Posterizer');
             
+            const activeShotValue = (activeShotType === 'three_pointer' || activeShotType === 'three_point_play') ? 3 : 2;
+
             if (attackerAdjusted > defenderAdjusted) {
               initialBucketMade = true;
             } else if (attackerAdjusted === defenderAdjusted && (hasOffensiveSuperstar || (hasPosterizer && (activeShotValue === 2 || isAnd1Opportunity)))) {
@@ -4690,10 +5029,10 @@ const getBasketballStatsAndBio = (card) => {
             scoreGained = true;
             if (isAnd1Opportunity) {
               commentary.push(`🏀 BUCKET IS GOOD! ${attacker.player} scores the 2-pointer and draws contact inside!`);
-              // Shoot free throw
-              const ftChance = Math.min(0.95, Math.max(0.40, 0.75 + (attackerHT.off - 85) * 0.01 - (attGassed ? 0.15 : 0)));
+              // Shoot free throw based on Athleticism (ATH)
+              const ftChance = Math.min(0.95, Math.max(0.40, 0.75 + (attackerHT.ath - 85) * 0.01 - (attGassed ? 0.15 : 0)));
               const ftPercent = Math.round(ftChance * 100);
-              commentary.push(`🪙 Free Throw Chance: ${ftPercent}% (based on Attacker OFF and Stamina)`);
+              commentary.push(`🪙 Free Throw Chance: ${ftPercent}% (based on Attacker ATH and Stamina)`);
               ftMade = Math.random() < ftChance;
               if (ftMade) {
                 pointsScored = 3;
@@ -4702,12 +5041,12 @@ const getBasketballStatsAndBio = (card) => {
                 pointsScored = 2;
                 commentary.push(`⚡ FREE THROW MISSED! ${attacker.player} misses the free throw, but keeps the 2 points from the bucket.`);
               }
-            } else if (activeShotValue === 3 && attackerHT.primaryBadge.type === 'three_pointer') {
+            } else if (activeShotType === 'three_pointer') {
               // 3-point shot check for rare foul (10% chance)
               isFouled3ptOpportunity = Math.random() < 0.10;
               if (isFouled3ptOpportunity) {
                 commentary.push(`🚨 FOUL ON THE SHOT! ${attacker.player} is fouled while releasing the 3-pointer! The shot drops!`);
-                const ftChance = Math.min(0.95, Math.max(0.40, 0.75 + (attackerHT.off - 85) * 0.01 - (attGassed ? 0.15 : 0)));
+                const ftChance = Math.min(0.95, Math.max(0.40, 0.75 + (attackerHT.tpt - 85) * 0.01 - (attGassed ? 0.15 : 0)));
                 const ftPercent = Math.round(ftChance * 100);
                 commentary.push(`🪙 Free Throw Chance: ${ftPercent}% for the Rare 4-Point Play...`);
                 ftMade = Math.random() < ftChance;
@@ -4723,8 +5062,8 @@ const getBasketballStatsAndBio = (card) => {
                 commentary.push(`🏀 SCORE! The 3-point shot is GOOD for 3 Points.`);
               }
             } else {
-              // Standard 2-pointer or Grail automatic make
-              pointsScored = activeShotValue;
+              // Standard 2-pointer (Mid-Range or Rim Attack) or Grail automatic make
+              pointsScored = (activeShotType === 'three_pointer' || activeShotType === 'three_point_play') ? 3 : 2;
               commentary.push(`🏀 SCORE! The shot is GOOD for ${pointsScored} Points.`);
             }
           } else {
@@ -4759,7 +5098,7 @@ const getBasketballStatsAndBio = (card) => {
             }
           }
 
-          // Dynamic Stamina Drain & Threes Attempted Counter
+          // Dynamic Stamina Drain & Shot Attempt Counters
           const updatePlayerStamina = (roster) => {
             return roster.map(c => {
               const isActiveAttacker = playerPossession && c.id === selectedAttackerId;
@@ -4772,7 +5111,7 @@ const getBasketballStatsAndBio = (card) => {
                 const drainAmt = hasIronMan ? 5 : 10;
 
                 let extraDrain = 0;
-                if (isActiveDefender && !playerPossession && (activeShotValue === 2 || isAnd1Opportunity)) {
+                if (isActiveDefender && !playerPossession && (activeShotType === 'mid_range' || activeShotType === 'attack_rim' || activeShotType === 'three_point_play')) {
                   const attStats = getCardGameStats(attacker);
                   if (attStats.perks.some(p => p.name === 'Posterizer')) {
                     extraDrain = 5;
@@ -4782,8 +5121,12 @@ const getBasketballStatsAndBio = (card) => {
                 const newSta = Math.max(0, c.currentSta - drainAmt - extraDrain);
                 updated = { ...c, currentSta: newSta, gassed: newSta <= 20 && !cStats.perks.some(p => p.name === 'Heavy Duty') };
               }
-              if (isActiveAttacker && activeShotValue === 3) {
-                updated.threesAttempted = (updated.threesAttempted || 0) + 1;
+              if (isActiveAttacker) {
+                if (activeShotType === 'three_pointer') {
+                  updated.threesAttempted = (updated.threesAttempted || 0) + 1;
+                } else if (activeShotType === 'three_point_play') {
+                  updated.and1sAttempted = (updated.and1sAttempted || 0) + 1;
+                }
               }
               return updated;
             });
@@ -4801,7 +5144,7 @@ const getBasketballStatsAndBio = (card) => {
                 const drainAmt = hasIronMan ? 5 : 10;
 
                 let extraDrain = 0;
-                if (isActiveDefender && playerPossession && (activeShotValue === 2 || isAnd1Opportunity)) {
+                if (isActiveDefender && playerPossession && (activeShotType === 'mid_range' || activeShotType === 'attack_rim' || activeShotType === 'three_point_play')) {
                   const attStats = getCardGameStats(attacker);
                   if (attStats.perks.some(p => p.name === 'Posterizer')) {
                     extraDrain = 5;
@@ -4811,8 +5154,12 @@ const getBasketballStatsAndBio = (card) => {
                 const newSta = Math.max(0, c.currentSta - drainAmt - extraDrain);
                 updated = { ...c, currentSta: newSta, gassed: newSta <= 20 && !cStats.perks.some(p => p.name === 'Heavy Duty') };
               }
-              if (isActiveAttacker && activeShotValue === 3) {
-                updated.threesAttempted = (updated.threesAttempted || 0) + 1;
+              if (isActiveAttacker) {
+                if (activeShotType === 'three_pointer') {
+                  updated.threesAttempted = (updated.threesAttempted || 0) + 1;
+                } else if (activeShotType === 'three_point_play') {
+                  updated.and1sAttempted = (updated.and1sAttempted || 0) + 1;
+                }
               }
               return updated;
             });
@@ -6119,56 +6466,63 @@ const getBasketballStatsAndBio = (card) => {
                     {gamePhase === 'attack' && (
                       <div className="space-y-3">
                         <p className="text-[9px] text-neutral-500">
-                          Select a shooter from your Starting Five on the court, then choose the shot value.
+                          Select a shooter from your Starting Five on the court, then choose your shot attempt type.
                         </p>
 
                         {selectedAttackerId ? (
                           (() => {
                             const attCard = playerCards.find(x => x.id === selectedAttackerId);
                             const stats = getCardGameStats(attCard);
-                            const isShooter = stats.primaryBadge.type === 'three_pointer';
-                            const limit = isShooter ? (6 + (stats.perks.some(p => p.name === 'Sniper Zone') ? 1 : 0)) : 6;
                             
+                            const limit3pt = stats.perks.some(p => p.name === 'Sniper Zone') ? 7 : 6;
+                            const limitAnd1 = 6;
+                            
+                            const threesAttempted = attCard.threesAttempted || 0;
+                            const and1sAttempted = attCard.and1sAttempted || 0;
+                            
+                            const isGassed = attCard.currentSta <= 20 && !stats.perks.some(p => p.name === 'Heavy Duty');
+
                             return (
-                              <div className="space-y-2 border border-white/5 bg-black/40 p-3.5 rounded-2xl">
-                                <div className="text-[10px] font-bold text-white uppercase">Selected: {attCard.player} ({stats.pos})</div>
-                                <div className="flex gap-2">
+                              <div className="space-y-3 border border-white/5 bg-black/40 p-3.5 rounded-2xl">
+                                <div className="text-[10px] font-bold text-white uppercase flex justify-between">
+                                  <span>Selected: {attCard.player} ({stats.pos})</span>
+                                  {isGassed && <span className="text-red-500 text-[8px] animate-pulse">GASSED</span>}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
                                   <button
-                                    onClick={() => handleSelectShooter(selectedAttackerId, 2)}
-                                    className={`flex-1 py-2.5 rounded-xl border border-orange-500/40 bg-orange-950/20 text-orange-400 text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-105 z-50' : ''}`}
+                                    onClick={() => handleSelectShooter(selectedAttackerId, 'mid_range')}
+                                    className={`py-2 rounded-xl border border-orange-500/40 bg-orange-950/20 hover:bg-orange-950/40 text-orange-400 text-[10px] font-bold uppercase transition-all flex flex-col items-center justify-center gap-0.5 relative`}
                                   >
-                                    {isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen && (
-                                      <span className="text-amber-400 animate-pulse font-sans">👉</span>
-                                    )}
-                                    Shoot 2-Pointer
+                                    <span className="text-white text-[9.5px]">Mid-Range</span>
+                                    <span className="text-[8px] text-orange-400/80 font-mono">MID: {stats.mid}</span>
                                   </button>
                                   <button
-                                    onClick={() => handleSelectShooter(selectedAttackerId, 3)}
-                                    disabled={attCard.currentSta <= 20 || (attCard.threesAttempted || 0) >= limit}
-                                    className={`flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center justify-center gap-1 relative ${isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen ? 'tutorial-highlight-orange scale-105 z-50' : ''}`}
+                                    onClick={() => handleSelectShooter(selectedAttackerId, 'attack_rim')}
+                                    className={`py-2 rounded-xl border border-blue-500/40 bg-blue-950/20 hover:bg-blue-950/40 text-blue-400 text-[10px] font-bold uppercase transition-all flex flex-col items-center justify-center gap-0.5 relative`}
                                   >
-                                    {isTutorialMatch && tutorialStep === 3 && !tutorialPopupOpen && (
-                                      <span className="text-amber-400 animate-pulse font-sans">👉</span>
-                                    )}
-                                    {isShooter ? 'Shoot 3-Pointer' : 'Attempt 3-Point Play'}
+                                    <span className="text-white text-[9.5px]">Attack Basket</span>
+                                    <span className="text-[8px] text-blue-400/80 font-mono">RIM: {stats.rim}</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleSelectShooter(selectedAttackerId, 'three_pointer')}
+                                    disabled={isGassed || threesAttempted >= limit3pt}
+                                    className={`py-2 rounded-xl border border-amber-500/40 bg-amber-950/20 hover:bg-amber-950/40 text-amber-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex flex-col items-center justify-center gap-0.5 relative`}
+                                  >
+                                    <span className="text-white text-[9.5px]">3-Pointer</span>
+                                    <span className="text-[8px] text-amber-400/80 font-mono">3PT: {stats.tpt} ({threesAttempted}/{limit3pt})</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleSelectShooter(selectedAttackerId, 'three_point_play')}
+                                    disabled={isGassed || and1sAttempted >= limitAnd1}
+                                    className={`py-2 rounded-xl border border-purple-500/40 bg-purple-950/20 hover:bg-purple-950/40 text-purple-400 text-[10px] font-bold uppercase disabled:opacity-30 disabled:pointer-events-none transition-all flex flex-col items-center justify-center gap-0.5 relative`}
+                                  >
+                                    <span className="text-white text-[9.5px]">3-Point Play</span>
+                                    <span className="text-[8px] text-purple-400/80 font-mono">ATH: {stats.ath} ({and1sAttempted}/{limitAnd1})</span>
                                   </button>
                                 </div>
-                                <div className="text-[7px] text-neutral-400 flex justify-between uppercase font-mono px-0.5 mt-1 border-t border-white/5 pt-1">
-                                  {isShooter ? (
-                                    <span>3PT Attempts: {attCard.threesAttempted || 0} / {limit}</span>
-                                  ) : (
-                                    <span>And-1 Plays: {attCard.threesAttempted || 0} / {limit}</span>
-                                  )}
-                                  {isShooter && stats.perks.some(p => p.name === 'Sniper Zone') && (
-                                    <span className="text-amber-400">⚡ Sniper Zone (+1 Limit)</span>
-                                  )}
-                                </div>
-                                {(attCard.threesAttempted || 0) >= limit && (
-                                  <span className="text-[6.5px] text-red-500 block font-semibold">Reached match limit for this player.</span>
-                                )}
-                                {attCard.currentSta <= 20 && (
-                                  <span className="text-[6.5px] text-red-500 block">
-                                    {isShooter ? 'Gassed players cannot attempt 3-pointers.' : 'Gassed players cannot attempt 3-point plays.'}
+                                {isGassed && (
+                                  <span className="text-[7px] text-red-500 block text-center font-semibold mt-1">
+                                    Gassed players cannot attempt 3-pointers or 3-point plays.
                                   </span>
                                 )}
                               </div>
@@ -6231,14 +6585,58 @@ const getBasketballStatsAndBio = (card) => {
                             <div className="space-y-3">
                               <div className="border border-white/5 bg-black/45 p-3 rounded-2xl text-[8.5px] leading-tight space-y-1">
                                 <div className="text-neutral-400">Matchup Roll Resolution:</div>
-                                <div className="flex justify-between font-mono text-white">
-                                  <span>🏀 OFFENSE: {att.player.split(' ').pop()} ({attStats.pos})</span>
-                                  <span className="font-bold">{attStats.off} OFF</span>
-                                </div>
-                                <div className="flex justify-between font-mono text-neutral-400">
-                                  <span>🛡️ DEFENSE: {def.player.split(' ').pop()} ({defStats.pos})</span>
-                                  <span className="font-bold">{defStats.def} DEF</span>
-                                </div>
+                                {(() => {
+                                  let attLabel = 'OFF';
+                                  let attVal = attStats.off;
+                                  let defLabel = 'DEF';
+                                  let defVal = defStats.def;
+                                  let activeShotType = shotType;
+                                  const hasDefensiveAnchor = defStats.perks.some(p => p.name === 'Defensive Anchor');
+                                  if (hasDefensiveAnchor && (activeShotType === 'three_pointer' || activeShotType === 'three_point_play')) {
+                                    if (activeShotType === 'three_pointer') {
+                                      activeShotType = 'mid_range';
+                                    } else {
+                                      activeShotType = 'attack_rim';
+                                    }
+                                  }
+
+                                  if (activeShotType === 'mid_range') {
+                                    attLabel = 'MID';
+                                    attVal = attStats.mid;
+                                    defLabel = 'DEF/MID';
+                                    defVal = Math.round(defStats.def * 0.7 + defStats.mid * 0.3);
+                                  } else if (activeShotType === 'attack_rim') {
+                                    attLabel = 'RIM';
+                                    attVal = attStats.rim;
+                                    defLabel = 'DEF/ATH';
+                                    defVal = Math.round(defStats.def * 0.7 + defStats.ath * 0.3);
+                                  } else if (activeShotType === 'three_pointer') {
+                                    attLabel = '3PT';
+                                    attVal = attStats.tpt;
+                                    defLabel = 'DEF/3PT';
+                                    defVal = Math.round(defStats.def * 0.7 + defStats.tpt * 0.3);
+                                  } else if (activeShotType === 'three_point_play') {
+                                    attLabel = 'ATH';
+                                    attVal = attStats.ath;
+                                    defLabel = 'DEF/ATH';
+                                    defVal = Math.round(defStats.def * 0.7 + defStats.ath * 0.3);
+                                  }
+
+                                  const { finalAtt, finalDef } = getMatchupRatings(att, def, activeShotType, possessionCount, playerPossession);
+
+                                  return (
+                                    <React.Fragment>
+                                      <div className="flex justify-between font-mono text-white">
+                                        <span>🏀 OFFENSE: {att.player.split(' ').pop()} ({attStats.pos})</span>
+                                        <span className="font-bold">{attVal} {attLabel} (Final: {finalAtt})</span>
+                                      </div>
+                                      <div className="flex justify-between font-mono text-neutral-400">
+                                        <span>🛡️ DEFENSE: {def.player.split(' ').pop()} ({defStats.pos})</span>
+                                        <span className="font-bold">{defVal} {defLabel} (Final: {finalDef})</span>
+                                      </div>
+                                    </React.Fragment>
+                                  );
+                                })()}
                               </div>
 
                               <div className="flex flex-col gap-2">
@@ -6369,10 +6767,10 @@ const getBasketballStatsAndBio = (card) => {
                         {(() => {
                           const isShooter = stats.primaryBadge.type === 'three_pointer';
                           const limit = isShooter ? (6 + (stats.perks.some(p => p.name === 'Sniper Zone') ? 1 : 0)) : 6;
-                          const attempted = att.threesAttempted || 0;
                           
-                          if (shotType === 3) {
-                            if (isShooter) {
+                          if (shotType === 'three_pointer' || shotType === 'three_point_play') {
+                            if (shotType === 'three_pointer') {
+                              const attempted = att.threesAttempted || 0;
                               return (
                                 <div className="mb-4 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 font-mono text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.25)] animate-scale-up z-10">
                                   <iconify-icon icon="solar:target-bold" className="animate-spin text-amber-400" style={{ animationDuration: '3s' }}></iconify-icon>
@@ -6382,6 +6780,7 @@ const getBasketballStatsAndBio = (card) => {
                                 </div>
                               );
                             } else {
+                              const attempted = att.and1sAttempted || 0;
                               return (
                                 <div className="mb-4 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 font-mono text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(168,85,247,0.25)] animate-scale-up z-10">
                                   <iconify-icon icon="solar:bolt-bold" className="animate-pulse text-purple-400"></iconify-icon>
@@ -6392,12 +6791,21 @@ const getBasketballStatsAndBio = (card) => {
                               );
                             }
                           } else {
-                            return (
-                              <div className="mb-4 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 font-mono text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(59,130,246,0.25)] animate-scale-up z-10">
-                                <iconify-icon icon="solar:basketball-bold" className="text-blue-400"></iconify-icon>
-                                <span>🏀 2-POINT SHOT ATTEMPT</span>
-                              </div>
-                            );
+                            if (shotType === 'mid_range') {
+                              return (
+                                <div className="mb-4 px-4 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-400 font-mono text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(249,115,22,0.25)] animate-scale-up z-10">
+                                  <iconify-icon icon="solar:basketball-bold" className="text-orange-400"></iconify-icon>
+                                  <span>🏀 MID-RANGE PULL-UP ATTEMPT</span>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div className="mb-4 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 font-mono text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(59,130,246,0.25)] animate-scale-up z-10">
+                                  <iconify-icon icon="solar:basketball-bold" className="text-blue-400"></iconify-icon>
+                                  <span>🏀 ATTACK TO THE BASKET</span>
+                                </div>
+                              );
+                            }
                           }
                         })()}
 
@@ -6472,19 +6880,38 @@ const getBasketballStatsAndBio = (card) => {
                         {/* Stat Differential Slider Bars */}
                         {def && (
                           (() => {
-                            const pChem = playerPossession ? getChemistryPenalty(starters) : getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id));
-                            const oChem = playerPossession ? getChemistryPenalty(opponentCards.slice(0, 5).map(x => x.id)) : getChemistryPenalty(starters);
-                            const attGassed = att.currentSta <= 20 && !stats.perks.some(p => p.name === 'Heavy Duty');
-                            const defGassed = def.currentSta <= 20 && !defStats.perks.some(p => p.name === 'Heavy Duty');
-                            
-                            const finalAtt = stats.off + (playerPossession ? pChem : oChem) + (attGassed ? -15 : 0);
-                            const finalDef = defStats.def + (playerPossession ? oChem : pChem) + (defGassed ? -15 : 0);
+                            let activeShotType = shotType;
+                            const hasDefensiveAnchor = defStats.perks.some(p => p.name === 'Defensive Anchor');
+                            if (hasDefensiveAnchor && (activeShotType === 'three_pointer' || activeShotType === 'three_point_play')) {
+                              if (activeShotType === 'three_pointer') {
+                                activeShotType = 'mid_range';
+                              } else {
+                                activeShotType = 'attack_rim';
+                              }
+                            }
+                            const { finalAtt, finalDef } = getMatchupRatings(att, def, activeShotType, possessionCount, playerPossession);
 
                             const totalStats = finalAtt + finalDef;
                             const attPercent = totalStats > 0 ? (finalAtt / totalStats) * 100 : 50;
                             
                             const totalOvr = stats.ovr + defStats.ovr;
                             const ovrPercent = totalOvr > 0 ? (stats.ovr / totalOvr) * 100 : 50;
+
+                            let typeLabel = 'OFF';
+                            let defTypeLabel = 'DEF';
+                            if (activeShotType === 'mid_range') {
+                              typeLabel = 'MID';
+                              defTypeLabel = 'DEF/MID';
+                            } else if (activeShotType === 'attack_rim') {
+                              typeLabel = 'RIM';
+                              defTypeLabel = 'DEF/ATH';
+                            } else if (activeShotType === 'three_pointer') {
+                              typeLabel = '3PT';
+                              defTypeLabel = 'DEF/3PT';
+                            } else if (activeShotType === 'three_point_play') {
+                              typeLabel = 'ATH';
+                              defTypeLabel = 'DEF/ATH';
+                            }
 
                             return (
                               <div className={`w-full max-w-[500px] mt-4 border ${isLight ? 'border-slate-200 bg-white shadow-xl' : 'border-white/5 bg-black/75'} p-3 sm:p-4 rounded-2xl flex flex-col gap-3 relative z-10`}>
@@ -6497,8 +6924,8 @@ const getBasketballStatsAndBio = (card) => {
                                 {/* Stat Bar 1: Final Matchup Rating */}
                                 <div className="flex flex-col gap-1.5">
                                   <div className={`flex justify-between text-[8px] sm:text-[11px] font-mono ${isLight ? 'text-slate-500' : 'text-neutral-400'} font-bold uppercase leading-none`}>
-                                    <span className="text-orange-400">Matchup OFF: {finalAtt}</span>
-                                    <span className="text-blue-400">Matchup DEF: {finalDef}</span>
+                                    <span className="text-orange-400">Matchup {typeLabel}: {finalAtt}</span>
+                                    <span className="text-blue-400">Matchup {defTypeLabel}: {finalDef}</span>
                                   </div>
                                   <div className={`h-2.5 w-full ${isLight ? 'bg-slate-100 border-slate-200' : 'bg-neutral-900 border-white/5'} rounded-full overflow-hidden flex border`}>
                                     <div className="h-full bg-gradient-to-r from-orange-600 to-orange-500" style={{ width: `${attPercent}%` }} />
@@ -7260,14 +7687,14 @@ const getBasketballStatsAndBio = (card) => {
                   {
                     step: '2',
                     title: 'Declare an Attack (Offense)',
-                    desc: 'When in possession, select an active starter to attack. Depending on their playstyle badge, you can declare a standard 2-Pointer, or choose a 3-point attack (limit 6/game). Three-Point Shooters fire a 3-Pointer, while Athletic players attempt a 3-Point Play (And-1). Non-shooters cannot attempt regular 3s!',
+                    desc: 'Select an active shooter and choose your shot type: Mid-Range Pull-Up (uses MID), Attack to the Basket (uses RIM), 3-Pointer (uses 3PT, limit 6), or a 3-Point Play drive (uses ATH, limit 6). Pick a shot that leverages your shooter\'s highest attribute!',
                     icon: 'solar:target-bold',
                     color: 'from-blue-500 to-indigo-500'
                   },
                   {
                     step: '3',
                     title: 'Contest the Play (Defense)',
-                    desc: 'The defending coach assigns one of their active starters to guard your shooter. Matchup rules are strictly enforced: for instance, a Center can guard a Center or Power Forward, but is too slow to guard Point Guards or Shooting Guards.',
+                    desc: 'Assign an active starter to guard the shooter. Matchup rules are strictly enforced (e.g. Center guards PF/C; PG guards PG/SG). Defenders contest shots using a hybrid formula: 70% of base DEF + 30% of the attacker\'s shot attribute, plus a +2 bonus if the matchup is an exact position match (e.g. PG vs. PG)!',
                     icon: 'solar:shield-bold',
                     color: 'from-green-500 to-emerald-500'
                   },
@@ -7329,7 +7756,7 @@ const getBasketballStatsAndBio = (card) => {
                     <h4 className="text-xs font-bold uppercase tracking-wider">Offense (OFF)</h4>
                   </div>
                   <p className="text-[10.5px] text-neutral-400 leading-relaxed">
-                    Represents shooting capability, slashing power, and ball-handling. Used as the offensive core stat during shot resolution checks. High OFF cards score easily when matching against weaker defenders.
+                    Represents standard scoring potential, handles, and passing. Used as the default rating in overtime sudden-death matchups.
                   </p>
                 </div>
                 
@@ -7339,7 +7766,7 @@ const getBasketballStatsAndBio = (card) => {
                     <h4 className="text-xs font-bold uppercase tracking-wider">Defense (DEF)</h4>
                   </div>
                   <p className="text-[10.5px] text-neutral-400 leading-relaxed">
-                    Represents shot-blocking, steal capacity, perimeter containment, and physical strength. This stat is compared against the shooter's OFF. Strong defensive players easily shut down opponent drives.
+                    Represents steal, block, and perimeter containment potential. Acts as the core (70%) of all defender contest ratings.
                   </p>
                 </div>
 
@@ -7349,7 +7776,7 @@ const getBasketballStatsAndBio = (card) => {
                     <h4 className="text-xs font-bold uppercase tracking-wider">Stamina (STA)</h4>
                   </div>
                   <p className="text-[10.5px] text-neutral-400 leading-relaxed">
-                    Represents player endurance. Starts at 100 (110 for Jersey Patches). Active players drain -20 STA per play. Dropping to 20 or below triggers the "Gassed" penalty (-15 ratings). Heal on bench via Timeout (+20).
+                    Represents player endurance. Starts at 100 (110 for Jersey Patches). Matchup selections drain -10 STA. Dropping to 20 or below triggers a heavy -15 Gassed ratings penalty.
                   </p>
                 </div>
 
@@ -7359,8 +7786,64 @@ const getBasketballStatsAndBio = (card) => {
                     <h4 className="text-xs font-bold uppercase tracking-wider">Playstyle Badges</h4>
                   </div>
                   <p className="text-[10.5px] text-neutral-400 leading-relaxed">
-                    Replaces numeric 3PT/ATH ratings. Shooters get the <strong>Three-Point Shooting</strong> badge (up to 6 shots/game). Athletic players get the <strong>Athleticism</strong> badge, enabling up to 6 drives/game for <strong>3-Point Plays</strong> (And-1 layup + FT) but blocking normal 3s.
+                    Designates card archetypes. Shooters get the <strong>Three-Point Shooting</strong> badge (up to 6 shots/game). Athletic players get the <strong>Athleticism</strong> badge, enabling up to 6 drives/game for <strong>3-Point Plays</strong> (And-1). Non-archetypes cannot attempt these shots.
                   </p>
+                </div>
+              </div>
+
+              {/* Detailed Attributes Descriptions */}
+              <div className="border-t border-white/5 pt-5 mt-5">
+                <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-3 font-mono">Specialized Attributes</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <div className="amp-card p-4 text-left border border-white/5 bg-black/45">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-amber-400">
+                      <iconify-icon icon="solar:target-bold" width="14"></iconify-icon>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider">3-Point (3PT)</h4>
+                    </div>
+                    <p className="text-[9.5px] text-neutral-400 leading-relaxed">
+                      Determines capability for 3-point shots. Highly-rated shooters can easily sink deep range attempts.
+                    </p>
+                  </div>
+                  
+                  <div className="amp-card p-4 text-left border border-white/5 bg-black/45">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-neutral-200">
+                      <iconify-icon icon="solar:basketball-bold" width="14"></iconify-icon>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider">Mid-Range (MID)</h4>
+                    </div>
+                    <p className="text-[9.5px] text-neutral-400 leading-relaxed">
+                      Powers mid-range pull-up jumpers, a reliable scoring method between the key and arc.
+                    </p>
+                  </div>
+
+                  <div className="amp-card p-4 text-left border border-white/5 bg-black/45">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-rose-400">
+                      <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider">Rim Finish (RIM)</h4>
+                    </div>
+                    <p className="text-[9.5px] text-neutral-400 leading-relaxed">
+                      Determines layup and dunk completion rate under heavy defensive pressure at the hoop.
+                    </p>
+                  </div>
+
+                  <div className="amp-card p-4 text-left border border-white/5 bg-black/45">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-purple-400">
+                      <iconify-icon icon="solar:running-bold" width="14"></iconify-icon>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider">Athleticism (ATH)</h4>
+                    </div>
+                    <p className="text-[9.5px] text-neutral-400 leading-relaxed">
+                      Powers 3-point play (And-1) drives and enhances a defender's recovery speed against drives.
+                    </p>
+                  </div>
+
+                  <div className="amp-card p-4 text-left border border-white/5 bg-black/45">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-yellow-400">
+                      <iconify-icon icon="solar:bolt-bold" width="14"></iconify-icon>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider">Clutch (CLU)</h4>
+                    </div>
+                    <p className="text-[9.5px] text-neutral-400 leading-relaxed">
+                      Grants a significant rating boost inside the 4th Quarter (possessions 25-32) equal to <code className="text-[8.5px] font-mono text-yellow-400/80">Math.round((clutch - 50) / 4)</code>.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -7368,10 +7851,10 @@ const getBasketballStatsAndBio = (card) => {
               <div className="glass-panel border border-white/5 p-5 rounded-3xl bg-black/20 text-left">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                   <iconify-icon icon="solar:user-bold" className="text-amber-400"></iconify-icon>
-                  Position Matchup Restrictions
+                  Position Matchup Restrictions & Matching Bonuses
                 </h4>
                 <p className="text-[10.5px] text-neutral-400 mb-4 leading-relaxed">
-                  Defenders must align to defend shooters based on position compatibility. Speed differences prevent big men from guarding guards, and size differences stop guards from contesting centers.
+                  Defenders must align to defend shooters based on position compatibility. Speed differences prevent big men from guarding guards, and size differences stop guards from contesting centers. Additionally, defending a shooter of the exact same position (e.g. PG guarding PG) awards a **+2 DEF** contest matchup bonus.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   {[
@@ -7694,16 +8177,16 @@ const getBasketballStatsAndBio = (card) => {
                 </p>
                 <div className="combat-math-box bg-neutral-950/60 p-4 rounded-2xl border border-white/5 font-mono text-[9px] text-neutral-300 space-y-2">
                   <div>
-                    <span className="text-orange-400 font-bold">Attacker Final OFF</span> = Base OFF + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Perks (Clutch Gene/Master) + Coin Flip (Heads: +4 / +6)
+                    <span className="text-orange-400 font-bold">Attacker Matchup Value</span> = Base Shot Attribute (MID, RIM, 3PT, or ATH) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Perks (Clutch Gene/Master) + Coin Flip (Heads: +4 / +6)
                   </div>
                   <div>
-                    <span className="text-blue-400 font-bold">Defender Final DEF</span> = Base DEF + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Perks (Clutch Gene/ECF MVP) + Coin Flip (Tails: +4) + CPU Modifier
+                    <span className="text-blue-400 font-bold">Defender Contest Value</span> = Contest Rating (70% Base DEF + 30% Attacker's Shot Attribute) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Position Matchup Bonus (+2) + Perks (Clutch Gene/ECF MVP/Eraser/Reflector) + Coin Flip (Tails: +4) + CPU Difficulty Modifier
                   </div>
                   <div className="border-t border-white/5 my-2 pt-2">
                     Result logic:
-                    <br />• If Attacker Final OFF &gt; Defender Final DEF: <span className="text-emerald-400">Shot is GOOD (2 or 3 pts scored)</span>
-                    <br />• If Attacker Final OFF === Defender Final DEF and has "Offensive Superstar": <span className="text-emerald-400">Shot is GOOD (superstar tie-breaker)</span>
-                    <br />• If Attacker Final OFF &lt;= Defender Final DEF: <span className="text-red-400">Shot is MISSED/DEFENDED (0 pts)</span>
+                    <br />• If Attacker Matchup Value &gt; Defender Contest Value: <span className="text-emerald-400">Shot is GOOD (2 or 3 pts scored)</span>
+                    <br />• If Attacker Matchup Value === Defender Contest Value and has "Offensive Superstar": <span className="text-emerald-400">Shot is GOOD (superstar tie-breaker)</span>
+                    <br />• If Attacker Matchup Value &lt;= Defender Contest Value: <span className="text-red-400">Shot is MISSED/DEFENDED (0 pts)</span>
                   </div>
                 </div>
               </div>
@@ -10565,6 +11048,62 @@ const getBasketballStatsAndBio = (card) => {
                               </div>
                               <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
                                 <div className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full" style={{ width: `${Math.min(100, (getCardGameStats(detailedActiveCard).sta / 110) * 100)}%` }}></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Expanded attributes section */}
+                          <div className="border-t border-white/5 pt-4 mt-4">
+                            <h4 className="text-[10px] uppercase font-bold text-neutral-500 mb-3 tracking-wider font-mono">Detailed Attributes</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 font-mono text-xs text-neutral-300">
+                              <div>
+                                <div className="flex justify-between font-bold mb-1">
+                                  <span>3-POINT (3PT)</span>
+                                  <span className="text-amber-400 font-black">{getCardGameStats(detailedActiveCard).tpt}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).tpt}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex justify-between font-bold mb-1">
+                                  <span>MID-RANGE (MID)</span>
+                                  <span className="text-neutral-200 font-black">{getCardGameStats(detailedActiveCard).mid}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-neutral-500 to-neutral-300 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).mid}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex justify-between font-bold mb-1">
+                                  <span>RIM FINISH (RIM)</span>
+                                  <span className="text-rose-400 font-black">{getCardGameStats(detailedActiveCard).rim}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-rose-600 to-rose-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).rim}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex justify-between font-bold mb-1">
+                                  <span>ATHLETICISM (ATH)</span>
+                                  <span className="text-purple-400 font-black">{getCardGameStats(detailedActiveCard).ath}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).ath}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex justify-between font-bold mb-1">
+                                  <span>CLUTCH (CLU)</span>
+                                  <span className="text-yellow-400 font-black">{getCardGameStats(detailedActiveCard).clu}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).clu}%` }}></div>
+                                </div>
                               </div>
                             </div>
                           </div>

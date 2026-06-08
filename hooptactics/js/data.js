@@ -275,7 +275,26 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-signature-series", "kon-knueppel-2025-topps-signature-series-auto", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Signature Series", "#1", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard-Forward", "6'7", "205 lbs", "2025"],
   ["Basketball", "2025-topps-woven-wonders", "brandon-miller-2025-topps-woven-wonders-patch", "Brandon Miller", "Charlotte Hornets", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Forward", "6'7", "200 lbs", "2023"],
   ["Basketball", "2025-topps-woven-wonders", "stephon-castle-2025-topps-woven-wonders-patch", "Stephon Castle", "San Antonio Spurs", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'6", "215 lbs", "2024"],
-  ["Basketball", "2025-topps-woven-wonders", "victor-wembanyama-2025-topps-woven-wonders-patch", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"]
+  ["Basketball", "2025-topps-woven-wonders", "victor-wembanyama-2025-topps-woven-wonders-patch", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2012-flawless", "amare-stoudemire-2012-flawless-patch-auto", "Amar'e Stoudemire", "New York Knicks", 2012, "Panini Flawless", "#1", "Patch Autograph Card", "Patch Autograph Parallel", "prismatic", 2500, 2.4, "5 sold / wk", "Forward-Center", "6'10", "245 lbs", "2002"],
+  ["Basketball", "2012-gold-standard", "magic-johnson-2012-gold-standard-auto", "Magic Johnson", "Los Angeles Lakers", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 1200, 2.4, "5 sold / wk", "Guard", "6'9", "220 lbs", "1979"],
+  ["Basketball", "2012-gold-standard", "nikola-vucevic-2012-gold-standard-auto", "Nikola Vucevic", "Orlando Magic", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 400, 2.4, "5 sold / wk", "Center", "6'11", "260 lbs", "2011"],
+  ["Basketball", "2012-gold-standard", "anthony-davis-2012-gold-standard-auto", "Anthony Davis", "New Orleans Pelicans", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 3500, 2.4, "5 sold / wk", "Forward-Center", "6'10", "253 lbs", "2012"],
+  ["Basketball", "2012-gold-standard", "kyrie-irving-2012-gold-standard-auto", "Kyrie Irving", "Cleveland Cavaliers", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 2500, 2.4, "5 sold / wk", "Guard", "6'2", "195 lbs", "2011"],
+  ["Basketball", "2012-gold-standard", "kobe-bryant-2012-gold-standard-auto", "Kobe Bryant", "Los Angeles Lakers", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 15000, 2.4, "5 sold / wk", "Guard", "6'6", "200 lbs", "1996"],
+  ["Basketball", "2012-gold-standard", "stephen-curry-2012-gold-standard-auto", "Stephen Curry", "Golden State Warriors", 2012, "Panini Gold Standard", "#1", "Autograph Card", "Gold Autograph Parallel", "gold", 8500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2012-gold-standard", "kevin-love-2012-gold-standard-limited", "Kevin Love", "Minnesota Timberwolves", 2012, "Panini Gold Standard", "#1", "Star Card", "Limited Parallel", "gold", 300, 2.4, "5 sold / wk", "Forward-Center", "6'8", "251 lbs", "2008"],
+  ["Basketball", "2012-gold-standard", "chris-paul-2012-gold-standard-limited", "Chris Paul", "Los Angeles Clippers", 2012, "Panini Gold Standard", "#1", "Star Card", "Limited Parallel", "gold", 500, 2.4, "5 sold / wk", "Guard", "6'0", "175 lbs", "2005"],
+  ["Basketball", "2012-immaculate", "stephen-curry-2012-immaculate-auto", "Stephen Curry", "Golden State Warriors", 2012, "Panini Immaculate", "#1", "Autograph Card", "Autograph Parallel", "prismatic", 9500, 2.4, "5 sold / wk", "Guard", "6'2", "185 lbs", "2009"],
+  ["Basketball", "2012-immaculate", "kobe-bryant-2012-immaculate-patch-auto", "Kobe Bryant", "Los Angeles Lakers", 2012, "Panini Immaculate", "#1", "Autograph Patch Card", "Patch Autograph Parallel", "prismatic", 18000, 2.4, "5 sold / wk", "Guard", "6'6", "200 lbs", "1996"],
+  ["Basketball", "2012-immaculate", "damian-lillard-2012-immaculate-patch", "Damian Lillard", "Portland Trail Blazers", 2012, "Panini Immaculate", "#1", "Patch Card", "Rookie Patch Parallel", "prismatic", 3000, 2.4, "5 sold / wk", "Guard", "6'2", "195 lbs", "2012"],
+  ["Basketball", "2012-immaculate", "anthony-davis-2012-immaculate-patch-auto", "Anthony Davis", "New Orleans Pelicans", 2012, "Panini Immaculate", "#1", "Autograph Patch Card", "Patch Autograph Parallel", "prismatic", 6000, 2.4, "5 sold / wk", "Forward-Center", "6'10", "253 lbs", "2012"],
+  ["Basketball", "2012-immaculate", "jimmy-butler-2012-immaculate-patch-auto", "Jimmy Butler", "Chicago Bulls", 2012, "Panini Immaculate", "#1", "Autograph Patch Card", "Patch Autograph Parallel", "prismatic", 4500, 2.4, "5 sold / wk", "Forward-Guard", "6'7", "230 lbs", "2011"],
+  ["Basketball", "2012-immaculate", "carmelo-anthony-2012-immaculate-patch-auto", "Carmelo Anthony", "New York Knicks", 2012, "Panini Immaculate", "#1", "Autograph Patch Card", "Patch Autograph Parallel", "prismatic", 2500, 2.4, "5 sold / wk", "Forward", "6'7", "238 lbs", "2003"],
+  ["Basketball", "2023-select", "amare-stoudemire-2023-select-auto", "Amar'e Stoudemire", "New York Knicks", 2023, "Panini Select", "#1", "Autograph Card", "Select Autograph Parallel", "prismatic", 800, 2.4, "5 sold / wk", "Forward-Center", "6'10", "245 lbs", "2002"],
+  ["Basketball", "2013-national-treasures", "carmelo-anthony-2013-national-treasures-auto", "Carmelo Anthony", "New York Knicks", 2013, "National Treasures", "#1", "Autograph Card", "Autograph Parallel", "prismatic", 1200, 2.4, "5 sold / wk", "Forward", "6'7", "238 lbs", "2003"],
+  ["Basketball", "2013-national-treasures", "kobe-bryant-2013-national-treasures-sneaker-swatch-auto", "Kobe Bryant", "Los Angeles Lakers", 2013, "National Treasures", "#1", "Autograph Card", "Sneaker Swatch Autograph Parallel", "prismatic", 35000, 2.4, "5 sold / wk", "Guard", "6'6", "200 lbs", "1996"],
+  ["Basketball", "2013-national-treasures", "kobe-bryant-2013-national-treasures", "Kobe Bryant", "Los Angeles Lakers", 2013, "National Treasures", "#1", "Star Card", "Base Card", "base", 15000, 2.4, "5 sold / wk", "Guard", "6'6", "200 lbs", "1996"]
 ];
 window.PARALLEL_MULTIPLIERS = {
   'Base': 1,
@@ -556,7 +575,11 @@ window.SPORTS_SETS = [
   { id: '2025-topps-comic-court', name: '2025-26 Topps Comic Court Set', era: 'Fanatics & Real-Time Era', sport: 'Basketball', year: 2025 },
   { id: '2025-topps-finest', name: '2025-26 Topps Finest Basketball Set', era: 'Fanatics & Real-Time Era', sport: 'Basketball', year: 2025 },
   { id: '2025-topps-woven-wonders', name: '2025-26 Topps Woven Wonders Set', era: 'Fanatics & Real-Time Era', sport: 'Basketball', year: 2025 },
-  { id: '2025-topps-signature-series', name: '2025-26 Topps Signature Series Set', era: 'Fanatics & Real-Time Era', sport: 'Basketball', year: 2025 }
+  { id: '2025-topps-signature-series', name: '2025-26 Topps Signature Series Set', era: 'Fanatics & Real-Time Era', sport: 'Basketball', year: 2025 },
+  { id: '2012-flawless', name: '2012-13 Panini Flawless Set', era: 'Premium, Insert, & Chrome Revolution', sport: 'Basketball', year: 2012 },
+  { id: '2012-gold-standard', name: '2012-13 Panini Gold Standard Set', era: 'Premium, Insert, & Chrome Revolution', sport: 'Basketball', year: 2012 },
+  { id: '2012-immaculate', name: '2012-13 Panini Immaculate Set', era: 'Premium, Insert, & Chrome Revolution', sport: 'Basketball', year: 2012 },
+  { id: '2023-select', name: '2023-24 Panini Select Set', era: 'Premium, Insert, & Chrome Revolution', sport: 'Basketball', year: 2023 }
 ];
 
 window.hashString = (str) => {
@@ -1335,7 +1358,100 @@ window.getCardGameStats = (card) => {
   let baseAth = 75;
   let perks = [];
 
+  const SPECIAL_STATS = {
+    'jordan': { mid: 99, rim: 98, clu: 99 },
+    'lebron': { mid: 88, rim: 99, clu: 97 },
+    'james': { mid: 88, rim: 99, clu: 97 },
+    'curry': { mid: 94, rim: 86, clu: 96 },
+    'brunson': { mid: 93, rim: 88, clu: 94 },
+    'kobe': { mid: 96, rim: 94, clu: 98 },
+    'bryant': { mid: 96, rim: 94, clu: 98 },
+    'wilt': { mid: 55, rim: 99, clu: 92 },
+    'chamberlain': { mid: 55, rim: 99, clu: 92 },
+    'russell': { mid: 50, rim: 78, clu: 96 },
+    'shaq': { mid: 45, rim: 99, clu: 92 },
+    'oneal': { mid: 45, rim: 99, clu: 92 },
+    'magic': { mid: 85, rim: 92, clu: 96 },
+    'johnson': { mid: 85, rim: 92, clu: 96 },
+    'bird': { mid: 97, rim: 85, clu: 98 },
+    'hakeem': { mid: 88, rim: 95, clu: 94 },
+    'olajuwon': { mid: 88, rim: 95, clu: 94 },
+    'duncan': { mid: 86, rim: 90, clu: 92 },
+    'giannis': { mid: 70, rim: 99, clu: 93 },
+    'antetokounmpo': { mid: 70, rim: 99, clu: 93 },
+    'jokic': { mid: 92, rim: 94, clu: 96 },
+    'luka': { mid: 93, rim: 92, clu: 96 },
+    'doncic': { mid: 93, rim: 92, clu: 96 },
+    'wembanyama': { mid: 82, rim: 90, clu: 92 },
+    'wemby': { mid: 82, rim: 90, clu: 92 },
+    'flagg': { mid: 80, rim: 86, clu: 88 },
+    'iverson': { mid: 92, rim: 90, clu: 94 },
+    'kyrie': { mid: 94, rim: 96, clu: 97 },
+    'irving': { mid: 94, rim: 96, clu: 97 },
+    'wade': { mid: 86, rim: 97, clu: 95 },
+    'durant': { mid: 98, rim: 92, clu: 97 },
+    'barkley': { mid: 82, rim: 97, clu: 92 },
+    'oscar': { mid: 90, rim: 92, clu: 95 },
+    'robertson': { mid: 90, rim: 92, clu: 95 },
+    'west': { mid: 92, rim: 88, clu: 96 },
+    'mikan': { mid: 75, rim: 88, clu: 88 },
+    'cousy': { mid: 82, rim: 78, clu: 90 },
+    'frazier': { mid: 88, rim: 84, clu: 94 },
+    'pettit': { mid: 85, rim: 90, clu: 90 },
+    'debusschere': { mid: 80, rim: 78, clu: 86 },
+    'bradley': { mid: 82, rim: 78, clu: 84 },
+    'havlicek': { mid: 86, rim: 84, clu: 92 },
+    'starks': { mid: 80, rim: 82, clu: 88 },
+    'drexler': { mid: 82, rim: 95, clu: 90 },
+    'robinson': { mid: 78, rim: 92, clu: 92 },
+    'pippen': { mid: 80, rim: 88, clu: 90 },
+    'allen': { mid: 88, rim: 84, clu: 92 },
+    'lillard': { mid: 90, rim: 88, clu: 96 },
+    'grant hill': { mid: 86, rim: 92, clu: 90 },
+    'hill': { mid: 86, rim: 92, clu: 90 },
+    'griffin': { mid: 75, rim: 96, clu: 88 },
+    'rose': { mid: 86, rim: 98, clu: 94 },
+    'tatum': { mid: 90, rim: 90, clu: 92 },
+    'towns': { mid: 88, rim: 86, clu: 88 },
+    'adebayo': { mid: 78, rim: 85, clu: 88 },
+    'bridges': { mid: 82, rim: 82, clu: 86 },
+    'shai': { mid: 96, rim: 94, clu: 96 },
+    'alexander': { mid: 96, rim: 94, clu: 96 },
+    'davis': { mid: 84, rim: 92, clu: 90 },
+    'carmelo': { mid: 94, rim: 90, clu: 93 },
+    'erving': { mid: 84, rim: 99, clu: 94 },
+    'julius': { mid: 84, rim: 99, clu: 94 },
+    'ewing': { mid: 85, rim: 88, clu: 90 },
+    'nowitzki': { mid: 96, rim: 82, clu: 96 },
+    'marbury': { mid: 86, rim: 88, clu: 90 },
+    'jaylen brown': { mid: 86, rim: 92, clu: 92 },
+    'jalen brown': { mid: 86, rim: 92, clu: 92 },
+    'lamelo ball': { mid: 84, rim: 85, clu: 90 }
+  };
+
+  let baseMid = 70;
+  let baseRim = 70;
+  let baseClu = 75;
+
   const nameLower = basePlayer.toLowerCase();
+
+  let specialMatched = false;
+  for (const key of Object.keys(SPECIAL_STATS)) {
+    if (nameLower.includes(key)) {
+      baseMid = SPECIAL_STATS[key].mid;
+      baseRim = SPECIAL_STATS[key].rim;
+      baseClu = SPECIAL_STATS[key].clu;
+      specialMatched = true;
+      break;
+    }
+  }
+
+  if (!specialMatched) {
+    const hash = localHash(basePlayer);
+    baseMid = 65 + ((hash >> 5) % 26);
+    baseRim = 60 + ((hash >> 6) % 31);
+    baseClu = 70 + ((hash >> 7) % 26);
+  }
 
   if (nameLower.includes('jordan')) {
     baseOff = 99; baseDef = 98; baseTpt = 83; baseAth = 99; htPos = 'SG';
@@ -1346,6 +1462,7 @@ window.getCardGameStats = (card) => {
     const isToppsNow = card.brand === 'Topps Now' || card.setId.includes('topps-now') || idLower.includes('topps-now');
     if (isToppsNow) {
       baseOff = 75; baseDef = 70; baseTpt = 80; baseAth = 82; htPos = 'SF';
+      baseMid = 72; baseRim = 80; baseClu = 82;
     } else {
       baseOff = 97; baseDef = 88; baseTpt = 86; baseAth = 97; htPos = 'SF';
     }
@@ -1432,6 +1549,7 @@ window.getCardGameStats = (card) => {
     const isToppsChrome = card.brand === 'Topps Chrome' || card.setId.includes('topps-chrome') || idLower.includes('topps-chrome');
     if (isToppsChrome) {
       baseOff = 85; baseDef = 64; baseTpt = 88; baseAth = 82; htPos = 'SF';
+      baseMid = 85; baseRim = 80; baseClu = 88;
     } else {
       baseOff = 97; baseDef = 73; baseTpt = 92; baseAth = 90; htPos = 'SF';
     }
@@ -1545,6 +1663,19 @@ window.getCardGameStats = (card) => {
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
     perks.push({ name: 'Ankle Breaker', desc: "Reduces defender's Defense (DEF) by -8 on contest rolls." });
+  } else if (nameLower.includes('butler') || nameLower.includes('jimmy')) {
+    baseOff = 91; baseDef = 92; baseTpt = 78; baseAth = 90; htPos = 'SF';
+    baseMid = 88; baseRim = 85; baseClu = 95;
+    perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+  } else if (nameLower.includes('stoudemire')) {
+    baseOff = 91; baseDef = 74; baseTpt = 65; baseAth = 95; htPos = 'PF';
+    baseMid = 84; baseRim = 92; baseClu = 88;
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+  } else if (nameLower.includes('vucevic')) {
+    baseOff = 86; baseDef = 72; baseTpt = 78; baseAth = 80; htPos = 'C';
+    baseMid = 82; baseRim = 80; baseClu = 80;
+    perks.push({ name: 'Chairman of the Boards', desc: '50% chance to retain possession on a missed shot.' });
   } else {
     const hash = localHash(basePlayer);
     baseOff = 70 + (hash % 25);
@@ -1569,6 +1700,9 @@ window.getCardGameStats = (card) => {
   let maxSta = baseSta;
   let tpt = baseTpt;
   let ath = baseAth;
+  let mid = baseMid;
+  let rim = baseRim;
+  let clu = baseClu;
 
   if (isPatch) {
     maxSta = 110;
@@ -1581,6 +1715,9 @@ window.getCardGameStats = (card) => {
     def += 5;
     tpt += 5;
     ath += 5;
+    mid += 5;
+    rim += 5;
+    clu += 5;
     perks.push({ name: 'Shiny Reflector', desc: 'Shimmering surface grants +5 to all DEF contest rolls.' });
   }
 
@@ -1589,6 +1726,9 @@ window.getCardGameStats = (card) => {
     def += 2;
     tpt += 2;
     ath += 2;
+    mid += 2;
+    rim += 2;
+    clu += 2;
     perks.push({ name: 'Clutch Gene', desc: '+10 to all stats during the 4th Quarter.' });
     perks.push({ name: 'Signature Clutch', desc: 'Signature edition grants +8 to all stats in the 4th Quarter.' });
   }
@@ -1604,6 +1744,9 @@ window.getCardGameStats = (card) => {
     def += 5;
     tpt += 5;
     ath += 5;
+    mid += 5;
+    rim += 5;
+    clu += 5;
   }
 
   if (card.brand === 'Topps Now' || card.setId.includes('topps-now')) {
@@ -1713,6 +1856,9 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 99, 99);
     tpt = scaleAttribute(tpt, 99, 99);
     ath = scaleAttribute(ath, 99, 99);
+    mid = scaleAttribute(mid, 99, 99);
+    rim = scaleAttribute(rim, 99, 99);
+    clu = scaleAttribute(clu, 99, 99);
     
     // Explicit override for Topps Chrome 96-97 Set (treated as legendary emerald set)
     if (card.setId === '1996-topps-chrome') {
@@ -1751,6 +1897,9 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 109, 99);
     tpt = scaleAttribute(tpt, 109, 99);
     ath = scaleAttribute(ath, 109, 99);
+    mid = scaleAttribute(mid, 109, 99);
+    rim = scaleAttribute(rim, 109, 99);
+    clu = scaleAttribute(clu, 109, 99);
   } else if (isParallel) {
     const clampedPower = Math.max(85, Math.min(115, unscaledOvr));
     finalOvr = 90 + ((clampedPower - 85) / 30) * 5;
@@ -1758,6 +1907,9 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 104, 95);
     tpt = scaleAttribute(tpt, 104, 95);
     ath = scaleAttribute(ath, 104, 95);
+    mid = scaleAttribute(mid, 104, 95);
+    rim = scaleAttribute(rim, 104, 95);
+    clu = scaleAttribute(clu, 104, 95);
 
     // Explicit override for Jaylen Brown and LaMelo Ball parallel cards to be 92 OVR
     if (nameLower.includes('jaylen brown') || nameLower.includes('jalen brown') || nameLower.includes('lamelo ball')) {
@@ -1779,7 +1931,8 @@ window.getCardGameStats = (card) => {
       'magic', 'johnson', 'bird', 'hakeem', 'olajuwon', 'duncan', 'iverson', 'kyrie', 'irving',
       'wade', 'nowitzki', 'robinson', 'pippen', 'ewing', 'robertson', 'west', 'barkley',
       'lillard', 'brunson', 'towns', 'edwards', 'leonard', 'kawhi', 'mikan', 'rose',
-      'drexler', 'allen', 'zion', 'erving', 'julius', 'jaylen brown', 'jalen brown', 'lamelo ball'
+      'drexler', 'allen', 'zion', 'erving', 'julius', 'jaylen brown', 'jalen brown', 'lamelo ball',
+      'butler', 'stoudemire', 'vucevic'
     ]);
     const isStarPlayer = starPlayers.has(nameLower) || Array.from(starPlayers).some(s => nameLower.includes(s));
 
@@ -1801,6 +1954,9 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 99, 89);
     tpt = scaleAttribute(tpt, 99, 89);
     ath = scaleAttribute(ath, 99, 89);
+    mid = scaleAttribute(mid, 99, 89);
+    rim = scaleAttribute(rim, 99, 89);
+    clu = scaleAttribute(clu, 99, 89);
   }
 
   return {
@@ -1812,7 +1968,10 @@ window.getCardGameStats = (card) => {
     perks: uniquePerks,
     primaryBadge: primaryBadge,
     tpt: Math.min(99, Math.round(tpt)),
-    ath: Math.min(99, Math.round(ath))
+    ath: Math.min(99, Math.round(ath)),
+    mid: Math.min(99, Math.round(mid)),
+    rim: Math.min(99, Math.round(rim)),
+    clu: Math.min(99, Math.round(clu))
   };
 };
 
