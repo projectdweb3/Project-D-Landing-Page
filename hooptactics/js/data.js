@@ -1536,6 +1536,15 @@ window.getCardGameStats = (card) => {
   } else if (nameLower.includes('marbury')) {
     baseOff = 91; baseDef = 62; baseTpt = 85; baseAth = 91; htPos = 'PG';
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
+  } else if (nameLower.includes('jaylen brown') || nameLower.includes('jalen brown')) {
+    baseOff = 92; baseDef = 85; baseTpt = 84; baseAth = 92; htPos = 'SF';
+    perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+  } else if (nameLower.includes('lamelo ball')) {
+    baseOff = 90; baseDef = 74; baseTpt = 88; baseAth = 84; htPos = 'PG';
+    perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
+    perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
+    perks.push({ name: 'Ankle Breaker', desc: "Reduces defender's Defense (DEF) by -8 on contest rolls." });
   } else {
     const hash = localHash(basePlayer);
     baseOff = 70 + (hash % 25);
@@ -1730,6 +1739,11 @@ window.getCardGameStats = (card) => {
     if (card.setId === '1961-fleer') {
       finalOvr = 96;
     }
+
+    // Explicit override for 1986 Fleer Set to be all 99 OVR
+    if (card.setId === '1986-fleer') {
+      finalOvr = 99;
+    }
   } else if (isAutoOrPatch) {
     const clampedPower = Math.max(85, Math.min(115, unscaledOvr));
     finalOvr = 96 + ((clampedPower - 85) / 30) * 3;
@@ -1744,6 +1758,16 @@ window.getCardGameStats = (card) => {
     def = scaleAttribute(def, 104, 95);
     tpt = scaleAttribute(tpt, 104, 95);
     ath = scaleAttribute(ath, 104, 95);
+
+    // Explicit override for Jaylen Brown and LaMelo Ball parallel cards to be 92 OVR
+    if (nameLower.includes('jaylen brown') || nameLower.includes('jalen brown') || nameLower.includes('lamelo ball')) {
+      finalOvr = 92;
+    }
+
+    // Explicit override for Stephen Curry and Jalen Brunson parallel cards to be 94 OVR
+    if (nameLower.includes('curry') || nameLower.includes('brunson')) {
+      finalOvr = 94;
+    }
   } else {
     const clampedPower = Math.max(75, Math.min(107, unscaledOvr));
     finalOvr = 75 + ((clampedPower - 75) / 32) * 14;
@@ -1755,7 +1779,7 @@ window.getCardGameStats = (card) => {
       'magic', 'johnson', 'bird', 'hakeem', 'olajuwon', 'duncan', 'iverson', 'kyrie', 'irving',
       'wade', 'nowitzki', 'robinson', 'pippen', 'ewing', 'robertson', 'west', 'barkley',
       'lillard', 'brunson', 'towns', 'edwards', 'leonard', 'kawhi', 'mikan', 'rose',
-      'drexler', 'allen', 'zion', 'erving', 'julius'
+      'drexler', 'allen', 'zion', 'erving', 'julius', 'jaylen brown', 'jalen brown', 'lamelo ball'
     ]);
     const isStarPlayer = starPlayers.has(nameLower) || Array.from(starPlayers).some(s => nameLower.includes(s));
 
@@ -1766,6 +1790,11 @@ window.getCardGameStats = (card) => {
                         nameLower.includes('jokic') || nameLower.includes('luka') || nameLower.includes('giannis') || 
                         nameLower.includes('durant') || nameLower.includes('wembanyama') || nameLower.includes('wemby');
       finalOvr = isTopTier ? 89 : 88;
+
+      const isBaseCard = parallelLower === 'base card' || parallelLower === 'base';
+      if ((nameLower.includes('jaylen brown') || nameLower.includes('jalen brown') || nameLower.includes('lamelo ball')) && isBaseCard) {
+        finalOvr = 87;
+      }
     }
 
     off = scaleAttribute(off, 99, 89);

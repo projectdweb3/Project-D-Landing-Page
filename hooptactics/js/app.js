@@ -3226,14 +3226,37 @@ const getBasketballStatsAndBio = (card) => {
     // Onboarding Screen Component
     const Onboarding = ({ onComplete }) => {
       const [step, setStep] = useState(0);
+      const [isLogin, setIsLogin] = useState(false);
       const [username, setUsername] = useState('');
       const [email, setEmail] = useState('');
+      const [emailOrUsername, setEmailOrUsername] = useState('');
       const [password, setPassword] = useState('');
       const [team, setTeam] = useState('');
       const [level, setLevel] = useState('');
 
+      const handleLogin = () => {
+        const usernameVal = emailOrUsername.includes('@') ? emailOrUsername.split('@')[0] : emailOrUsername;
+        const emailVal = emailOrUsername.includes('@') ? emailOrUsername : `${emailOrUsername}@hooptactics.com`;
+        
+        const savedFavs = localStorage.getItem('ht_favorites');
+        let favs = { sports: ['Basketball'], team: '', level: 'hobbyist', username: usernameVal || 'Collector', email: emailVal };
+        if (savedFavs) {
+          try {
+            const parsed = JSON.parse(savedFavs);
+            if (parsed) {
+              favs = { ...favs, ...parsed };
+              if (usernameVal) favs.username = usernameVal;
+              if (emailVal) favs.email = emailVal;
+            }
+          } catch (e) {}
+        }
+        onComplete(favs);
+      };
+
       const handleNext = () => {
-        if (step === 2) {
+        if (isLogin) {
+          handleLogin();
+        } else if (step === 2) {
           onComplete({ sports: ['Basketball'], team, level, username, email });
         } else {
           setStep(step + 1);
@@ -3241,6 +3264,9 @@ const getBasketballStatsAndBio = (card) => {
       };
 
       const isNextDisabled = () => {
+        if (isLogin) {
+          return !emailOrUsername.trim() || password.length < 6;
+        }
         if (step === 0) {
           return !username.trim() || !email.trim() || !email.includes('@') || password.length < 6;
         }
@@ -3267,7 +3293,35 @@ const getBasketballStatsAndBio = (card) => {
               <p className="text-[10px] tracking-widest text-neutral-500 uppercase">Tactical Basketball Vault</p>
             </div>
 
+            {/* Tabs for Sign Up / Sign In */}
             {step === 0 && (
+              <div className="flex border-b border-white/5 mb-6">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
+                    !isLogin 
+                      ? 'border-orange-500 text-white font-black' 
+                      : 'border-transparent text-neutral-500 hover:text-neutral-300'
+                  }`}
+                >
+                  Create Account
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
+                    isLogin 
+                      ? 'border-orange-500 text-white font-black' 
+                      : 'border-transparent text-neutral-500 hover:text-neutral-300'
+                  }`}
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
+
+            {step === 0 && !isLogin && (
               <div className="space-y-4">
                 <div className="text-center mb-2">
                   <h2 className="text-lg font-semibold mb-1">Create Your Account</h2>
@@ -3286,6 +3340,33 @@ const getBasketballStatsAndBio = (card) => {
                     <label className="text-[9px] uppercase font-bold text-neutral-400 tracking-wider block mb-1">Email Address</label>
                     <input 
                       type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g. collector@hooptactics.com"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-white transition-all text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase font-bold text-neutral-400 tracking-wider block mb-1">Password</label>
+                    <input 
+                      type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                      placeholder="•••••••• (Min 6 characters)"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-white transition-all text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 0 && isLogin && (
+              <div className="space-y-4">
+                <div className="text-center mb-2">
+                  <h2 className="text-lg font-semibold mb-1">Welcome Back</h2>
+                  <p className="text-xs text-neutral-400">Sign in to access your HoopTactics basketball binder</p>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[9px] uppercase font-bold text-neutral-400 tracking-wider block mb-1">Email / Username</label>
+                    <input 
+                      type="text" value={emailOrUsername} onChange={(e) => setEmailOrUsername(e.target.value)}
                       placeholder="e.g. collector@hooptactics.com"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-white transition-all text-white"
                     />
@@ -3386,7 +3467,7 @@ const getBasketballStatsAndBio = (card) => {
                 <div className="conic-spin-bg"></div>
                 <div className="conic-btn-mask"></div>
                 <span className="relative z-10 flex items-center justify-center gap-1.5 text-xs font-semibold px-4 py-2.5 text-white font-bold uppercase">
-                  {step === 2 ? 'Enter Vault' : 'Next'} 
+                  {isLogin ? 'Sign In' : step === 2 ? 'Enter Vault' : 'Next'} 
                   <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
                 </span>
               </button>
@@ -9783,13 +9864,31 @@ const getBasketballStatsAndBio = (card) => {
                         triggerToast("Settings saved successfully!");
                         setActiveTab('home');
                       }}
-                      className="conic-btn primary dramatic-hover w-full sm:w-64 sm:flex-initial py-3.5 text-xs font-bold uppercase text-white"
+                      className="conic-btn primary dramatic-hover w-full sm:w-48 sm:flex-initial py-3.5 text-xs font-bold uppercase text-white"
                     >
                       <div className="conic-spin-bg"></div>
                       <div className="conic-btn-mask"></div>
                       <span className="relative z-10 flex items-center justify-center gap-1.5 font-bold uppercase text-white">
                         <iconify-icon icon="solar:diskette-bold" width="14"></iconify-icon>
                         Save Settings
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (confirm("Are you sure you want to log out of HoopTactics? Your collection and settings will be saved on this device.")) {
+                          setScreen('onboarding');
+                          setActiveTab('home');
+                          triggerToast("Logged out successfully.");
+                        }
+                      }}
+                      className="conic-btn primary dramatic-hover w-full sm:w-48 sm:flex-initial py-3.5"
+                    >
+                      <div className="conic-spin-bg"></div>
+                      <div className="conic-btn-mask bg-neutral-900"></div>
+                      <span className="relative z-10 flex items-center justify-center gap-1.5 text-xs font-bold uppercase text-amber-500 hover:text-amber-400">
+                        <iconify-icon icon="solar:logout-bold" width="14"></iconify-icon>
+                        Log Out
                       </span>
                     </button>
 
@@ -9815,7 +9914,7 @@ const getBasketballStatsAndBio = (card) => {
                           triggerToast("App successfully reset to default.");
                         }
                       }}
-                      className="conic-btn orange dramatic-hover w-full sm:w-64 sm:flex-initial py-3.5"
+                      className="conic-btn orange dramatic-hover w-full sm:w-48 sm:flex-initial py-3.5"
                     >
                       <div className="conic-spin-bg"></div>
                       <div className="conic-btn-mask bg-red-950/10 dark:bg-red-950/20"></div>
