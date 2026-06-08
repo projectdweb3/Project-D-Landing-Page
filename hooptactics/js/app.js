@@ -6057,14 +6057,14 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* 5. ACTIVE ARENA GAMEPLAY PANEL */}
           {gameState === 'playing' && (
-            <div className="relative animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 items-start">
+            <div className="relative animate-fade-in lg:flex-1 lg:flex lg:flex-col lg:min-h-0 lg:h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6 items-stretch lg:flex-1 lg:min-h-0 lg:h-full">
               
               {/* Left & Center: Scoreboard + Basketball Court */}
-              <div className="lg:col-span-2 space-y-3 sm:space-y-6">
+              <div className="lg:col-span-2 flex flex-col gap-3 lg:gap-4 lg:min-h-0 lg:h-full">
                 
                 {/* scoreboard */}
-                <div className="game-scoreboard glass-panel p-4 rounded-2xl border border-white/5 flex items-center justify-between bg-black/60 shadow-xl relative overflow-hidden">
+                <div className="game-scoreboard glass-panel p-4 rounded-2xl border border-white/5 flex items-center justify-between bg-black/60 shadow-xl relative overflow-hidden flex-shrink-0">
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-600 via-yellow-500 to-blue-600" />
                   
                   {/* Player Team Score */}
@@ -6108,8 +6108,10 @@ const getBasketballStatsAndBio = (card) => {
                   </div>
                 </div>
 
-                {/* Court Container */}
-                <div className="game-court glass-panel p-2.5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-white/5 relative bg-gradient-to-b from-neutral-950 to-black overflow-hidden flex flex-col justify-between aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:min-h-[640px] lg:gap-8">
+                {/* Scrollable Court & Bench Container */}
+                <div className="lg:flex-1 lg:overflow-y-auto lg:pr-1 space-y-3 sm:space-y-6 lg:space-y-4 lg:min-h-0">
+                  {/* Court Container */}
+                  <div className="game-court glass-panel p-2.5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-white/5 relative bg-gradient-to-b from-neutral-950 to-black overflow-hidden flex flex-col justify-between aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:min-h-[640px] lg:gap-8">
                   {/* Basketball Court Line Overlays */}
                   <div className="absolute inset-x-8 top-0 bottom-0 border-x border-white/[0.03] pointer-events-none" />
                   <div className="absolute inset-y-12 left-0 right-0 border-y border-white/[0.03] pointer-events-none" />
@@ -6384,13 +6386,14 @@ const getBasketballStatsAndBio = (card) => {
                   </div>
                   )}
                 </div>
+                </div>
               </div>
               
               {/* Right Panel: Game Commentary Feed + Action Controller Console */}
-              <div className="flex flex-col gap-4 lg:gap-6">
+              <div className="flex flex-col gap-4 lg:gap-6 lg:min-h-0 lg:h-full">
                 
                 {/* 1. Live Play Commentary event log */}
-                <div className="game-commentary order-2 lg:order-1 glass-panel p-4 rounded-2xl border border-white/5 bg-black/60 flex flex-col h-40 min-[400px]:h-48 lg:h-auto lg:flex-1 lg:min-h-[460px]">
+                <div className="game-commentary order-2 lg:order-1 glass-panel p-4 rounded-2xl border border-white/5 bg-black/60 flex flex-col h-40 min-[400px]:h-48 lg:h-auto lg:flex-1 lg:min-h-0">
                   <div className="text-[9px] uppercase font-bold text-neutral-400 tracking-wider mb-2 border-b border-white/5 pb-2 flex justify-between items-center">
                     <span>🎙️ Play-by-Play Commentary</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -6418,7 +6421,7 @@ const getBasketballStatsAndBio = (card) => {
                 </div>
 
                 {/* 2. Gameplay Controller panel */}
-                <div className="game-console order-1 lg:order-2 glass-panel p-4 sm:p-5 rounded-2xl border border-white/5 bg-black/60 relative overflow-hidden flex flex-col justify-start gap-4">
+                <div className="game-console order-1 lg:order-2 glass-panel p-4 sm:p-5 rounded-2xl border border-white/5 bg-black/60 relative overflow-hidden flex flex-col justify-start gap-4 lg:flex-shrink-0">
                   <div className="absolute top-0 left-0 w-full h-[1.5px] bg-neutral-800" />
                   
                   {/* Chat Notification Box Simulation */}
@@ -9120,7 +9123,7 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Main Panel */}
           <main className="flex-1 bg-black/60 border border-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0">
-            <div className="p-2 pb-24 sm:p-6 sm:pb-16 md:p-8 flex-1 overflow-y-auto hide-scrollbar">
+            <div className={`p-2 sm:p-6 md:p-8 flex-1 flex flex-col min-h-0 ${isGameActive ? 'lg:overflow-hidden' : 'pb-24 sm:pb-16 overflow-y-auto hide-scrollbar'}`}>
               
               {/* Top Action Row */}
               {!isGameActive && (
@@ -9557,7 +9560,7 @@ const getBasketballStatsAndBio = (card) => {
 
               {/* TAB: HOOPTACTICS ARENA GAMEPLAY EXPERIENCE */}
               {activeTab === 'play' && (
-                <div className="space-y-6 animate-modal-entry text-left">
+                <div className={`animate-modal-entry text-left ${isGameActive ? 'lg:flex-1 lg:flex lg:flex-col lg:min-h-0 lg:h-full' : 'space-y-6'}`}>
                   {(() => {
                     const basketballCardsInCollection = activeUserCollection.filter(item => {
                       const c = SPORTS_CARDS.find(x => x.id === item);
