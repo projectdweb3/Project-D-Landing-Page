@@ -8285,6 +8285,9 @@ const getBasketballStatsAndBio = (card) => {
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedCardId, setSelectedCardId] = useState(null);
       const [modalMode, setModalMode] = useState('attributes'); // 'attributes' or 'analytics'
+      const [performanceMode, setPerformanceMode] = useState(() => {
+        return localStorage.getItem('ht_performanceMode') || 'animations';
+      });
       const [favorites, setFavorites] = useState(() => {
         const saved = localStorage.getItem('ht_favorites');
         if (saved) {
@@ -8531,6 +8534,15 @@ const getBasketballStatsAndBio = (card) => {
       useEffect(() => {
         localStorage.setItem('ht_unlocked_achievements', JSON.stringify(unlockedAchievements));
       }, [unlockedAchievements]);
+
+      useEffect(() => {
+        localStorage.setItem('ht_performanceMode', performanceMode);
+        if (performanceMode === 'performance') {
+          document.documentElement.classList.add('performance-mode');
+        } else {
+          document.documentElement.classList.remove('performance-mode');
+        }
+      }, [performanceMode]);
 
       // Reset card removal confirmation states when details modal closes or changes
       useEffect(() => {
@@ -10358,6 +10370,38 @@ const getBasketballStatsAndBio = (card) => {
                               width="16"
                             ></iconify-icon>
                             <span className="text-[10px] font-bold uppercase">{t} Mode</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Performance vs Animation Mode Selector (Desktop Only) */}
+                  <div className="hidden md:block space-y-3">
+                    <label className="text-xs uppercase font-extrabold text-neutral-400 tracking-wider">Performance Priority</label>
+                    <p className="text-[10px] text-neutral-500 uppercase font-semibold">Prioritize smooth rendering or rich 3D card animations (recommended for weaker laptops)</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { id: 'animations', label: 'Prioritize Animations', desc: 'Full 3D effects & reflection sweeps', icon: 'solar:magic-stick-linear' },
+                        { id: 'performance', label: 'Prioritize Performance', desc: 'Static rendering (similar to mobile)', icon: 'solar:bolt-linear' }
+                      ].map(mode => {
+                        const isSelected = performanceMode === mode.id;
+                        return (
+                          <button
+                            key={mode.id}
+                            type="button"
+                            onClick={() => setPerformanceMode(mode.id)}
+                            className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-300 ${
+                              isSelected 
+                                ? 'bg-white text-black border-white shadow-lg' 
+                                : 'bg-neutral-950/40 border-white/5 text-neutral-400 hover:border-white/20'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <iconify-icon icon={mode.icon} width="16"></iconify-icon>
+                              <span className="text-[10px] font-bold uppercase">{mode.label}</span>
+                            </div>
+                            <span className={`text-[8.5px] font-semibold leading-normal ${isSelected ? 'text-black/60' : 'text-neutral-500'}`}>{mode.desc}</span>
                           </button>
                         );
                       })}

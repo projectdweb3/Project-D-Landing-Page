@@ -4,8 +4,13 @@
 <head>
   <base href="/hooptactics/">
   <meta charset="UTF-8" />
-  <div id="error-console" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; background: #990000; color: white; font-family: monospace; font-size: 12px; padding: 12px; display: none; white-space: pre-wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"><strong>JavaScript Error Detected:</strong></div>
   <script>
+    // Redirect /hooptact (no trailing slash) to /hooptact/ so that relative paths resolve correctly
+    if (window.location.pathname.endsWith('/hooptact')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
+
+    // Global JavaScript Error Handler
     window.onerror = function(message, source, lineno, colno, error) {
       const el = document.getElementById('error-console');
       if (el) {
@@ -14,6 +19,7 @@
       }
       return false;
     };
+
     window.addEventListener('unhandledrejection', function(event) {
       const el = document.getElementById('error-console');
       if (el) {
@@ -21,6 +27,18 @@
         el.textContent += '\n\nUnhandled Rejection: ' + (event.reason ? event.reason.stack || event.reason : 'Unknown reason');
       }
     });
+
+    // Capture asset and script loading failures
+    window.addEventListener('error', function(event) {
+      if (event.target && (event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
+        const el = document.getElementById('error-console');
+        if (el) {
+          el.style.display = 'block';
+          const src = event.target.src || event.target.href || 'unknown';
+          el.textContent += '\n\nFailed to load resource: ' + src;
+        }
+      }
+    }, true);
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HoopTactics | Premium Digital Basketball Card Collection</title>
@@ -1372,6 +1390,56 @@
       }
     }
 
+    /* Performance Mode (prioritize performance over animations on desktop) */
+    html.performance-mode .card-3d-wrapper,
+    html.performance-mode .card-3d-inner,
+    html.performance-mode .card-face,
+    html.performance-mode .card-face img,
+    html.performance-mode .holo-shimmer,
+    html.performance-mode .holo-refractor,
+    html.performance-mode .holo-glare,
+    html.performance-mode .ovr-avatar-spin {
+      transform: none !important;
+      transform-style: flat !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    html.performance-mode .glass-panel,
+    html.performance-mode .digital-toploader,
+    html.performance-mode .amp-card,
+    html.performance-mode .fixed.inset-0.z-50 {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    html.performance-mode .holo-shimmer {
+      background-position: 50% 50% !important;
+      opacity: 0.75 !important;
+      z-index: 15 !important;
+    }
+
+    html.performance-mode .holo-refractor {
+      opacity: 0.55 !important;
+      background-position: 50% 50% !important;
+      z-index: 14 !important;
+    }
+
+    html.performance-mode .holo-glare {
+      opacity: 0.35 !important;
+      background-position: 50% 50% !important;
+      z-index: 16 !important;
+    }
+
+    html.performance-mode .holo-shimmer.is-emerald-shimmer ~ .holo-refractor::before {
+      display: none !important;
+    }
+
+    html.performance-mode .neon-beam-glow {
+      animation: none !important;
+      display: none !important;
+    }
+
     /* Tutorial Highlight Animations */
     @keyframes pulse-beam-teal {
       0%, 100% {
@@ -1407,6 +1475,8 @@
 </head>
 
 <body>
+  <div id="error-console" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; background: #990000; color: white; font-family: monospace; font-size: 12px; padding: 12px; display: none; white-space: pre-wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"><strong>JavaScript Error Detected:</strong></div>
+
   <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-[#000000]" id="bg-container">
     <div class="neon-beam-glow top-[5%] -left-[10%]"></div>
     <div class="neon-beam-glow top-[40%] -right-[15%]"></div>
