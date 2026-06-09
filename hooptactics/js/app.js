@@ -3805,79 +3805,50 @@ const getBasketballStatsAndBio = (card) => {
               <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
                 <defs>
                   {/* Embossed metal lighting filter */}
-                  <filter id="metal-emboss-heads" x="-15%" y="-15%" width="130%" height="130%">
-                    <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.3" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
-                    <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" flood-color="#ffffff" flood-opacity="0.85" result="highlight"/>
+                  <filter id="metal-emboss-heads" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0.6" dy="0.6" stdDeviation="0.4" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
+                    <feDropShadow dx="-0.6" dy="-0.6" stdDeviation="0.4" flood-color="#ffffff" flood-opacity="0.8" result="highlight"/>
                     <feMerge>
                       <feMergeNode in="shadow"/>
                       <feMergeNode in="highlight"/>
                       <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                   </filter>
-                  <path id="top-curve-heads" d="M 16 50 A 34 34 0 0 1 84 50" fill="none" />
-                  <path id="bottom-curve-heads" d="M 16 50 A 34 34 0 0 0 84 50" fill="none" />
                 </defs>
 
-                {/* Outer rim notches */}
-                <circle cx="50" cy="50" r="47.5" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="1.2, 1.8" />
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.3" />
+                {/* Polished outer border rim */}
+                <circle cx="50" cy="50" r="47" fill="none" stroke="#3f3f46" stroke-width="1.5" />
+                <circle cx="50" cy="50" r="45.5" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.4" />
                 
-                {/* George Washington bust profile silhouette */}
-                <path 
-                  d="M 33 46 
-                     C 33 44, 34.5 43.2, 35 41.7 
-                     C 35.5 40.2, 35 38.2, 36 36.2 
-                     C 37 34.2, 39 32.7, 42 31.2 
-                     C 45.5 29.7, 49.5 29.2, 53.5 30.2 
-                     C 57 31.2, 59 33.2, 60 36.2 
-                     C 61 39.2, 59.5 41.2, 60 43.7 
-                     C 60.5 46.2, 62.5 48.2, 62 50.7 
-                     C 61.5 53.2, 60 54.7, 60 56.2 
-                     C 60 57.7, 61 58.2, 61 59.7 
-                     C 61 61.2, 59 63.2, 57 64.2 
-                     C 55 65.2, 53.5 64.7, 52 64.7 
-                     C 51.5 66.2, 52.5 67.7, 53.5 69.7 
-                     C 54.5 71.7, 55.5 73.2, 56 75.2 
-                     C 56.5 77.2, 56.5 79.2, 53 79.2 
-                     C 48 79.2, 43.5 76.2, 41 72.2 
-                     C 39.5 70.2, 39.5 67.2, 38.5 65.7 
-                     C 37.5 64.2, 36 63.2, 35.5 61.7 
-                     C 35 60.2, 36.5 59.2, 36.5 57.7 
-                     C 36.5 56.2, 35 55.2, 34.5 53.7 
-                     C 34 52.2, 35 51.2, 34.5 49.7 
-                     C 34 48.2, 33 47.2, 33 46 Z" 
-                  fill="#e4e4e7" 
-                  filter="url(#metal-emboss-heads)" 
-                />
-                {/* Washington's ribbon */}
-                <path 
-                  d="M 52.8 64.7 C 53.8 65.2, 54.3 66.2, 54.3 67.2 C 54.3 68.2, 53.8 69.2, 52.8 69.7 C 51.8 69.2, 51.3 68.2, 51.3 67.2 C 51.3 66.2, 51.8 65.2, 52.8 64.7 Z" 
-                  fill="#a1a1aa" 
-                  filter="url(#metal-emboss-heads)"
-                />
+                {/* Dotted decorative inner border */}
+                <circle cx="50" cy="50" r="43" fill="none" stroke="#52525b" stroke-width="1.2" stroke-dasharray="1.5, 2" />
+                <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2" />
 
-                {/* LIBERTY */}
-                <text fill="#ffffff" fill-opacity="0.9" font-size="7.5" font-family="Georgia, serif" font-weight="900" letter-spacing="1.8" filter="url(#metal-emboss-heads)">
-                  <textPath href="#top-curve-heads" startOffset="50%" textAnchor="middle">LIBERTY</textPath>
-                </text>
-
-                {/* IN GOD WE TRUST */}
-                <text x="21" y="55" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
-                  IN GOD WE
-                </text>
-                <text x="22.5" y="59.5" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
-                  TRUST
-                </text>
-
-                {/* Mint Mark P */}
-                <text x="75" y="57.5" fill="#ffffff" fill-opacity="0.85" font-size="5" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
-                  P
-                </text>
-
-                {/* 2026 */}
-                <text fill="#ffffff" fill-opacity="0.9" font-size="8" font-family="Georgia, serif" font-weight="900" letter-spacing="1.5" filter="url(#metal-emboss-heads)">
-                  <textPath href="#bottom-curve-heads" startOffset="50%" textAnchor="middle">2026</textPath>
-                </text>
+                {/* Heads Icon: Stylized Washington Profile Silhouette (large & crisp) */}
+                <g filter="url(#metal-emboss-heads)" fill="#e4e4e7">
+                  <path d="M 33,65 
+                           C 33,60 35,58 37,56 
+                           C 39,54 38,51 38,49 
+                           C 38,47 39.5,45 41,43 
+                           C 42.5,41 43,39 45,37 
+                           C 47,35 51,34 54,35 
+                           C 57,36 59,38 60,41 
+                           C 61,44 60,47 59.5,49 
+                           C 59,51 60.5,53 60.5,55 
+                           C 60.5,57 59,58.5 59,60 
+                           C 59,61.5 60,62 60,63.5 
+                           C 60,65 58,67 56,68 
+                           C 54,69 52.5,68.5 51,68.5 
+                           C 50.5,70 51.5,71.5 52.5,73.5 
+                           C 53.5,75.5 54.5,77 55,79 
+                           H 45 
+                           C 41,74 38,71 36.5,69.5 
+                           C 35,68 33.5,67 33,65.5 Z" />
+                  {/* Hair bun */}
+                  <circle cx="41.5" cy="52" r="3.5" fill="#a1a1aa" />
+                  {/* Hair bow ribbon */}
+                  <path d="M 38,52 L 34,55 L 36,52 L 34,49 Z" fill="#71717a" />
+                </g>
               </svg>
             </div>
             
@@ -3885,75 +3856,46 @@ const getBasketballStatsAndBio = (card) => {
             <div className="coin-3d-face coin-3d-back">
               <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
                 <defs>
-                  <filter id="metal-emboss-tails" x="-15%" y="-15%" width="130%" height="130%">
-                    <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.3" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
-                    <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" flood-color="#ffffff" flood-opacity="0.85" result="highlight"/>
+                  <filter id="metal-emboss-tails" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0.6" dy="0.6" stdDeviation="0.4" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
+                    <feDropShadow dx="-0.6" dy="-0.6" stdDeviation="0.4" flood-color="#ffffff" flood-opacity="0.8" result="highlight"/>
                     <feMerge>
                       <feMergeNode in="shadow"/>
                       <feMergeNode in="highlight"/>
                       <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                   </filter>
-                  <path id="top-curve-tails" d="M 13 50 A 37 37 0 0 1 87 50" fill="none" />
-                  <path id="bottom-curve-tails" d="M 13 50 A 37 37 0 0 0 87 50" fill="none" />
                 </defs>
 
-                {/* Outer rim notches */}
-                <circle cx="50" cy="50" r="47.5" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="1.2, 1.8" />
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.3" />
+                {/* Polished outer border rim */}
+                <circle cx="50" cy="50" r="47" fill="none" stroke="#3f3f46" stroke-width="1.5" />
+                <circle cx="50" cy="50" r="45.5" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.4" />
                 
-                {/* Bald Eagle silhouette */}
-                <path 
-                  d="M 50 36 
-                     C 49 36, 47.8 37, 46.8 38 
-                     C 42.8 40, 37.8 37, 33.8 35 
-                     C 28.8 33, 21.8 34, 15.8 38 
-                     C 13.8 39.5, 12.8 42, 14.8 44 
-                     C 16.8 46, 21.8 48, 25.8 47 
-                     C 30.8 46, 34.8 49, 36.8 51 
-                     C 38.3 52.5, 38.8 55, 39.8 57 
-                     C 40.8 59, 42.3 61, 43.8 62 
-                     C 44.8 63, 46.8 61.5, 48.3 60 
-                     C 49 59.2, 49.4 58.5, 49.8 58.5 
-                     C 50.2 58.5, 50.6 59.2, 51.3 60 
-                     C 52.8 61.5, 54.8 63, 55.8 62 
-                     C 57.3 61, 58.8 59, 59.8 57 
-                     C 60.8 55, 61.3 52.5, 62.8 51 
-                     C 64.8 49, 68.8 46, 73.8 47 
-                     C 77.8 48, 82.8 46, 84.8 44 
-                     C 86.8 42, 85.8 39.5, 83.8 38 
-                     C 77.8 34, 70.8 33, 65.8 35 
-                     C 61.8 37, 56.8 40, 52.8 38 
-                     C 51.8 37, 50.8 36, 50 36 Z" 
-                  fill="#e4e4e7" 
-                  filter="url(#metal-emboss-tails)" 
-                />
-                
-                {/* Head detail */}
-                <circle cx="50" cy="40.5" r="1" fill="#a1a1aa" filter="url(#metal-emboss-tails)" />
-                
-                {/* Arrows and Olive Branch crossed */}
-                <path d="M 33 63 Q 50 67 67 63" fill="none" stroke="#e4e4e7" stroke-width="1.5" stroke-linecap="round" filter="url(#metal-emboss-tails)" />
-                <path d="M 40 66 L 60 61" stroke="#a1a1aa" stroke-width="1" filter="url(#metal-emboss-tails)" />
-                <path d="M 60 66 L 40 61" stroke="#a1a1aa" stroke-width="1" filter="url(#metal-emboss-tails)" />
+                {/* Dotted decorative inner border */}
+                <circle cx="50" cy="50" r="43" fill="none" stroke="#52525b" stroke-width="1.2" stroke-dasharray="1.5, 2" />
+                <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2" />
 
-                {/* UNITED STATES OF AMERICA */}
-                <text fill="#ffffff" fill-opacity="0.9" font-size="5.2" font-family="Georgia, serif" font-weight="900" filter="url(#metal-emboss-tails)">
-                  <textPath href="#top-curve-tails" startOffset="50%" textAnchor="middle">UNITED STATES OF AMERICA</textPath>
-                </text>
-
-                {/* E PLURIBUS UNUM */}
-                <text x="50" y="50" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" textAnchor="middle" filter="url(#metal-emboss-tails)">
-                  E PLURIBUS
-                </text>
-                <text x="50" y="54.5" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" textAnchor="middle" filter="url(#metal-emboss-tails)">
-                  UNUM
-                </text>
-
-                {/* QUARTER DOLLAR */}
-                <text fill="#ffffff" fill-opacity="0.9" font-size="6" font-family="Georgia, serif" font-weight="900" letter-spacing="0.8" filter="url(#metal-emboss-tails)">
-                  <textPath href="#bottom-curve-tails" startOffset="50%" textAnchor="middle">QUARTER DOLLAR</textPath>
-                </text>
+                {/* Tails Icon: Bald Eagle with Spread Wings (clean, geometric, prominent) */}
+                <g filter="url(#metal-emboss-tails)" fill="#e4e4e7">
+                  <path d="M 50,28 
+                           L 36,39 
+                           H 20 
+                           C 18,39 16.5,41 17.5,44 
+                           L 24,59 
+                           C 25,61 27,63 29,63 
+                           H 42 
+                           L 50,71 
+                           L 58,63 
+                           H 71 
+                           C 73,63 75,61 76,59 
+                           L 82.5,44 
+                           C 83.5,41 82,39 80,39 
+                           H 64 
+                           L 50,28 Z" />
+                  {/* Shield graphic on breast of the eagle */}
+                  <path d="M 45,46 H 55 V 53 C 55,57 50,60 50,60 C 50,60 45,57 45,53 Z" fill="#71717a" />
+                  <path d="M 45,46 H 55 V 53 C 55,57 50,60 50,60 C 50,60 45,57 45,53 Z" fill="none" stroke="#e4e4e7" stroke-width="0.8" />
+                </g>
               </svg>
             </div>
           </div>
@@ -6390,18 +6332,7 @@ const getBasketballStatsAndBio = (card) => {
                         // Defender restriction validation check
                         let canBeDefender = false;
                         if (!playerPossession && gamePhase === 'contest') {
-                          const oppAttacker = opponentCards.slice(0, 5).find(x => x.id === selectedAttackerId);
-                          if (oppAttacker) {
-                            const attPos = getCardGameStats(oppAttacker).pos;
-                            const matchupMap = {
-                              'PG': ['PG', 'SG'],
-                              'SG': ['PG', 'SG', 'SF'],
-                              'SF': ['SG', 'SF', 'PF'],
-                              'PF': ['SF', 'PF', 'C'],
-                              'C': ['PF', 'C']
-                            };
-                            canBeDefender = (matchupMap[attPos] || []).includes(stats.pos);
-                          }
+                          canBeDefender = true;
                         }
 
                         const isHighlighted = isTutorialMatch && tutorialStep === 2 && !tutorialPopupOpen && (playerPossession ? canBeShooter : canBeDefender);
@@ -6793,7 +6724,7 @@ const getBasketballStatsAndBio = (card) => {
 
                           // CPU smart usage of Hall of Fame Aura
                           // CPU uses HoF Aura if it's a tight score or 4th quarter and they haven't used it
-                          const shouldCpuUseGrail = canOpponentUseGrail && (possessionCount >= 20 || Math.abs(playerScore - opponentScore) <= 2) && Math.random() > 0.5;
+                          const shouldCpuUseGrail = canOpponentUseGrail && (possessionCount >= 20 || Math.abs(playerScore - opponentScore) <= 2) && (((possessionCount * 7 + 3) % 10) < 5);
 
                           return (
                             <div className="space-y-3">
@@ -6883,9 +6814,12 @@ const getBasketballStatsAndBio = (card) => {
                                   </button>
                                 )}
 
-                                {shouldCpuUseGrail && (
-                                  <div className="text-[7.5px] text-amber-500 italic block">Opponent coach is preparing to invoke Hall of Fame Aura...</div>
-                                )}
+                                <div 
+                                  className="text-[7.5px] text-amber-500 italic block transition-opacity duration-200"
+                                  style={{ height: '12px', opacity: shouldCpuUseGrail ? 1 : 0, visibility: shouldCpuUseGrail ? 'visible' : 'hidden' }}
+                                >
+                                  Opponent coach is preparing to invoke Hall of Fame Aura...
+                                </div>
                               </div>
                             </div>
                           );
@@ -6953,7 +6887,7 @@ const getBasketballStatsAndBio = (card) => {
                     const defHasGrail = defStats ? defStats.perks.some(p => p.name === 'Hall of Fame Aura') : false;
                     const canPlayerUseGrail = playerPossession ? (attHasGrail && !selectedGrailUsed) : (defHasGrail && !selectedGrailUsed);
                     const canOpponentUseGrail = !playerPossession ? (attHasGrail && !oppGrailUsed) : (defHasGrail && !oppGrailUsed);
-                    const shouldCpuUseGrail = canOpponentUseGrail && (possessionCount >= 20 || Math.abs(playerScore - opponentScore) <= 2) && Math.random() > 0.5;
+                    const shouldCpuUseGrail = canOpponentUseGrail && (possessionCount >= 20 || Math.abs(playerScore - opponentScore) <= 2) && (((possessionCount * 7 + 3) % 10) < 5);
 
                     const matchupMap = {
                       'PG': ['PG', 'SG'],
@@ -7170,23 +7104,13 @@ const getBasketballStatsAndBio = (card) => {
                                 const c = playerCards.find(x => x.id === sid);
                                 if (!c) return null;
                                 const cStats = getCardGameStats(c);
-                                const allowedPositions = matchupMap[stats.pos] || [];
-                                const isEligible = allowedPositions.includes(cStats.pos);
 
                                 return (
                                   <div
                                     key={sid + '_inline_def'}
-                                    onClick={() => {
-                                      if (isEligible) {
-                                        handleSelectDefender(c.id);
-                                      } else {
-                                        triggerToast(`Matchup Error: A ${cStats.pos} cannot defend a ${stats.pos}!`);
-                                      }
-                                    }}
+                                    onClick={() => handleSelectDefender(c.id)}
                                     className={`w-[18%] flex flex-col items-center gap-1 cursor-pointer transition-all duration-200 ${
-                                      isEligible 
-                                        ? (isLight ? 'hover:scale-105 border border-blue-300 hover:border-blue-500 rounded-lg p-0.5 bg-blue-50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'hover:scale-105 border border-blue-500/50 hover:border-blue-400 rounded-lg p-0.5 bg-blue-950/10 shadow-[0_0_10px_rgba(59,130,246,0.2)]')
-                                        : 'opacity-40 grayscale pointer-events-none'
+                                      isLight ? 'hover:scale-105 border border-blue-300 hover:border-blue-500 rounded-lg p-0.5 bg-blue-50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'hover:scale-105 border border-blue-500/50 hover:border-blue-400 rounded-lg p-0.5 bg-blue-950/10 shadow-[0_0_10px_rgba(59,130,246,0.2)]'
                                     }`}
                                   >
                                     <div className="w-full aspect-[3/4] rounded overflow-hidden relative">
@@ -7200,15 +7124,15 @@ const getBasketballStatsAndBio = (card) => {
                                     <span className={`text-[7px] sm:text-[8px] font-extrabold ${isLight ? 'text-slate-700' : 'text-neutral-300'} leading-none truncate max-w-full`}>
                                       {c.player.split(' ').pop()}
                                     </span>
-                                    <span className={`text-[6px] sm:text-[7px] font-mono leading-none ${isEligible ? (isLight ? 'text-blue-600 font-bold' : 'text-blue-400 font-bold') : 'text-neutral-500'}`}>
-                                      {cStats.pos} ({cStats.def})
+                                    <span className={`text-[6px] sm:text-[7px] font-mono leading-none ${isLight ? 'text-blue-600 font-bold' : 'text-blue-400 font-bold'}`}>
+                                      {cStats.pos} (P:{cStats.perDef}|R:{cStats.rimDef})
                                     </span>
                                   </div>
                                 );
                               })}
                             </div>
                             <div className={`text-[6.5px] sm:text-[8.5px] ${isLight ? 'text-slate-500' : 'text-neutral-400'} text-center italic leading-none`}>
-                              Matchup rules: PG guards PG/SG, C guards PF/C, etc.
+                              No position locks! Choose the best defender based on their PRD (Perimeter Defense) or RMP (Rim Protection) rating.
                             </div>
                           </div>
                         )}
@@ -7270,11 +7194,12 @@ const getBasketballStatsAndBio = (card) => {
                               </button>
                             )}
 
-                            {shouldCpuUseGrail && (
-                              <div className={`text-[8px] sm:text-[10px] ${isLight ? 'text-amber-700' : 'text-amber-400'} font-bold italic text-center animate-pulse`}>
-                                ⚠️ Opponent coach is invoking Hall of Fame Aura for this play!
-                              </div>
-                            )}
+                            <div 
+                              className={`text-[8px] sm:text-[10px] ${isLight ? 'text-amber-700' : 'text-amber-400'} font-bold italic text-center animate-pulse transition-opacity duration-200 flex items-center justify-center`}
+                              style={{ height: '16px', opacity: shouldCpuUseGrail ? 1 : 0, visibility: shouldCpuUseGrail ? 'visible' : 'hidden' }}
+                            >
+                              ⚠️ Opponent coach is invoking Hall of Fame Aura for this play!
+                            </div>
                           </div>
                         )}
 
@@ -7298,403 +7223,13 @@ const getBasketballStatsAndBio = (card) => {
                               {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
                                 <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })()}
-                </div>
-              )}
-
-              {/* TIMEOUT FULL-SCREEN OVERLAY SEQUENCE */}
-              {timeoutActive && (
-                <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-amber-950 rounded-2xl sm:rounded-3xl bg-[#0d241c] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
-                  {/* Chalk drawings on the background board */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
-                    {/* Court lines */}
-                    <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6,6" />
-                    <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-                    <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-                    
-                    {/* Tactical drawings */}
-                    <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(234,179,8,0.18)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
-                    <circle cx="250" cy="350" r="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
-                    <text x="246" y="352" fill="rgba(239,68,68,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
-                    
-                    <circle cx="210" cy="265" r="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" strokeWidth="1.5" />
-                    <text x="206" y="267" fill="rgba(59,130,246,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
-                    
-                    <defs>
-                      <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(234,179,8,0.3)" />
-                      </marker>
-                    </defs>
-                  </svg>
-
-                  {/* Stamina Bubble Emitters */}
-                  <div className="absolute inset-0 pointer-events-none z-0">
-                    <div className="absolute bottom-8 left-[25%] w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-bubble-1" />
-                    <div className="absolute bottom-12 left-[50%] w-2 h-2 rounded-full bg-emerald-500/20 animate-bubble-2" />
-                    <div className="absolute bottom-6 left-[75%] w-3 h-3 rounded-full bg-emerald-500/20 animate-bubble-3" />
-                  </div>
-
-                  <div className="absolute top-4 right-4 text-[7px] font-mono text-neutral-500 tracking-wider z-10">
-                    HOOPTACTICS ARENA TIMEOUT INTERMISSION
-                  </div>
-
-                  {/* Coaching chalkboard visual banner */}
-                  <div className="w-full h-full overflow-y-auto relative z-10 flex flex-col items-center justify-start gap-4 py-4 pb-16 pr-1 hide-scrollbar max-w-4xl text-center">
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-bounce">
-                      <iconify-icon icon="solar:stopwatch-bold" width="28" className="text-white"></iconify-icon>
+                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-cen
+          {/* 6. SUDDEN DEATH OVERTIME WINDOW */}          <div className="conic-btn-mask"></div>
+                        <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                          💡 Close Chalkboard & Resume
+                        </span>
+                      </button>
                     </div>
-                    
-                    <h2 className="text-xl font-black uppercase tracking-wider text-white">
-                      🚨 TIMEOUT ACTIVATED 🚨
-                    </h2>
-                    
-                    <p className="text-[10px] font-mono font-bold uppercase" style={{ color: timeoutCaller === 'player' ? '#F97316' : '#3B82F6' }}>
-                      {timeoutCaller === 'player' 
-                        ? `Coach ${favorites?.username || 'Player'} calls for tactical realignment!` 
-                        : `Coach ${opponentName} initiates a strategic timeout!`}
-                    </p>
-                    
-                    <div className="border border-white/5 bg-[#0a1a14]/90 p-4 rounded-3xl space-y-4 shadow-2xl relative overflow-hidden w-full flex flex-col gap-4">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
-                      
-                      <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1.5 flex justify-between items-center text-left">
-                        <span>📋 Chalkboard Strategy & Bench Realignment</span>
-                        {timeoutCaller === 'player' && (
-                          <span className="text-[7.5px] text-neutral-400 font-mono font-normal">
-                            💡 Drag & drop or tap a starter + reserve to swap!
-                          </span>
-                        )}
-                      </div>
-                      
-                      {timeoutCaller === 'player' ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-                          {/* STARTERS ON COURT */}
-                          <div className="border border-white/5 bg-black/40 p-3.5 rounded-2xl flex flex-col gap-2">
-                            <div className="text-[9px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-1 text-left flex justify-between">
-                              <span>🏀 Active On-Court Lineup (Starters)</span>
-                            </div>
-                            <div className="flex gap-2 sm:gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar">
-                              {starters.map((id, sIdx) => {
-                                const c = playerCards.find(x => x.id === id);
-                                if (!c) return null;
-                                const stats = getCardGameStats(c);
-                                const isSelected = selectedSubId === c.id;
-                                const isDragOver = dragOverCardId === c.id;
-                                const isDragging = draggedCardId === c.id;
-                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
-                                
-                                return (
-                                  <div
-                                    key={c.id + '_timeout_starter'}
-                                    draggable="true"
-                                    onDragStart={(e) => {
-                                      e.dataTransfer.effectAllowed = "move";
-                                      e.dataTransfer.setData("text/plain", c.id);
-                                      const cid = c.id;
-                                      setTimeout(() => {
-                                        setDraggedCardId(cid);
-                                      }, 0);
-                                    }}
-                                    onDragOver={(e) => {
-                                      e.preventDefault();
-                                      if (draggedCardId && draggedCardId !== c.id) {
-                                        setDragOverCardId(c.id);
-                                      }
-                                    }}
-                                    onDragLeave={() => setDragOverCardId(null)}
-                                    onDrop={(e) => {
-                                      e.preventDefault();
-                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
-                                      if (sourceId && sourceId !== c.id) {
-                                        handleDragDropSwap(sourceId, c.id);
-                                      }
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onDragEnd={() => {
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onClick={() => {
-                                      if (selectedSubId === c.id) {
-                                        setSelectedSubId(null);
-                                      } else if (selectedSubId) {
-                                        handleDragDropSwap(selectedSubId, c.id);
-                                        setSelectedSubId(null);
-                                      } else {
-                                        setSelectedSubId(c.id);
-                                      }
-                                    }}
-                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
-                                      isSelected 
-                                        ? 'ring-4 ring-amber-400 scale-105 z-20 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
-                                        : isDragOver 
-                                          ? 'ring-4 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_25px_rgba(16,185,129,0.8)] -rotate-1' 
-                                          : 'hover:scale-[1.03]'
-                                    }`}
-                                  >
-                                    {isDragging ? (
-                                      <div className="relative w-full aspect-[3/4] rounded-xl border-2 border-dashed border-orange-500/40 bg-orange-950/20 flex flex-col items-center justify-center gap-1 shadow-[inset_0_0_15px_rgba(245,158,11,0.15)] animate-pulse">
-                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="22" className="text-orange-400/70 animate-bounce"></iconify-icon>
-                                        <span className="text-[5.5px] font-mono font-black text-orange-400/60 uppercase tracking-widest text-center px-1 leading-none">SWAPPING</span>
-                                      </div>
-                                    ) : (
-                                      <React.Fragment>
-                                        <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
-                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                          {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
-                                            </div>
-                                          )}
-                                          {isDragOver && (
-                                            <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
-                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="20" className="text-emerald-400 animate-spin-slow"></iconify-icon>
-                                              <span className="text-[6px] font-mono font-black text-emerald-400 uppercase tracking-wider text-center px-1 leading-none">SWAP PLAYERS</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
-                                          <div 
-                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
-                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                          />
-                                        </div>
-                                        <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
-                                      </React.Fragment>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* BENCH RESERVES */}
-                          <div className="border border-white/5 bg-black/40 p-3.5 rounded-2xl flex flex-col gap-2">
-                            <div className="text-[9px] uppercase tracking-wider text-emerald-400 font-bold border-b border-white/5 pb-1 text-left flex justify-between">
-                              <span>📋 Bench Reserves (Resting)</span>
-                              <span className="text-[7px] text-emerald-400 font-normal">▲ +20 Stamina recovered!</span>
-                            </div>
-                            <div className="flex gap-2 sm:gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar">
-                              {bench.map((id, bIdx) => {
-                                const c = playerCards.find(x => x.id === id);
-                                if (!c) return null;
-                                const stats = getCardGameStats(c);
-                                const isSelected = selectedSubId === c.id;
-                                const isDragOver = dragOverCardId === c.id;
-                                const isDragging = draggedCardId === c.id;
-                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
-                                
-                                return (
-                                  <div
-                                    key={c.id + '_timeout_bench'}
-                                    draggable="true"
-                                    onDragStart={(e) => {
-                                      e.dataTransfer.effectAllowed = "move";
-                                      e.dataTransfer.setData("text/plain", c.id);
-                                      const cid = c.id;
-                                      setTimeout(() => {
-                                        setDraggedCardId(cid);
-                                      }, 0);
-                                    }}
-                                    onDragOver={(e) => {
-                                      e.preventDefault();
-                                      if (draggedCardId && draggedCardId !== c.id) {
-                                        setDragOverCardId(c.id);
-                                      }
-                                    }}
-                                    onDragLeave={() => setDragOverCardId(null)}
-                                    onDrop={(e) => {
-                                      e.preventDefault();
-                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
-                                      if (sourceId && sourceId !== c.id) {
-                                        handleDragDropSwap(sourceId, c.id);
-                                      }
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onDragEnd={() => {
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onClick={() => {
-                                      if (selectedSubId === c.id) {
-                                        setSelectedSubId(null);
-                                      } else if (selectedSubId) {
-                                        handleDragDropSwap(selectedSubId, c.id);
-                                        setSelectedSubId(null);
-                                      } else {
-                                        setSelectedSubId(c.id);
-                                      }
-                                    }}
-                                    className={`w-[17%] sm:w-[18%] md:w-[96px] lg:w-[104px] xl:w-[112px] flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
-                                      isSelected 
-                                        ? 'ring-4 ring-amber-400 scale-105 z-20 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
-                                        : isDragOver 
-                                          ? 'ring-4 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_25px_rgba(16,185,129,0.8)] -rotate-1' 
-                                          : 'hover:scale-[1.03]'
-                                    }`}
-                                  >
-                                    {isDragging ? (
-                                      <div className="relative w-full aspect-[3/4] rounded-xl border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center gap-1 shadow-[inset_0_0_15px_rgba(16,185,129,0.15)] animate-pulse">
-                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="22" className="text-emerald-400/70 animate-bounce"></iconify-icon>
-                                        <span className="text-[5.5px] font-mono font-black text-emerald-400/60 uppercase tracking-widest text-center px-1 leading-none">SWAPPING</span>
-                                      </div>
-                                    ) : (
-                                      <React.Fragment>
-                                        <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-white/5">
-                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                          {/* Stamina recovered badge */}
-                                          <span className="absolute top-1 right-1 text-[5px] font-extrabold text-emerald-400 bg-black/85 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
-                                            ▲ +20
-                                          </span>
-                                          {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
-                                            </div>
-                                          )}
-                                          {isDragOver && (
-                                            <div className="absolute inset-0 bg-amber-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
-                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="20" className="text-amber-400 animate-spin-slow"></iconify-icon>
-                                              <span className="text-[6px] font-mono font-black text-amber-400 uppercase tracking-wider text-center px-1 leading-none">SWAP PLAYERS</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <span className="text-[7.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-1">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-1">
-                                          <div 
-                                            className="h-full bg-emerald-500 animate-fill-stamina" 
-                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                          />
-                                        </div>
-                                        <span className="text-[5.5px] font-mono text-neutral-400">STA: {c.currentSta}/{stats.sta}</span>
-                                      </React.Fragment>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="border border-white/5 bg-[#0a1a14]/90 p-4 rounded-3xl space-y-4 shadow-2xl relative overflow-hidden w-full">
-                          <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1.5">
-                            📋 Opponent Bench & Recovery Status
-                          </div>
-                          
-                          <div className="flex gap-3 sm:gap-4 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-1 relative">
-                            {opponentCards.slice(5, 10).map((c, sIdx) => {
-                              const stats = getCardGameStats(c);
-                              return (
-                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[16%] min-w-[56px] flex flex-col items-center gap-1 sm:gap-1.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.1}s` }}>
-                                  <div className="relative w-10 h-13 rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-lg flex items-center justify-center">
-                                    <img src={c.frontImg} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-emerald-950/20" />
-                                  </div>
-                                  
-                                  <span className="text-[6.5px] font-mono text-neutral-300 truncate w-full">{c.player.split(' ').pop()}</span>
-                                  
-                                  <span className="text-[5.5px] font-extrabold text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/15 flex items-center gap-0.5 leading-none">
-                                    ▲ +20
-                                  </span>
-
-                                  <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative">
-                                    <div 
-                                      className="h-full bg-emerald-500 animate-fill-stamina" 
-                                      style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Stamina Engine & Recovery Guide */}
-                      <div className="border border-white/5 bg-[#0a1a14]/65 p-3 rounded-2xl text-left space-y-1.5 shadow-lg w-full">
-                        <div className="text-[9.5px] uppercase tracking-wider text-emerald-400 font-black flex items-center gap-1.5 border-b border-white/5 pb-1">
-                          <iconify-icon icon="solar:bolt-circle-bold" className="text-emerald-400 animate-pulse" width="14"></iconify-icon>
-                          <span>Stamina Engine & Recovery Guide</span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[8.5px] font-mono leading-relaxed text-neutral-300">
-                          <div className="space-y-1">
-                            <div className="text-orange-400 font-bold tracking-wide flex items-center gap-1">
-                              <iconify-icon icon="solar:shield-warning-bold" width="10"></iconify-icon>
-                              <span>🔋 STAMINA DEPLETION</span>
-                            </div>
-                            <ul className="list-disc pl-4 space-y-0.5 text-neutral-400">
-                              <li><span className="text-white font-semibold">Matchup Play</span>: Active Attacker and Defender lose <span className="text-white font-semibold">-10 STA</span> per possession.</li>
-                              <li><span className="text-white font-semibold">Iron Man Perk</span>: Restricts possession cost to only <span className="text-emerald-400 font-semibold">-5 STA</span>.</li>
-                              <li><span className="text-white font-semibold">Posterizer Penalty</span>: Extra <span className="text-red-400 font-semibold">-5 STA</span> to defenders when posters occur.</li>
-                              <li><span className="text-red-400 font-semibold">Gassed Penalty</span>: At <span className="text-red-400 font-semibold">≤20 STA</span>, card has <span className="text-red-400 font-semibold">-15 to all Matchup stats</span> (negated if card has Heavy Duty perk).</li>
-                            </ul>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="text-emerald-400 font-bold tracking-wide flex items-center gap-1">
-                              <iconify-icon icon="solar:restart-bold" width="10"></iconify-icon>
-                              <span>⚡ STAMINA RECOVERY</span>
-                            </div>
-                            <ul className="list-disc pl-4 space-y-0.5 text-neutral-400">
-                              <li><span className="text-emerald-400 font-semibold">Coach Timeout</span>: Restores <span className="text-emerald-400 font-semibold">+20 STA</span> instantly to all resting bench players.</li>
-                              <li><span className="text-white font-semibold">Quarter Intermissions</span>: On-court starters recover <span className="text-white font-semibold">+5 STA</span> | Bench recovers <span className="text-emerald-400 font-semibold">+15 STA</span>.</li>
-                              <li><span className="text-white font-semibold">Halftime (Q2 Break)</span>: All players recover <span className="text-emerald-400 font-semibold">+30 STA</span>.</li>
-                              <li><span className="text-white font-semibold">Debut Fire Perk</span>: Grants an extra <span className="text-emerald-400 font-semibold">+10 STA</span> recovery at all quarter/halftime breaks.</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Coaching Chalkboard Tips */}
-                      <div className="text-[8.5px] text-yellow-300 font-mono font-bold leading-normal bg-black/40 border border-yellow-500/10 p-2.5 rounded-xl uppercase w-full text-center">
-                        {(() => {
-                          const lowSPlayer = timeoutCaller === 'player'
-                            ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
-                            : null;
-                          const highestOffPlayer = timeoutCaller === 'player'
-                            ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
-                            : null;
-
-                          return timeoutCaller === 'player'
-                            ? (lowSPlayer 
-                              ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
-                              : highestOffPlayer 
-                                ? `💡 COACH STRATEGY: Matchup focus! Run the offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
-                                : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
-                              )
-                            : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Resume Match Button */}
-                    <button 
-                      onClick={() => {
-                        setTimeoutActive(false);
-                        setTimeoutCaller(null);
-                        setSelectedSubId(null);
-                      }}
-                      className="conic-btn px-6 py-2.5 transition-all mt-2"
-                    >
-                      <div className="conic-spin-bg"></div>
-                      <div className="conic-btn-mask"></div>
-                      <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                        💡 Close Chalkboard & Resume
-                      </span>
-                    </button>
                   </div>
                 </div>
               )}
@@ -9316,7 +8851,7 @@ const getBasketballStatsAndBio = (card) => {
           </aside>
 
           {/* Main Panel */}
-          <main className="flex-1 bg-black/60 border border-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0">
+          <main className="flex-1 bg-black/60 border border-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0 max-h-full">
             <div className={`p-2 sm:p-6 md:p-8 flex-1 flex flex-col min-h-0 ${isGameActive ? 'lg:overflow-hidden' : 'pb-24 sm:pb-16 overflow-y-auto hide-scrollbar'}`}>
               
               {/* Top Action Row */}
@@ -10721,6 +10256,376 @@ const getBasketballStatsAndBio = (card) => {
             )}
 
             </div>
+
+            {/* TIMEOUT FULL-SCREEN OVERLAY SEQUENCE */}
+            {timeoutActive && (
+              <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-amber-950 rounded-3xl bg-[#0d241c] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
+                {/* Chalk drawings on the background board */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
+                  {/* Court lines */}
+                  <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6,6" />
+                  <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+                  <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+                  
+                  {/* Tactical drawings */}
+                  <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(234,179,8,0.18)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
+                  <circle cx="250" cy="350" r="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
+                  <text x="246" y="352" fill="rgba(239,68,68,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
+                  
+                  <circle cx="210" cy="265" r="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" strokeWidth="1.5" />
+                  <text x="206" y="267" fill="rgba(59,130,246,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
+                  
+                  <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(234,179,8,0.3)" />
+                    </marker>
+                  </defs>
+                </svg>
+
+                {/* Stamina Bubble Emitters */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                  <div className="absolute bottom-8 left-[25%] w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-bubble-1" />
+                  <div className="absolute bottom-12 left-[50%] w-2 h-2 rounded-full bg-emerald-500/20 animate-bubble-2" />
+                  <div className="absolute bottom-6 left-[75%] w-3 h-3 rounded-full bg-emerald-500/20 animate-bubble-3" />
+                </div>
+
+                <div className="absolute top-4 right-4 text-[7px] font-mono text-neutral-500 tracking-wider z-10">
+                  HOOPTACTICS ARENA TIMEOUT INTERMISSION
+                </div>
+
+                <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-4xl text-center">
+                  
+                  {/* Header Section: compact and fixed */}
+                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_12px_rgba(239,68,68,0.3)] animate-pulse">
+                        <iconify-icon icon="solar:stopwatch-bold" width="18" className="text-white"></iconify-icon>
+                      </div>
+                      <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white">
+                        TIMEOUT ACTIVATED
+                      </h2>
+                    </div>
+                    
+                    <p className="text-[8.5px] sm:text-[9.5px] font-mono font-bold uppercase tracking-wider" style={{ color: timeoutCaller === 'player' ? '#F97316' : '#3B82F6' }}>
+                      {timeoutCaller === 'player' 
+                        ? `Coach ${favorites?.username || 'Player'} calls for tactical realignment!` 
+                        : `Coach ${opponentName} initiates a strategic timeout!`}
+                    </p>
+                  </div>
+                  
+                  {/* Middle Section: Chalkboard Strategy Card (scrolls internally if height is extremely constrained) */}
+                  <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center">
+                    <div className="border border-white/5 bg-[#0a1a14]/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-2.5 sm:gap-3 my-auto">
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
+                      
+                      <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1 flex justify-between items-center text-left">
+                        <span>📋 Chalkboard Strategy & Bench Realignment</span>
+                        {timeoutCaller === 'player' && (
+                          <span className="text-[7px] text-neutral-400 font-mono font-normal">
+                            💡 Drag & drop or tap a starter + reserve to swap!
+                          </span>
+                        )}
+                      </div>
+                      
+                      {timeoutCaller === 'player' ? (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+                          {/* STARTERS ON COURT */}
+                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
+                            <div className="text-[8.5px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-0.5 text-left">
+                              🏀 Active On-Court Lineup (Starters)
+                            </div>
+                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                              {starters.map((id, sIdx) => {
+                                const c = playerCards.find(x => x.id === id);
+                                if (!c) return null;
+                                const stats = getCardGameStats(c);
+                                const isSelected = selectedSubId === c.id;
+                                const isDragOver = dragOverCardId === c.id;
+                                const isDragging = draggedCardId === c.id;
+                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
+                                
+                                return (
+                                  <div
+                                    key={c.id + '_timeout_starter'}
+                                    draggable="true"
+                                    onDragStart={(e) => {
+                                      e.dataTransfer.effectAllowed = "move";
+                                      e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
+                                    }}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      if (draggedCardId && draggedCardId !== c.id) {
+                                        setDragOverCardId(c.id);
+                                      }
+                                    }}
+                                    onDragLeave={() => setDragOverCardId(null)}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
+                                      if (sourceId && sourceId !== c.id) {
+                                        handleDragDropSwap(sourceId, c.id);
+                                      }
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onDragEnd={() => {
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onClick={() => {
+                                      if (selectedSubId === c.id) {
+                                        setSelectedSubId(null);
+                                      } else if (selectedSubId) {
+                                        handleDragDropSwap(selectedSubId, c.id);
+                                        setSelectedSubId(null);
+                                      } else {
+                                        setSelectedSubId(c.id);
+                                      }
+                                    }}
+                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                      isSelected 
+                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
+                                        : isDragOver 
+                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
+                                          : 'hover:scale-[1.03]'
+                                    }`}
+                                  >
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-orange-500/40 bg-orange-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(245,158,11,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-orange-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[4.5px] font-mono font-black text-orange-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-emerald-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[4.5px] font-mono font-black text-emerald-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                          <div 
+                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* BENCH RESERVES */}
+                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
+                            <div className="text-[8.5px] uppercase tracking-wider text-emerald-400 font-bold border-b border-white/5 pb-0.5 text-left flex justify-between">
+                              <span>📋 Bench Reserves (Resting)</span>
+                              <span className="text-[6px] text-emerald-400 font-normal">▲ +20 STA!</span>
+                            </div>
+                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                              {bench.map((id, bIdx) => {
+                                const c = playerCards.find(x => x.id === id);
+                                if (!c) return null;
+                                const stats = getCardGameStats(c);
+                                const isSelected = selectedSubId === c.id;
+                                const isDragOver = dragOverCardId === c.id;
+                                const isDragging = draggedCardId === c.id;
+                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
+                                
+                                return (
+                                  <div
+                                    key={c.id + '_timeout_bench'}
+                                    draggable="true"
+                                    onDragStart={(e) => {
+                                      e.dataTransfer.effectAllowed = "move";
+                                      e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
+                                    }}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      if (draggedCardId && draggedCardId !== c.id) {
+                                        setDragOverCardId(c.id);
+                                      }
+                                    }}
+                                    onDragLeave={() => setDragOverCardId(null)}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
+                                      if (sourceId && sourceId !== c.id) {
+                                        handleDragDropSwap(sourceId, c.id);
+                                      }
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onDragEnd={() => {
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onClick={() => {
+                                      if (selectedSubId === c.id) {
+                                        setSelectedSubId(null);
+                                      } else if (selectedSubId) {
+                                        handleDragDropSwap(selectedSubId, c.id);
+                                        setSelectedSubId(null);
+                                      } else {
+                                        setSelectedSubId(c.id);
+                                      }
+                                    }}
+                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                      isSelected 
+                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
+                                        : isDragOver 
+                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
+                                          : 'hover:scale-[1.03]'
+                                    }`}
+                                  >
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(16,185,129,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-emerald-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[4.5px] font-mono font-black text-emerald-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {/* Stamina recovered badge */}
+                                          <span className="absolute top-0.5 right-0.5 text-[4.5px] font-extrabold text-emerald-400 bg-black/85 px-0.5 py-0.2 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
+                                            ▲+20
+                                          </span>
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-amber-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-amber-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[4.5px] font-mono font-black text-amber-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                          <div 
+                                            className="h-full bg-emerald-500 animate-fill-stamina" 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border border-white/5 bg-[#0a1a14]/90 p-2.5 rounded-xl space-y-2 shadow-2xl relative overflow-hidden w-full">
+                          <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1">
+                            📋 Opponent Bench & Recovery Status
+                          </div>
+                          
+                          <div className="flex gap-2 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-0.5 relative justify-start lg:justify-center">
+                            {opponentCards.slice(5, 10).map((c, sIdx) => {
+                              const stats = getCardGameStats(c);
+                              return (
+                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[14%] min-w-[48px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.1}s` }}>
+                                  <div className="relative w-8 h-10 rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-lg flex items-center justify-center">
+                                    <img src={c.frontImg} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-emerald-950/20" />
+                                  </div>
+                                  
+                                  <span className="text-[6px] font-mono text-neutral-300 truncate w-full">{c.player.split(' ').pop()}</span>
+                                  
+                                  <span className="text-[5px] font-extrabold text-emerald-400 bg-emerald-500/10 px-0.5 py-0.2 rounded border border-emerald-500/15 flex items-center gap-0.2 leading-none">
+                                    ▲+20
+                                  </span>
+
+                                  <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative">
+                                    <div 
+                                      className="h-full bg-emerald-500 animate-fill-stamina" 
+                                      style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Simplified Stamina Guide Bar */}
+                      <div className="bg-emerald-950/30 border border-emerald-500/10 p-2 rounded-xl text-left flex items-center gap-2 text-[8px] font-mono text-emerald-300">
+                        <iconify-icon icon="solar:info-circle-bold-duotone" className="text-emerald-400 text-xs flex-shrink-0"></iconify-icon>
+                        <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
+                      </div>
+                      
+                      {/* Coaching Chalkboard Tips */}
+                      <div className="text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase w-full text-center">
+                        {(() => {
+                          const lowSPlayer = timeoutCaller === 'player'
+                            ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
+                            : null;
+                          const highestOffPlayer = timeoutCaller === 'player'
+                            ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
+                            : null;
+
+                          return timeoutCaller === 'player'
+                            ? (lowSPlayer 
+                              ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
+                              : highestOffPlayer 
+                                ? `💡 COACH STRATEGY: Matchup focus! Run offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
+                                : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
+                              )
+                            : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Resume Match Button: Pinned to the bottom of the viewport */}
+                  <div className="flex-shrink-0 w-full flex justify-center pt-2">
+                    <button 
+                      onClick={() => {
+                        setTimeoutActive(false);
+                        setTimeoutCaller(null);
+                        setSelectedSubId(null);
+                      }}
+                      className="conic-btn px-6 py-2.5 transition-all shadow-[0_0_15px_rgba(70,212,198,0.25)] scale-100 hover:scale-[1.05] active:scale-95"
+                    >
+                      <div className="conic-spin-bg opacity-100 animate-[spin_3s_linear_infinite]"></div>
+                      <div className="conic-btn-mask"></div>
+                      <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                        💡 Close Chalkboard & Resume
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </main>
 
