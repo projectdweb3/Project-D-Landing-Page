@@ -2233,7 +2233,7 @@ const getBasketballStatsAndBio = (card) => {
       // Basketball Custom Card Back Render (HoopTactics ratings and attributes)
       if (card.sport === 'Basketball') {
         const { rows, bio } = getBasketballStatsAndBio(card);
-        const { off, def, sta, pos, ovr, perks, primaryBadge, tpt, mid, rim, ath, clu } = getCardGameStats(card);
+        const { off, def, rimDef, perDef, sta, pos, ovr, perks, primaryBadge, tpt, mid, rim, ath, clu } = getCardGameStats(card);
         
         // Compact mini-card back for search index grids
         if (size === 'sm') {
@@ -2252,7 +2252,8 @@ const getBasketballStatsAndBio = (card) => {
               </div>
               <div className="space-y-0.5 my-auto text-[7px]">
                 <div className="flex justify-between"><span>OFF:</span><span className={`font-black ${isLight ? 'text-neutral-900' : 'text-white'}`}>{off}</span></div>
-                <div className="flex justify-between"><span>DEF:</span><span className={`font-black ${isLight ? 'text-neutral-900' : 'text-white'}`}>{def}</span></div>
+                <div className="flex justify-between"><span>PRD:</span><span className={`font-black ${isLight ? 'text-neutral-900' : 'text-white'}`}>{perDef}</span></div>
+                <div className="flex justify-between"><span>RMP:</span><span className={`font-black ${isLight ? 'text-neutral-900' : 'text-white'}`}>{rimDef}</span></div>
                 <div className="flex justify-between"><span>STA:</span><span className={`font-black ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>{sta}</span></div>
                 <div className={`mt-1 flex items-center justify-between border-t ${isLight ? 'border-neutral-200' : 'border-white/5'} pt-1 scale-95 origin-left`}>
                   <span className={isLight ? 'text-[5.5px] text-neutral-400 uppercase font-semibold' : 'text-[5.5px] text-neutral-500 uppercase'}>Style:</span>
@@ -2307,11 +2308,21 @@ const getBasketballStatsAndBio = (card) => {
 
                 <div>
                   <div className={`flex justify-between font-semibold mb-0.5 ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
-                    <span>DEFENSE (DEF)</span>
-                    <span className={isLight ? 'text-neutral-900 font-bold' : 'text-white font-bold'}>{def}</span>
+                    <span>PERIMETER DEF (PRD)</span>
+                    <span className={isLight ? 'text-neutral-900 font-bold' : 'text-white font-bold'}>{perDef}</span>
                   </div>
                   <div className={`h-1.5 w-full ${isLight ? 'bg-neutral-200' : 'bg-neutral-900'} rounded overflow-hidden`}>
-                    <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400" style={{ width: `${def}%` }}></div>
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-400" style={{ width: `${perDef}%` }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className={`flex justify-between font-semibold mb-0.5 ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
+                    <span>RIM PROTECTION (RMP)</span>
+                    <span className={isLight ? 'text-neutral-900 font-bold' : 'text-white font-bold'}>{rimDef}</span>
+                  </div>
+                  <div className={`h-1.5 w-full ${isLight ? 'bg-neutral-200' : 'bg-neutral-900'} rounded overflow-hidden`}>
+                    <div className="h-full bg-gradient-to-r from-indigo-600 to-blue-500" style={{ width: `${rimDef}%` }}></div>
                   </div>
                 </div>
 
@@ -2410,14 +2421,18 @@ const getBasketballStatsAndBio = (card) => {
                 </div>
 
                 {/* Attributes block */}
-                <div className="grid grid-cols-5 gap-1.5 my-2 font-mono text-[8px]">
+                <div className="grid grid-cols-6 gap-1.5 my-2 font-mono text-[8px]">
                   <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
                     <span className="text-neutral-500 font-bold block uppercase mb-1">OFF</span>
                     <span className={`text-[14px] font-black ${isLight ? 'text-orange-600' : 'text-orange-500'}`}>{off}</span>
                   </div>
                   <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
-                    <span className="text-neutral-500 font-bold block uppercase mb-1">DEF</span>
-                    <span className={`text-[14px] font-black ${isLight ? 'text-blue-600' : 'text-blue-500'}`}>{def}</span>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">PRD</span>
+                    <span className={`text-[14px] font-black ${isLight ? 'text-blue-600' : 'text-blue-500'}`}>{perDef}</span>
+                  </div>
+                  <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
+                    <span className="text-neutral-500 font-bold block uppercase mb-1">RMP</span>
+                    <span className={`text-[14px] font-black ${isLight ? 'text-indigo-600' : 'text-indigo-500'}`}>{rimDef}</span>
                   </div>
                   <div className={`border p-2 rounded-lg text-center flex flex-col justify-center ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-900/60 border-white/5'}`}>
                     <span className="text-neutral-500 font-bold block uppercase mb-1">STA</span>
@@ -3756,6 +3771,196 @@ const getBasketballStatsAndBio = (card) => {
     // Seeded random helper functions for realistic dynamic price comp history
 // price history math moved to js/data.js
 
+    // Reusable 3D U.S. Quarter Coin Component for Matchup Resolution
+    const QuarterCoin = ({ flipping, result, size = 'md', flipId = 0 }) => {
+      const tossClass = flipping
+        ? (result === 'heads' ? 'coin-3d-tossing-heads' : 'coin-3d-tossing-tails')
+        : '';
+        
+      const shadowClass = flipping ? 'coin-3d-shadow-tossing' : '';
+      const sizeScale = size === 'sm' ? 'scale-75' : size === 'lg' ? 'scale-125' : 'scale-100';
+
+      return (
+        <div className={`coin-3d-scene ${sizeScale} transform transition-transform duration-300`}>
+          {/* Parabolic dynamic shadow */}
+          <div className="coin-3d-shadow-wrapper">
+            <div key={`shadow-${flipId}`} className={`coin-3d-shadow ${shadowClass}`} />
+          </div>
+          
+          {/* 3D spinning coin cylinder */}
+          <div 
+            key={`coin-${flipId}`} 
+            className={`coin-3d-box ${tossClass}`}
+            style={{
+              transform: !flipping && result
+                ? (result === 'heads' ? 'rotateX(0deg)' : 'rotateX(180deg)')
+                : undefined
+            }}
+          >
+            {/* Ribbed reeded edge ring */}
+            <div className="coin-3d-edge-ring" />
+            
+            {/* FRONT FACE (HEADS) */}
+            <div className="coin-3d-face coin-3d-front">
+              <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
+                <defs>
+                  {/* Embossed metal lighting filter */}
+                  <filter id="metal-emboss-heads" x="-15%" y="-15%" width="130%" height="130%">
+                    <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.3" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
+                    <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" flood-color="#ffffff" flood-opacity="0.85" result="highlight"/>
+                    <feMerge>
+                      <feMergeNode in="shadow"/>
+                      <feMergeNode in="highlight"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                  <path id="top-curve-heads" d="M 16 50 A 34 34 0 0 1 84 50" fill="none" />
+                  <path id="bottom-curve-heads" d="M 16 50 A 34 34 0 0 0 84 50" fill="none" />
+                </defs>
+
+                {/* Outer rim notches */}
+                <circle cx="50" cy="50" r="47.5" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="1.2, 1.8" />
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.3" />
+                
+                {/* George Washington bust profile silhouette */}
+                <path 
+                  d="M 33 46 
+                     C 33 44, 34.5 43.2, 35 41.7 
+                     C 35.5 40.2, 35 38.2, 36 36.2 
+                     C 37 34.2, 39 32.7, 42 31.2 
+                     C 45.5 29.7, 49.5 29.2, 53.5 30.2 
+                     C 57 31.2, 59 33.2, 60 36.2 
+                     C 61 39.2, 59.5 41.2, 60 43.7 
+                     C 60.5 46.2, 62.5 48.2, 62 50.7 
+                     C 61.5 53.2, 60 54.7, 60 56.2 
+                     C 60 57.7, 61 58.2, 61 59.7 
+                     C 61 61.2, 59 63.2, 57 64.2 
+                     C 55 65.2, 53.5 64.7, 52 64.7 
+                     C 51.5 66.2, 52.5 67.7, 53.5 69.7 
+                     C 54.5 71.7, 55.5 73.2, 56 75.2 
+                     C 56.5 77.2, 56.5 79.2, 53 79.2 
+                     C 48 79.2, 43.5 76.2, 41 72.2 
+                     C 39.5 70.2, 39.5 67.2, 38.5 65.7 
+                     C 37.5 64.2, 36 63.2, 35.5 61.7 
+                     C 35 60.2, 36.5 59.2, 36.5 57.7 
+                     C 36.5 56.2, 35 55.2, 34.5 53.7 
+                     C 34 52.2, 35 51.2, 34.5 49.7 
+                     C 34 48.2, 33 47.2, 33 46 Z" 
+                  fill="#e4e4e7" 
+                  filter="url(#metal-emboss-heads)" 
+                />
+                {/* Washington's ribbon */}
+                <path 
+                  d="M 52.8 64.7 C 53.8 65.2, 54.3 66.2, 54.3 67.2 C 54.3 68.2, 53.8 69.2, 52.8 69.7 C 51.8 69.2, 51.3 68.2, 51.3 67.2 C 51.3 66.2, 51.8 65.2, 52.8 64.7 Z" 
+                  fill="#a1a1aa" 
+                  filter="url(#metal-emboss-heads)"
+                />
+
+                {/* LIBERTY */}
+                <text fill="#ffffff" fill-opacity="0.9" font-size="7.5" font-family="Georgia, serif" font-weight="900" letter-spacing="1.8" filter="url(#metal-emboss-heads)">
+                  <textPath href="#top-curve-heads" startOffset="50%" textAnchor="middle">LIBERTY</textPath>
+                </text>
+
+                {/* IN GOD WE TRUST */}
+                <text x="21" y="55" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
+                  IN GOD WE
+                </text>
+                <text x="22.5" y="59.5" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
+                  TRUST
+                </text>
+
+                {/* Mint Mark P */}
+                <text x="75" y="57.5" fill="#ffffff" fill-opacity="0.85" font-size="5" font-family="Georgia, serif" font-weight="bold" filter="url(#metal-emboss-heads)">
+                  P
+                </text>
+
+                {/* 2026 */}
+                <text fill="#ffffff" fill-opacity="0.9" font-size="8" font-family="Georgia, serif" font-weight="900" letter-spacing="1.5" filter="url(#metal-emboss-heads)">
+                  <textPath href="#bottom-curve-heads" startOffset="50%" textAnchor="middle">2026</textPath>
+                </text>
+              </svg>
+            </div>
+            
+            {/* BACK FACE (TAILS) */}
+            <div className="coin-3d-face coin-3d-back">
+              <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
+                <defs>
+                  <filter id="metal-emboss-tails" x="-15%" y="-15%" width="130%" height="130%">
+                    <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.3" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
+                    <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" flood-color="#ffffff" flood-opacity="0.85" result="highlight"/>
+                    <feMerge>
+                      <feMergeNode in="shadow"/>
+                      <feMergeNode in="highlight"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                  <path id="top-curve-tails" d="M 13 50 A 37 37 0 0 1 87 50" fill="none" />
+                  <path id="bottom-curve-tails" d="M 13 50 A 37 37 0 0 0 87 50" fill="none" />
+                </defs>
+
+                {/* Outer rim notches */}
+                <circle cx="50" cy="50" r="47.5" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="1.2, 1.8" />
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.3" />
+                
+                {/* Bald Eagle silhouette */}
+                <path 
+                  d="M 50 36 
+                     C 49 36, 47.8 37, 46.8 38 
+                     C 42.8 40, 37.8 37, 33.8 35 
+                     C 28.8 33, 21.8 34, 15.8 38 
+                     C 13.8 39.5, 12.8 42, 14.8 44 
+                     C 16.8 46, 21.8 48, 25.8 47 
+                     C 30.8 46, 34.8 49, 36.8 51 
+                     C 38.3 52.5, 38.8 55, 39.8 57 
+                     C 40.8 59, 42.3 61, 43.8 62 
+                     C 44.8 63, 46.8 61.5, 48.3 60 
+                     C 49 59.2, 49.4 58.5, 49.8 58.5 
+                     C 50.2 58.5, 50.6 59.2, 51.3 60 
+                     C 52.8 61.5, 54.8 63, 55.8 62 
+                     C 57.3 61, 58.8 59, 59.8 57 
+                     C 60.8 55, 61.3 52.5, 62.8 51 
+                     C 64.8 49, 68.8 46, 73.8 47 
+                     C 77.8 48, 82.8 46, 84.8 44 
+                     C 86.8 42, 85.8 39.5, 83.8 38 
+                     C 77.8 34, 70.8 33, 65.8 35 
+                     C 61.8 37, 56.8 40, 52.8 38 
+                     C 51.8 37, 50.8 36, 50 36 Z" 
+                  fill="#e4e4e7" 
+                  filter="url(#metal-emboss-tails)" 
+                />
+                
+                {/* Head detail */}
+                <circle cx="50" cy="40.5" r="1" fill="#a1a1aa" filter="url(#metal-emboss-tails)" />
+                
+                {/* Arrows and Olive Branch crossed */}
+                <path d="M 33 63 Q 50 67 67 63" fill="none" stroke="#e4e4e7" stroke-width="1.5" stroke-linecap="round" filter="url(#metal-emboss-tails)" />
+                <path d="M 40 66 L 60 61" stroke="#a1a1aa" stroke-width="1" filter="url(#metal-emboss-tails)" />
+                <path d="M 60 66 L 40 61" stroke="#a1a1aa" stroke-width="1" filter="url(#metal-emboss-tails)" />
+
+                {/* UNITED STATES OF AMERICA */}
+                <text fill="#ffffff" fill-opacity="0.9" font-size="5.2" font-family="Georgia, serif" font-weight="900" filter="url(#metal-emboss-tails)">
+                  <textPath href="#top-curve-tails" startOffset="50%" textAnchor="middle">UNITED STATES OF AMERICA</textPath>
+                </text>
+
+                {/* E PLURIBUS UNUM */}
+                <text x="50" y="50" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" textAnchor="middle" filter="url(#metal-emboss-tails)">
+                  E PLURIBUS
+                </text>
+                <text x="50" y="54.5" fill="#ffffff" fill-opacity="0.85" font-size="3.8" font-family="Georgia, serif" font-weight="bold" textAnchor="middle" filter="url(#metal-emboss-tails)">
+                  UNUM
+                </text>
+
+                {/* QUARTER DOLLAR */}
+                <text fill="#ffffff" fill-opacity="0.9" font-size="6" font-family="Georgia, serif" font-weight="900" letter-spacing="0.8" filter="url(#metal-emboss-tails)">
+                  <textPath href="#bottom-curve-tails" startOffset="50%" textAnchor="middle">QUARTER DOLLAR</textPath>
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     // Standalone Price Chart Component (rules of hooks compliant)
     const PriceChart = ({ card, timeline = '1D', data = [] }) => {
       const canvasRef = useRef(null);
@@ -3960,6 +4165,7 @@ const getBasketballStatsAndBio = (card) => {
       // Animations & Logs
       const [coinFlipping, setCoinFlipping] = useState(false);
       const [coinResult, setCoinResult] = useState(null); // 'heads' or 'tails'
+      const [coinFlipId, setCoinFlipId] = useState(0);
       const [gameLog, setGameLog] = useState([]); // Play by play logs
       const [logScrollRef, setLogScrollRef] = useState(null);
       const [matchmakingProgress, setMatchmakingProgress] = useState(0);
@@ -4057,13 +4263,13 @@ const getBasketballStatsAndBio = (card) => {
           case 2:
             return playerPossession
               ? "You have the ball! Click on one of your active starters on the court (the bottom row of cards) to designate them as the shooter. Tip: Pick a player with a high rating in the shot type you want to take (like 3PT or Rim) to beat the defender's contest!"
-              : "Opponent has declared an attack! Click on one of your active starters to match up as the defender. Note the positional restriction (e.g. PG can only defend PG/SG; C defends PF/C). Select a card with a high Defense (DEF) rating!";
+              : "Opponent has declared an attack! Click on any of your active starters to match up as the defender. You are free to choose any defender you want! Pick a player with high Perimeter Defense (PRD) to contest mid-range or 3pt shots, or a player with high Rim Protection (RMP) to contest rim attacks or 3-point plays.";
           case 3:
             return "Now choose your shot in the Action Console: choose between a Mid-Range Pull-Up (2 pts, uses MID), an Attack to the Basket (2 pts, uses RIM), a 3-Pointer (3 pts, uses 3PT, limit 6), or a 3-Point Play (3 pts, uses ATH, limit 6). Pick a shooter with high attributes for that specific shot!";
           case 4:
             return "You selected your shot! Now the CPU is matching up a defender on court. Prepare for the contest roll in the center spotlight.";
           case 5:
-            return "It's time for the matchup roll! Attacker's shot rating and Defender's hybrid contest (70% DEF + 30% of shot rating) are compiled with active perks (like Stepback Maestro or Glove Defense). In the 4th Quarter, Clutch ratings add a boost! Then, a coin flip is spun: HEADS grants offense +4 (or +6), while TAILS grants defense +4. Highest final rating wins the bucket! Click the button to flip.";
+            return "It's time for the matchup roll! Attacker's shot rating and Defender's hybrid contest (70% of Perimeter/Rim Defense + 30% of shot rating) are compiled with active perks (like Stepback Maestro or Glove Defense). In the 4th Quarter, Clutch ratings add a boost! Then, a coin flip is spun: HEADS grants offense +4 (or +6), while TAILS grants defense +4. Highest final rating wins the bucket! Click the button to flip.";
           case 6:
             return "The play is resolved! Check the Play-by-Play Commentary log at the top right to see exactly which perks triggered and what scores were reached. Click the button in the Action Console to advance to the next possession.";
           case 7:
@@ -4676,34 +4882,20 @@ const getBasketballStatsAndBio = (card) => {
           console.warn("makeCpuDefensiveContest: opponent starters are empty!");
           return;
         }
-        const attackerStats = getCardGameStats(attackerCard);
-        const attPos = attackerStats.pos;
 
-        // Position matchups
-        const matchupMap = {
-          'PG': ['PG', 'SG'],
-          'SG': ['PG', 'SG', 'SF'],
-          'SF': ['SG', 'SF', 'PF'],
-          'PF': ['SF', 'PF', 'C'],
-          'C': ['PF', 'C']
-        };
-
-        const legalPositions = matchupMap[attPos] || [];
-        let legalDefenders = oppStarters.filter(c => legalPositions.includes(getCardGameStats(c).pos));
-
-        // Fallback if no matching position
-        if (legalDefenders.length === 0) {
-          legalDefenders = oppStarters;
-        }
-
-        // Pick based on difficulty
+        // Pick based on difficulty and shot type
         let defender;
         if (cpuDifficulty === 'rookie') {
-          // Pick a random legal defender
-          defender = legalDefenders[Math.floor(Math.random() * legalDefenders.length)];
+          // Pick a random defender from starters
+          defender = oppStarters[Math.floor(Math.random() * oppStarters.length)];
         } else {
-          // Pick defender with highest DEF stat
-          defender = legalDefenders.sort((a, b) => getCardGameStats(b).def - getCardGameStats(a).def)[0];
+          // Choose based on shot type: Rim plays check Rim Protection (rimDef), Perimeter plays check Perimeter Defense (perDef)
+          const isRimPlay = shotType === 'attack_rim' || shotType === 'three_point_play';
+          if (isRimPlay) {
+            defender = [...oppStarters].sort((a, b) => getCardGameStats(b).rimDef - getCardGameStats(a).rimDef)[0];
+          } else {
+            defender = [...oppStarters].sort((a, b) => getCardGameStats(b).perDef - getCardGameStats(a).perDef)[0];
+          }
         }
 
         if (!defender) {
@@ -4764,26 +4956,8 @@ const getBasketballStatsAndBio = (card) => {
 
       // Action: Defense defender selected (User choice)
       const handleSelectDefender = (cardId) => {
-        const attackerCard = opponentCards.slice(0, 5).find(x => x.id === selectedAttackerId);
-        const attackerStats = getCardGameStats(attackerCard);
-        
         const defenderCard = playerCards.find(x => x.id === cardId);
-        const defenderStats = getCardGameStats(defenderCard);
-        
-        // Enforce matchup restriction
-        const matchupMap = {
-          'PG': ['PG', 'SG'],
-          'SG': ['PG', 'SG', 'SF'],
-          'SF': ['SG', 'SF', 'PF'],
-          'PF': ['SF', 'PF', 'C'],
-          'C': ['PF', 'C']
-        };
-
-        const allowed = matchupMap[attackerStats.pos] || [];
-        if (!allowed.includes(defenderStats.pos)) {
-          triggerToast(`Matchup Error: A ${defenderStats.pos} cannot defend a ${attackerStats.pos}!`);
-          return;
-        }
+        if (!defenderCard) return;
 
         setSelectedDefenderId(cardId);
         setGameLog(prev => [...prev, `🛡️ Player Contest: You assign ${defenderCard.player} to guard the play.`]);
@@ -4844,16 +5018,16 @@ const getBasketballStatsAndBio = (card) => {
 
         if (activeShotType === 'mid_range') {
           attBaseVal = attackerHT.mid;
-          defBaseVal = defenderHT.def * 0.7 + defenderHT.mid * 0.3;
+          defBaseVal = defenderHT.perDef * 0.7 + defenderHT.mid * 0.3;
         } else if (activeShotType === 'attack_rim') {
           attBaseVal = attackerHT.rim;
-          defBaseVal = defenderHT.def * 0.7 + defenderHT.ath * 0.3;
+          defBaseVal = defenderHT.rimDef * 0.7 + defenderHT.ath * 0.3;
         } else if (activeShotType === 'three_pointer') {
           attBaseVal = attackerHT.tpt;
-          defBaseVal = defenderHT.def * 0.7 + defenderHT.tpt * 0.3;
+          defBaseVal = defenderHT.perDef * 0.7 + defenderHT.tpt * 0.3;
         } else if (activeShotType === 'three_point_play') {
           attBaseVal = attackerHT.ath;
-          defBaseVal = defenderHT.def * 0.7 + defenderHT.ath * 0.3;
+          defBaseVal = defenderHT.rimDef * 0.7 + defenderHT.ath * 0.3;
         }
 
         const positionMatch = defenderHT.pos === attackerHT.pos ? 2 : 0;
@@ -4880,6 +5054,11 @@ const getBasketballStatsAndBio = (card) => {
       // Execute Shot Resolution
       const resolveShotPlay = (useGrailPerk = false) => {
         const grailUser = useGrailPerk === true ? (playerPossession ? 'player' : 'opponent') : useGrailPerk;
+        
+        // Pre-determine coin flip result for rendering & animation
+        const flip = Math.random() > 0.5 ? 'heads' : 'tails';
+        setCoinResult(flip);
+        setCoinFlipId(prev => prev + 1);
         setCoinFlipping(true);
 
         const attacker = playerPossession 
@@ -4992,9 +5171,7 @@ const getBasketballStatsAndBio = (card) => {
               }
             }
           } else {
-            // Normal coin flip resolution
-            const flip = Math.random() > 0.5 ? 'heads' : 'tails';
-            setCoinResult(flip);
+            // Normal coin flip resolution (flip was pre-determined)
             
             let attackerAdjusted = finalAtt;
             let defenderAdjusted = finalDef;
@@ -5211,7 +5388,7 @@ const getBasketballStatsAndBio = (card) => {
           setGameLog(prev => [...prev, ...commentary]);
           setCoinFlipping(false);
           setGamePhase('next');
-        }, 1200);
+        }, 2000);
       };
 
       // Proceed to Next Possession / Quarter Break
@@ -5353,13 +5530,13 @@ const getBasketballStatsAndBio = (card) => {
         const pStats = getCardGameStats(pCard);
         const oStats = getCardGameStats(oCard);
 
+        const flip = Math.random() > 0.5 ? 'heads' : 'tails';
+        setCoinResult(flip);
+        setCoinFlipId(prev => prev + 1);
         setCoinFlipping(true);
         setGameLog(prev => [...prev, `⚔️ 1-on-1 SUDDEN DEATH: ${pCard.player} (${pStats.pos}) vs ${oCard.player} (${oStats.pos})!`]);
 
         setTimeout(() => {
-          const flip = Math.random() > 0.5 ? 'heads' : 'tails';
-          setCoinResult(flip);
-
           let pVal = pStats.off;
           let oVal = oStats.def;
 
@@ -5387,7 +5564,7 @@ const getBasketballStatsAndBio = (card) => {
           setIsOvertime(false);
           setGameState('ended');
           setIsGameActive(false);
-        }, 1500);
+        }, 2000);
       };
 
       // End Game calculations (Reward XP)
@@ -6184,18 +6361,13 @@ const getBasketballStatsAndBio = (card) => {
                   <div className="my-2 py-1.5 flex flex-col items-center justify-center text-center">
                     {coinFlipping ? (
                       <div className="flex flex-col items-center gap-2">
-                        {/* Custom spinning coin vector */}
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-yellow-300 border-2 border-white/20 shadow-lg flex items-center justify-center animate-spin">
-                          <span className="font-extrabold text-[12px] text-black">🪙</span>
-                        </div>
-                        <div className="text-[9px] uppercase font-bold text-amber-400 animate-pulse tracking-widest">Flipping coin...</div>
+                        <QuarterCoin flipping={true} result={coinResult} size="sm" flipId={coinFlipId} />
+                        <div className="text-[9px] uppercase font-bold text-amber-400 animate-pulse tracking-widest mt-1">Flipping coin...</div>
                       </div>
                     ) : coinResult && gamePhase === 'next' ? (
-                      <div className="flex flex-col items-center gap-1 animate-bounce">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 border-2 border-white/10 flex items-center justify-center shadow-md font-mono text-[9px] font-black text-black">
-                          {coinResult.toUpperCase()}
-                        </div>
-                        <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-400 mt-1">Flip Outcome</span>
+                      <div className="flex flex-col items-center gap-1 animate-scale-up">
+                        <QuarterCoin flipping={false} result={coinResult} size="sm" flipId={coinFlipId} />
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-400 mt-1">Flip Outcome: {coinResult.toUpperCase()}</span>
                       </div>
                     ) : null}
                   </div>
@@ -6874,15 +7046,11 @@ const getBasketballStatsAndBio = (card) => {
 
                           {/* VS Divider & Coin Portal */}
                           <div className="flex flex-col items-center justify-center gap-2 z-10">
-                            <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                            <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center overflow-visible">
                               {coinFlipping ? (
-                                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-yellow-300 border-2 border-white/20 shadow-lg flex items-center justify-center animate-spin z-10">
-                                  <span className="font-extrabold text-[12px] sm:text-[16px] text-black">🪙</span>
-                                </div>
+                                <QuarterCoin flipping={true} result={coinResult} size="md" flipId={coinFlipId} />
                               ) : coinResult && gamePhase === 'next' ? (
-                                <div className={`w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 border-2 ${isLight ? 'border-amber-400/40 shadow-sm' : 'border-white/10'} flex items-center justify-center shadow-md font-mono text-[9px] sm:text-xs font-black text-black z-10 animate-scale-up`}>
-                                  {coinResult.toUpperCase()}
-                                </div>
+                                <QuarterCoin flipping={false} result={coinResult} size="md" flipId={coinFlipId} />
                               ) : (
                                 <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full ${isLight ? 'bg-slate-100 border border-slate-200 text-slate-500' : 'bg-neutral-900 border border-white/10 text-neutral-400'} flex items-center justify-center text-[10px] sm:text-xs font-extrabold font-mono shadow-inner z-10`}>
                                   VS
@@ -7766,7 +7934,7 @@ const getBasketballStatsAndBio = (card) => {
                   {
                     step: '3',
                     title: 'Contest the Play (Defense)',
-                    desc: 'Assign an active starter to guard the shooter. Matchup rules are strictly enforced (e.g. Center guards PF/C; PG guards PG/SG). Defenders contest shots using a hybrid formula: 70% of base DEF + 30% of the attacker\'s shot attribute, plus a +2 bonus if the matchup is an exact position match (e.g. PG vs. PG)!',
+                    desc: 'Assign any active starter to guard the shooter (no position restrictions!). Defenders contest shots using a hybrid formula: 70% of Perimeter Defense (for Mid-Range or 3PT shots) or Rim Protection (for Paint attacks or 3-Point plays) + 30% of the attacker\'s shot attribute, plus a +2 bonus if the matchup is an exact position match (e.g. PG vs. PG)!',
                     icon: 'solar:shield-bold',
                     color: 'from-green-500 to-emerald-500'
                   },
@@ -7821,7 +7989,7 @@ const getBasketballStatsAndBio = (card) => {
           {subTab === 'attributes' && (
             <div className="space-y-6">
               {/* Descriptions Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="amp-card p-5 text-left border border-white/5 bg-black/40">
                   <div className="flex items-center gap-2 mb-2 text-orange-400">
                     <iconify-icon icon="solar:fire-bold" width="16"></iconify-icon>
@@ -7835,10 +8003,20 @@ const getBasketballStatsAndBio = (card) => {
                 <div className="amp-card p-5 text-left border border-white/5 bg-black/40">
                   <div className="flex items-center gap-2 mb-2 text-blue-400">
                     <iconify-icon icon="solar:shield-bold" width="16"></iconify-icon>
-                    <h4 className="text-xs font-bold uppercase tracking-wider">Defense (DEF)</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider">Perimeter Def (PRD)</h4>
                   </div>
                   <p className="text-[10.5px] text-neutral-400 leading-relaxed">
-                    Represents steal, block, and perimeter containment potential. Acts as the core (70%) of all defender contest ratings.
+                    Represents steal, perimeter containment, and contest potential. Used to contest Mid-Range and 3PT shots (70% of the base contest rating).
+                  </p>
+                </div>
+
+                <div className="amp-card p-5 text-left border border-white/5 bg-black/40">
+                  <div className="flex items-center gap-2 mb-2 text-indigo-400">
+                    <iconify-icon icon="solar:shield-bold" width="16"></iconify-icon>
+                    <h4 className="text-xs font-bold uppercase tracking-wider">Rim Protection (RMP)</h4>
+                  </div>
+                  <p className="text-[10.5px] text-neutral-400 leading-relaxed">
+                    Represents block, interior defense, and paint containment potential. Used to contest Rim Attacks and 3PT Plays (70% of the base contest rating).
                   </p>
                 </div>
 
@@ -7923,25 +8101,27 @@ const getBasketballStatsAndBio = (card) => {
               <div className="glass-panel border border-white/5 p-5 rounded-3xl bg-black/20 text-left">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                   <iconify-icon icon="solar:user-bold" className="text-amber-400"></iconify-icon>
-                  Position Matchup Restrictions & Matching Bonuses
+                  Matchup Strategy & Matching Bonuses
                 </h4>
                 <p className="text-[10.5px] text-neutral-400 mb-4 leading-relaxed">
-                  Defenders must align to defend shooters based on position compatibility. Speed differences prevent big men from guarding guards, and size differences stop guards from contesting centers. Additionally, defending a shooter of the exact same position (e.g. PG guarding PG) awards a **+2 DEF** contest matchup bonus.
+                  You are free to assign any defender to any shooter! However, choosing logical matchups is key: guards excel on the perimeter with high Perimeter Defense (PRD), and big men lock down the paint with high Rim Protection (RMP). Additionally, defending a shooter of the exact same position (e.g. PG guarding PG) awards a **+2 DEF** contest matchup bonus.
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   {[
-                    { pos: 'PG', defends: 'PG, SG', label: 'Point Guard' },
-                    { pos: 'SG', defends: 'PG, SG, SF', label: 'Shooting Guard' },
-                    { pos: 'SF', defends: 'SG, SF, PF', label: 'Small Forward' },
-                    { pos: 'PF', defends: 'SF, PF, C', label: 'Power Forward' },
-                    { pos: 'C', defends: 'PF, C', label: 'Center' }
+                    { pos: 'PG', defends: 'PG, SG', label: 'Point Guard', specialty: 'Perimeter' },
+                    { pos: 'SG', defends: 'PG, SG, SF', label: 'Shooting Guard', specialty: 'Perimeter' },
+                    { pos: 'SF', defends: 'SG, SF, PF', label: 'Small Forward', specialty: 'Balanced' },
+                    { pos: 'PF', defends: 'SF, PF, C', label: 'Power Forward', specialty: 'Rim Protection' },
+                    { pos: 'C', defends: 'PF, C', label: 'Center', specialty: 'Rim Protection' }
                   ].map((x) => (
                     <div key={x.pos} className="matchup-card bg-neutral-950/60 border border-white/5 rounded-xl p-3 flex flex-col items-center text-center">
                       <span className="text-[10px] uppercase font-bold text-white bg-white/10 px-2 py-0.5 rounded mb-1.5">{x.pos}</span>
                       <span className="text-[9px] text-neutral-500 font-semibold">{x.label}</span>
                       <div className="w-full border-t border-white/5 my-2"></div>
-                      <span className="text-[8px] text-neutral-500 font-mono scale-90">Can Guard:</span>
+                      <span className="text-[8px] text-neutral-500 font-mono scale-90">Best Matchups:</span>
                       <span className="text-[9px] text-orange-400 font-bold font-mono mt-0.5">{x.defends}</span>
+                      <span className="text-[8px] text-neutral-500 font-mono scale-90 mt-1">Specialty:</span>
+                      <span className="text-[9px] text-blue-400 font-bold font-mono mt-0.5">{x.specialty}</span>
                     </div>
                   ))}
                 </div>
@@ -10923,7 +11103,7 @@ const getBasketballStatsAndBio = (card) => {
                 <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-3">
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">🏀 The Matchup Arena</h4>
                   <p className="text-[11px] leading-relaxed text-neutral-300">
-                    Each card features physical specs, team registries, and custom game attributes: <strong>Offense (OFF)</strong>, <strong>Defense (DEF)</strong>, and <strong>Stamina (STA)</strong>. 
+                    Each card features physical specs, team registries, and custom game attributes: <strong>Offense (OFF)</strong>, <strong>Perimeter Defense (PRD)</strong>, <strong>Rim Protection (RMP)</strong>, and <strong>Stamina (STA)</strong>. 
                   </p>
                   <p className="text-[11px] leading-relaxed text-neutral-300">
                     In the <strong>Play Now (Arena)</strong>, you select a 5-card deck to match up against opposing players. Manage your squad's stamina depletion, execute strategic timeouts to swap tired players, and leverage special roster perks (like scoring boosts, defense anchors, or playmaking engines) to dominate the court.
@@ -11162,11 +11342,21 @@ const getBasketballStatsAndBio = (card) => {
 
                             <div>
                               <div className="flex justify-between font-bold mb-1">
-                                <span>DEFENSE (DEF)</span>
-                                <span className="text-blue-400 font-black">{getCardGameStats(detailedActiveCard).def}</span>
+                                <span>PERIMETER DEFENSE (PRD)</span>
+                                <span className="text-blue-400 font-black">{getCardGameStats(detailedActiveCard).perDef}</span>
                               </div>
                               <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).def}%` }}></div>
+                                <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).perDef}%` }}></div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="flex justify-between font-bold mb-1">
+                                <span>RIM PROTECTION (RMP)</span>
+                                <span className="text-indigo-400 font-black">{getCardGameStats(detailedActiveCard).rimDef}</span>
+                              </div>
+                              <div className="h-2 w-full bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full" style={{ width: `${getCardGameStats(detailedActiveCard).rimDef}%` }}></div>
                               </div>
                             </div>
 

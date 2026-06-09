@@ -1704,6 +1704,29 @@ window.getCardGameStats = (card) => {
   let rim = baseRim;
   let clu = baseClu;
 
+  let baseRimDef = baseDef;
+  let basePerDef = baseDef;
+
+  if (htPos === 'C') {
+    baseRimDef = baseDef;
+    basePerDef = Math.round(baseDef * 0.65);
+  } else if (htPos === 'PF') {
+    baseRimDef = Math.round(baseDef * 0.95);
+    basePerDef = Math.round(baseDef * 0.75);
+  } else if (htPos === 'SF') {
+    baseRimDef = Math.round(baseDef * 0.8);
+    basePerDef = Math.round(baseDef * 0.9);
+  } else if (htPos === 'SG') {
+    baseRimDef = Math.round(baseDef * 0.65);
+    basePerDef = baseDef;
+  } else if (htPos === 'PG') {
+    baseRimDef = Math.round(baseDef * 0.55);
+    basePerDef = baseDef;
+  }
+
+  let rimDef = baseRimDef;
+  let perDef = basePerDef;
+
   if (isPatch) {
     maxSta = 110;
     perks.push({ name: 'Heavy Duty', desc: '+15 Max Stamina and shields against gassed penalties.' });
@@ -1713,17 +1736,21 @@ window.getCardGameStats = (card) => {
   if (isRarityParallel) {
     off += 5;
     def += 5;
+    rimDef += 5;
+    perDef += 5;
     tpt += 5;
     ath += 5;
     mid += 5;
     rim += 5;
     clu += 5;
-    perks.push({ name: 'Shiny Reflector', desc: 'Shimmering surface grants +5 to all DEF contest rolls.' });
+    perks.push({ name: 'Shiny Reflector', desc: 'Shimmering surface grants +5 to all PRD/RMP contest rolls.' });
   }
 
   if (isAuto) {
     off += 2;
     def += 2;
+    rimDef += 2;
+    perDef += 2;
     tpt += 2;
     ath += 2;
     mid += 2;
@@ -1742,6 +1769,8 @@ window.getCardGameStats = (card) => {
   if (isOneOfOne) {
     off += 5;
     def += 5;
+    rimDef += 5;
+    perDef += 5;
     tpt += 5;
     ath += 5;
     mid += 5;
@@ -1854,6 +1883,8 @@ window.getCardGameStats = (card) => {
     finalOvr = 96 + ((clampedPower - 75) / 40) * 3;
     off = scaleAttribute(off, 99, 99);
     def = scaleAttribute(def, 99, 99);
+    rimDef = scaleAttribute(rimDef, 99, 99);
+    perDef = scaleAttribute(perDef, 99, 99);
     tpt = scaleAttribute(tpt, 99, 99);
     ath = scaleAttribute(ath, 99, 99);
     mid = scaleAttribute(mid, 99, 99);
@@ -1895,6 +1926,8 @@ window.getCardGameStats = (card) => {
     finalOvr = 96 + ((clampedPower - 85) / 30) * 3;
     off = scaleAttribute(off, 109, 99);
     def = scaleAttribute(def, 109, 99);
+    rimDef = scaleAttribute(rimDef, 109, 99);
+    perDef = scaleAttribute(perDef, 109, 99);
     tpt = scaleAttribute(tpt, 109, 99);
     ath = scaleAttribute(ath, 109, 99);
     mid = scaleAttribute(mid, 109, 99);
@@ -1905,6 +1938,8 @@ window.getCardGameStats = (card) => {
     finalOvr = 90 + ((clampedPower - 85) / 30) * 5;
     off = scaleAttribute(off, 104, 95);
     def = scaleAttribute(def, 104, 95);
+    rimDef = scaleAttribute(rimDef, 104, 95);
+    perDef = scaleAttribute(perDef, 104, 95);
     tpt = scaleAttribute(tpt, 104, 95);
     ath = scaleAttribute(ath, 104, 95);
     mid = scaleAttribute(mid, 104, 95);
@@ -1919,6 +1954,14 @@ window.getCardGameStats = (card) => {
     // Explicit override for Stephen Curry and Jalen Brunson parallel cards to be 94 OVR
     if (nameLower.includes('curry') || nameLower.includes('brunson')) {
       finalOvr = 94;
+    }
+
+    // Explicit override to swap OVR for Kevin Love and Chris Paul Gold Standard cards
+    if (card.id === 'kevin-love-2012-gold-standard-limited') {
+      finalOvr = 90;
+    }
+    if (card.id === 'chris-paul-2012-gold-standard-limited') {
+      finalOvr = 92;
     }
   } else {
     const clampedPower = Math.max(75, Math.min(107, unscaledOvr));
@@ -1952,6 +1995,8 @@ window.getCardGameStats = (card) => {
 
     off = scaleAttribute(off, 99, 89);
     def = scaleAttribute(def, 99, 89);
+    rimDef = scaleAttribute(rimDef, 99, 89);
+    perDef = scaleAttribute(perDef, 99, 89);
     tpt = scaleAttribute(tpt, 99, 89);
     ath = scaleAttribute(ath, 99, 89);
     mid = scaleAttribute(mid, 99, 89);
@@ -1962,6 +2007,8 @@ window.getCardGameStats = (card) => {
   return {
     off: Math.min(99, Math.round(off)),
     def: Math.min(99, Math.round(def)),
+    rimDef: Math.min(99, Math.round(rimDef)),
+    perDef: Math.min(99, Math.round(perDef)),
     sta: maxSta,
     pos: htPos,
     ovr: Math.min(99, Math.round(finalOvr)),
