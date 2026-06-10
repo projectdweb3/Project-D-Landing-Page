@@ -7363,6 +7363,375 @@ const getBasketballStatsAndBio = (card) => {
               </div>
             </div>
           )}
+            {/* TIMEOUT FULL-SCREEN OVERLAY SEQUENCE */}
+            {timeoutActive && (
+              <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-amber-950 rounded-3xl bg-[#0d241c] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
+                {/* Chalk drawings on the background board */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
+                  {/* Court lines */}
+                  <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6,6" />
+                  <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+                  <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+                  
+                  {/* Tactical drawings */}
+                  <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(234,179,8,0.18)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
+                  <circle cx="250" cy="350" r="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
+                  <text x="246" y="352" fill="rgba(239,68,68,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
+                  
+                  <circle cx="210" cy="265" r="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" strokeWidth="1.5" />
+                  <text x="206" y="267" fill="rgba(59,130,246,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
+                  
+                  <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(234,179,8,0.3)" />
+                    </marker>
+                  </defs>
+                </svg>
+
+                {/* Stamina Bubble Emitters */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                  <div className="absolute bottom-8 left-[25%] w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-bubble-1" />
+                  <div className="absolute bottom-12 left-[50%] w-2 h-2 rounded-full bg-emerald-500/20 animate-bubble-2" />
+                  <div className="absolute bottom-6 left-[75%] w-3 h-3 rounded-full bg-emerald-500/20 animate-bubble-3" />
+                </div>
+
+                <div className="absolute top-4 right-4 text-[7px] font-mono text-neutral-500 tracking-wider z-10">
+                  HOOPTACTICS ARENA TIMEOUT INTERMISSION
+                </div>
+
+                <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-4xl text-center">
+                  
+                  {/* Header Section: compact and fixed */}
+                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_12px_rgba(239,68,68,0.3)] animate-pulse">
+                        <iconify-icon icon="solar:stopwatch-bold" width="18" className="text-white"></iconify-icon>
+                      </div>
+                      <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white">
+                        TIMEOUT ACTIVATED
+                      </h2>
+                    </div>
+                    
+                    <p className="text-[8.5px] sm:text-[9.5px] font-mono font-bold uppercase tracking-wider" style={{ color: timeoutCaller === 'player' ? '#F97316' : '#3B82F6' }}>
+                      {timeoutCaller === 'player' 
+                        ? `Coach ${favorites?.username || 'Player'} calls for tactical realignment!` 
+                        : `Coach ${opponentName} initiates a strategic timeout!`}
+                    </p>
+                  </div>
+                  
+                  {/* Middle Section: Chalkboard Strategy Card (scrolls internally if height is extremely constrained) */}
+                  <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center">
+                    <div className="border border-white/5 bg-[#0a1a14]/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-2.5 sm:gap-3 my-auto">
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
+                      
+                      <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1 flex justify-between items-center text-left">
+                        <span>📋 Chalkboard Strategy & Bench Realignment</span>
+                        {timeoutCaller === 'player' && (
+                          <span className="text-[7px] text-neutral-400 font-mono font-normal">
+                            💡 Drag & drop or tap a starter + reserve to swap!
+                          </span>
+                        )}
+                      </div>
+                      
+                      {timeoutCaller === 'player' ? (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+                          {/* STARTERS ON COURT */}
+                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
+                            <div className="text-[8.5px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-0.5 text-left">
+                              🏀 Active On-Court Lineup (Starters)
+                            </div>
+                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                              {starters.map((id, sIdx) => {
+                                const c = playerCards.find(x => x.id === id);
+                                if (!c) return null;
+                                const stats = getCardGameStats(c);
+                                const isSelected = selectedSubId === c.id;
+                                const isDragOver = dragOverCardId === c.id;
+                                const isDragging = draggedCardId === c.id;
+                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
+                                
+                                return (
+                                  <div
+                                    key={c.id + '_timeout_starter'}
+                                    draggable="true"
+                                    onDragStart={(e) => {
+                                      e.dataTransfer.effectAllowed = "move";
+                                      e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
+                                    }}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      if (draggedCardId && draggedCardId !== c.id) {
+                                        setDragOverCardId(c.id);
+                                      }
+                                    }}
+                                    onDragLeave={() => setDragOverCardId(null)}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
+                                      if (sourceId && sourceId !== c.id) {
+                                        handleDragDropSwap(sourceId, c.id);
+                                      }
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onDragEnd={() => {
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onClick={() => {
+                                      if (selectedSubId === c.id) {
+                                        setSelectedSubId(null);
+                                      } else if (selectedSubId) {
+                                        handleDragDropSwap(selectedSubId, c.id);
+                                        setSelectedSubId(null);
+                                      } else {
+                                        setSelectedSubId(c.id);
+                                      }
+                                    }}
+                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                      isSelected 
+                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
+                                        : isDragOver 
+                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
+                                          : 'hover:scale-[1.03]'
+                                    }`}
+                                  >
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-orange-500/40 bg-orange-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(245,158,11,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-orange-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[4.5px] font-mono font-black text-orange-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-emerald-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[4.5px] font-mono font-black text-emerald-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                          <div 
+                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* BENCH RESERVES */}
+                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
+                            <div className="text-[8.5px] uppercase tracking-wider text-emerald-400 font-bold border-b border-white/5 pb-0.5 text-left flex justify-between">
+                              <span>📋 Bench Reserves (Resting)</span>
+                              <span className="text-[6px] text-emerald-400 font-normal">▲ +20 STA!</span>
+                            </div>
+                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                              {bench.map((id, bIdx) => {
+                                const c = playerCards.find(x => x.id === id);
+                                if (!c) return null;
+                                const stats = getCardGameStats(c);
+                                const isSelected = selectedSubId === c.id;
+                                const isDragOver = dragOverCardId === c.id;
+                                const isDragging = draggedCardId === c.id;
+                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
+                                
+                                return (
+                                  <div
+                                    key={c.id + '_timeout_bench'}
+                                    draggable="true"
+                                    onDragStart={(e) => {
+                                      e.dataTransfer.effectAllowed = "move";
+                                      e.dataTransfer.setData("text/plain", c.id);
+                                      const cid = c.id;
+                                      setTimeout(() => {
+                                        setDraggedCardId(cid);
+                                      }, 0);
+                                    }}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      if (draggedCardId && draggedCardId !== c.id) {
+                                        setDragOverCardId(c.id);
+                                      }
+                                    }}
+                                    onDragLeave={() => setDragOverCardId(null)}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
+                                      if (sourceId && sourceId !== c.id) {
+                                        handleDragDropSwap(sourceId, c.id);
+                                      }
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onDragEnd={() => {
+                                      setDraggedCardId(null);
+                                      setDragOverCardId(null);
+                                    }}
+                                    onClick={() => {
+                                      if (selectedSubId === c.id) {
+                                        setSelectedSubId(null);
+                                      } else if (selectedSubId) {
+                                        handleDragDropSwap(selectedSubId, c.id);
+                                        setSelectedSubId(null);
+                                      } else {
+                                        setSelectedSubId(c.id);
+                                      }
+                                    }}
+                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                      isSelected 
+                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
+                                        : isDragOver 
+                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
+                                          : 'hover:scale-[1.03]'
+                                    }`}
+                                  >
+                                    {isDragging ? (
+                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(16,185,129,0.15)] animate-pulse">
+                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-emerald-400/70 animate-bounce"></iconify-icon>
+                                        <span className="text-[4.5px] font-mono font-black text-emerald-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
+                                      </div>
+                                    ) : (
+                                      <React.Fragment>
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
+                                          {/* Stamina recovered badge */}
+                                          <span className="absolute top-0.5 right-0.5 text-[4.5px] font-extrabold text-emerald-400 bg-black/85 px-0.5 py-0.2 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
+                                            ▲+20
+                                          </span>
+                                          {c.currentSta <= 20 && (
+                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
+                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            </div>
+                                          )}
+                                          {isDragOver && (
+                                            <div className="absolute inset-0 bg-amber-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
+                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-amber-400 animate-spin-slow"></iconify-icon>
+                                              <span className="text-[4.5px] font-mono font-black text-amber-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                        </span>
+                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                          <div 
+                                            className="h-full bg-emerald-500 animate-fill-stamina" 
+                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                      </React.Fragment>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border border-white/5 bg-[#0a1a14]/90 p-2.5 rounded-xl space-y-2 shadow-2xl relative overflow-hidden w-full">
+                          <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1">
+                            📋 Opponent Bench & Recovery Status
+                          </div>
+                          
+                          <div className="flex gap-2 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-0.5 relative justify-start lg:justify-center">
+                            {opponentCards.slice(5, 10).map((c, sIdx) => {
+                              const stats = getCardGameStats(c);
+                              return (
+                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[14%] min-w-[48px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.1}s` }}>
+                                  <div className="relative w-8 h-10 rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-lg flex items-center justify-center">
+                                    <img src={c.frontImg} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-emerald-950/20" />
+                                  </div>
+                                  
+                                  <span className="text-[6px] font-mono text-neutral-300 truncate w-full">{c.player.split(' ').pop()}</span>
+                                  
+                                  <span className="text-[5px] font-extrabold text-emerald-400 bg-emerald-500/10 px-0.5 py-0.2 rounded border border-emerald-500/15 flex items-center gap-0.2 leading-none">
+                                    ▲+20
+                                  </span>
+
+                                  <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative">
+                                    <div 
+                                      className="h-full bg-emerald-500 animate-fill-stamina" 
+                                      style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Simplified Stamina Guide Bar */}
+                      <div className="bg-emerald-950/30 border border-emerald-500/10 p-2 rounded-xl text-left flex items-center gap-2 text-[8px] font-mono text-emerald-300">
+                        <iconify-icon icon="solar:info-circle-bold-duotone" className="text-emerald-400 text-xs flex-shrink-0"></iconify-icon>
+                        <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
+                      </div>
+                      
+                      {/* Coaching Chalkboard Tips */}
+                      <div className="text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase w-full text-center">
+                        {(() => {
+                          const lowSPlayer = timeoutCaller === 'player'
+                            ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
+                            : null;
+                          const highestOffPlayer = timeoutCaller === 'player'
+                            ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
+                            : null;
+
+                          return timeoutCaller === 'player'
+                            ? (lowSPlayer 
+                              ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
+                              : highestOffPlayer 
+                                ? `💡 COACH STRATEGY: Matchup focus! Run offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
+                                : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
+                              )
+                            : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Resume Match Button: Pinned to the bottom of the viewport */}
+                  <div className="flex-shrink-0 w-full flex justify-center pt-2">
+                    <button 
+                      onClick={() => {
+                        setTimeoutActive(false);
+                        setTimeoutCaller(null);
+                        setSelectedSubId(null);
+                      }}
+                      className="conic-btn px-6 py-2.5 transition-all shadow-[0_0_15px_rgba(70,212,198,0.25)] scale-100 hover:scale-[1.05] active:scale-95"
+                    >
+                      <div className="conic-spin-bg opacity-100 animate-[spin_3s_linear_infinite]"></div>
+                      <div className="conic-btn-mask"></div>
+                      <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
+                        💡 Close Chalkboard & Resume
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
         </div>
       );
     };
@@ -10258,375 +10627,6 @@ const getBasketballStatsAndBio = (card) => {
 
             </div>
 
-            {/* TIMEOUT FULL-SCREEN OVERLAY SEQUENCE */}
-            {timeoutActive && (
-              <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-amber-950 rounded-3xl bg-[#0d241c] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
-                {/* Chalk drawings on the background board */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
-                  {/* Court lines */}
-                  <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6,6" />
-                  <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-                  <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-                  
-                  {/* Tactical drawings */}
-                  <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(234,179,8,0.18)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
-                  <circle cx="250" cy="350" r="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
-                  <text x="246" y="352" fill="rgba(239,68,68,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
-                  
-                  <circle cx="210" cy="265" r="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" strokeWidth="1.5" />
-                  <text x="206" y="267" fill="rgba(59,130,246,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
-                  
-                  <defs>
-                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(234,179,8,0.3)" />
-                    </marker>
-                  </defs>
-                </svg>
-
-                {/* Stamina Bubble Emitters */}
-                <div className="absolute inset-0 pointer-events-none z-0">
-                  <div className="absolute bottom-8 left-[25%] w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-bubble-1" />
-                  <div className="absolute bottom-12 left-[50%] w-2 h-2 rounded-full bg-emerald-500/20 animate-bubble-2" />
-                  <div className="absolute bottom-6 left-[75%] w-3 h-3 rounded-full bg-emerald-500/20 animate-bubble-3" />
-                </div>
-
-                <div className="absolute top-4 right-4 text-[7px] font-mono text-neutral-500 tracking-wider z-10">
-                  HOOPTACTICS ARENA TIMEOUT INTERMISSION
-                </div>
-
-                <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-4xl text-center">
-                  
-                  {/* Header Section: compact and fixed */}
-                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
-                    <div className="flex items-center gap-2 mt-1 sm:mt-2">
-                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_12px_rgba(239,68,68,0.3)] animate-pulse">
-                        <iconify-icon icon="solar:stopwatch-bold" width="18" className="text-white"></iconify-icon>
-                      </div>
-                      <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white">
-                        TIMEOUT ACTIVATED
-                      </h2>
-                    </div>
-                    
-                    <p className="text-[8.5px] sm:text-[9.5px] font-mono font-bold uppercase tracking-wider" style={{ color: timeoutCaller === 'player' ? '#F97316' : '#3B82F6' }}>
-                      {timeoutCaller === 'player' 
-                        ? `Coach ${favorites?.username || 'Player'} calls for tactical realignment!` 
-                        : `Coach ${opponentName} initiates a strategic timeout!`}
-                    </p>
-                  </div>
-                  
-                  {/* Middle Section: Chalkboard Strategy Card (scrolls internally if height is extremely constrained) */}
-                  <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center">
-                    <div className="border border-white/5 bg-[#0a1a14]/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-2.5 sm:gap-3 my-auto">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
-                      
-                      <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1 flex justify-between items-center text-left">
-                        <span>📋 Chalkboard Strategy & Bench Realignment</span>
-                        {timeoutCaller === 'player' && (
-                          <span className="text-[7px] text-neutral-400 font-mono font-normal">
-                            💡 Drag & drop or tap a starter + reserve to swap!
-                          </span>
-                        )}
-                      </div>
-                      
-                      {timeoutCaller === 'player' ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
-                          {/* STARTERS ON COURT */}
-                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
-                            <div className="text-[8.5px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-0.5 text-left">
-                              🏀 Active On-Court Lineup (Starters)
-                            </div>
-                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
-                              {starters.map((id, sIdx) => {
-                                const c = playerCards.find(x => x.id === id);
-                                if (!c) return null;
-                                const stats = getCardGameStats(c);
-                                const isSelected = selectedSubId === c.id;
-                                const isDragOver = dragOverCardId === c.id;
-                                const isDragging = draggedCardId === c.id;
-                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
-                                
-                                return (
-                                  <div
-                                    key={c.id + '_timeout_starter'}
-                                    draggable="true"
-                                    onDragStart={(e) => {
-                                      e.dataTransfer.effectAllowed = "move";
-                                      e.dataTransfer.setData("text/plain", c.id);
-                                      const cid = c.id;
-                                      setTimeout(() => {
-                                        setDraggedCardId(cid);
-                                      }, 0);
-                                    }}
-                                    onDragOver={(e) => {
-                                      e.preventDefault();
-                                      if (draggedCardId && draggedCardId !== c.id) {
-                                        setDragOverCardId(c.id);
-                                      }
-                                    }}
-                                    onDragLeave={() => setDragOverCardId(null)}
-                                    onDrop={(e) => {
-                                      e.preventDefault();
-                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
-                                      if (sourceId && sourceId !== c.id) {
-                                        handleDragDropSwap(sourceId, c.id);
-                                      }
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onDragEnd={() => {
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onClick={() => {
-                                      if (selectedSubId === c.id) {
-                                        setSelectedSubId(null);
-                                      } else if (selectedSubId) {
-                                        handleDragDropSwap(selectedSubId, c.id);
-                                        setSelectedSubId(null);
-                                      } else {
-                                        setSelectedSubId(c.id);
-                                      }
-                                    }}
-                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
-                                      isSelected 
-                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
-                                        : isDragOver 
-                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
-                                          : 'hover:scale-[1.03]'
-                                    }`}
-                                  >
-                                    {isDragging ? (
-                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-orange-500/40 bg-orange-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(245,158,11,0.15)] animate-pulse">
-                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-orange-400/70 animate-bounce"></iconify-icon>
-                                        <span className="text-[4.5px] font-mono font-black text-orange-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
-                                      </div>
-                                    ) : (
-                                      <React.Fragment>
-                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
-                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                          {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
-                                            </div>
-                                          )}
-                                          {isDragOver && (
-                                            <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
-                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-emerald-400 animate-spin-slow"></iconify-icon>
-                                              <span className="text-[4.5px] font-mono font-black text-emerald-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
-                                          <div 
-                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
-                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                          />
-                                        </div>
-                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
-                                      </React.Fragment>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* BENCH RESERVES */}
-                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
-                            <div className="text-[8.5px] uppercase tracking-wider text-emerald-400 font-bold border-b border-white/5 pb-0.5 text-left flex justify-between">
-                              <span>📋 Bench Reserves (Resting)</span>
-                              <span className="text-[6px] text-emerald-400 font-normal">▲ +20 STA!</span>
-                            </div>
-                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
-                              {bench.map((id, bIdx) => {
-                                const c = playerCards.find(x => x.id === id);
-                                if (!c) return null;
-                                const stats = getCardGameStats(c);
-                                const isSelected = selectedSubId === c.id;
-                                const isDragOver = dragOverCardId === c.id;
-                                const isDragging = draggedCardId === c.id;
-                                const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
-                                
-                                return (
-                                  <div
-                                    key={c.id + '_timeout_bench'}
-                                    draggable="true"
-                                    onDragStart={(e) => {
-                                      e.dataTransfer.effectAllowed = "move";
-                                      e.dataTransfer.setData("text/plain", c.id);
-                                      const cid = c.id;
-                                      setTimeout(() => {
-                                        setDraggedCardId(cid);
-                                      }, 0);
-                                    }}
-                                    onDragOver={(e) => {
-                                      e.preventDefault();
-                                      if (draggedCardId && draggedCardId !== c.id) {
-                                        setDragOverCardId(c.id);
-                                      }
-                                    }}
-                                    onDragLeave={() => setDragOverCardId(null)}
-                                    onDrop={(e) => {
-                                      e.preventDefault();
-                                      const sourceId = draggedCardId || e.dataTransfer.getData("text/plain");
-                                      if (sourceId && sourceId !== c.id) {
-                                        handleDragDropSwap(sourceId, c.id);
-                                      }
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onDragEnd={() => {
-                                      setDraggedCardId(null);
-                                      setDragOverCardId(null);
-                                    }}
-                                    onClick={() => {
-                                      if (selectedSubId === c.id) {
-                                        setSelectedSubId(null);
-                                      } else if (selectedSubId) {
-                                        handleDragDropSwap(selectedSubId, c.id);
-                                        setSelectedSubId(null);
-                                      } else {
-                                        setSelectedSubId(c.id);
-                                      }
-                                    }}
-                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
-                                      isSelected 
-                                        ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
-                                        : isDragOver 
-                                          ? 'ring-2 ring-emerald-400 scale-[1.06] z-20 shadow-[0_0_15px_rgba(16,185,129,0.6)] -rotate-1' 
-                                          : 'hover:scale-[1.03]'
-                                    }`}
-                                  >
-                                    {isDragging ? (
-                                      <div className="relative w-full aspect-[3/4] rounded-lg border border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center gap-0.5 shadow-[inset_0_0_10px_rgba(16,185,129,0.15)] animate-pulse">
-                                        <iconify-icon icon="solar:transfer-vertical-bold-duotone" width="14" className="text-emerald-400/70 animate-bounce"></iconify-icon>
-                                        <span className="text-[4.5px] font-mono font-black text-emerald-400/60 uppercase tracking-widest text-center px-0.5 leading-none">SWAP</span>
-                                      </div>
-                                    ) : (
-                                      <React.Fragment>
-                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
-                                          <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
-                                          {/* Stamina recovered badge */}
-                                          <span className="absolute top-0.5 right-0.5 text-[4.5px] font-extrabold text-emerald-400 bg-black/85 px-0.5 py-0.2 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
-                                            ▲+20
-                                          </span>
-                                          {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
-                                            </div>
-                                          )}
-                                          {isDragOver && (
-                                            <div className="absolute inset-0 bg-amber-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center gap-0.5 z-30 animate-fade-in">
-                                              <iconify-icon icon="solar:round-transfer-horizontal-bold-duotone" width="14" className="text-amber-400 animate-spin-slow"></iconify-icon>
-                                              <span className="text-[4.5px] font-mono font-black text-amber-400 uppercase tracking-wider text-center px-0.5 leading-none">SWAP</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
-                                          <div 
-                                            className="h-full bg-emerald-500 animate-fill-stamina" 
-                                            style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                          />
-                                        </div>
-                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
-                                      </React.Fragment>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="border border-white/5 bg-[#0a1a14]/90 p-2.5 rounded-xl space-y-2 shadow-2xl relative overflow-hidden w-full">
-                          <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1">
-                            📋 Opponent Bench & Recovery Status
-                          </div>
-                          
-                          <div className="flex gap-2 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-0.5 relative justify-start lg:justify-center">
-                            {opponentCards.slice(5, 10).map((c, sIdx) => {
-                              const stats = getCardGameStats(c);
-                              return (
-                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[14%] min-w-[48px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.1}s` }}>
-                                  <div className="relative w-8 h-10 rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-lg flex items-center justify-center">
-                                    <img src={c.frontImg} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-emerald-950/20" />
-                                  </div>
-                                  
-                                  <span className="text-[6px] font-mono text-neutral-300 truncate w-full">{c.player.split(' ').pop()}</span>
-                                  
-                                  <span className="text-[5px] font-extrabold text-emerald-400 bg-emerald-500/10 px-0.5 py-0.2 rounded border border-emerald-500/15 flex items-center gap-0.2 leading-none">
-                                    ▲+20
-                                  </span>
-
-                                  <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative">
-                                    <div 
-                                      className="h-full bg-emerald-500 animate-fill-stamina" 
-                                      style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Simplified Stamina Guide Bar */}
-                      <div className="bg-emerald-950/30 border border-emerald-500/10 p-2 rounded-xl text-left flex items-center gap-2 text-[8px] font-mono text-emerald-300">
-                        <iconify-icon icon="solar:info-circle-bold-duotone" className="text-emerald-400 text-xs flex-shrink-0"></iconify-icon>
-                        <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
-                      </div>
-                      
-                      {/* Coaching Chalkboard Tips */}
-                      <div className="text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase w-full text-center">
-                        {(() => {
-                          const lowSPlayer = timeoutCaller === 'player'
-                            ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
-                            : null;
-                          const highestOffPlayer = timeoutCaller === 'player'
-                            ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
-                            : null;
-
-                          return timeoutCaller === 'player'
-                            ? (lowSPlayer 
-                              ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
-                              : highestOffPlayer 
-                                ? `💡 COACH STRATEGY: Matchup focus! Run offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
-                                : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
-                              )
-                            : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Resume Match Button: Pinned to the bottom of the viewport */}
-                  <div className="flex-shrink-0 w-full flex justify-center pt-2">
-                    <button 
-                      onClick={() => {
-                        setTimeoutActive(false);
-                        setTimeoutCaller(null);
-                        setSelectedSubId(null);
-                      }}
-                      className="conic-btn px-6 py-2.5 transition-all shadow-[0_0_15px_rgba(70,212,198,0.25)] scale-100 hover:scale-[1.05] active:scale-95"
-                    >
-                      <div className="conic-spin-bg opacity-100 animate-[spin_3s_linear_infinite]"></div>
-                      <div className="conic-btn-mask"></div>
-                      <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                        💡 Close Chalkboard & Resume
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
 
           </main>
 
