@@ -7223,18 +7223,19 @@ const getBasketballStatsAndBio = (card) => {
                               {isTutorialMatch && tutorialStep === 6 && !tutorialPopupOpen && (
                                 <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 z-30">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-cen
-          {/* 6. SUDDEN DEATH OVERTIME WINDOW */}          <div className="conic-btn-mask"></div>
-                        <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                          💡 Close Chalkboard & Resume
-                        </span>
-                      </button>
-                    </div>
-                  </div>
+                                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border border-black flex items-center justify-center text-[6.5px] font-black text-black">!</span>
+                                </span>
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </React.Fragment>
+                    );
+                  })()}
                 </div>
               )}
             </div>
-            <div className="h-24 md:hidden" /> {/* Spacer to allow scrolling past mobile browser navigation bar */}
+            <div className="h-24 md:hidden" />
           </div>
         )}
 
