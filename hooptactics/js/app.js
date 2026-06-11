@@ -4522,6 +4522,7 @@ const getBasketballStatsAndBio = (card) => {
       const startMatch = (oppName = 'CPU Coach', customStarters = null, customBench = null) => {
         const activeStarters = customStarters || starters;
         const activeBench = customBench || bench;
+        setSubsActive(false);
         
         // Form player deck dynamic state
         const pStarters = activeStarters.map(id => {
@@ -4946,7 +4947,7 @@ const getBasketballStatsAndBio = (card) => {
         let tnDefBonus = 0;
         if (isQ4) {
           if (attackerHT.perks.some(p => p.name === 'Topps Now: Clutch Master')) tnOffBonus += 5;
-          if (defenderHT.perks.some(p => p.name === 'Topps Now: ECF MVP')) tnDefBonus += 10;
+          if (defenderHT.perks.some(p => p.name === 'Topps Now: ECF MVP' || p.name === 'Topps Now: WCF MVP')) tnDefBonus += 10;
         }
 
         let cpuDifficultyModifier = 0;
@@ -5335,6 +5336,7 @@ const getBasketballStatsAndBio = (card) => {
 
       // Proceed to Next Possession / Quarter Break
       const handleNextPossession = () => {
+        setSubsActive(false);
         // Rebound Check
         if (reboundRetained) {
           setReboundRetained(false);
@@ -5584,7 +5586,7 @@ const getBasketballStatsAndBio = (card) => {
       };
 
       return (
-        <div className="w-full flex flex-col gap-6">
+        <div className={`w-full flex flex-col gap-6 ${gameState === 'playing' ? 'lg:flex-1 lg:flex lg:flex-col lg:min-h-0 lg:h-full' : ''}`}>
           
           {/* 1. ARENA LOBBY WINDOW */}
           {gameState === 'lobby' && (
@@ -6372,6 +6374,8 @@ const getBasketballStatsAndBio = (card) => {
                                   setSelectedAttackerId(c.id);
                                 } else if (canBeDefender) {
                                   handleSelectDefender(c.id);
+                                } else if (gamePhase === 'tactical') {
+                                  triggerToast("Call a timeout in order to make substitutions.");
                                 }
                               }}
                               className={`relative w-full rounded-xl transition-all ${borderStyle}`}
@@ -6424,69 +6428,79 @@ const getBasketballStatsAndBio = (card) => {
                     className="w-full text-[9px] uppercase font-bold text-neutral-400 tracking-wider mb-2 flex justify-between items-center cursor-pointer"
                   >
                     <span className="flex items-center gap-1.5">
-                      📋 Bench Substitutes {subsActive ? '(Click Starter and Bench card to swap)' : '(Call Timeout to make substitutions)'}
+                      📋 Bench Substitutes {subsActive ? '(Click starter and bench card to swap)' : '(Call a timeout to make substitutions)'}
                       <iconify-icon icon={isBenchCollapsed ? "solar:alt-arrow-down-bold" : "solar:alt-arrow-up-bold"} width="10"></iconify-icon>
                       {subsActive && <span className="text-[8px] bg-red-950/20 text-red-500 font-bold px-1.5 py-0.5 rounded border border-red-500/10 tracking-wider ml-1.5 animate-pulse">SUBS ACTIVE</span>}
                     </span>
                     <span className="text-neutral-500 text-[8px] hidden min-[400px]:inline">Bench heals +20 on Timeouts</span>
                   </button>
                   {!isBenchCollapsed && (
-                    <div className="flex gap-3 sm:gap-4 justify-center transition-all animate-modal-entry flex-wrap">
-                    {bench.map(id => {
-                      const c = playerCards.find(x => x.id === id);
-                      if (!c) return null;
-                      
-                      const stats = getCardGameStats(c);
-                      const isSubActive = subsActive;
-                      const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
-                      
-                      return (
-                        <div 
-                          key={c.id + '_bench'}
-                          className="w-[15%] lg:w-[96px] xl:w-[112px] flex flex-col items-center gap-1.5 flex-shrink-0"
-                        >
-                          <div 
-                            onClick={() => {
-                              if (isSubActive) {
-                                if (selectedSubId === c.id) {
-                                  setSelectedSubId(null);
-                                } else if (selectedSubId) {
-                                  handleDragDropSwap(selectedSubId, c.id);
-                                  setSelectedSubId(null);
-                                } else {
-                                  setSelectedSubId(c.id);
-                                }
-                              }
-                            }}
-                            className={`relative w-full rounded-xl transition-all ${
-                              isSubActive 
-                                ? (selectedSubId === c.id 
-                                    ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
-                                    : 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer') 
-                                : 'opacity-60'
-                            }`}
-                          >
-                            <HoloCard 
-                              card={c} 
-                              size="game" 
-                              interactive={isSubActive}
-                              hideAttributes={false}
-                            />
-                          </div>
-
-                          {/* Name & Stamina Gauge */}
-                          <div className="w-full flex flex-col items-center leading-none gap-1">
-                            <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">
-                              <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                            </span>
-                            <div className="h-1.5 w-full max-w-[72px] bg-neutral-950 rounded-full overflow-hidden relative border border-white/5">
-                              <div className="h-full bg-emerald-600" style={{ width: `${(c.currentSta/stats.sta)*100}%` }} />
-                            </div>
-                          </div>
+                    <div className="flex flex-col items-center gap-3 w-full animate-modal-entry">
+                      {!subsActive && (
+                        <div className="text-[8.5px] sm:text-[9.5px] text-amber-400 font-bold bg-amber-500/5 border border-amber-500/10 rounded-xl px-4 py-2 w-full text-center max-w-md animate-pulse uppercase flex items-center justify-center gap-1.5 shadow-md">
+                          <iconify-icon icon="solar:danger-triangle-bold" className="text-amber-400 text-xs"></iconify-icon>
+                          Call a timeout in order to make substitutions.
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
+                      <div className="flex gap-3 sm:gap-4 justify-center flex-wrap w-full">
+                        {bench.map(id => {
+                          const c = playerCards.find(x => x.id === id);
+                          if (!c) return null;
+                          
+                          const stats = getCardGameStats(c);
+                          const isSubActive = subsActive;
+                          const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
+                          
+                          return (
+                            <div 
+                              key={c.id + '_bench'}
+                              className="w-[15%] lg:w-[96px] xl:w-[112px] flex flex-col items-center gap-1.5 flex-shrink-0"
+                            >
+                              <div 
+                                onClick={() => {
+                                  if (isSubActive) {
+                                    if (selectedSubId === c.id) {
+                                      setSelectedSubId(null);
+                                    } else if (selectedSubId) {
+                                      handleDragDropSwap(selectedSubId, c.id);
+                                      setSelectedSubId(null);
+                                    } else {
+                                      setSelectedSubId(c.id);
+                                    }
+                                  } else {
+                                    triggerToast("Call a timeout in order to make substitutions.");
+                                  }
+                                }}
+                                className={`relative w-full rounded-xl transition-all ${
+                                  isSubActive 
+                                    ? (selectedSubId === c.id 
+                                        ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
+                                        : 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer') 
+                                    : 'opacity-60 cursor-pointer'
+                                }`}
+                              >
+                                <HoloCard 
+                                  card={c} 
+                                  size="game" 
+                                  interactive={isSubActive}
+                                  hideAttributes={false}
+                                />
+                              </div>
+
+                              {/* Name & Stamina Gauge */}
+                              <div className="w-full flex flex-col items-center leading-none gap-1">
+                                <span className="text-[7.5px] font-bold text-neutral-400 truncate max-w-[72px]">
+                                  <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                </span>
+                                <div className="h-1.5 w-full max-w-[72px] bg-neutral-950 rounded-full overflow-hidden relative border border-white/5">
+                                  <div className="h-full bg-emerald-600" style={{ width: `${(c.currentSta/stats.sta)*100}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
                 </div>
@@ -7365,25 +7379,37 @@ const getBasketballStatsAndBio = (card) => {
           )}
             {/* TIMEOUT FULL-SCREEN OVERLAY SEQUENCE */}
             {timeoutActive && (
-              <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-amber-950 rounded-3xl bg-[#0d241c] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
-                {/* Chalk drawings on the background board */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
-                  {/* Court lines */}
-                  <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6,6" />
-                  <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-                  <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+              <div className="absolute inset-0 border-4 sm:border-[12px] md:border-[16px] border-[#25180f] rounded-3xl bg-[#080d14] z-50 flex flex-col items-center justify-center p-3 sm:p-6 animate-timeout-bg animate-fade-in backdrop-blur-md overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
+                {/* Clipboard Clamp at the top */}
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-40 sm:w-48 h-6 sm:h-7 bg-gradient-to-b from-zinc-300 via-zinc-400 to-zinc-500 rounded-b-lg border-x border-b border-zinc-600 shadow-[0_4px_10px_rgba(0,0,0,0.4)] flex items-center justify-center z-10">
+                  {/* Clipboard spring clamp detail */}
+                  <div className="w-16 sm:w-20 h-1.5 sm:h-2 bg-zinc-800 rounded-full opacity-80 shadow-inner flex items-center justify-around px-2">
+                    <div className="w-1 h-1 rounded-full bg-zinc-500"></div>
+                    <div className="w-1 h-1 rounded-full bg-zinc-500"></div>
+                  </div>
+                  {/* Rivets */}
+                  <div className="absolute left-3 w-1.5 h-1.5 rounded-full bg-zinc-600 shadow-inner"></div>
+                  <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-zinc-600 shadow-inner"></div>
+                </div>
+
+                {/* Tactical drawings on the background board */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" viewBox="0 0 500 500" preserveAspectRatio="none">
+                  {/* Court lines - styled to match a modern blueprint/tactical slate */}
+                  <rect x="15" y="15" width="470" height="470" fill="none" stroke="rgba(245,158,11,0.06)" strokeWidth="1.5" strokeDasharray="6,6" />
+                  <circle cx="250" cy="250" r="50" fill="none" stroke="rgba(245,158,11,0.06)" strokeWidth="1.5" />
+                  <line x1="15" y1="250" x2="485" y2="250" stroke="rgba(245,158,11,0.06)" strokeWidth="1.5" />
                   
-                  {/* Tactical drawings */}
-                  <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(234,179,8,0.18)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
-                  <circle cx="250" cy="350" r="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
-                  <text x="246" y="352" fill="rgba(239,68,68,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
+                  {/* Tactical drawings - styled like coach blueprint pen lines */}
+                  <path className="animate-chalk-line" d="M 250 350 Q 210 270 240 210" fill="none" stroke="rgba(70,212,198,0.25)" strokeWidth="3" strokeLinecap="round" markerEnd="url(#arrow)" />
+                  <circle cx="250" cy="350" r="6" fill="rgba(70,212,198,0.15)" stroke="rgba(70,212,198,0.4)" strokeWidth="1.5" />
+                  <text x="246" y="352" fill="rgba(70,212,198,0.5)" fontSize="7" fontWeight="bold" fontFamily="monospace">O</text>
                   
-                  <circle cx="210" cy="265" r="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" strokeWidth="1.5" />
-                  <text x="206" y="267" fill="rgba(59,130,246,0.4)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
+                  <circle cx="210" cy="265" r="6" fill="rgba(249,115,22,0.15)" stroke="rgba(249,115,22,0.4)" strokeWidth="1.5" />
+                  <text x="206" y="267" fill="rgba(249,115,22,0.5)" fontSize="7" fontWeight="bold" fontFamily="monospace">X</text>
                   
                   <defs>
                     <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(234,179,8,0.3)" />
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(70,212,198,0.4)" />
                     </marker>
                   </defs>
                 </svg>
@@ -7399,7 +7425,7 @@ const getBasketballStatsAndBio = (card) => {
                   HOOPTACTICS ARENA TIMEOUT INTERMISSION
                 </div>
 
-                <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-4xl text-center">
+                <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-5xl text-center">
                   
                   {/* Header Section: compact and fixed */}
                   <div className="flex-shrink-0 flex flex-col items-center gap-1">
@@ -7419,28 +7445,32 @@ const getBasketballStatsAndBio = (card) => {
                     </p>
                   </div>
                   
-                  {/* Middle Section: Chalkboard Strategy Card (scrolls internally if height is extremely constrained) */}
-                  <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center">
-                    <div className="border border-white/5 bg-[#0a1a14]/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-2.5 sm:gap-3 my-auto">
+                  {/* Middle Section: Coach's Clipboard Strategy Card (scrolls internally if height is extremely constrained) */}
+                  <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center justify-center">
+                    <div className="border border-white/10 bg-[#0f141d]/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-3 sm:gap-4 my-auto">
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
                       
-                      <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1 flex justify-between items-center text-left">
-                        <span>📋 Chalkboard Strategy & Bench Realignment</span>
+                      <div className="text-[9px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1.5 flex justify-between items-center text-left">
+                        <span className="flex items-center gap-1.5 text-white">
+                          <iconify-icon icon="solar:clipboard-list-bold-duotone" className="text-emerald-400 text-xs"></iconify-icon>
+                          Coach's Clipboard Strategy & Bench Realignment
+                        </span>
                         {timeoutCaller === 'player' && (
-                          <span className="text-[7px] text-neutral-400 font-mono font-normal">
-                            💡 Drag & drop or tap a starter + reserve to swap!
+                          <span className="text-[7.5px] text-neutral-400 font-mono font-normal">
+                            💡 Drag & drop or click a starter + reserve to swap!
                           </span>
                         )}
                       </div>
                       
                       {timeoutCaller === 'player' ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+                        <div className="flex flex-col gap-3 w-full">
                           {/* STARTERS ON COURT */}
-                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
-                            <div className="text-[8.5px] uppercase tracking-wider text-orange-400 font-bold border-b border-white/5 pb-0.5 text-left">
-                              🏀 Active On-Court Lineup (Starters)
+                          <div className="border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
+                            <div className="text-[9px] uppercase tracking-wider text-orange-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
+                              <span>🏀 Active On-Court Lineup (Starters)</span>
+                              <span className="text-[7px] text-neutral-400 font-mono font-normal">Drag starter or click to select</span>
                             </div>
-                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                            <div className="flex gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar justify-start lg:justify-center">
                               {starters.map((id, sIdx) => {
                                 const c = playerCards.find(x => x.id === id);
                                 if (!c) return null;
@@ -7492,7 +7522,7 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                    className={`w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
                                         ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
                                         : isDragOver 
@@ -7507,11 +7537,11 @@ const getBasketballStatsAndBio = (card) => {
                                       </div>
                                     ) : (
                                       <React.Fragment>
-                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5 transition-all">
                                           <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
                                           {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            <div className="absolute inset-0 bg-red-950/75 flex items-center justify-center pointer-events-none animate-pulse">
+                                              <span className="text-[5px] sm:text-[6px] font-black text-red-500 font-mono tracking-wider bg-black/80 px-1 py-0.5 rounded border border-red-500/30">GASSED</span>
                                             </div>
                                           )}
                                           {isDragOver && (
@@ -7521,16 +7551,16 @@ const getBasketballStatsAndBio = (card) => {
                                             </div>
                                           )}
                                         </div>
-                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                        <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
                                           <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
                                         </span>
-                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
                                           <div 
-                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500' : c.currentSta <= 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+                                            className={`h-full ${c.currentSta <= 20 ? 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.4)]' : c.currentSta <= 50 ? 'bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.4)]' : 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]'}`} 
                                             style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                           />
                                         </div>
-                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                        <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                       </React.Fragment>
                                     )}
                                   </div>
@@ -7540,12 +7570,15 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
 
                           {/* BENCH RESERVES */}
-                          <div className="border border-white/5 bg-black/40 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5">
-                            <div className="text-[8.5px] uppercase tracking-wider text-emerald-400 font-bold border-b border-white/5 pb-0.5 text-left flex justify-between">
+                          <div className="border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
+                            <div className="text-[9px] uppercase tracking-wider text-emerald-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
                               <span>📋 Bench Reserves (Resting)</span>
-                              <span className="text-[6px] text-emerald-400 font-normal">▲ +20 STA!</span>
+                              <span className="text-[7px] text-emerald-400 font-bold flex items-center gap-1">
+                                <iconify-icon icon="solar:healing-bold-duotone" className="text-emerald-400"></iconify-icon>
+                                ▲ Resting recovers +20 Stamina!
+                              </span>
                             </div>
-                            <div className="flex gap-2 safe-scroll-center py-0.5 overflow-x-auto no-scrollbar justify-start lg:justify-center">
+                            <div className="flex gap-3 safe-scroll-center py-1 overflow-x-auto no-scrollbar justify-start lg:justify-center">
                               {bench.map((id, bIdx) => {
                                 const c = playerCards.find(x => x.id === id);
                                 if (!c) return null;
@@ -7597,7 +7630,7 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[17%] min-w-[58px] sm:min-w-[68px] md:w-[76px] lg:w-[84px] xl:w-[90px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                    className={`w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
                                         ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
                                         : isDragOver 
@@ -7612,15 +7645,15 @@ const getBasketballStatsAndBio = (card) => {
                                       </div>
                                     ) : (
                                       <React.Fragment>
-                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5">
+                                        <div className="relative w-full rounded-lg overflow-hidden shadow-md border border-white/5 transition-all">
                                           <HoloCard card={c} size="game" interactive={false} hideAttributes={false} />
                                           {/* Stamina recovered badge */}
-                                          <span className="absolute top-0.5 right-0.5 text-[4.5px] font-extrabold text-emerald-400 bg-black/85 px-0.5 py-0.2 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
+                                          <span className="absolute top-0.5 right-0.5 text-[5px] sm:text-[5.5px] font-extrabold text-emerald-400 bg-black/90 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10 animate-bounce">
                                             ▲+20
                                           </span>
                                           {c.currentSta <= 20 && (
-                                            <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center pointer-events-none">
-                                              <span className="text-[4.5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
+                                            <div className="absolute inset-0 bg-red-950/75 flex items-center justify-center pointer-events-none animate-pulse">
+                                              <span className="text-[5px] sm:text-[6px] font-black text-red-500 font-mono tracking-wider bg-black/80 px-1 py-0.5 rounded border border-red-500/30">GASSED</span>
                                             </div>
                                           )}
                                           {isDragOver && (
@@ -7630,16 +7663,16 @@ const getBasketballStatsAndBio = (card) => {
                                             </div>
                                           )}
                                         </div>
-                                        <span className="text-[6.5px] font-bold text-neutral-300 truncate w-full text-center leading-none mt-0.5">
+                                        <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
                                           <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
                                         </span>
-                                        <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
+                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
                                           <div 
-                                            className="h-full bg-emerald-500 animate-fill-stamina" 
+                                            className="h-full bg-emerald-500 animate-fill-stamina shadow-[0_0_6px_rgba(16,185,129,0.4)]" 
                                             style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                           />
                                         </div>
-                                        <span className="text-[5px] font-mono text-neutral-400 leading-none mt-0.5">STA: {c.currentSta}/{stats.sta}</span>
+                                        <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                       </React.Fragment>
                                     )}
                                   </div>
@@ -7649,33 +7682,39 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
                       ) : (
-                        <div className="border border-white/5 bg-[#0a1a14]/90 p-2.5 rounded-xl space-y-2 shadow-2xl relative overflow-hidden w-full">
-                          <div className="text-[8px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1">
-                            📋 Opponent Bench & Recovery Status
+                        <div className="border border-white/10 bg-black/50 p-4 rounded-2xl flex flex-col gap-2.5 shadow-inner w-full">
+                          <div className="text-[9px] uppercase tracking-wider text-emerald-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
+                            <span>📋 Opponent Bench & Recovery Status</span>
+                            <span className="text-[7px] text-emerald-400 font-bold flex items-center gap-1">
+                              <iconify-icon icon="solar:healing-bold-duotone" className="text-emerald-400"></iconify-icon>
+                              ▲ Resting recovers +20 Stamina!
+                            </span>
                           </div>
                           
-                          <div className="flex gap-2 safe-scroll-center overflow-x-auto no-scrollbar w-full pb-0.5 relative justify-start lg:justify-center">
+                          <div className="flex gap-3 safe-scroll-center overflow-x-auto no-scrollbar w-full py-1 relative justify-start lg:justify-center">
                             {opponentCards.slice(5, 10).map((c, sIdx) => {
                               const stats = getCardGameStats(c);
                               return (
-                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[14%] min-w-[48px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.1}s` }}>
-                                  <div className="relative w-8 h-10 rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-lg flex items-center justify-center">
+                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.05}s` }}>
+                                  <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-md">
                                     <img src={c.frontImg} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-emerald-950/20" />
+                                    <span className="absolute top-0.5 right-0.5 text-[5px] sm:text-[5.5px] font-extrabold text-emerald-400 bg-black/85 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
+                                      ▲+20
+                                    </span>
                                   </div>
                                   
-                                  <span className="text-[6px] font-mono text-neutral-300 truncate w-full">{c.player.split(' ').pop()}</span>
-                                  
-                                  <span className="text-[5px] font-extrabold text-emerald-400 bg-emerald-500/10 px-0.5 py-0.2 rounded border border-emerald-500/15 flex items-center gap-0.2 leading-none">
-                                    ▲+20
+                                  <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
+                                    <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {c.player.split(' ').pop()}
                                   </span>
-
-                                  <div className="h-0.5 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5 relative">
+                                  
+                                  <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
                                     <div 
-                                      className="h-full bg-emerald-500 animate-fill-stamina" 
+                                      className="h-full bg-emerald-500 animate-fill-stamina shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                                       style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                     />
                                   </div>
+                                  <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                 </div>
                               );
                             })}
@@ -7689,7 +7728,7 @@ const getBasketballStatsAndBio = (card) => {
                         <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
                       </div>
                       
-                      {/* Coaching Chalkboard Tips */}
+                      {/* Coaching Clipboard Tips */}
                       <div className="text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase w-full text-center">
                         {(() => {
                           const lowSPlayer = timeoutCaller === 'player'
@@ -7725,7 +7764,7 @@ const getBasketballStatsAndBio = (card) => {
                       <div className="conic-spin-bg opacity-100 animate-[spin_3s_linear_infinite]"></div>
                       <div className="conic-btn-mask"></div>
                       <span className="relative z-10 text-[9px] font-black text-white uppercase flex items-center justify-center gap-1.5">
-                        💡 Close Chalkboard & Resume
+                        📋 Close Clipboard & Resume
                       </span>
                     </button>
                   </div>
@@ -8234,6 +8273,13 @@ const getBasketballStatsAndBio = (card) => {
                     color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20'
                   },
                   {
+                    name: 'Topps Now: WCF MVP',
+                    icon: 'solar:medal-star-bold',
+                    desc: 'Grants +10 to Defense (DEF) during the 4th Quarter (possessions 25 to 32). Lock down opponent clutch attempts with ease.',
+                    example: 'Topps Now cards representing Western Conference Finals MVP honors',
+                    color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20'
+                  },
+                  {
                     name: 'Topps Now: Debut Fire',
                     icon: 'solar:running-bold',
                     desc: 'Keeps rookie legs fresh! Recover +10 Stamina at the end of each quarter (possessions 8, 16, and 24) to offset stamina fatigue.',
@@ -8337,7 +8383,7 @@ const getBasketballStatsAndBio = (card) => {
                     <span className="text-orange-400 font-bold">Attacker Matchup Value</span> = Base Shot Attribute (MID, RIM, 3PT, or ATH) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Perks (Clutch Gene/Master) + Coin Flip (Heads: +4 / +6)
                   </div>
                   <div>
-                    <span className="text-blue-400 font-bold">Defender Contest Value</span> = Contest Rating (70% Base DEF + 30% Attacker's Shot Attribute) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Position Matchup Bonus (+2) + Perks (Clutch Gene/ECF MVP/Eraser/Reflector) + Coin Flip (Tails: +4) + CPU Difficulty Modifier
+                    <span className="text-blue-400 font-bold">Defender Contest Value</span> = Contest Rating (70% Base DEF + 30% Attacker's Shot Attribute) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Position Matchup Bonus (+2) + Perks (Clutch Gene/ECF/WCF MVP/Eraser/Reflector) + Coin Flip (Tails: +4) + CPU Difficulty Modifier
                   </div>
                   <div className="border-t border-white/5 my-2 pt-2">
                     Result logic:
@@ -8364,7 +8410,8 @@ const getBasketballStatsAndBio = (card) => {
       });
       const [expandedSets, setExpandedSets] = useState({});
       const [activeTab, setActiveTab] = useState(() => {
-        return localStorage.getItem('ht_activeTab') || 'home';
+        const savedTab = localStorage.getItem('ht_activeTab');
+        return (savedTab && savedTab !== 'market') ? savedTab : 'home';
       });
       const [focusMode, setFocusMode] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
@@ -8492,11 +8539,7 @@ const getBasketballStatsAndBio = (card) => {
       const [selectedParallel, setSelectedParallel] = useState('Base');
       const [selectedTimeline, setSelectedTimeline] = useState('1D');
 
-      // Market-specific sort & filter states
-      const [marketSearchQuery, setMarketSearchQuery] = useState('');
-      const [marketSortBy, setMarketSortBy] = useState('value-desc');
-      const [marketActiveEraFilter, setMarketActiveEraFilter] = useState('All');
-      const [marketActiveTeamFilter, setMarketActiveTeamFilter] = useState('All');
+
 
   // Dynamic filtered variables based on user's selected sports in settings
   const activeCards = React.useMemo(() => {
@@ -9080,7 +9123,6 @@ const getBasketballStatsAndBio = (card) => {
                     { id: 'teams', icon: 'solar:shield-linear', label: 'Teams', desc: 'Registries' },
                     { id: 'scan', icon: 'solar:camera-linear', label: 'Scanner', desc: 'Digital Scan' },
                     { id: 'drops', icon: 'solar:calendar-date-linear', label: 'Drops', desc: 'New Packs' },
-                    { id: 'market', icon: 'solar:chart-square-linear', label: 'Market', desc: 'Analytics' },
                     { id: 'settings', icon: 'solar:settings-linear', label: 'Settings', desc: 'Options' }
                   ].map(item => (
                     <button 
@@ -9168,7 +9210,6 @@ const getBasketballStatsAndBio = (card) => {
                   { id: 'teams', icon: 'solar:shield-linear', label: 'Teams Directory' },
                   { id: 'scan', icon: 'solar:camera-linear', label: 'Camera Scanner' },
                   { id: 'drops', icon: 'solar:calendar-date-linear', label: 'Drops & Releases' },
-                  { id: 'market', icon: 'solar:chart-square-linear', label: 'Market Analytics' },
                   { id: 'settings', icon: 'solar:settings-linear', label: 'Settings' }
                 ].map(item => (
                   <button 
@@ -9222,7 +9263,7 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Main Panel */}
           <main className="flex-1 bg-black/60 border border-white/5 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0 max-h-full">
-            <div className={`p-2 sm:p-6 md:p-8 flex-1 flex flex-col min-h-0 ${isGameActive ? 'lg:overflow-hidden' : 'pb-24 sm:pb-16 overflow-y-auto hide-scrollbar'}`}>
+            <div className={`p-2 sm:p-6 md:p-8 flex-1 flex flex-col min-h-0 ${isGameActive ? 'lg:overflow-hidden lg:h-full' : 'pb-24 sm:pb-16 overflow-y-auto hide-scrollbar'}`}>
               
               {/* Top Action Row */}
               {!isGameActive && (
@@ -9236,7 +9277,6 @@ const getBasketballStatsAndBio = (card) => {
                     {activeTab === 'teams' && 'Teams Directory'}
                     {activeTab === 'scan' && 'Scan Digital Replica'}
                     {activeTab === 'drops' && 'Drops & Releases'}
-                    {activeTab === 'market' && 'Market Analytics'}
                   </h2>
                   <p className="text-[10px] text-neutral-500 uppercase">
                     {activeTab === 'home' && 'Your personal scanned card binder & stats'}
@@ -9246,7 +9286,6 @@ const getBasketballStatsAndBio = (card) => {
                     {activeTab === 'teams' && 'Browse cards by team registries & set sources'}
                     {activeTab === 'scan' && 'Align your card inside the frame to scan'}
                     {activeTab === 'drops' && 'Subscribed pack releases and digital sale pre-orders'}
-                    {activeTab === 'market' && 'Volume & price fluctuations over time'}
                   </p>
                 </div>
 
@@ -9893,277 +9932,7 @@ const getBasketballStatsAndBio = (card) => {
                 </div>
               )}
 
-              {/* TAB 4: MARKET ANALYTICS */}
-              {activeTab === 'market' && (
-                <div className="space-y-6 animate-modal-entry">
-                  {/* Market Summary cards */}
-                  <div className="grid grid-cols-1 min-[450px]:grid-cols-3 gap-4">
-                    <div className="amp-card p-4 sm:p-5 text-left">
-                      <div className="text-[10px] text-neutral-500 uppercase">Market Index</div>
-                      <div className="text-lg font-bold mt-1 text-white">CV-500 Index</div>
-                      <div className="text-[9px] text-green-500 mt-0.5">+4.2% This Month</div>
-                    </div>
-                    <div className="amp-card p-4 sm:p-5 text-left">
-                      <div className="text-[10px] text-neutral-500 uppercase">Top Gainer</div>
-                      <div className="text-lg font-bold mt-1 text-white">Victor Wemby</div>
-                      <div className="text-[9px] text-green-500 mt-0.5">+14.2% Spike</div>
-                    </div>
-                    <div className="amp-card p-4 sm:p-5 text-left">
-                      <div className="text-[10px] text-neutral-500 uppercase">Index Volume</div>
-                      <div className="text-lg font-bold mt-1 text-white">14.8M</div>
-                      <div className="text-[9px] text-neutral-400 mt-0.5">Slab comps validated</div>
-                    </div>
-                  </div>
 
-                  {/* Search and Filters Bar (Specific to Market) */}
-                  <div className="flex flex-col gap-4">
-                    <div className="relative">
-                      <input 
-                        type="text" value={marketSearchQuery} onChange={(e) => setMarketSearchQuery(e.target.value)}
-                        placeholder="Search card by player name, set, team, brand..."
-                        className="w-full bg-neutral-900 border border-white/5 rounded-2xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:ring-0 focus:border-white/20 transition-all text-white placeholder-neutral-500"
-                      />
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 flex items-center justify-center pointer-events-none">
-                        <iconify-icon icon="solar:magnifer-linear" width="18"></iconify-icon>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-1.5 sm:gap-3 bg-neutral-950/40 p-2 sm:p-3 rounded-2xl border border-white/5 text-xs">
-                      {/* Sort Dropdown */}
-                      <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Sort By</label>
-                        <select 
-                          value={marketSortBy} onChange={(e) => setMarketSortBy(e.target.value)}
-                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
-                        >
-                          <option value="value-desc">Market Value: High to Low</option>
-                          <option value="value-asc">Market Value: Low to High</option>
-                          <option value="year-desc">Year: Newest First</option>
-                          <option value="year-asc">Year: Oldest First</option>
-                          <option value="pct-desc">7D Change: Highest Spikes</option>
-                          <option value="volume-desc">Sales Volume: Highest First</option>
-                        </select>
-                      </div>
-
-                      {/* Era Filter */}
-                      <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Era</label>
-                        <select 
-                          value={marketActiveEraFilter} onChange={(e) => setMarketActiveEraFilter(e.target.value)}
-                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
-                        >
-                          <option value="All">All Eras</option>
-                          <option value="Pre-War & Tobacco Era">Pre-War & Tobacco Era</option>
-                          <option value="Early Vintage Era">Early Vintage Era</option>
-                          <option value="Modern Competition & Junk Wax Era">Modern Competition & Junk Wax Era</option>
-                          <option value="Premium, Insert, & Chrome Revolution">Premium, Insert, & Chrome Revolution</option>
-                          <option value="Fanatics & Real-Time Era">Fanatics & Real-Time Era</option>
-                        </select>
-                      </div>
-
-                      {/* Team Filter */}
-                      <div className="flex flex-col gap-1 text-left">
-                        <label className="text-[8px] sm:text-[9px] uppercase text-neutral-500 font-bold truncate">Team</label>
-                        <select 
-                          value={marketActiveTeamFilter} onChange={(e) => setMarketActiveTeamFilter(e.target.value)}
-                          className="w-full bg-neutral-900 border border-white/10 rounded-lg p-1.5 sm:p-2 focus:outline-none text-white font-semibold cursor-pointer text-[10px] sm:text-xs"
-                        >
-                          <option value="All">All Teams</option>
-                          {allTeams.map(t => (
-                            <option key={t} value={t}>{t}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Reset Filters Button */}
-                      <div className="flex items-end">
-                        <button 
-                          onClick={() => {
-                            setMarketSearchQuery('');
-                            setMarketSortBy('value-desc');
-                            setMarketActiveEraFilter('All');
-                            setMarketActiveTeamFilter('All');
-                          }}
-                          className="w-full bg-neutral-900 hover:bg-neutral-800 border border-white/10 rounded-lg py-1.5 sm:py-2 font-bold text-white transition-colors text-[10px] sm:text-xs flex items-center justify-center gap-1.5"
-                          title="Reset Filters"
-                        >
-                          <iconify-icon icon="solar:restart-bold" width="14" className="text-white"></iconify-icon>
-                          <span className="hidden sm:inline">Reset Filters</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 2. Flat Search/Filter Results or Structured Catalog Sets */}
-                  {(marketSearchQuery || marketActiveTeamFilter !== 'All' || marketActiveEraFilter !== 'All') ? (
-                    <div>
-                      <h3 className="text-xs uppercase font-extrabold text-neutral-400 mb-4 tracking-widest border-b border-white/5 pb-2 text-left">
-                        Filtered Catalog Cards ({
-                          sortCardsList(
-                            activeCards.filter(card => {
-                              const set = activeSets.find(s => s.id === card.setId);
-                              const setName = set ? set.name.toLowerCase() : '';
-                              if (marketSearchQuery) {
-                                const query = marketSearchQuery.toLowerCase();
-                                const matchesSearch = 
-                                  card.player.toLowerCase().includes(query) ||
-                                  card.brand.toLowerCase().includes(query) ||
-                                  card.team.toLowerCase().includes(query) ||
-                                  card.sport.toLowerCase().includes(query) ||
-                                  setName.includes(query) ||
-                                  card.setId.toLowerCase().includes(query);
-                                if (!matchesSearch) return false;
-                              }
-                              if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
-                              if (marketActiveEraFilter !== 'All' && (!set || set.era !== marketActiveEraFilter)) return false;
-                              if (marketActiveTeamFilter !== 'All') {
-                                if (card.team !== marketActiveTeamFilter) {
-                                  const cardTeams = card.team.split(' / ');
-                                  const match = cardTeams.some(ct => {
-                                    const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
-                                    const cleanTn = marketActiveTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
-                                    return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
-                                  });
-                                  if (!match) return false;
-                                }
-                              }
-                              return true;
-                            }),
-                            marketSortBy
-                          ).length
-                        })
-                      </h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6">
-                        {sortCardsList(
-                          activeCards.filter(card => {
-                            const set = activeSets.find(s => s.id === card.setId);
-                            const setName = set ? set.name.toLowerCase() : '';
-                            if (marketSearchQuery) {
-                              const query = marketSearchQuery.toLowerCase();
-                              const matchesSearch = 
-                                card.player.toLowerCase().includes(query) ||
-                                card.brand.toLowerCase().includes(query) ||
-                                card.team.toLowerCase().includes(query) ||
-                                card.sport.toLowerCase().includes(query) ||
-                                setName.includes(query) ||
-                                card.setId.toLowerCase().includes(query);
-                              if (!matchesSearch) return false;
-                            }
-                            if (activeSportFilter !== 'All' && card.sport !== activeSportFilter) return false;
-                            if (marketActiveEraFilter !== 'All' && (!set || set.era !== marketActiveEraFilter)) return false;
-                            if (marketActiveTeamFilter !== 'All') {
-                              if (card.team !== marketActiveTeamFilter) {
-                                const cardTeams = card.team.split(' / ');
-                                const match = cardTeams.some(ct => {
-                                  const cleanCt = ct.replace('L.A. ', '').replace('L.A. Lakers', 'Lakers').toLowerCase().trim();
-                                  const cleanTn = marketActiveTeamFilter.replace('Los Angeles ', '').replace('L.A. ', '').toLowerCase().trim();
-                                  return cleanCt === cleanTn || cleanTn.includes(cleanCt) || cleanCt.includes(cleanTn);
-                                });
-                                if (!match) return false;
-                              }
-                            }
-                            return true;
-                          }),
-                          marketSortBy
-                        ).map(card => (
-                          <CatalogCard 
-                            key={card.id} 
-                            card={card}
-                            isOwned={isAnyParallelOwned(userCollection, card.id)}
-                            onToggle={toggleCollection}
-                            hideAttributes={true}
-                            showAnalyticsButton={true}
-                            onOpenDetail={(id) => {
-                              setSelectedCardId(id);
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-10">
-                      {(() => {
-                        const marketChronologicalSets = getChronologicalSetsWithCards(
-                          marketSearchQuery, 
-                          marketActiveEraFilter, 
-                          marketActiveTeamFilter, 
-                          activeSportFilter,
-                          marketSortBy
-                        );
-
-                        if (marketChronologicalSets.length === 0) {
-                          return (
-                            <div className="amp-card p-12 text-center text-neutral-500 text-xs rounded-2xl border border-dashed border-white/10">
-                              No sets match the active filters or suggestions.
-                            </div>
-                          );
-                        }
-
-                        return (
-                          <div className="space-y-6">
-                            {/* Chronological Label */}
-                            <h3 className="text-sm font-black uppercase tracking-widest text-white border-b border-white/10 pb-2 flex items-center justify-between">
-                              <span>Market Set Index</span>
-                              <span className="text-[9px] font-mono text-neutral-500 font-normal">Latest Season to Past</span>
-                            </h3>
-
-                            {/* Sets list */}
-                            <div className="space-y-8">
-                              {marketChronologicalSets.map(set => {
-                                const ownedCount = set.cards.filter(c => isAnyParallelOwned(userCollection, c.id)).length;
-                                const completionPercent = Math.round((ownedCount / set.cards.length) * 100);
-
-                                return (
-                                  <div key={set.id} className="bg-black/30 border border-white/5 rounded-3xl p-5 md:p-6 space-y-4 text-left">
-                                    {/* Set Header with Progress */}
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
-                                      <div className="flex items-center gap-2">
-                                        <div className="flex flex-col text-left">
-                                          <h4 className="text-md font-bold text-white flex items-center gap-2 flex-wrap">
-                                            {set.name}
-                                          </h4>
-                                          <span className="text-[10px] text-neutral-500 uppercase font-semibold">{set.sport} Set • {set.year} • {set.era}</span>
-                                        </div>
-                                      </div>
-
-                                      {/* Completion Progress Bar */}
-                                      <div className="flex items-center gap-3">
-                                        <div className="text-right">
-                                          <div className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono">Vault Progress</div>
-                                          <div className="text-xs font-bold text-white">{ownedCount} / {set.cards.length} Scanned ({completionPercent}%)</div>
-                                        </div>
-                                        <div className="w-24 h-1.5 bg-neutral-900 border border-white/5 rounded-full overflow-hidden">
-                                          <div className="h-full bg-white" style={{ width: `${completionPercent}%` }} />
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {/* Set Cards Listing */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6 pt-2">
-                                      {set.cards.map(card => (
-                                        <CatalogCard 
-                                          key={card.id} 
-                                          card={card}
-                                          isOwned={isAnyParallelOwned(userCollection, card.id)}
-                                          onToggle={toggleCollection}
-                                          hideAttributes={true}
-                                          showAnalyticsButton={true}
-                                          onOpenDetail={(id) => {
-                                            setSelectedCardId(id);
-                                          }}
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* TAB 6: TEAMS DIRECTORY & INDEX */}
               {activeTab === 'teams' && (
@@ -11031,7 +10800,6 @@ const getBasketballStatsAndBio = (card) => {
                       { icon: 'solar:shield-linear', label: 'Teams Directory', desc: 'Examine card checklists and track scanned card completion by franchise.' },
                       { icon: 'solar:camera-linear', label: 'Camera Scanner', desc: 'Simulate scanning digital or physical card slabs into your digital binder.' },
                       { icon: 'solar:calendar-date-linear', label: 'Drops & Releases', desc: 'Follow new pack releases, daily reward calendars, and drop schedules.' },
-                      { icon: 'solar:chart-square-linear', label: 'Market Analytics', desc: 'Monitor price trend graphs, historical valuation data, and player trends.' },
                       { icon: 'solar:settings-linear', label: 'Settings', desc: 'Switch light/dark themes, specify your favorite franchise, or reset progress.' }
                     ].map((ch, idx) => (
                       <div key={idx} className="p-3 bg-white/[0.01] border border-white/5 rounded-xl flex items-start gap-3">

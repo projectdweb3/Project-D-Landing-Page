@@ -272,6 +272,10 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "victor-wembanyama-2025-topps-now-most-points-playoffs", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Now", "#Playoffs-Most-Pts", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-now", "victor-wembanyama-2025-topps-now-returns", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Now", "#Returns", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
   ["Basketball", "2025-topps-now", "victor-wembanyama-2025-topps-now-youngest-40-15-consecutive", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Now", "#Youngest-40/15-Consec", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2025-topps-now", "og-anunoby-2025-topps-now-finals-patch-auto", "OG Anunoby", "New York Knicks", 2025, "Topps Now", "#Finals-Game-4-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward", "6'7", "240 lbs", "2017"],
+  ["Basketball", "2025-topps-now", "victor-wembanyama-2025-topps-now-finals-patch-auto", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Now", "#Finals-Game-3-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2025-topps-now", "victor-wembanyama-2025-topps-now-wcf-mvp-auto", "Victor Wembanyama", "San Antonio Spurs", 2025, "Topps Now", "#WCF-MVP-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Center-Forward", "7'4", "210 lbs", "2023"],
+  ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-finals-game-4", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Finals-Game-4", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-signature-series", "kon-knueppel-2025-topps-signature-series-auto", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Signature Series", "#1", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard-Forward", "6'7", "205 lbs", "2025"],
   ["Basketball", "2025-topps-woven-wonders", "brandon-miller-2025-topps-woven-wonders-patch", "Brandon Miller", "Charlotte Hornets", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Forward", "6'7", "200 lbs", "2023"],
   ["Basketball", "2025-topps-woven-wonders", "stephon-castle-2025-topps-woven-wonders-patch", "Stephon Castle", "San Antonio Spurs", 2025, "Topps Woven Wonders", "#1", "Patch Card", "Patch Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'6", "215 lbs", "2024"],
@@ -1426,7 +1430,8 @@ window.getCardGameStats = (card) => {
     'marbury': { mid: 86, rim: 88, clu: 90 },
     'jaylen brown': { mid: 86, rim: 92, clu: 92 },
     'jalen brown': { mid: 86, rim: 92, clu: 92 },
-    'lamelo ball': { mid: 84, rim: 85, clu: 90 }
+    'lamelo ball': { mid: 84, rim: 85, clu: 90 },
+    'anunoby': { mid: 82, rim: 84, clu: 88 }
   };
 
   let baseMid = 70;
@@ -1526,6 +1531,10 @@ window.getCardGameStats = (card) => {
     baseOff = 98; baseDef = 68; baseTpt = 91; baseAth = 85; htPos = 'SG';
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Floor General', desc: 'Boosts all starting teammates\' Offense (OFF) by +3.' });
+  } else if (nameLower.includes('anunoby')) {
+    baseOff = 82; baseDef = 90; baseTpt = 84; baseAth = 88; htPos = 'SF';
+    perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
+    perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
   } else if (nameLower.includes('wembanyama') || nameLower.includes('wemby')) {
     baseOff = 88; baseDef = 98; baseTpt = 82; baseAth = 95; htPos = 'C';
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
@@ -1783,6 +1792,8 @@ window.getCardGameStats = (card) => {
       perks.push({ name: 'Topps Now: Clutch Master', desc: '+5 to OFF in the 4th Quarter.' });
     } else if (card.id.includes('ecf-mvp')) {
       perks.push({ name: 'Topps Now: ECF MVP', desc: '+10 DEF in the 4th Quarter.' });
+    } else if (card.id.includes('wcf-mvp')) {
+      perks.push({ name: 'Topps Now: WCF MVP', desc: '+10 DEF in the 4th Quarter.' });
     } else if (card.id.includes('debut') || card.id.includes('all-rookie')) {
       perks.push({ name: 'Topps Now: Debut Fire', desc: 'Heals +10 Stamina at end of quarters.' });
     } else {
