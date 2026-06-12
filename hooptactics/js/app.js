@@ -6186,7 +6186,9 @@ const getBasketballStatsAndBio = (card) => {
                 
                 {/* scoreboard */}
                 <div className="game-scoreboard glass-panel p-4 rounded-2xl border border-white/5 flex items-center justify-between bg-black/60 shadow-xl relative overflow-hidden flex-shrink-0">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-600 via-yellow-500 to-blue-600" />
+                  {!timeoutActive && (
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-600 via-yellow-500 to-blue-600" />
+                  )}
                   
                   {/* Player Team Score */}
                   <div className="flex items-center gap-3 w-1/3">
@@ -6343,13 +6345,9 @@ const getBasketballStatsAndBio = (card) => {
                           : isDefender ? 'ring-4 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]'
                           : isHighlighted
                             ? `${highlightClass} scale-105 z-50 cursor-pointer relative`
-                          : subsActive 
-                            ? (selectedSubId === c.id 
-                                ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
-                                : 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer')
-                            : canBeShooter ? 'ring-2 ring-orange-500/40 hover:ring-orange-500 cursor-pointer'
-                            : canBeDefender ? 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer'
-                            : '';
+                          : canBeShooter ? 'ring-2 ring-orange-500/40 hover:ring-orange-500 cursor-pointer'
+                          : canBeDefender ? 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer'
+                          : '';
                         
                         const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
 
@@ -6360,16 +6358,7 @@ const getBasketballStatsAndBio = (card) => {
                           >
                             <div 
                               onClick={() => {
-                                if (subsActive) {
-                                  if (selectedSubId === c.id) {
-                                    setSelectedSubId(null);
-                                  } else if (selectedSubId) {
-                                    handleDragDropSwap(selectedSubId, c.id);
-                                    setSelectedSubId(null);
-                                  } else {
-                                    setSelectedSubId(c.id);
-                                  }
-                                } else if (canBeShooter) {
+                                if (canBeShooter) {
                                   // Set the selected attacker so the user can choose the shot type in the Action Console
                                   setSelectedAttackerId(c.id);
                                 } else if (canBeDefender) {
@@ -6428,27 +6417,23 @@ const getBasketballStatsAndBio = (card) => {
                     className="w-full text-[9px] uppercase font-bold text-neutral-400 tracking-wider mb-2 flex justify-between items-center cursor-pointer"
                   >
                     <span className="flex items-center gap-1.5">
-                      📋 Bench Substitutes {subsActive ? '(Click starter and bench card to swap)' : '(Call a timeout to make substitutions)'}
+                      📋 Bench Reserves (Call a timeout to make substitutions)
                       <iconify-icon icon={isBenchCollapsed ? "solar:alt-arrow-down-bold" : "solar:alt-arrow-up-bold"} width="10"></iconify-icon>
-                      {subsActive && <span className="text-[8px] bg-red-950/20 text-red-500 font-bold px-1.5 py-0.5 rounded border border-red-500/10 tracking-wider ml-1.5 animate-pulse">SUBS ACTIVE</span>}
                     </span>
                     <span className="text-neutral-500 text-[8px] hidden min-[400px]:inline">Bench heals +20 on Timeouts</span>
                   </button>
                   {!isBenchCollapsed && (
                     <div className="flex flex-col items-center gap-3 w-full animate-modal-entry">
-                      {!subsActive && (
-                        <div className="text-[8.5px] sm:text-[9.5px] text-amber-400 font-bold bg-amber-500/5 border border-amber-500/10 rounded-xl px-4 py-2 w-full text-center max-w-md animate-pulse uppercase flex items-center justify-center gap-1.5 shadow-md">
-                          <iconify-icon icon="solar:danger-triangle-bold" className="text-amber-400 text-xs"></iconify-icon>
-                          Call a timeout in order to make substitutions.
-                        </div>
-                      )}
+                      <div className="text-[8.5px] sm:text-[9.5px] text-neutral-400 font-bold bg-white/[0.02] border border-white/5 rounded-xl px-4 py-2 w-full text-center max-w-md uppercase flex items-center justify-center gap-1.5 shadow-md">
+                        <iconify-icon icon="solar:info-circle-bold" className="text-neutral-400 text-xs"></iconify-icon>
+                        Substitutions can only be made inside active timeouts.
+                      </div>
                       <div className="flex gap-3 sm:gap-4 justify-center flex-wrap w-full">
                         {bench.map(id => {
                           const c = playerCards.find(x => x.id === id);
                           if (!c) return null;
                           
                           const stats = getCardGameStats(c);
-                          const isSubActive = subsActive;
                           const nameLabel = c.player.split('(')[0].trim().split(' ').pop();
                           
                           return (
@@ -6458,31 +6443,14 @@ const getBasketballStatsAndBio = (card) => {
                             >
                               <div 
                                 onClick={() => {
-                                  if (isSubActive) {
-                                    if (selectedSubId === c.id) {
-                                      setSelectedSubId(null);
-                                    } else if (selectedSubId) {
-                                      handleDragDropSwap(selectedSubId, c.id);
-                                      setSelectedSubId(null);
-                                    } else {
-                                      setSelectedSubId(c.id);
-                                    }
-                                  } else {
-                                    triggerToast("Call a timeout in order to make substitutions.");
-                                  }
+                                  triggerToast("Call a timeout in order to make substitutions.");
                                 }}
-                                className={`relative w-full rounded-xl transition-all ${
-                                  isSubActive 
-                                    ? (selectedSubId === c.id 
-                                        ? 'ring-4 ring-amber-400 animate-pulse scale-105 z-20 shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer' 
-                                        : 'ring-2 ring-blue-500/40 hover:ring-blue-500 cursor-pointer') 
-                                    : 'opacity-60 cursor-pointer'
-                                }`}
+                                className="relative w-full rounded-xl transition-all opacity-85 hover:scale-[1.02] cursor-pointer"
                               >
                                 <HoloCard 
                                   card={c} 
                                   size="game" 
-                                  interactive={isSubActive}
+                                  interactive={false}
                                   hideAttributes={false}
                                 />
                               </div>
@@ -7428,7 +7396,7 @@ const getBasketballStatsAndBio = (card) => {
                 <div className="w-full h-full relative z-10 flex flex-col items-center justify-between p-2 sm:p-4 max-w-5xl text-center">
                   
                   {/* Header Section: compact and fixed */}
-                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                  <div className="animate-timeout-header flex-shrink-0 flex flex-col items-center gap-1">
                     <div className="flex items-center gap-2 mt-1 sm:mt-2">
                       <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 shadow-[0_0_12px_rgba(239,68,68,0.3)] animate-pulse">
                         <iconify-icon icon="solar:stopwatch-bold" width="18" className="text-white"></iconify-icon>
@@ -7447,7 +7415,7 @@ const getBasketballStatsAndBio = (card) => {
                   
                   {/* Middle Section: Coach's Clipboard Strategy Card (scrolls internally if height is extremely constrained) */}
                   <div className="flex-1 w-full min-h-0 overflow-y-auto my-2 pr-1 hide-scrollbar flex flex-col items-center justify-center">
-                    <div className="border border-white/10 bg-[#0f141d]/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-3 sm:gap-4 my-auto">
+                    <div className="animate-timeout-bg-slate border border-white/10 bg-[#0f141d]/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl shadow-2xl relative overflow-hidden w-full flex flex-col gap-3 sm:gap-4 my-auto">
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.01] to-transparent pointer-events-none" />
                       
                       <div className="text-[9px] uppercase tracking-widest text-emerald-400 font-bold border-b border-white/10 pb-1.5 flex justify-between items-center text-left">
@@ -7465,7 +7433,7 @@ const getBasketballStatsAndBio = (card) => {
                       {timeoutCaller === 'player' ? (
                         <div className="flex flex-col gap-3 w-full">
                           {/* STARTERS ON COURT */}
-                          <div className="border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
+                          <div className="animate-timeout-bg-row border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
                             <div className="text-[9px] uppercase tracking-wider text-orange-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
                               <span>🏀 Active On-Court Lineup (Starters)</span>
                               <span className="text-[7px] text-neutral-400 font-mono font-normal">Drag starter or click to select</span>
@@ -7522,7 +7490,7 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                    className={`timeout-player-card flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
                                         ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
                                         : isDragOver 
@@ -7570,7 +7538,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
 
                           {/* BENCH RESERVES */}
-                          <div className="border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
+                          <div className="animate-timeout-bg-row border border-white/10 bg-black/50 p-2.5 sm:p-3 rounded-2xl flex flex-col gap-2 shadow-inner">
                             <div className="text-[9px] uppercase tracking-wider text-emerald-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
                               <span>📋 Bench Reserves (Resting)</span>
                               <span className="text-[7px] text-emerald-400 font-bold flex items-center gap-1">
@@ -7630,7 +7598,7 @@ const getBasketballStatsAndBio = (card) => {
                                         setSelectedSubId(c.id);
                                       }
                                     }}
-                                    className={`w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
+                                    className={`timeout-player-card flex flex-col items-center gap-0.5 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out flex-shrink-0 ${
                                       isSelected 
                                         ? 'ring-2 ring-amber-400 scale-105 z-20 shadow-[0_0_15px_rgba(245,158,11,0.6)]'
                                         : isDragOver 
@@ -7682,7 +7650,7 @@ const getBasketballStatsAndBio = (card) => {
                           </div>
                         </div>
                       ) : (
-                        <div className="border border-white/10 bg-black/50 p-4 rounded-2xl flex flex-col gap-2.5 shadow-inner w-full">
+                        <div className="animate-timeout-bg-row border border-white/10 bg-black/50 p-4 rounded-2xl flex flex-col gap-2.5 shadow-inner w-full">
                           <div className="text-[9px] uppercase tracking-wider text-emerald-400 font-extrabold border-b border-white/5 pb-1 text-left flex justify-between items-center">
                             <span>📋 Opponent Bench & Recovery Status</span>
                             <span className="text-[7px] text-emerald-400 font-bold flex items-center gap-1">
@@ -7695,7 +7663,7 @@ const getBasketballStatsAndBio = (card) => {
                             {opponentCards.slice(5, 10).map((c, sIdx) => {
                               const stats = getCardGameStats(c);
                               return (
-                                <div key={c.id + '_timeout_opp_' + sIdx} className="w-[16%] min-w-[64px] sm:min-w-[76px] md:w-[96px] lg:w-[110px] xl:w-[124px] flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.05}s` }}>
+                                <div key={c.id + '_timeout_opp_' + sIdx} className="timeout-player-card flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.05}s` }}>
                                   <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-md">
                                     <img src={c.frontImg} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-emerald-950/20" />

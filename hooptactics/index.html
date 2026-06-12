@@ -1102,6 +1102,110 @@
     .animate-timeout-bg {
       animation: pulseBackground 3s ease-in-out infinite;
     }
+
+    /* Coach's Clipboard Sizing & Responsiveness System */
+    :root {
+      --timeout-card-w: 124px;
+    }
+
+    .timeout-player-card {
+      width: var(--timeout-card-w) !important;
+    }
+
+    /* Screen width adjustments */
+    @media (max-width: 1280px) {
+      :root {
+        --timeout-card-w: 110px;
+      }
+    }
+    @media (max-width: 1024px) {
+      :root {
+        --timeout-card-w: 96px;
+      }
+    }
+    @media (max-width: 768px) {
+      :root {
+        --timeout-card-w: 76px;
+      }
+    }
+    @media (max-width: 480px) {
+      :root {
+        --timeout-card-w: 64px;
+      }
+    }
+
+    /* Height-based constraints (laptop screen adjustments to prevent overflow) */
+    @media (max-height: 900px) {
+      :root {
+        --timeout-card-w: 104px;
+      }
+    }
+    @media (max-height: 800px) {
+      :root {
+        --timeout-card-w: 90px;
+      }
+      .animate-timeout-bg .max-w-5xl {
+        margin-top: 0.75rem !important;
+      }
+      .animate-timeout-bg-slate {
+        padding: 0.75rem !important;
+        gap: 0.75rem !important;
+        border-radius: 1.5rem !important;
+      }
+      .animate-timeout-bg-row {
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        border-radius: 1rem !important;
+      }
+    }
+    @media (max-height: 720px) {
+      :root {
+        --timeout-card-w: 76px;
+      }
+      .animate-timeout-bg .max-w-5xl {
+        margin-top: 0.5rem !important;
+      }
+      .animate-timeout-bg-slate {
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+      }
+      .animate-timeout-bg-row {
+        padding: 0.375rem !important;
+        gap: 0.375rem !important;
+      }
+      .animate-timeout-header {
+        gap: 0.25rem !important;
+      }
+      .animate-timeout-header h2 {
+        font-size: 0.875rem !important;
+      }
+      .animate-timeout-header p {
+        font-size: 8px !important;
+      }
+      .animate-timeout-bg-slate .text-\[9px\] {
+        font-size: 8px !important;
+      }
+      .animate-timeout-bg-slate .text-\[7.5px\] {
+        font-size: 7px !important;
+      }
+      .animate-timeout-bg-slate .text-\[8px\] {
+        font-size: 7px !important;
+      }
+      .animate-timeout-bg-slate .text-\[7px\] {
+        font-size: 6px !important;
+      }
+      .conic-btn {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+      }
+    }
+    @media (max-height: 600px) {
+      :root {
+        --timeout-card-w: 64px;
+      }
+    }
     .animate-fill-stamina {
       animation: fillStamina 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
