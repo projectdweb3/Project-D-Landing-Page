@@ -9063,7 +9063,7 @@ const getBasketballStatsAndBio = (card) => {
 
       return (
         <div 
-          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md transition-all duration-500 ${
+          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/25 transition-all duration-500 ${
             isFadingOut ? 'animate-fade-out-loader' : ''
           }`}
         >
@@ -9826,7 +9826,7 @@ const getBasketballStatsAndBio = (card) => {
                     <Logo className="w-8 h-10 text-white" />
                     <div>
                       <h1 className="font-bold tracking-widest text-sm text-white uppercase leading-none">Hoop Tactics</h1>
-                      <span className="text-[8px] text-neutral-500 uppercase tracking-wider mt-1 block">The Basketball Trading Card Game</span>
+                      <span className="text-[8px] text-neutral-500 uppercase tracking-wider mt-1 block">The Basketball TCG</span>
                     </div>
                   </div>
                   <button 
@@ -9920,7 +9920,7 @@ const getBasketballStatsAndBio = (card) => {
                 <Logo className="w-12 h-16 text-white" />
                 <div>
                   <h1 className="font-bold tracking-widest text-sm text-white uppercase">Hoop Tactics</h1>
-                  <span className="text-[8px] text-neutral-500 uppercase tracking-wider">The Basketball Trading Card Game</span>
+                  <span className="text-[8px] text-neutral-500 uppercase tracking-wider">The Basketball TCG</span>
                 </div>
               </div>
 
