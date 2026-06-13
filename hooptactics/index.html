@@ -452,6 +452,29 @@
       background-size: 32px 32px;
     }
 
+    #bg-image {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/court_dark.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(8px);
+      transform: scale(1.05);
+      opacity: 0.35;
+      will-change: transform, opacity;
+      transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out;
+    }
+
+    #bg-gradient-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.65) 60%, #000000 100%),
+                  linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 50%, #000000 100%);
+      background-blend-mode: multiply;
+      transition: background 0.8s ease-in-out;
+    }
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -839,8 +862,15 @@
     }
     html.light #bg-container {
       background-color: #F3F4F6 !important;
-      background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px) !important;
-      background-size: 32px 32px !important;
+    }
+    html.light #bg-image {
+      background-image: url('assets/court_light.jpg') !important;
+      opacity: 0.22 !important;
+    }
+    html.light #bg-gradient-overlay {
+      background: radial-gradient(circle at center, rgba(243, 244, 246, 0.25) 0%, rgba(243, 244, 246, 0.65) 60%, #F3F4F6 100%),
+                  linear-gradient(to bottom, rgba(243, 244, 246, 0.2) 0%, rgba(243, 244, 246, 0.5) 50%, #F3F4F6 100%) !important;
+      background-blend-mode: normal !important;
     }
     html.light .neon-beam-glow {
       background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.005) 40%, transparent 80%) !important;
@@ -1043,16 +1073,48 @@
       color: #4B5563 !important;
     }
     /* Prevent global light mode text overrides from blackening white text in solid badges/buttons */
+    html.light .bg-orange-500,
+    html.light .bg-orange-600,
+    html.light .bg-red-500,
+    html.light .bg-red-600,
+    html.light .bg-emerald-500,
+    html.light .bg-emerald-600,
+    html.light .bg-blue-500,
+    html.light .bg-blue-600,
+    html.light .bg-purple-500,
+    html.light .bg-purple-600 {
+      color: #FFFFFF !important;
+    }
+    html.light .bg-orange-500 .text-white,
     html.light .bg-orange-600 .text-white,
-    html.light .bg-orange-600 iconify-icon,
-    html.light .bg-orange-600 span,
+    html.light .bg-red-500 .text-white,
     html.light .bg-red-600 .text-white,
+    html.light .bg-emerald-500 .text-white,
     html.light .bg-emerald-600 .text-white,
+    html.light .bg-blue-500 .text-white,
     html.light .bg-blue-600 .text-white,
+    html.light .bg-purple-500 .text-white,
     html.light .bg-purple-600 .text-white,
-    html.light .conic-btn.primary span,
-    html.light .conic-btn.primary iconify-icon,
-    html.light .ovr-avatar-content span {
+    html.light .bg-orange-500 span,
+    html.light .bg-orange-600 span,
+    html.light .bg-red-500 span,
+    html.light .bg-red-600 span,
+    html.light .bg-emerald-500 span,
+    html.light .bg-emerald-600 span,
+    html.light .bg-blue-500 span,
+    html.light .bg-blue-600 span,
+    html.light .bg-purple-500 span,
+    html.light .bg-purple-600 span,
+    html.light .bg-orange-500 iconify-icon,
+    html.light .bg-orange-600 iconify-icon,
+    html.light .bg-red-500 iconify-icon,
+    html.light .bg-red-600 iconify-icon,
+    html.light .bg-emerald-500 iconify-icon,
+    html.light .bg-emerald-600 iconify-icon,
+    html.light .bg-blue-500 iconify-icon,
+    html.light .bg-blue-600 iconify-icon,
+    html.light .bg-purple-500 iconify-icon,
+    html.light .bg-purple-600 iconify-icon {
       color: #FFFFFF !important;
     }
     
@@ -1105,7 +1167,7 @@
 
     /* Coach's Clipboard Sizing & Responsiveness System */
     :root {
-      --timeout-card-w: 124px;
+      --timeout-card-w: 116px;
     }
 
     .timeout-player-card {
@@ -1115,12 +1177,12 @@
     /* Screen width adjustments */
     @media (max-width: 1280px) {
       :root {
-        --timeout-card-w: 110px;
+        --timeout-card-w: 104px;
       }
     }
     @media (max-width: 1024px) {
       :root {
-        --timeout-card-w: 96px;
+        --timeout-card-w: 92px;
       }
     }
     @media (max-width: 768px) {
@@ -1134,47 +1196,57 @@
       }
     }
 
-    /* Height-based constraints (laptop screen adjustments to prevent overflow) */
-    @media (max-height: 900px) {
+    /* Height-based constraints (laptop & tablet adjustments to prevent overflow) */
+    @media (max-height: 950px) {
       :root {
-        --timeout-card-w: 104px;
-      }
-    }
-    @media (max-height: 800px) {
-      :root {
-        --timeout-card-w: 90px;
+        --timeout-card-w: 96px;
       }
       .animate-timeout-bg .max-w-5xl {
-        margin-top: 0.75rem !important;
+        margin-top: 0.5rem !important;
+      }
+      .animate-timeout-bg-slate {
+        padding: 1rem !important;
+        gap: 1rem !important;
+        border-radius: 1.5rem !important;
+      }
+      .animate-timeout-bg-row {
+        padding: 0.75rem !important;
+        gap: 0.75rem !important;
+        border-radius: 1.25rem !important;
+      }
+    }
+
+    @media (max-height: 850px) {
+      :root {
+        --timeout-card-w: 84px;
+      }
+      .animate-timeout-bg {
+        border-width: 8px !important;
+        padding: 0.75rem !important;
+      }
+      .animate-timeout-bg .max-w-5xl {
+        margin-top: 0.25rem !important;
       }
       .animate-timeout-bg-slate {
         padding: 0.75rem !important;
         gap: 0.75rem !important;
-        border-radius: 1.5rem !important;
+        border-radius: 1.25rem !important;
       }
       .animate-timeout-bg-row {
         padding: 0.5rem !important;
         gap: 0.5rem !important;
         border-radius: 1rem !important;
       }
-    }
-    @media (max-height: 720px) {
-      :root {
-        --timeout-card-w: 76px;
-      }
-      .animate-timeout-bg .max-w-5xl {
-        margin-top: 0.5rem !important;
-      }
-      .animate-timeout-bg-slate {
-        padding: 0.5rem !important;
-        gap: 0.5rem !important;
-      }
-      .animate-timeout-bg-row {
-        padding: 0.375rem !important;
-        gap: 0.375rem !important;
-      }
       .animate-timeout-header {
         gap: 0.25rem !important;
+      }
+      .animate-timeout-header .w-8 {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+      }
+      .animate-timeout-header iconify-icon {
+        width: 14px !important;
+        height: 14px !important;
       }
       .animate-timeout-header h2 {
         font-size: 0.875rem !important;
@@ -1195,15 +1267,82 @@
         font-size: 6px !important;
       }
       .conic-btn {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.4rem !important;
+        padding-bottom: 0.4rem !important;
         padding-left: 1.25rem !important;
         padding-right: 1.25rem !important;
       }
     }
-    @media (max-height: 600px) {
+
+    @media (max-height: 750px) {
       :root {
-        --timeout-card-w: 64px;
+        --timeout-card-w: 74px;
+      }
+      .animate-timeout-bg {
+        border-width: 6px !important;
+        padding: 0.5rem !important;
+      }
+      .animate-timeout-bg-slate {
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        border-radius: 1rem !important;
+      }
+      .animate-timeout-bg-row {
+        padding: 0.375rem !important;
+        gap: 0.375rem !important;
+        border-radius: 0.75rem !important;
+      }
+      .animate-timeout-header .w-8 {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+      }
+      .animate-timeout-header iconify-icon {
+        width: 12px !important;
+        height: 12px !important;
+      }
+      .animate-timeout-header h2 {
+        font-size: 0.75rem !important;
+      }
+      .animate-timeout-header p {
+        font-size: 7.5px !important;
+      }
+    }
+
+    @media (max-height: 650px) {
+      :root {
+        --timeout-card-w: 62px;
+      }
+      .animate-timeout-bg {
+        border-width: 4px !important;
+        padding: 0.375rem !important;
+      }
+      .animate-timeout-bg-slate {
+        padding: 0.375rem !important;
+        gap: 0.375rem !important;
+      }
+      .animate-timeout-bg-row {
+        padding: 0.25rem !important;
+        gap: 0.25rem !important;
+      }
+      .animate-timeout-header .w-8 {
+        width: 1rem !important;
+        height: 1rem !important;
+      }
+      .animate-timeout-header iconify-icon {
+        width: 10px !important;
+        height: 10px !important;
+      }
+      .animate-timeout-header h2 {
+        font-size: 0.7rem !important;
+      }
+      .animate-timeout-header p {
+        font-size: 7px !important;
+      }
+    }
+
+    @media (max-height: 550px) {
+      :root {
+        --timeout-card-w: 52px;
       }
     }
     .animate-fill-stamina {
@@ -1767,6 +1906,8 @@
   <div id="error-console" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; background: #990000; color: white; font-family: monospace; font-size: 12px; padding: 12px; display: none; white-space: pre-wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"><strong>JavaScript Error Detected:</strong></div>
 
   <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-[#000000]" id="bg-container">
+    <div id="bg-image"></div>
+    <div id="bg-gradient-overlay"></div>
     <div class="neon-beam-glow top-[5%] -left-[10%]"></div>
     <div class="neon-beam-glow top-[40%] -right-[15%]"></div>
     <div class="neon-beam-glow -bottom-[10%] left-[20%]"></div>

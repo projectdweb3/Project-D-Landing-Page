@@ -3801,8 +3801,8 @@ const getBasketballStatsAndBio = (card) => {
             <div className="coin-3d-edge-ring" />
             
             {/* FRONT FACE (HEADS) */}
-            <div className="coin-3d-face coin-3d-front">
-              <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
+            <div className="coin-3d-face coin-3d-front relative flex items-center justify-center">
+              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full select-none pointer-events-none">
                 <defs>
                   {/* Embossed metal lighting filter */}
                   <filter id="metal-emboss-heads" x="-20%" y="-20%" width="140%" height="140%">
@@ -3823,38 +3823,20 @@ const getBasketballStatsAndBio = (card) => {
                 {/* Dotted decorative inner border */}
                 <circle cx="50" cy="50" r="43" fill="none" stroke="#52525b" stroke-width="1.2" stroke-dasharray="1.5, 2" />
                 <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2" />
-
-                {/* Heads Icon: Stylized Washington Profile Silhouette (large & crisp) */}
-                <g filter="url(#metal-emboss-heads)" fill="#e4e4e7">
-                  <path d="M 33,65 
-                           C 33,60 35,58 37,56 
-                           C 39,54 38,51 38,49 
-                           C 38,47 39.5,45 41,43 
-                           C 42.5,41 43,39 45,37 
-                           C 47,35 51,34 54,35 
-                           C 57,36 59,38 60,41 
-                           C 61,44 60,47 59.5,49 
-                           C 59,51 60.5,53 60.5,55 
-                           C 60.5,57 59,58.5 59,60 
-                           C 59,61.5 60,62 60,63.5 
-                           C 60,65 58,67 56,68 
-                           C 54,69 52.5,68.5 51,68.5 
-                           C 50.5,70 51.5,71.5 52.5,73.5 
-                           C 53.5,75.5 54.5,77 55,79 
-                           H 45 
-                           C 41,74 38,71 36.5,69.5 
-                           C 35,68 33.5,67 33,65.5 Z" />
-                  {/* Hair bun */}
-                  <circle cx="41.5" cy="52" r="3.5" fill="#a1a1aa" />
-                  {/* Hair bow ribbon */}
-                  <path d="M 38,52 L 34,55 L 36,52 L 34,49 Z" fill="#71717a" />
-                </g>
               </svg>
+
+              {/* Heads Icon: Classical Laurels Profile/Bust (extremely detailed & styled) */}
+              <div 
+                className="z-10 flex items-center justify-center" 
+                style={{ filter: 'url(#metal-emboss-heads)', color: '#e4e4e7' }}
+              >
+                <iconify-icon icon="game-icons:philosopher-bust" width="48" height="48"></iconify-icon>
+              </div>
             </div>
             
             {/* BACK FACE (TAILS) */}
-            <div className="coin-3d-face coin-3d-back">
-              <svg viewBox="0 0 100 100" className="w-full h-full select-none pointer-events-none">
+            <div className="coin-3d-face coin-3d-back relative flex items-center justify-center">
+              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full select-none pointer-events-none">
                 <defs>
                   <filter id="metal-emboss-tails" x="-20%" y="-20%" width="140%" height="140%">
                     <feDropShadow dx="0.6" dy="0.6" stdDeviation="0.4" flood-color="#000000" flood-opacity="0.65" result="shadow"/>
@@ -3874,29 +3856,15 @@ const getBasketballStatsAndBio = (card) => {
                 {/* Dotted decorative inner border */}
                 <circle cx="50" cy="50" r="43" fill="none" stroke="#52525b" stroke-width="1.2" stroke-dasharray="1.5, 2" />
                 <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2" />
-
-                {/* Tails Icon: Bald Eagle with Spread Wings (clean, geometric, prominent) */}
-                <g filter="url(#metal-emboss-tails)" fill="#e4e4e7">
-                  <path d="M 50,28 
-                           L 36,39 
-                           H 20 
-                           C 18,39 16.5,41 17.5,44 
-                           L 24,59 
-                           C 25,61 27,63 29,63 
-                           H 42 
-                           L 50,71 
-                           L 58,63 
-                           H 71 
-                           C 73,63 75,61 76,59 
-                           L 82.5,44 
-                           C 83.5,41 82,39 80,39 
-                           H 64 
-                           L 50,28 Z" />
-                  {/* Shield graphic on breast of the eagle */}
-                  <path d="M 45,46 H 55 V 53 C 55,57 50,60 50,60 C 50,60 45,57 45,53 Z" fill="#71717a" />
-                  <path d="M 45,46 H 55 V 53 C 55,57 50,60 50,60 C 50,60 45,57 45,53 Z" fill="none" stroke="#e4e4e7" stroke-width="0.8" />
-                </g>
               </svg>
+
+              {/* Tails Icon: Majestic Heraldic Eagle Emblem */}
+              <div 
+                className="z-10 flex items-center justify-center" 
+                style={{ filter: 'url(#metal-emboss-tails)', color: '#e4e4e7' }}
+              >
+                <iconify-icon icon="game-icons:eagle-emblem" width="48" height="48"></iconify-icon>
+              </div>
             </div>
           </div>
         </div>
@@ -4037,6 +4005,39 @@ const getBasketballStatsAndBio = (card) => {
       return <canvas ref={canvasRef} className="w-full h-36" />;
     };
 
+    // Highlight terms in tutorial text for a premium coach playbook appearance
+    const formatTutorialText = (text) => {
+      if (!text) return '';
+      
+      const highlights = [
+        { word: "Tactical Phase", color: "text-teal-300 font-bold" },
+        { word: "Action Console", color: "text-amber-300 font-bold" },
+        { word: "Stamina", color: "text-orange-400 font-bold" },
+        { word: "Timeout", color: "text-cyan-400 font-bold" },
+        { word: "Attacker's", color: "text-emerald-400 font-bold" },
+        { word: "Attacker", color: "text-emerald-400 font-bold" },
+        { word: "Defender's", color: "text-rose-400 font-bold" },
+        { word: "Defender", color: "text-rose-400 font-bold" },
+        { word: "Mid-Range Pull-Up", color: "text-white font-bold" },
+        { word: "Attack to the Basket", color: "text-white font-bold" },
+        { word: "3-Pointer", color: "text-white font-bold" },
+        { word: "3-Point Play", color: "text-white font-bold" },
+        { word: "Perimeter Defense \\(PRD\\)", color: "text-teal-300 font-bold" },
+        { word: "Rim Protection \\(RMP\\)", color: "text-teal-300 font-bold" },
+        { word: "HEADS", color: "text-emerald-400 font-bold" },
+        { word: "TAILS", color: "text-rose-400 font-bold" },
+        { word: "coin flip", color: "text-amber-400 font-bold" },
+        { word: "Gassed", color: "text-red-400 font-bold" }
+      ];
+      
+      let html = text;
+      highlights.forEach(h => {
+        const regex = new RegExp(`(${h.word})`, 'gi');
+        html = html.replace(regex, `<span class="${h.color}">$1</span>`);
+      });
+      return <span dangerouslySetInnerHTML={{ __html: html }} />;
+    };
+
     // HoopTactics Arena Turn-Based Tabletop Basketball Card Game Component
     const HoopTacticsArenaContainer = ({ 
       onOpenDetail,
@@ -4059,7 +4060,8 @@ const getBasketballStatsAndBio = (card) => {
       setMatchStats,
       avatarIcon,
       avatarGradient,
-      setIsGameActive
+      setIsGameActive,
+      checkAndAwardAchievements
     }) => {
       const { theme } = React.useContext(ThemeContext) || { theme: 'dark' };
       const isLight = theme === 'light';
@@ -4067,6 +4069,7 @@ const getBasketballStatsAndBio = (card) => {
       const [opponentType, setOpponentType] = useState('cpu'); // 'cpu' or 'online'
       const [cpuDifficulty, setCpuDifficulty] = useState('veteran'); // 'rookie', 'veteran', 'hall-famer'
       const [opponentName, setOpponentName] = useState('CPU Coach');
+      const [boxScoreTab, setBoxScoreTab] = useState('player');
       
       // Match score and possessions
       const [possessionCount, setPossessionCount] = useState(1); // 1 to 32
@@ -4103,6 +4106,7 @@ const getBasketballStatsAndBio = (card) => {
       const [draggedCardId, setDraggedCardId] = useState(null);
       const [dragOverCardId, setDragOverCardId] = useState(null);
       const [selectedSubId, setSelectedSubId] = useState(null);
+      const [startersBeforeTimeout, setStartersBeforeTimeout] = useState([]);
       
       // Animations & Logs
       const [coinFlipping, setCoinFlipping] = useState(false);
@@ -4124,6 +4128,34 @@ const getBasketballStatsAndBio = (card) => {
       // Collapsible bench roster states
       const [isBenchCollapsed, setIsBenchCollapsed] = useState(true);
       
+      // Saved Decks states
+      const [savedDecks, setSavedDecks] = useState(() => {
+        try {
+          const saved = localStorage.getItem('ht_saved_decks');
+          if (saved) {
+            return JSON.parse(saved);
+          }
+        } catch (e) {
+          console.error("Failed to load saved decks", e);
+        }
+        return Array.from({ length: 5 }, (_, i) => ({
+          id: i,
+          name: `Saved Lineup ${i + 1}`,
+          starters: [],
+          bench: []
+        }));
+      });
+      const [isSavedDecksOpen, setIsSavedDecksOpen] = useState(false);
+      const [editingDeckIndex, setEditingDeckIndex] = useState(null);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem('ht_saved_decks', JSON.stringify(savedDecks));
+        } catch (e) {
+          console.error("Failed to save decks", e);
+        }
+      }, [savedDecks]);
+
       useEffect(() => {
         if (subsActive) {
           setIsBenchCollapsed(false);
@@ -4514,7 +4546,12 @@ const getBasketballStatsAndBio = (card) => {
           gassed: false,
           usedGrailPerk: false,
           threesAttempted: 0,
-          and1sAttempted: 0
+          and1sAttempted: 0,
+          pts: 0,
+          reb: 0,
+          ast: 0,
+          stl: 0,
+          blk: 0
         }));
       };
 
@@ -4523,15 +4560,16 @@ const getBasketballStatsAndBio = (card) => {
         const activeStarters = customStarters || starters;
         const activeBench = customBench || bench;
         setSubsActive(false);
+        setBoxScoreTab('player');
         
         // Form player deck dynamic state
         const pStarters = activeStarters.map(id => {
           const c = SPORTS_CARDS.find(x => x.id === id) || SPORTS_CARDS[0];
-          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0 };
+          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0, pts: 0, reb: 0, ast: 0, stl: 0, blk: 0 };
         });
         const pBench = activeBench.map(id => {
           const c = SPORTS_CARDS.find(x => x.id === id) || SPORTS_CARDS[1];
-          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0 };
+          return { ...c, currentSta: getCardGameStats(c).sta, gassed: false, usedGrailPerk: false, threesAttempted: 0, and1sAttempted: 0, pts: 0, reb: 0, ast: 0, stl: 0, blk: 0 };
         });
         
         setPlayerCards([...pStarters, ...pBench]);
@@ -4649,6 +4687,8 @@ const getBasketballStatsAndBio = (card) => {
       const callTimeout = (isPlayer) => {
         if (isPlayer) {
           if (playerTimeouts <= 0) return;
+          
+          setStartersBeforeTimeout([...starters]);
           
           if (isTutorialMatch && tutorialStep === 7) {
             setTutorialStep(null);
@@ -5235,7 +5275,15 @@ const getBasketballStatsAndBio = (card) => {
             }
           }
 
+          let scorerId = null;
+          let assistantId = null;
+          let rebounderId = null;
+          let stealerId = null;
+          let blockerId = null;
+          let isOffRebound = false;
+
           if (scoreGained) {
+            scorerId = selectedAttackerId;
             if (playerPossession) {
               setPlayerScore(prev => prev + pointsScored);
               setLastScorer('player');
@@ -5244,21 +5292,141 @@ const getBasketballStatsAndBio = (card) => {
               setLastScorer('opponent');
             }
             setReboundRetained(false);
+
+            // 55% chance of an assist on a made basket
+            if (Math.random() < 0.55) {
+              if (playerPossession) {
+                const otherStarters = starters.filter(id => id !== selectedAttackerId);
+                if (otherStarters.length > 0) {
+                  const pool = [];
+                  otherStarters.forEach(id => {
+                    const cardObj = playerCards.find(x => x.id === id);
+                    if (cardObj) {
+                      const pos = getCardGameStats(cardObj).pos;
+                      const weight = pos === 'PG' ? 4 : (pos === 'SG' ? 2 : 1);
+                      for (let i = 0; i < weight; i++) pool.push(id);
+                    }
+                  });
+                  if (pool.length > 0) {
+                    assistantId = pool[Math.floor(Math.random() * pool.length)];
+                    const assistantCard = playerCards.find(x => x.id === assistantId);
+                    if (assistantCard) {
+                      commentary.push(`🏀 ASSIST: Nice pass from ${assistantCard.player}!`);
+                    }
+                  }
+                }
+              } else {
+                const oppActive = opponentCards.slice(0, 5);
+                const otherStarters = oppActive.filter(c => c.id !== selectedAttackerId);
+                if (otherStarters.length > 0) {
+                  const pool = [];
+                  otherStarters.forEach(c => {
+                    const pos = getCardGameStats(c).pos;
+                    const weight = pos === 'PG' ? 4 : (pos === 'SG' ? 2 : 1);
+                    for (let i = 0; i < weight; i++) pool.push(c.id);
+                  });
+                  if (pool.length > 0) {
+                    assistantId = pool[Math.floor(Math.random() * pool.length)];
+                    const assistantCard = opponentCards.find(x => x.id === assistantId);
+                    if (assistantCard) {
+                      commentary.push(`🏀 ASSIST: Nice pass from ${assistantCard.player}!`);
+                    }
+                  }
+                }
+              }
+            }
           } else {
             setLastScorer(null);
+
+            // Defense got a stop
+            const stopRoll = Math.random();
+            const isRimPlay = activeShotType === 'attack_rim' || activeShotType === 'three_point_play';
+            if (isRimPlay) {
+              if (stopRoll < 0.25) {
+                blockerId = selectedDefenderId;
+                const defCard = playerPossession 
+                  ? opponentCards.find(x => x.id === selectedDefenderId)
+                  : playerCards.find(x => x.id === selectedDefenderId);
+                if (defCard) {
+                  commentary.push(`🛑 BLOCK! ${defCard.player} rejects the shot at the rim!`);
+                }
+              } else if (stopRoll < 0.40) {
+                stealerId = selectedDefenderId;
+                const defCard = playerPossession 
+                  ? opponentCards.find(x => x.id === selectedDefenderId)
+                  : playerCards.find(x => x.id === selectedDefenderId);
+                if (defCard) {
+                  commentary.push(`⚡ STEAL! ${defCard.player} strips the ball clean inside!`);
+                }
+              }
+            } else {
+              if (stopRoll < 0.20) {
+                stealerId = selectedDefenderId;
+                const defCard = playerPossession 
+                  ? opponentCards.find(x => x.id === selectedDefenderId)
+                  : playerCards.find(x => x.id === selectedDefenderId);
+                if (defCard) {
+                  commentary.push(`⚡ STEAL! ${defCard.player} jumps the passing lane / strips the shooter!`);
+                }
+              } else if (stopRoll < 0.25) {
+                blockerId = selectedDefenderId;
+                const defCard = playerPossession 
+                  ? opponentCards.find(x => x.id === selectedDefenderId)
+                  : playerCards.find(x => x.id === selectedDefenderId);
+                if (defCard) {
+                  commentary.push(`🛑 BLOCK! ${defCard.player} gets a hand on the perimeter shot!`);
+                }
+              }
+            }
 
             // Rebound Check for Chairman of the Boards perk
             const hasChairman = attackerHT.perks.some(p => p.name === 'Chairman of the Boards');
             if (hasChairman && Math.random() < 0.5) {
               setReboundRetained(true);
+              rebounderId = selectedAttackerId;
+              isOffRebound = true;
               commentary.push(`🏀 REBOUND: ${attacker.player} (Chairman of the Boards) secures the offensive board! Possession retained.`);
             } else {
               setReboundRetained(false);
+              // Defensive Rebound selection
+              if (playerPossession) {
+                const oppActive = opponentCards.slice(0, 5);
+                const pool = [];
+                oppActive.forEach(c => {
+                  const pos = getCardGameStats(c).pos;
+                  const weight = pos === 'C' ? 5 : (pos === 'PF' ? 4 : (pos === 'SF' ? 2 : 1));
+                  for (let i = 0; i < weight; i++) pool.push(c.id);
+                });
+                if (pool.length > 0) {
+                  rebounderId = pool[Math.floor(Math.random() * pool.length)];
+                  const rebounderCard = opponentCards.find(x => x.id === rebounderId);
+                  if (rebounderCard) {
+                    commentary.push(`🏀 REBOUND: ${rebounderCard.player} grabs the defensive board.`);
+                  }
+                }
+              } else {
+                const pool = [];
+                starters.forEach(id => {
+                  const cardObj = playerCards.find(x => x.id === id);
+                  if (cardObj) {
+                    const pos = getCardGameStats(cardObj).pos;
+                    const weight = pos === 'C' ? 5 : (pos === 'PF' ? 4 : (pos === 'SF' ? 2 : 1));
+                    for (let i = 0; i < weight; i++) pool.push(id);
+                  }
+                });
+                if (pool.length > 0) {
+                  rebounderId = pool[Math.floor(Math.random() * pool.length)];
+                  const rebounderCard = playerCards.find(x => x.id === rebounderId);
+                  if (rebounderCard) {
+                    commentary.push(`🏀 REBOUND: ${rebounderCard.player} pulls down the defensive board.`);
+                  }
+                }
+              }
             }
           }
 
-          // Dynamic Stamina Drain & Shot Attempt Counters
-          const updatePlayerStamina = (roster) => {
+          // Dynamic Stamina Drain, Shot Attempt, and Stat Counters
+          const updatePlayerStatsAndStamina = (roster) => {
             return roster.map(c => {
               const isActiveAttacker = playerPossession && c.id === selectedAttackerId;
               const isActiveDefender = !playerPossession && c.id === selectedDefenderId;
@@ -5287,11 +5455,34 @@ const getBasketballStatsAndBio = (card) => {
                   updated.and1sAttempted = (updated.and1sAttempted || 0) + 1;
                 }
               }
+
+              // Apply game stats
+              if (playerPossession) {
+                if (c.id === scorerId) {
+                  updated.pts = (updated.pts || 0) + pointsScored;
+                }
+                if (c.id === assistantId) {
+                  updated.ast = (updated.ast || 0) + 1;
+                }
+                if (c.id === rebounderId && isOffRebound) {
+                  updated.reb = (updated.reb || 0) + 1;
+                }
+              } else {
+                if (c.id === stealerId) {
+                  updated.stl = (updated.stl || 0) + 1;
+                }
+                if (c.id === blockerId) {
+                  updated.blk = (updated.blk || 0) + 1;
+                }
+                if (c.id === rebounderId && !isOffRebound) {
+                  updated.reb = (updated.reb || 0) + 1;
+                }
+              }
               return updated;
             });
           };
 
-          const updateOpponentStamina = (roster) => {
+          const updateOpponentStatsAndStamina = (roster) => {
             return roster.map(c => {
               const isActiveAttacker = !playerPossession && c.id === selectedAttackerId;
               const isActiveDefender = playerPossession && c.id === selectedDefenderId;
@@ -5320,12 +5511,35 @@ const getBasketballStatsAndBio = (card) => {
                   updated.and1sAttempted = (updated.and1sAttempted || 0) + 1;
                 }
               }
+
+              // Apply game stats
+              if (!playerPossession) {
+                if (c.id === scorerId) {
+                  updated.pts = (updated.pts || 0) + pointsScored;
+                }
+                if (c.id === assistantId) {
+                  updated.ast = (updated.ast || 0) + 1;
+                }
+                if (c.id === rebounderId && isOffRebound) {
+                  updated.reb = (updated.reb || 0) + 1;
+                }
+              } else {
+                if (c.id === stealerId) {
+                  updated.stl = (updated.stl || 0) + 1;
+                }
+                if (c.id === blockerId) {
+                  updated.blk = (updated.blk || 0) + 1;
+                }
+                if (c.id === rebounderId && !isOffRebound) {
+                  updated.reb = (updated.reb || 0) + 1;
+                }
+              }
               return updated;
             });
           };
 
-          setPlayerCards(updatePlayerStamina(playerCards));
-          setOpponentCards(updateOpponentStamina(opponentCards));
+          setPlayerCards(updatePlayerStatsAndStamina(playerCards));
+          setOpponentCards(updateOpponentStatsAndStamina(opponentCards));
 
           // Log commentary
           setGameLog(prev => [...prev, ...commentary]);
@@ -5496,10 +5710,12 @@ const getBasketballStatsAndBio = (card) => {
 
           if (pVal > oVal) {
             setPlayerScore(prev => prev + 2);
+            setPlayerCards(prev => prev.map(c => c.id === playerId ? { ...c, pts: (c.pts || 0) + 2 } : c));
             setGameLog(prev => [...prev, `🎉 SCORE! ${pCard.player} scores the sudden death winner!`]);
             triggerToast("You win in Overtime!");
           } else {
             setOpponentScore(prev => prev + 2);
+            setOpponentCards(prev => prev.map(c => c.id === oppId ? { ...c, pts: (c.pts || 0) + 2 } : c));
             setGameLog(prev => [...prev, `😭 Opponent Scores! ${oCard.player} scores the game winner.`]);
             triggerToast("Opponent wins in Overtime.");
           }
@@ -5644,7 +5860,18 @@ const getBasketballStatsAndBio = (card) => {
                   <h3 className="text-md font-bold uppercase tracking-wider text-white">Deck Builder</h3>
                   <p className="text-[10px] text-neutral-500 uppercase mt-0.5">Assign exactly 5 starters & 5 bench players</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <button 
+                    onClick={() => setIsSavedDecksOpen(true)}
+                    className="conic-btn dramatic-hover"
+                  >
+                    <div className="conic-spin-bg"></div>
+                    <div className="conic-btn-mask bg-black/60 backdrop-blur-md"></div>
+                    <span className="relative z-10 text-[10px] font-bold text-white px-4 py-2 uppercase flex items-center gap-1.5">
+                      <iconify-icon icon="solar:folder-with-files-bold" width="14" className="text-teal-400"></iconify-icon>
+                      Saved Decks
+                    </span>
+                  </button>
                   <button 
                     onClick={autoBuildDeck}
                     className="conic-btn dramatic-hover"
@@ -5653,6 +5880,24 @@ const getBasketballStatsAndBio = (card) => {
                     <div className="conic-btn-mask bg-black/60 backdrop-blur-md"></div>
                     <span className="relative z-10 text-[10px] font-bold text-white px-4 py-2 uppercase">
                       Auto-Build Lineup
+                    </span>
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (starters.length === 5 && bench.length === 5) {
+                        setIsSavedDecksOpen(true);
+                        triggerToast("Select a slot to save your current deck.");
+                      } else {
+                        triggerToast("Lineup invalid. Select exactly 5 starters and 5 bench cards to save.");
+                      }
+                    }}
+                    className={`conic-btn dramatic-hover ${starters.length === 5 && bench.length === 5 ? '' : 'opacity-60'}`}
+                  >
+                    <div className="conic-spin-bg"></div>
+                    <div className="conic-btn-mask bg-black/60 backdrop-blur-md"></div>
+                    <span className="relative z-10 text-[10px] font-bold text-white px-4 py-2 uppercase flex items-center gap-1.5">
+                      <iconify-icon icon="solar:diskette-bold" width="14" className="text-emerald-400"></iconify-icon>
+                      Save Deck
                     </span>
                   </button>
                   <button 
@@ -6790,7 +7035,8 @@ const getBasketballStatsAndBio = (card) => {
                                 {canPlayerUseGrail && (
                                   <button
                                     onClick={() => resolveShotPlay('player')}
-                                    className="w-full py-2.5 rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-300 text-[9px] font-bold uppercase transition-all flex items-center justify-center gap-1"
+                                    disabled={coinFlipping}
+                                    className="w-full py-2.5 rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-300 text-[9px] font-bold uppercase disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center justify-center gap-1"
                                   >
                                     👑 Use Hall of Fame Aura (Auto-Win Roll)
                                   </button>
@@ -7223,34 +7469,39 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* 6. SUDDEN DEATH OVERTIME WINDOW */}
           {isOvertime && (
-            <div className="glass-panel p-8 rounded-3xl border border-white/5 text-center max-w-md mx-auto w-full space-y-6 animate-modal-entry z-50">
-              <h3 className="text-lg font-black uppercase text-amber-500 animate-pulse">SUDDEN DEATH OVERTIME</h3>
-              <p className="text-xs text-neutral-400">
-                Regulations tied! Both coaches must select one single player to resolve a 1-on-1 winner-take-all roll.
-              </p>
+            <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+              <div 
+                className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/40 shadow-[0_0_50px_rgba(245,158,11,0.25)] text-center max-w-md w-full space-y-6 animate-scale-up"
+                style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+              >
+                <h3 className="text-lg font-black uppercase text-amber-500 animate-pulse">SUDDEN DEATH OVERTIME</h3>
+                <p className="text-xs text-neutral-400">
+                  Regulations tied! Both coaches must select one single player to resolve a 1-on-1 winner-take-all roll.
+                </p>
 
-              {/* Player single roster selection */}
-              <div className="space-y-3">
-                <div className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">Choose Your Champion</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {starters.map(id => {
-                    const c = playerCards.find(x => x.id === id);
-                    const stats = getCardGameStats(c);
-                    return (
-                      <button
-                        key={id + '_ot'}
-                        onClick={() => {
-                          // CPU selects their champion (usually center or best overall)
-                          const oppBest = opponentCards.slice(0, 5).sort((a, b) => getCardGameStats(b).ovr - getCardGameStats(a).ovr)[0];
-                          resolveSuddenDeathMatchup(c.id, oppBest.id);
-                        }}
-                        className="py-2.5 rounded-xl border border-white/5 bg-white/5 text-[9px] text-white uppercase font-bold hover:border-amber-400 transition-all flex flex-col items-center gap-1"
-                      >
-                        <span>{c.player.split(' ').pop()} ({stats.pos})</span>
-                        <span className="text-amber-400 text-[10px] font-mono">{stats.ovr} OVR</span>
-                      </button>
-                    );
-                  })}
+                {/* Player single roster selection */}
+                <div className="space-y-3">
+                  <div className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">Choose Your Champion</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {starters.map(id => {
+                      const c = playerCards.find(x => x.id === id);
+                      const stats = getCardGameStats(c);
+                      return (
+                        <button
+                          key={id + '_ot'}
+                          onClick={() => {
+                            // CPU selects their champion (usually center or best overall)
+                            const oppBest = opponentCards.slice(0, 5).sort((a, b) => getCardGameStats(b).ovr - getCardGameStats(a).ovr)[0];
+                            resolveSuddenDeathMatchup(c.id, oppBest.id);
+                          }}
+                          className="py-2.5 rounded-xl border border-white/5 bg-white/5 text-[9px] text-white uppercase font-bold hover:border-amber-400 transition-all flex flex-col items-center gap-1"
+                        >
+                          <span>{c.player.split(' ').pop()} ({stats.pos})</span>
+                          <span className="text-amber-400 text-[10px] font-mono">{stats.ovr} OVR</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -7258,89 +7509,211 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* 7. END GAME RESULT PANEL */}
           {gameState === 'ended' && (
-            <div className="glass-panel p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/5 text-center max-w-md mx-auto w-full space-y-4 sm:space-y-6 animate-modal-entry">
-              <div className="flex flex-col items-center">
-                <iconify-icon icon="solar:crown-minimalistic-bold" width="54" className="text-amber-400 animate-bounce"></iconify-icon>
-                <h3 className="text-xl font-bold tracking-widest uppercase text-white mt-4">Match Terminated!</h3>
+            <div className="max-w-4xl mx-auto w-full space-y-6 animate-modal-entry px-4 sm:px-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                {playerScore > opponentScore ? (
-                  <span className="text-green-500 text-lg font-black uppercase mt-1">🏆 Victory! You Won 🏆</span>
-                ) : (
-                  <span className="text-red-500 text-lg font-black uppercase mt-1">😭 Defeat! You Lost 😭</span>
-                )}
-              </div>
+                {/* Result Card */}
+                <div className={`lg:col-span-1 glass-panel p-6 sm:p-8 rounded-2xl sm:rounded-3xl border ${isLight ? 'border-neutral-200 bg-white/70 shadow-xl' : 'border-white/5 bg-black/40'} text-center space-y-4 sm:space-y-6 flex flex-col justify-between`}>
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="flex flex-col items-center">
+                      <iconify-icon icon="solar:crown-minimalistic-bold" width="54" className="text-amber-400 animate-bounce"></iconify-icon>
+                      <h3 className={`text-xl font-bold tracking-widest uppercase ${isLight ? 'text-neutral-900' : 'text-white'} mt-4`}>Match Terminated!</h3>
+                      
+                      {playerScore > opponentScore ? (
+                        <span className="text-green-500 text-lg font-black uppercase mt-1 animate-pulse">🏆 Victory! You Won 🏆</span>
+                      ) : (
+                        <span className="text-red-500 text-lg font-black uppercase mt-1">😭 Defeat! You Lost 😭</span>
+                      )}
+                    </div>
 
-              <div className="bg-black/40 border border-white/5 p-4 rounded-2xl flex justify-around font-mono text-sm">
-                <div>
-                  <div className="text-[9px] uppercase font-bold text-neutral-500">Your Score</div>
-                  <div className="text-2xl font-black text-white mt-1">{playerScore}</div>
-                </div>
-                <div>
-                  <div className="text-[9px] uppercase font-bold text-neutral-500">Opponent</div>
-                  <div className="text-2xl font-black text-white mt-1">{opponentScore}</div>
-                </div>
-              </div>
+                    <div className={`border p-4 rounded-2xl flex justify-around font-mono text-sm ${isLight ? 'bg-slate-50 border-neutral-200 text-neutral-800' : 'bg-black/40 border-white/5 text-white'}`}>
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-neutral-500">Your Score</div>
+                        <div className={`text-2xl font-black mt-1 ${isLight ? 'text-neutral-950' : 'text-white'}`}>{playerScore}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] uppercase font-bold text-neutral-500">Opponent</div>
+                        <div className={`text-2xl font-black mt-1 ${isLight ? 'text-neutral-950' : 'text-white'}`}>{opponentScore}</div>
+                      </div>
+                    </div>
 
-              <div className="bg-[#1C2028] p-4 rounded-2xl text-left border border-white/10 text-xs">
-                <div className="font-bold text-white flex items-center justify-between">
-                  <span>Arena Rewards:</span>
-                  <span className="text-green-400">
-                    +{opponentType === 'online' 
-                      ? (playerScore > opponentScore ? 300 : 120) 
-                      : (cpuDifficulty === 'rookie' ? (playerScore > opponentScore ? 80 : 30) : cpuDifficulty === 'veteran' ? (playerScore > opponentScore ? 120 : 50) : (playerScore > opponentScore ? 180 : 70))
-                    } XP
-                  </span>
-                </div>
-                <p className="text-[9px] text-neutral-400 mt-1 leading-relaxed">
-                  Excellent coaching. Your match records and Arena statistics have been updated in your profile database.
-                </p>
-              </div>
+                    <div className={`p-4 rounded-2xl text-left border text-xs ${isLight ? 'bg-slate-50 border-neutral-200' : 'bg-[#1C2028] border-white/10'}`}>
+                      <div className={`font-bold flex items-center justify-between ${isLight ? 'text-neutral-900' : 'text-white'}`}>
+                        <span>Arena Rewards:</span>
+                        <span className="text-green-500">
+                          +{opponentType === 'online' 
+                            ? (playerScore > opponentScore ? 300 : 120) 
+                            : (cpuDifficulty === 'rookie' ? (playerScore > opponentScore ? 80 : 30) : cpuDifficulty === 'veteran' ? (playerScore > opponentScore ? 120 : 50) : (playerScore > opponentScore ? 180 : 70))
+                          } XP
+                        </span>
+                      </div>
+                      <p className="text-[9px] text-neutral-400 mt-1 leading-relaxed">
+                        Excellent coaching. Your match records and Arena statistics have been updated in your profile database.
+                      </p>
+                    </div>
+                  </div>
 
-              <button 
-                onClick={handleReturnToLobby}
-                className="w-full conic-btn py-3.5"
-              >
-                <div className="conic-spin-bg"></div>
-                <div className="conic-btn-mask"></div>
-                <span className="relative z-10 text-[10px] font-black text-white px-6 py-3 uppercase flex items-center justify-center gap-1">
-                  Return to Lobby & Claim XP
-                </span>
-              </button>
+                  <button 
+                    onClick={handleReturnToLobby}
+                    className="w-full conic-btn py-3.5 mt-4"
+                  >
+                    <div className="conic-spin-bg"></div>
+                    <div className="conic-btn-mask"></div>
+                    <span className="relative z-10 text-[10px] font-black text-white px-6 py-3 uppercase flex items-center justify-center gap-1">
+                      Return to Lobby & Claim XP
+                    </span>
+                  </button>
+                </div>
+
+                {/* Box Score Card */}
+                <div className={`lg:col-span-2 glass-panel p-6 rounded-2xl border ${isLight ? 'border-neutral-200 bg-white/70 shadow-xl' : 'border-white/5 bg-black/40'} text-left space-y-4`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-3 gap-3">
+                    <h4 className={`text-sm font-black tracking-wider uppercase ${isLight ? 'text-neutral-900' : 'text-white'} flex items-center gap-2`}>
+                      <iconify-icon icon="solar:clipboard-list-bold-duotone" className="text-amber-400" width="18"></iconify-icon>
+                      Match Box Score
+                    </h4>
+                    <div className={`flex p-0.5 rounded-lg border text-[10px] ${isLight ? 'bg-slate-200/60 border-neutral-300' : 'bg-black/40 border-white/5'}`}>
+                      <button 
+                        onClick={() => setBoxScoreTab('player')} 
+                        className={`px-3 py-1 rounded-md font-bold uppercase transition-all ${boxScoreTab === 'player' ? 'bg-amber-500 text-black shadow-md font-extrabold' : `${isLight ? 'text-neutral-600 hover:text-neutral-900' : 'text-neutral-400 hover:text-white'}`}`}
+                      >
+                        Your Team
+                      </button>
+                      <button 
+                        onClick={() => setBoxScoreTab('opponent')} 
+                        className={`px-3 py-1 rounded-md font-bold uppercase transition-all ${boxScoreTab === 'opponent' ? 'bg-amber-500 text-black shadow-md font-extrabold' : `${isLight ? 'text-neutral-600 hover:text-neutral-900' : 'text-neutral-400 hover:text-white'}`}`}
+                      >
+                        {opponentName}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-[11px]">
+                      <thead>
+                        <tr className={`border-b ${isLight ? 'border-neutral-200 text-neutral-500' : 'border-white/5 text-neutral-500'} uppercase font-mono text-[9px] tracking-wider`}>
+                          <th className="py-2.5 font-bold">Player</th>
+                          <th className="py-2.5 font-bold text-center">Pos</th>
+                          <th className="py-2.5 font-bold text-center">PTS</th>
+                          <th className="py-2.5 font-bold text-center">REB</th>
+                          <th className="py-2.5 font-bold text-center">AST</th>
+                          <th className="py-2.5 font-bold text-center">STL</th>
+                          <th className="py-2.5 font-bold text-center">BLK</th>
+                          <th className="py-2.5 font-bold text-center">Stamina</th>
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${isLight ? 'divide-neutral-200' : 'divide-white/5'} font-medium`}>
+                        {(boxScoreTab === 'player' ? playerCards : opponentCards).map((c, idx) => {
+                          const cStats = getCardGameStats(c);
+                          const isStarter = boxScoreTab === 'player' ? starters.includes(c.id) : (idx < 5);
+                          return (
+                            <tr key={c.id} className={`hover:${isLight ? 'bg-slate-50/50' : 'bg-white/5'} transition-colors`}>
+                              <td className="py-2 sm:py-3 flex items-center gap-2">
+                                <span className={`w-1.5 h-1.5 rounded-full ${isStarter ? 'bg-green-400' : 'bg-neutral-600'}`} title={isStarter ? 'Starter' : 'Bench'}></span>
+                                <div>
+                                  <div className={`font-bold text-xs ${isLight ? 'text-neutral-900' : 'text-white'}`}>{c.player}</div>
+                                  <div className={`text-[9px] ${isLight ? 'text-neutral-500' : 'text-neutral-400'} font-mono`}>OVR {cStats.ovr} • {c.parallelName || 'Base'}</div>
+                                </div>
+                              </td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-600' : 'text-neutral-300'} font-bold`}>{cStats.pos}</td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-900' : 'text-white'} font-mono font-bold text-xs`}>{c.pts || 0}</td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-800' : 'text-neutral-200'} font-mono`}>{c.reb || 0}</td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-800' : 'text-neutral-200'} font-mono`}>{c.ast || 0}</td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-800' : 'text-neutral-200'} font-mono`}>{c.stl || 0}</td>
+                              <td className={`py-2 sm:py-3 text-center ${isLight ? 'text-neutral-800' : 'text-neutral-200'} font-mono`}>{c.blk || 0}</td>
+                              <td className="py-2 sm:py-3 text-center">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  <span className={`font-mono text-[10px] ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>{c.currentSta}</span>
+                                  {c.gassed && (
+                                    <span className="text-[8px] px-1 bg-red-500/20 text-red-400 rounded border border-red-500/30 uppercase font-black tracking-wide leading-none py-0.5">Gassed</span>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
             </div>
           )}
 
           {/* Tutorial Overlay Modal/Popup */}
           {tutorialStep !== null && tutorialPopupOpen && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/45 backdrop-blur-[2px] z-50 pointer-events-auto">
               <div 
-                className="glass-panel p-5 md:p-6 rounded-2xl border border-amber-500/40 shadow-[0_0_35px_rgba(245,158,11,0.25)] w-full max-w-sm sm:max-w-md text-left flex flex-col justify-between max-h-[85vh] overflow-y-auto animate-scale-up"
-                style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+                className={`glass-panel p-5 md:p-6 rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.85)] w-full text-left flex flex-col justify-between max-h-[85vh] overflow-y-auto animate-scale-up pointer-events-auto ${getTutorialAlignmentClass()}`}
+                style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
               >
-                <div className="flex items-center justify-between gap-2 mb-3 border-b border-white/10 pb-2.5 flex-shrink-0">
-                  <div className="flex items-center gap-1.5">
-                    <iconify-icon icon="solar:info-circle-bold-duotone" width="16" className="text-amber-400"></iconify-icon>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Coach Tutorial ({tutorialStep}/7)</span>
+                {/* Visual Top Accent Gradient Bar */}
+                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-teal-400 rounded-t-2xl"></div>
+
+                <div className="flex items-center justify-between gap-2 mb-3.5 border-b border-white/10 pb-3 flex-shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 p-0.5 shadow-md shadow-orange-500/10">
+                        <div className="w-full h-full rounded-full bg-neutral-900 flex items-center justify-center">
+                          <iconify-icon icon="solar:user-speak-rounded-bold-duotone" width="22" className="text-amber-400"></iconify-icon>
+                        </div>
+                      </div>
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-neutral-950 rounded-full"></span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">Coach Rivers</span>
+                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/5 border border-white/10 font-mono text-neutral-400 font-bold">Step {tutorialStep}/7</span>
+                      </div>
+                      <div className="text-[9px] text-neutral-500 font-bold uppercase tracking-wide">HoopTactics Advisor</div>
+                    </div>
                   </div>
+                  
                   <button 
                     onClick={() => setTutorialStep(null)}
-                    className="text-[9px] font-bold text-neutral-500 hover:text-white uppercase transition-all"
+                    className="px-2.5 py-1 rounded-full border border-white/5 bg-white/2 hover:bg-red-500/10 hover:border-red-500/20 text-[9px] font-bold text-neutral-400 hover:text-red-400 uppercase tracking-wider transition-all flex items-center gap-1"
+                    title="End Tutorial"
                   >
-                    Skip
+                    <span>Skip</span>
+                    <iconify-icon icon="solar:close-square-bold-duotone" width="11"></iconify-icon>
                   </button>
                 </div>
                 
                 <div className="space-y-2 mb-4 flex-1">
-                  <h4 className="text-xs font-extrabold text-white uppercase">{getTutorialTitle()}</h4>
-                  <p className="text-[10.5px] text-neutral-300 leading-relaxed font-sans font-medium">{getTutorialText()}</p>
+                  <h4 className="text-[11px] font-extrabold text-white tracking-wide uppercase mt-1">
+                    {getTutorialTitle().replace(/^\d+\.\s*/, '')}
+                  </h4>
+                  <div className="text-[10.5px] text-neutral-300 leading-relaxed font-sans font-medium">
+                    {formatTutorialText(getTutorialText())}
+                  </div>
                 </div>
 
-                <div className="flex justify-end items-center border-t border-white/5 pt-3 flex-shrink-0">
-                  <button
-                    onClick={() => setTutorialPopupOpen(false)}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black text-[10px] font-black uppercase transition-all shadow-lg border border-amber-400/20 font-bold animate-pulse"
-                  >
-                    Got it, show me!
-                  </button>
+                <div className="flex justify-end items-center border-t border-white/5 pt-3.5 flex-shrink-0">
+                  {(() => {
+                    const isEndStep = tutorialStep === 7;
+                    const themeClass = isEndStep ? 'orange' : 'primary';
+                    const textClass = isEndStep ? 'text-amber-300' : 'text-teal-300';
+                    const arrowIcon = isEndStep ? 'solar:check-circle-bold-duotone' : 'solar:arrow-right-bold-duotone';
+                    return (
+                      <button
+                        onClick={() => {
+                          if (getTutorialBtnText()) {
+                            handleTutorialBtnAction();
+                          }
+                          setTutorialPopupOpen(false);
+                        }}
+                        className={`conic-btn ${themeClass} w-full dramatic-hover`}
+                      >
+                        <div className="conic-spin-bg opacity-100 animate-[spin_2s_linear_infinite]"></div>
+                        <div className="conic-btn-mask bg-neutral-900 hover:bg-neutral-950 transition-colors"></div>
+                        <span className={`relative z-10 text-[9.5px] font-black uppercase tracking-wider ${textClass} py-2.5 px-4 flex items-center justify-center gap-1.5`}>
+                          {getTutorialBtnText() ? getTutorialBtnText() : "Got it, Coach!"}
+                          <iconify-icon icon={arrowIcon} width="12" className={textClass}></iconify-icon>
+                        </span>
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -7519,16 +7892,18 @@ const getBasketballStatsAndBio = (card) => {
                                             </div>
                                           )}
                                         </div>
-                                        <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
+                                        <div className="flex items-center justify-between w-full mt-1.5 px-0.5">
+                                          <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate max-w-[65%] text-left">
+                                            <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                          </span>
+                                          <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none">STA: {c.currentSta}</span>
+                                        </div>
+                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
                                           <div 
                                             className={`h-full ${c.currentSta <= 20 ? 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.4)]' : c.currentSta <= 50 ? 'bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.4)]' : 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]'}`} 
                                             style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                           />
                                         </div>
-                                        <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                       </React.Fragment>
                                     )}
                                   </div>
@@ -7631,16 +8006,18 @@ const getBasketballStatsAndBio = (card) => {
                                             </div>
                                           )}
                                         </div>
-                                        <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
-                                          <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
-                                        </span>
-                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
+                                        <div className="flex items-center justify-between w-full mt-1.5 px-0.5">
+                                          <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate max-w-[65%] text-left">
+                                            <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {nameLabel}
+                                          </span>
+                                          <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none">STA: {c.currentSta}</span>
+                                        </div>
+                                        <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
                                           <div 
                                             className="h-full bg-emerald-500 animate-fill-stamina shadow-[0_0_6px_rgba(16,185,129,0.4)]" 
                                             style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                           />
                                         </div>
-                                        <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                       </React.Fragment>
                                     )}
                                   </div>
@@ -7672,17 +8049,19 @@ const getBasketballStatsAndBio = (card) => {
                                     </span>
                                   </div>
                                   
-                                  <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate w-full text-center leading-none mt-1">
-                                    <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {c.player.split(' ').pop()}
-                                  </span>
+                                  <div className="flex items-center justify-between w-full mt-1.5 px-0.5">
+                                    <span className="text-[7px] sm:text-[8px] font-bold text-neutral-200 truncate max-w-[65%] text-left">
+                                      <span className="text-amber-400 font-extrabold mr-0.5">{stats.pos}</span> {c.player.split(' ').pop()}
+                                    </span>
+                                    <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none">STA: {c.currentSta}</span>
+                                  </div>
                                   
-                                  <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-1">
+                                  <div className="h-1 w-full bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative mt-0.5">
                                     <div 
                                       className="h-full bg-emerald-500 animate-fill-stamina shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                                       style={{ width: `${(c.currentSta/stats.sta)*100}%` }}
                                     />
                                   </div>
-                                  <span className="text-[5.5px] sm:text-[6.5px] font-mono text-neutral-400 leading-none mt-1">STA: {c.currentSta}/{stats.sta}</span>
                                 </div>
                               );
                             })}
@@ -7690,31 +8069,36 @@ const getBasketballStatsAndBio = (card) => {
                         </div>
                       )}
                       
-                      {/* Simplified Stamina Guide Bar */}
-                      <div className="bg-emerald-950/30 border border-emerald-500/10 p-2 rounded-xl text-left flex items-center gap-2 text-[8px] font-mono text-emerald-300">
-                        <iconify-icon icon="solar:info-circle-bold-duotone" className="text-emerald-400 text-xs flex-shrink-0"></iconify-icon>
-                        <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
-                      </div>
-                      
-                      {/* Coaching Clipboard Tips */}
-                      <div className="text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase w-full text-center">
-                        {(() => {
-                          const lowSPlayer = timeoutCaller === 'player'
-                            ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
-                            : null;
-                          const highestOffPlayer = timeoutCaller === 'player'
-                            ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
-                            : null;
+                      {/* Bottom info section: side-by-side on larger screens, stacked on tiny ones */}
+                      <div className="flex flex-col sm:flex-row gap-2 w-full mt-1 flex-shrink-0">
+                        {/* Simplified Stamina Guide Bar */}
+                        <div className="flex-1 bg-emerald-950/30 border border-emerald-500/10 p-2 rounded-xl text-left flex items-center gap-2 text-[8px] font-mono text-emerald-300">
+                          <iconify-icon icon="solar:info-circle-bold-duotone" className="text-emerald-400 text-xs flex-shrink-0"></iconify-icon>
+                          <span className="leading-tight"><strong>Stamina Quick Rules:</strong> Possession drains <span className="text-white">-10 STA</span>. Gassed penalty is <span className="text-red-400">-15 ratings at ≤20 STA</span>. Timeouts restore <span className="text-white">+20 STA</span> to bench.</span>
+                        </div>
+                        
+                        {/* Coaching Clipboard Tips */}
+                        <div className="flex-1 text-[8px] sm:text-[8.5px] text-yellow-300 font-mono font-bold leading-snug bg-black/40 border border-yellow-500/10 p-2 rounded-xl uppercase flex items-center justify-center text-center">
+                          <span>
+                            {(() => {
+                              const lowSPlayer = timeoutCaller === 'player'
+                                ? bench.map(id => playerCards.find(x => x.id === id)).filter(Boolean).find(c => c.currentSta <= 40)
+                                : null;
+                              const highestOffPlayer = timeoutCaller === 'player'
+                                ? starters.map(id => playerCards.find(x => x.id === id)).filter(Boolean).sort((a,b) => getCardGameStats(b).off - getCardGameStats(a).off)[0]
+                                : null;
 
-                          return timeoutCaller === 'player'
-                            ? (lowSPlayer 
-                              ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
-                              : highestOffPlayer 
-                                ? `💡 COACH STRATEGY: Matchup focus! Run offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
-                                : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
-                              )
-                            : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
-                        })()}
+                              return timeoutCaller === 'player'
+                                ? (lowSPlayer 
+                                  ? `🚨 COACH STRATEGY: Roster warning! ${lowSPlayer.player} is low on stamina (${lowSPlayer.currentSta}). Swap them out on the court to avoid penalty.`
+                                  : highestOffPlayer 
+                                    ? `💡 COACH STRATEGY: Matchup focus! Run offense through ${highestOffPlayer.player.split(' ').pop()} (OFF: ${getCardGameStats(highestOffPlayer).off}) to exploit weaknesses.`
+                                    : "💡 COACH STRATEGY: Maintain high-energy defense and look for open 3-point shooters."
+                                  )
+                                : `Opponent Coach ${opponentName} is realigning their defense. Keep your defenses high!`;
+                            })()}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -7726,6 +8110,13 @@ const getBasketballStatsAndBio = (card) => {
                         setTimeoutActive(false);
                         setTimeoutCaller(null);
                         setSelectedSubId(null);
+                        
+                        if (isTutorialMatch) {
+                          const startersChanged = starters.some(id => !startersBeforeTimeout.includes(id));
+                          if (!startersChanged) {
+                            setTutorialStep(7);
+                          }
+                        }
                       }}
                       className="conic-btn px-6 py-2.5 transition-all shadow-[0_0_15px_rgba(70,212,198,0.25)] scale-100 hover:scale-[1.05] active:scale-95"
                     >
@@ -8359,6 +8750,276 @@ const getBasketballStatsAndBio = (card) => {
                     <br />• If Attacker Matchup Value === Defender Contest Value and has "Offensive Superstar": <span className="text-emerald-400">Shot is GOOD (superstar tie-breaker)</span>
                     <br />• If Attacker Matchup Value &lt;= Defender Contest Value: <span className="text-red-400">Shot is MISSED/DEFENDED (0 pts)</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isSavedDecksOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
+              <div 
+                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
+              >
+                {/* Close Button */}
+                <button 
+                  onClick={() => {
+                    setIsSavedDecksOpen(false);
+                    setEditingDeckIndex(null);
+                  }}
+                  className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors cursor-pointer"
+                >
+                  <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
+                </button>
+
+                {/* Modal Title */}
+                <div>
+                  <h3 className="text-sm md:text-base font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <iconify-icon icon="solar:folder-with-files-bold" className="text-teal-400" width="20"></iconify-icon>
+                    Saved Lineup Presets
+                  </h3>
+                  <p className="text-[9px] md:text-[10px] text-neutral-500 uppercase mt-0.5">Save, load, and manage up to 5 custom deck setups</p>
+                </div>
+
+                {/* Presets List */}
+                <div className="space-y-4">
+                  {savedDecks.map((deck, idx) => {
+                    const hasDeck = deck.starters && deck.starters.length === 5 && deck.bench && deck.bench.length === 5;
+                    const isEditing = editingDeckIndex === idx;
+
+                    // Calculate stats of saved deck
+                    let teamOvr = 0;
+                    let chemPenalty = 0;
+                    let startersInfo = [];
+                    let benchInfo = [];
+
+                    if (hasDeck) {
+                      const starterCards = deck.starters.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
+                      const benchCards = deck.bench.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
+                      
+                      const allCards = [...starterCards, ...benchCards];
+                      if (allCards.length > 0) {
+                        const totalRating = allCards.reduce((acc, c) => acc + (c.rating || 80), 0);
+                        teamOvr = Math.round(totalRating / allCards.length);
+                      }
+                      chemPenalty = getChemistryPenalty(deck.starters);
+                      
+                      startersInfo = starterCards.map(c => {
+                        const stats = getCardGameStats(c);
+                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
+                      });
+                      benchInfo = benchCards.map(c => {
+                        const stats = getCardGameStats(c);
+                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
+                      });
+                    }
+
+                    // Save Active Lineup to Slot
+                    const handleSaveCurrent = () => {
+                      if (starters.length === 5 && bench.length === 5) {
+                        const updated = savedDecks.map((d, i) => {
+                          if (i === idx) {
+                            return {
+                              ...d,
+                              starters: [...starters],
+                              bench: [...bench]
+                            };
+                          }
+                          return d;
+                        });
+                        setSavedDecks(updated);
+                        triggerToast(`Roster successfully saved to ${deck.name}!`);
+                      } else {
+                        triggerToast("Active roster invalid. Assign exactly 5 starters & 5 bench players first.");
+                      }
+                    };
+
+                    // Load Lineup from Slot
+                    const handleLoad = () => {
+                      if (hasDeck) {
+                        const isCpu = opponentType === 'cpu';
+                        const ownedOnly = !isCpu || vaultOwnedOnly;
+                        if (ownedOnly) {
+                          const unownedStarters = deck.starters.filter(id => !collection.includes(id));
+                          const unownedBench = deck.bench.filter(id => !collection.includes(id));
+                          if (unownedStarters.length > 0 || unownedBench.length > 0) {
+                            triggerToast("Cannot load preset: contains cards not in your owned collection!");
+                            return;
+                          }
+                        }
+                        
+                        setSelectedDeckIds([...deck.starters, ...deck.bench]);
+                        setStarters(deck.starters);
+                        setBench(deck.bench);
+                        setIsSavedDecksOpen(false);
+                        triggerToast(`Roster "${deck.name}" loaded successfully!`);
+                      }
+                    };
+
+                    // Rename Slot
+                    const handleRename = (newName) => {
+                      if (!newName.trim()) return;
+                      const updated = savedDecks.map((d, i) => {
+                        if (i === idx) {
+                          return { ...d, name: newName };
+                        }
+                        return d;
+                      });
+                      setSavedDecks(updated);
+                      setEditingDeckIndex(null);
+                      triggerToast(`Lineup renamed to "${newName}"`);
+                    };
+
+                    // Clear Slot
+                    const handleClear = () => {
+                      if (confirm(`Are you sure you want to clear ${deck.name}?`)) {
+                        const updated = savedDecks.map((d, i) => {
+                          if (i === idx) {
+                            return {
+                              ...d,
+                              starters: [],
+                              bench: []
+                            };
+                          }
+                          return d;
+                        });
+                        setSavedDecks(updated);
+                        triggerToast(`Cleared preset slot ${idx + 1}.`);
+                      }
+                    };
+
+                    return (
+                      <div 
+                        key={deck.id} 
+                        className={`border rounded-2xl p-4 transition-all ${
+                          hasDeck 
+                            ? 'bg-white/[0.02] border-white/10 hover:border-white/20' 
+                            : 'border-dashed border-white/5 bg-transparent'
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          {/* Slot Info / Name */}
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-mono text-neutral-500 uppercase">Slot {idx + 1}</span>
+                              {hasDeck && (
+                                <div className="flex gap-2">
+                                  <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase">
+                                    {teamOvr} OVR
+                                  </span>
+                                  <span className="text-[9px] font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">
+                                    Chem Penalty: {chemPenalty} OVR
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {isEditing ? (
+                              <div className="flex items-center gap-2 mt-1">
+                                <input
+                                  type="text"
+                                  defaultValue={deck.name}
+                                  autoFocus
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleRename(e.target.value);
+                                    if (e.key === 'Escape') setEditingDeckIndex(null);
+                                  }}
+                                  onBlur={(e) => handleRename(e.target.value)}
+                                  className="bg-neutral-900 border border-white/20 rounded px-2.5 py-1 text-xs text-white focus:border-teal-500 w-full max-w-[200px]"
+                                />
+                                <span className="text-[9px] text-neutral-500 font-mono">(Press Enter)</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-black uppercase text-white tracking-wide">
+                                  {deck.name}
+                                </h4>
+                                {hasDeck && (
+                                  <button 
+                                    onClick={() => setEditingDeckIndex(idx)}
+                                    className="text-neutral-500 hover:text-white transition-colors p-0.5"
+                                    title="Rename Preset"
+                                  >
+                                    <iconify-icon icon="solar:pen-bold" width="12"></iconify-icon>
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Roster Details */}
+                            {hasDeck ? (
+                              <div className="mt-2 text-[10px] text-neutral-400 space-y-1 font-mono leading-relaxed">
+                                <div>
+                                  <span className="text-orange-500 font-bold uppercase">Starters:</span> {startersInfo.join(' • ')}
+                                </div>
+                                <div>
+                                  <span className="text-teal-400 font-bold uppercase">Bench:</span> {benchInfo.join(' • ')}
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-[10px] text-neutral-600 uppercase font-semibold">Empty Preset Slot</p>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 items-center sm:self-center self-end">
+                            {hasDeck ? (
+                              <>
+                                <button 
+                                  onClick={handleLoad}
+                                  className="conic-btn dramatic-hover py-1.5 px-3"
+                                >
+                                  <div className="conic-spin-bg"></div>
+                                  <div className="conic-btn-mask bg-black/40"></div>
+                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                    <iconify-icon icon="solar:upload-minimal-bold" width="12" className="text-teal-400"></iconify-icon>
+                                    Load
+                                  </span>
+                                </button>
+                                <button 
+                                  onClick={handleSaveCurrent}
+                                  className="conic-btn dramatic-hover py-1.5 px-3"
+                                  title="Overwrite with active on-screen lineup"
+                                >
+                                  <div className="conic-spin-bg"></div>
+                                  <div className="conic-btn-mask bg-black/40"></div>
+                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                    <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
+                                    Overwrite
+                                  </span>
+                                </button>
+                                <button 
+                                  onClick={handleClear}
+                                  className="text-neutral-500 hover:text-red-500 transition-colors p-1"
+                                  title="Clear Slot"
+                                >
+                                  <iconify-icon icon="solar:trash-bin-trash-bold" width="16"></iconify-icon>
+                                </button>
+                              </>
+                            ) : (
+                              <button 
+                                onClick={handleSaveCurrent}
+                                disabled={starters.length !== 5 || bench.length !== 5}
+                                className="conic-btn dramatic-hover py-1.5 px-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                <div className="conic-spin-bg"></div>
+                                <div className="conic-btn-mask bg-black/40"></div>
+                                <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                  <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
+                                  Save Current
+                                </span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Info Text */}
+                <div className="flex items-center gap-2 text-[9px] text-neutral-500 uppercase font-semibold border-t border-white/5 pt-4">
+                  <iconify-icon icon="solar:info-circle-linear" width="14"></iconify-icon>
+                  <span>Lineups require exactly 5 starters & 5 bench players to be saved.</span>
                 </div>
               </div>
             </div>
@@ -9697,6 +10358,7 @@ const getBasketballStatsAndBio = (card) => {
                         avatarIcon={avatarIcon}
                         avatarGradient={avatarGradient}
                         setIsGameActive={setIsGameActive}
+                        checkAndAwardAchievements={checkAndAwardAchievements}
                       />
                     );
                   })()}
