@@ -3797,11 +3797,19 @@ const getBasketballStatsAndBio = (card) => {
                 : undefined
             }}
           >
-            {/* Ribbed reeded edge ring */}
-            <div className="coin-3d-edge-ring" />
+            {/* Ribbed reeded edge ring layers to simulate 3D thickness */}
+            {[...Array(11)].map((_, i) => (
+              <div 
+                key={`edge-${i}`}
+                className="coin-3d-edge-ring" 
+                style={{
+                  transform: `translateZ(${(i - 5) * 0.4}px)`
+                }}
+              />
+            ))}
             
             {/* FRONT FACE (HEADS) */}
-            <div className="coin-3d-face coin-3d-front relative flex items-center justify-center">
+            <div className="coin-3d-face coin-3d-front absolute flex items-center justify-center">
               <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full select-none pointer-events-none">
                 <defs>
                   {/* Embossed metal lighting filter */}
@@ -3835,7 +3843,7 @@ const getBasketballStatsAndBio = (card) => {
             </div>
             
             {/* BACK FACE (TAILS) */}
-            <div className="coin-3d-face coin-3d-back relative flex items-center justify-center">
+            <div className="coin-3d-face coin-3d-back absolute flex items-center justify-center">
               <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full select-none pointer-events-none">
                 <defs>
                   <filter id="metal-emboss-tails" x="-20%" y="-20%" width="140%" height="140%">
@@ -7080,7 +7088,7 @@ const getBasketballStatsAndBio = (card) => {
               </div>
               {/* FACE-OFF SPOTLIGHT (Contest / Resolve / Next phases) */}
               {(gamePhase === 'contest' || gamePhase === 'resolve' || gamePhase === 'next') && selectedAttackerId && (
-                <div className={`absolute inset-0 ${isLight ? 'bg-white/90 border border-slate-200/60 shadow-2xl' : 'bg-black/80'} z-30 flex flex-col items-center justify-center p-2 sm:p-4 animate-faceoff-fade-in backdrop-blur-md overflow-hidden`} style={{ borderRadius: '24px' }}>
+                <div className="absolute inset-0 faceoff-overlay z-30 flex flex-col items-center justify-center p-2 sm:p-4 animate-faceoff-fade-in overflow-hidden" style={{ borderRadius: '24px' }}>
                   {(() => {
                     const att = playerPossession 
                       ? playerCards.find(x => x.id === selectedAttackerId) 
@@ -9030,10 +9038,92 @@ const getBasketballStatsAndBio = (card) => {
     };
 
 // Achievements and profile data moved to js/data.js
+ 
+    // Startup Loading Screen Component
+    const StartupLoader = ({ isFadingOut }) => {
+      const [progress, setProgress] = useState(0);
+
+      useEffect(() => {
+        const duration = 2200;
+        const intervalTime = 30;
+        const totalSteps = duration / intervalTime;
+        let step = 0;
+        
+        const timer = setInterval(() => {
+          step++;
+          const currentProgress = Math.min(Math.round((step / totalSteps) * 100), 100);
+          setProgress(currentProgress);
+          if (step >= totalSteps) {
+            clearInterval(timer);
+          }
+        }, intervalTime);
+
+        return () => clearInterval(timer);
+      }, []);
+
+      return (
+        <div 
+          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md transition-all duration-500 ${
+            isFadingOut ? 'animate-fade-out-loader' : ''
+          }`}
+        >
+          {/* Subtle background glow beam */}
+          <div className="absolute w-[40vw] h-[40vw] rounded-full bg-gradient-to-tr from-orange-500/10 to-teal-500/10 blur-[80px] pointer-events-none animate-pulse-slow z-0" />
+          
+          <div className="relative z-10 flex flex-col items-center animate-loader-fade-in-up">
+            {/* Logo Container with floating animation */}
+            <div className="animate-logo-float-slow cursor-pointer">
+              <Logo className="w-32 h-44 md:w-36 md:h-48 text-white filter drop-shadow-[0_0_30px_rgba(255,145,70,0.15)]" />
+            </div>
+
+            {/* Typography Title and Subtitle */}
+            <div className="flex flex-col items-center text-center mt-8 px-6 select-none">
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-widest uppercase font-sans">
+                <span className="text-white">Hoop </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-300 to-teal-400">Tactics</span>
+              </h2>
+              <div className="h-[1px] w-16 bg-gradient-to-r from-transparent via-neutral-500 to-transparent my-3" />
+              <p className="text-[10px] md:text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase leading-none">
+                The Basketball Trading Card Game
+              </p>
+            </div>
+
+            {/* Glowing Slim Progress Bar */}
+            <div className="w-56 md:w-64 h-1 bg-neutral-900 rounded-full overflow-hidden mt-8 border border-white/5 relative shadow-inner">
+              <div className="h-full bg-gradient-to-r from-orange-500 via-yellow-400 to-teal-400 rounded-full animate-loader-progress" />
+            </div>
+
+            {/* Percentage count indicator */}
+            <div className="text-[9px] font-mono tracking-widest text-neutral-500 uppercase mt-3 select-none">
+              LOADING SYSTEM ... {progress}%
+            </div>
+          </div>
+        </div>
+      );
+    };
 
     // Main App Shell Component
     const App = () => {
       const { theme, setTheme } = React.useContext(ThemeContext);
+      const [isStartupLoading, setIsStartupLoading] = useState(true);
+      const [isLoaderFading, setIsLoaderFading] = useState(false);
+
+      useEffect(() => {
+        // Run startup loading fade-out sequence
+        const fadeTimer = setTimeout(() => {
+          setIsLoaderFading(true);
+        }, 2200);
+
+        const endTimer = setTimeout(() => {
+          setIsStartupLoading(false);
+        }, 2650);
+
+        return () => {
+          clearTimeout(fadeTimer);
+          clearTimeout(endTimer);
+        };
+      }, []);
+
       // Initialize states from localStorage with sensible defaults
       const [screen, setScreen] = useState(() => {
         return localStorage.getItem('ht_screen') || 'onboarding';
@@ -9674,6 +9764,10 @@ const getBasketballStatsAndBio = (card) => {
         }));
       };
 
+      if (isStartupLoading) {
+        return <StartupLoader isFadingOut={isLoaderFading} />;
+      }
+
       if (screen === 'onboarding') {
         return <Onboarding onComplete={handleOnboardingComplete} />;
       }
@@ -9694,8 +9788,8 @@ const getBasketballStatsAndBio = (card) => {
             <div className="flex items-center gap-2">
               <Logo className="w-6 h-8 text-white" />
               <div>
-                <h1 className="font-bold tracking-widest text-xs text-white uppercase leading-none">HoopTactics</h1>
-                <span className="text-[7px] text-neutral-500 uppercase tracking-wider block mt-0.5">Tactical Binder</span>
+                <h1 className="font-bold tracking-widest text-xs text-white uppercase leading-none">Hoop Tactics</h1>
+                <span className="text-[7px] text-neutral-500 uppercase tracking-wider block mt-0.5">The Basketball TCG</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -9731,8 +9825,8 @@ const getBasketballStatsAndBio = (card) => {
                   <div className="flex items-center gap-2.5">
                     <Logo className="w-8 h-10 text-white" />
                     <div>
-                      <h1 className="font-bold tracking-widest text-sm text-white uppercase leading-none">HoopTactics</h1>
-                      <span className="text-[8px] text-neutral-500 uppercase tracking-wider mt-1 block">Tactical Basketball Binder</span>
+                      <h1 className="font-bold tracking-widest text-sm text-white uppercase leading-none">Hoop Tactics</h1>
+                      <span className="text-[8px] text-neutral-500 uppercase tracking-wider mt-1 block">The Basketball Trading Card Game</span>
                     </div>
                   </div>
                   <button 
@@ -9825,8 +9919,8 @@ const getBasketballStatsAndBio = (card) => {
               <div className="flex items-center gap-3">
                 <Logo className="w-12 h-16 text-white" />
                 <div>
-                  <h1 className="font-bold tracking-widest text-sm text-white uppercase">HoopTactics</h1>
-                  <span className="text-[8px] text-neutral-500 uppercase tracking-wider">Tactical Basketball Binder</span>
+                  <h1 className="font-bold tracking-widest text-sm text-white uppercase">Hoop Tactics</h1>
+                  <span className="text-[8px] text-neutral-500 uppercase tracking-wider">The Basketball Trading Card Game</span>
                 </div>
               </div>
 
