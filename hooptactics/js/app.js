@@ -8130,6 +8130,277 @@ const getBasketballStatsAndBio = (card) => {
                 </div>
               </div>
             )}
+
+          {isSavedDecksOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
+              <div 
+                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
+              >
+                {/* Close Button */}
+                <button 
+                  onClick={() => {
+                    setIsSavedDecksOpen(false);
+                    setEditingDeckIndex(null);
+                  }}
+                  className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors cursor-pointer"
+                >
+                  <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
+                </button>
+
+                {/* Modal Title */}
+                <div>
+                  <h3 className="text-sm md:text-base font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <iconify-icon icon="solar:folder-with-files-bold" className="text-teal-400" width="20"></iconify-icon>
+                    Saved Lineup Presets
+                  </h3>
+                  <p className="text-[9px] md:text-[10px] text-neutral-500 uppercase mt-0.5">Save, load, and manage up to 5 custom deck setups</p>
+                </div>
+
+                {/* Presets List */}
+                <div className="space-y-4">
+                  {savedDecks.map((deck, idx) => {
+                    const hasDeck = deck.starters && deck.starters.length === 5 && deck.bench && deck.bench.length === 5;
+                    const isEditing = editingDeckIndex === idx;
+
+                    // Calculate stats of saved deck
+                    let teamOvr = 0;
+                    let chemPenalty = 0;
+                    let startersInfo = [];
+                    let benchInfo = [];
+
+                    if (hasDeck) {
+                      const starterCards = deck.starters.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
+                      const benchCards = deck.bench.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
+                      
+                      const allCards = [...starterCards, ...benchCards];
+                      if (allCards.length > 0) {
+                        const totalRating = allCards.reduce((acc, c) => acc + (c.rating || 80), 0);
+                        teamOvr = Math.round(totalRating / allCards.length);
+                      }
+                      chemPenalty = getChemistryPenalty(deck.starters);
+                      
+                      startersInfo = starterCards.map(c => {
+                        const stats = getCardGameStats(c);
+                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
+                      });
+                      benchInfo = benchCards.map(c => {
+                        const stats = getCardGameStats(c);
+                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
+                      });
+                    }
+
+                    // Save Active Lineup to Slot
+                    const handleSaveCurrent = () => {
+                      if (starters.length === 5 && bench.length === 5) {
+                        const updated = savedDecks.map((d, i) => {
+                          if (i === idx) {
+                            return {
+                              ...d,
+                              starters: [...starters],
+                              bench: [...bench]
+                            };
+                          }
+                          return d;
+                        });
+                        setSavedDecks(updated);
+                        triggerToast(`Roster successfully saved to ${deck.name}!`);
+                      } else {
+                        triggerToast("Active roster invalid. Assign exactly 5 starters & 5 bench players first.");
+                      }
+                    };
+
+                    // Load Lineup from Slot
+                    const handleLoad = () => {
+                      if (hasDeck) {
+                        const isCpu = opponentType === 'cpu';
+                        const ownedOnly = !isCpu || vaultOwnedOnly;
+                        if (ownedOnly) {
+                          const unownedStarters = deck.starters.filter(id => !collection.includes(id));
+                          const unownedBench = deck.bench.filter(id => !collection.includes(id));
+                          if (unownedStarters.length > 0 || unownedBench.length > 0) {
+                            triggerToast("Cannot load preset: contains cards not in your owned collection!");
+                            return;
+                          }
+                        }
+                        
+                        setSelectedDeckIds([...deck.starters, ...deck.bench]);
+                        setStarters(deck.starters);
+                        setBench(deck.bench);
+                        setIsSavedDecksOpen(false);
+                        triggerToast(`Roster "${deck.name}" loaded successfully!`);
+                      }
+                    };
+
+                    // Rename Slot
+                    const handleRename = (newName) => {
+                      if (!newName.trim()) return;
+                      const updated = savedDecks.map((d, i) => {
+                        if (i === idx) {
+                          return { ...d, name: newName };
+                        }
+                        return d;
+                      });
+                      setSavedDecks(updated);
+                      setEditingDeckIndex(null);
+                      triggerToast(`Preset renamed to "${newName}".`);
+                    };
+
+                    // Clear Slot
+                    const handleClear = () => {
+                      if (confirm(`Are you sure you want to clear ${deck.name}?`)) {
+                        const updated = savedDecks.map((d, i) => {
+                          if (i === idx) {
+                            return {
+                              ...d,
+                              name: `Saved Lineup ${i + 1}`,
+                              starters: [],
+                              bench: []
+                            };
+                          }
+                          return d;
+                        });
+                        setSavedDecks(updated);
+                        triggerToast(`Cleared preset slot ${idx + 1}.`);
+                      }
+                    };
+
+                    return (
+                      <div 
+                        key={deck.id} 
+                        className={`border rounded-2xl p-4 transition-all ${
+                          hasDeck 
+                            ? 'bg-white/[0.02] border-white/10 hover:border-white/20' 
+                            : 'border-dashed border-white/5 bg-transparent'
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          {/* Slot Info / Name */}
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-mono text-neutral-500 uppercase">Slot {idx + 1}</span>
+                              {hasDeck && (
+                                <div className="flex gap-2">
+                                  <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase">
+                                    {teamOvr} OVR
+                                  </span>
+                                  <span className="text-[9px] font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">
+                                    Chem Penalty: {chemPenalty} OVR
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {isEditing ? (
+                              <div className="flex items-center gap-2 mt-1">
+                                <input
+                                  type="text"
+                                  defaultValue={deck.name}
+                                  autoFocus
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleRename(e.target.value);
+                                    if (e.key === 'Escape') setEditingDeckIndex(null);
+                                  }}
+                                  onBlur={(e) => handleRename(e.target.value)}
+                                  className="bg-neutral-900 border border-white/20 rounded px-2.5 py-1 text-xs text-white focus:border-teal-500 w-full max-w-[200px]"
+                                />
+                                <span className="text-[9px] text-neutral-500 font-mono">(Press Enter)</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-black uppercase text-white tracking-wide">
+                                  {deck.name}
+                                </h4>
+                                {hasDeck && (
+                                  <button 
+                                    onClick={() => setEditingDeckIndex(idx)}
+                                    className="text-neutral-500 hover:text-white transition-colors p-0.5"
+                                    title="Rename Preset"
+                                  >
+                                    <iconify-icon icon="solar:pen-bold" width="12"></iconify-icon>
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Roster Details */}
+                            {hasDeck ? (
+                              <div className="mt-2 text-[10px] text-neutral-400 space-y-1 font-mono leading-relaxed">
+                                <div>
+                                  <span className="text-orange-500 font-bold uppercase">Starters:</span> {startersInfo.join(' • ')}
+                                </div>
+                                <div>
+                                  <span className="text-teal-400 font-bold uppercase">Bench:</span> {benchInfo.join(' • ')}
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-[10px] text-neutral-600 uppercase font-semibold">Empty Preset Slot</p>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 items-center sm:self-center self-end">
+                            {hasDeck ? (
+                              <>
+                                <button 
+                                  onClick={handleLoad}
+                                  className="conic-btn dramatic-hover py-1.5 px-3"
+                                >
+                                  <div className="conic-spin-bg"></div>
+                                  <div className="conic-btn-mask bg-black/40"></div>
+                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                    <iconify-icon icon="solar:upload-minimal-bold" width="12" className="text-teal-400"></iconify-icon>
+                                    Load
+                                  </span>
+                                </button>
+                                <button 
+                                  onClick={handleSaveCurrent}
+                                  className="conic-btn dramatic-hover py-1.5 px-3"
+                                  title="Overwrite with active on-screen lineup"
+                                >
+                                  <div className="conic-spin-bg"></div>
+                                  <div className="conic-btn-mask bg-black/40"></div>
+                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                    <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
+                                    Overwrite
+                                  </span>
+                                </button>
+                                <button 
+                                  onClick={handleClear}
+                                  className="text-neutral-500 hover:text-red-500 transition-colors p-1"
+                                  title="Clear Slot"
+                                >
+                                  <iconify-icon icon="solar:trash-bin-trash-bold" width="16"></iconify-icon>
+                                </button>
+                              </>
+                            ) : (
+                              <button 
+                                onClick={handleSaveCurrent}
+                                disabled={starters.length !== 5 || bench.length !== 5}
+                                className="conic-btn dramatic-hover py-1.5 px-3 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                <div className="conic-spin-bg"></div>
+                                <div className="conic-btn-mask bg-black/40"></div>
+                                <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
+                                  <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
+                                  Save Current
+                                </span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Info Text */}
+                <div className="flex items-center gap-2 text-[9px] text-neutral-500 uppercase font-semibold border-t border-white/5 pt-4">
+                  <iconify-icon icon="solar:info-circle-linear" width="14"></iconify-icon>
+                  <span>Lineups require exactly 5 starters & 5 bench players to be saved.</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
@@ -8750,276 +9021,6 @@ const getBasketballStatsAndBio = (card) => {
                     <br />• If Attacker Matchup Value === Defender Contest Value and has "Offensive Superstar": <span className="text-emerald-400">Shot is GOOD (superstar tie-breaker)</span>
                     <br />• If Attacker Matchup Value &lt;= Defender Contest Value: <span className="text-red-400">Shot is MISSED/DEFENDED (0 pts)</span>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isSavedDecksOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
-              <div 
-                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
-              >
-                {/* Close Button */}
-                <button 
-                  onClick={() => {
-                    setIsSavedDecksOpen(false);
-                    setEditingDeckIndex(null);
-                  }}
-                  className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors cursor-pointer"
-                >
-                  <iconify-icon icon="solar:close-circle-bold" width="24"></iconify-icon>
-                </button>
-
-                {/* Modal Title */}
-                <div>
-                  <h3 className="text-sm md:text-base font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                    <iconify-icon icon="solar:folder-with-files-bold" className="text-teal-400" width="20"></iconify-icon>
-                    Saved Lineup Presets
-                  </h3>
-                  <p className="text-[9px] md:text-[10px] text-neutral-500 uppercase mt-0.5">Save, load, and manage up to 5 custom deck setups</p>
-                </div>
-
-                {/* Presets List */}
-                <div className="space-y-4">
-                  {savedDecks.map((deck, idx) => {
-                    const hasDeck = deck.starters && deck.starters.length === 5 && deck.bench && deck.bench.length === 5;
-                    const isEditing = editingDeckIndex === idx;
-
-                    // Calculate stats of saved deck
-                    let teamOvr = 0;
-                    let chemPenalty = 0;
-                    let startersInfo = [];
-                    let benchInfo = [];
-
-                    if (hasDeck) {
-                      const starterCards = deck.starters.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
-                      const benchCards = deck.bench.map(id => SPORTS_CARDS.find(x => x.id === id)).filter(Boolean);
-                      
-                      const allCards = [...starterCards, ...benchCards];
-                      if (allCards.length > 0) {
-                        const totalRating = allCards.reduce((acc, c) => acc + (c.rating || 80), 0);
-                        teamOvr = Math.round(totalRating / allCards.length);
-                      }
-                      chemPenalty = getChemistryPenalty(deck.starters);
-                      
-                      startersInfo = starterCards.map(c => {
-                        const stats = getCardGameStats(c);
-                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
-                      });
-                      benchInfo = benchCards.map(c => {
-                        const stats = getCardGameStats(c);
-                        return `${c.player.split(' ').pop()} (${stats.pos} ${c.rating})`;
-                      });
-                    }
-
-                    // Save Active Lineup to Slot
-                    const handleSaveCurrent = () => {
-                      if (starters.length === 5 && bench.length === 5) {
-                        const updated = savedDecks.map((d, i) => {
-                          if (i === idx) {
-                            return {
-                              ...d,
-                              starters: [...starters],
-                              bench: [...bench]
-                            };
-                          }
-                          return d;
-                        });
-                        setSavedDecks(updated);
-                        triggerToast(`Roster successfully saved to ${deck.name}!`);
-                      } else {
-                        triggerToast("Active roster invalid. Assign exactly 5 starters & 5 bench players first.");
-                      }
-                    };
-
-                    // Load Lineup from Slot
-                    const handleLoad = () => {
-                      if (hasDeck) {
-                        const isCpu = opponentType === 'cpu';
-                        const ownedOnly = !isCpu || vaultOwnedOnly;
-                        if (ownedOnly) {
-                          const unownedStarters = deck.starters.filter(id => !collection.includes(id));
-                          const unownedBench = deck.bench.filter(id => !collection.includes(id));
-                          if (unownedStarters.length > 0 || unownedBench.length > 0) {
-                            triggerToast("Cannot load preset: contains cards not in your owned collection!");
-                            return;
-                          }
-                        }
-                        
-                        setSelectedDeckIds([...deck.starters, ...deck.bench]);
-                        setStarters(deck.starters);
-                        setBench(deck.bench);
-                        setIsSavedDecksOpen(false);
-                        triggerToast(`Roster "${deck.name}" loaded successfully!`);
-                      }
-                    };
-
-                    // Rename Slot
-                    const handleRename = (newName) => {
-                      if (!newName.trim()) return;
-                      const updated = savedDecks.map((d, i) => {
-                        if (i === idx) {
-                          return { ...d, name: newName };
-                        }
-                        return d;
-                      });
-                      setSavedDecks(updated);
-                      setEditingDeckIndex(null);
-                      triggerToast(`Lineup renamed to "${newName}"`);
-                    };
-
-                    // Clear Slot
-                    const handleClear = () => {
-                      if (confirm(`Are you sure you want to clear ${deck.name}?`)) {
-                        const updated = savedDecks.map((d, i) => {
-                          if (i === idx) {
-                            return {
-                              ...d,
-                              starters: [],
-                              bench: []
-                            };
-                          }
-                          return d;
-                        });
-                        setSavedDecks(updated);
-                        triggerToast(`Cleared preset slot ${idx + 1}.`);
-                      }
-                    };
-
-                    return (
-                      <div 
-                        key={deck.id} 
-                        className={`border rounded-2xl p-4 transition-all ${
-                          hasDeck 
-                            ? 'bg-white/[0.02] border-white/10 hover:border-white/20' 
-                            : 'border-dashed border-white/5 bg-transparent'
-                        }`}
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          {/* Slot Info / Name */}
-                          <div className="flex-1 space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-mono text-neutral-500 uppercase">Slot {idx + 1}</span>
-                              {hasDeck && (
-                                <div className="flex gap-2">
-                                  <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase">
-                                    {teamOvr} OVR
-                                  </span>
-                                  <span className="text-[9px] font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">
-                                    Chem Penalty: {chemPenalty} OVR
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            
-                            {isEditing ? (
-                              <div className="flex items-center gap-2 mt-1">
-                                <input
-                                  type="text"
-                                  defaultValue={deck.name}
-                                  autoFocus
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleRename(e.target.value);
-                                    if (e.key === 'Escape') setEditingDeckIndex(null);
-                                  }}
-                                  onBlur={(e) => handleRename(e.target.value)}
-                                  className="bg-neutral-900 border border-white/20 rounded px-2.5 py-1 text-xs text-white focus:border-teal-500 w-full max-w-[200px]"
-                                />
-                                <span className="text-[9px] text-neutral-500 font-mono">(Press Enter)</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <h4 className="text-xs font-black uppercase text-white tracking-wide">
-                                  {deck.name}
-                                </h4>
-                                {hasDeck && (
-                                  <button 
-                                    onClick={() => setEditingDeckIndex(idx)}
-                                    className="text-neutral-500 hover:text-white transition-colors p-0.5"
-                                    title="Rename Preset"
-                                  >
-                                    <iconify-icon icon="solar:pen-bold" width="12"></iconify-icon>
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Roster Details */}
-                            {hasDeck ? (
-                              <div className="mt-2 text-[10px] text-neutral-400 space-y-1 font-mono leading-relaxed">
-                                <div>
-                                  <span className="text-orange-500 font-bold uppercase">Starters:</span> {startersInfo.join(' • ')}
-                                </div>
-                                <div>
-                                  <span className="text-teal-400 font-bold uppercase">Bench:</span> {benchInfo.join(' • ')}
-                                </div>
-                              </div>
-                            ) : (
-                              <p className="text-[10px] text-neutral-600 uppercase font-semibold">Empty Preset Slot</p>
-                            )}
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-2 items-center sm:self-center self-end">
-                            {hasDeck ? (
-                              <>
-                                <button 
-                                  onClick={handleLoad}
-                                  className="conic-btn dramatic-hover py-1.5 px-3"
-                                >
-                                  <div className="conic-spin-bg"></div>
-                                  <div className="conic-btn-mask bg-black/40"></div>
-                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
-                                    <iconify-icon icon="solar:upload-minimal-bold" width="12" className="text-teal-400"></iconify-icon>
-                                    Load
-                                  </span>
-                                </button>
-                                <button 
-                                  onClick={handleSaveCurrent}
-                                  className="conic-btn dramatic-hover py-1.5 px-3"
-                                  title="Overwrite with active on-screen lineup"
-                                >
-                                  <div className="conic-spin-bg"></div>
-                                  <div className="conic-btn-mask bg-black/40"></div>
-                                  <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
-                                    <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
-                                    Overwrite
-                                  </span>
-                                </button>
-                                <button 
-                                  onClick={handleClear}
-                                  className="text-neutral-500 hover:text-red-500 transition-colors p-1"
-                                  title="Clear Slot"
-                                >
-                                  <iconify-icon icon="solar:trash-bin-trash-bold" width="16"></iconify-icon>
-                                </button>
-                              </>
-                            ) : (
-                              <button 
-                                onClick={handleSaveCurrent}
-                                disabled={starters.length !== 5 || bench.length !== 5}
-                                className="conic-btn dramatic-hover py-1.5 px-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                              >
-                                <div className="conic-spin-bg"></div>
-                                <div className="conic-btn-mask bg-black/40"></div>
-                                <span className="relative z-10 text-[9px] font-bold text-white uppercase flex items-center gap-1">
-                                  <iconify-icon icon="solar:diskette-bold" width="12" className="text-emerald-400"></iconify-icon>
-                                  Save Current
-                                </span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Info Text */}
-                <div className="flex items-center gap-2 text-[9px] text-neutral-500 uppercase font-semibold border-t border-white/5 pt-4">
-                  <iconify-icon icon="solar:info-circle-linear" width="14"></iconify-icon>
-                  <span>Lineups require exactly 5 starters & 5 bench players to be saved.</span>
                 </div>
               </div>
             </div>
