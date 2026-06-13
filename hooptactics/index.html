@@ -455,13 +455,13 @@
     #bg-image {
       position: absolute;
       inset: 0;
-      background-image: url('assets/court_dark.jpg');
+      background-image: url('./assets/court_dark.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      filter: blur(8px);
+      filter: blur(6px);
       transform: scale(1.05);
-      opacity: 0.35;
+      opacity: 0.55;
       will-change: transform, opacity;
       transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out;
     }
@@ -469,9 +469,7 @@
     #bg-gradient-overlay {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.65) 60%, #000000 100%),
-                  linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 50%, #000000 100%);
-      background-blend-mode: multiply;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.8) 85%, #000000 100%);
       transition: background 0.8s ease-in-out;
     }
 
@@ -864,13 +862,11 @@
       background-color: #F3F4F6 !important;
     }
     html.light #bg-image {
-      background-image: url('assets/court_light.jpg') !important;
-      opacity: 0.22 !important;
+      background-image: url('./assets/court_light.jpg') !important;
+      opacity: 0.45 !important;
     }
     html.light #bg-gradient-overlay {
-      background: radial-gradient(circle at center, rgba(243, 244, 246, 0.25) 0%, rgba(243, 244, 246, 0.65) 60%, #F3F4F6 100%),
-                  linear-gradient(to bottom, rgba(243, 244, 246, 0.2) 0%, rgba(243, 244, 246, 0.5) 50%, #F3F4F6 100%) !important;
-      background-blend-mode: normal !important;
+      background: radial-gradient(circle at center, transparent 0%, rgba(243, 244, 246, 0.35) 50%, rgba(243, 244, 246, 0.8) 85%, #F3F4F6 100%) !important;
     }
     html.light .neon-beam-glow {
       background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.005) 40%, transparent 80%) !important;
