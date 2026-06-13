@@ -1361,6 +1361,8 @@ window.getCardGameStats = (card) => {
   let baseTpt = 70;
   let baseAth = 75;
   let perks = [];
+  let customPerDef = null;
+  let customRimDef = null;
 
   const SPECIAL_STATS = {
     'jordan': { mid: 99, rim: 98, clu: 99 },
@@ -1431,7 +1433,21 @@ window.getCardGameStats = (card) => {
     'jaylen brown': { mid: 86, rim: 92, clu: 92 },
     'jalen brown': { mid: 86, rim: 92, clu: 92 },
     'lamelo ball': { mid: 84, rim: 85, clu: 90 },
-    'anunoby': { mid: 82, rim: 84, clu: 88 }
+    'anunoby': { mid: 82, rim: 84, clu: 88 },
+    'castle': { mid: 76, rim: 82, clu: 80 },
+    'white': { mid: 84, rim: 80, clu: 86 },
+    'leonard': { mid: 95, rim: 90, clu: 95 },
+    'kawhi': { mid: 95, rim: 90, clu: 95 },
+    'edwards': { mid: 88, rim: 94, clu: 92 },
+    'paul': { mid: 92, rim: 75, clu: 94 },
+    'williamson': { mid: 70, rim: 96, clu: 86 },
+    'miller': { mid: 82, rim: 80, clu: 84 },
+    'queen': { mid: 74, rim: 82, clu: 78 },
+    'harper': { mid: 80, rim: 82, clu: 82 },
+    'love': { mid: 84, rim: 82, clu: 84 },
+    'knueppel': { mid: 82, rim: 76, clu: 82 },
+    'edgecomb': { mid: 78, rim: 84, clu: 80 },
+    'bailey': { mid: 80, rim: 85, clu: 82 }
   };
 
   let baseMid = 70;
@@ -1460,6 +1476,7 @@ window.getCardGameStats = (card) => {
 
   if (nameLower.includes('jordan')) {
     baseOff = 99; baseDef = 98; baseTpt = 83; baseAth = 99; htPos = 'SG';
+    customPerDef = 98; customRimDef = 78;
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
     perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
@@ -1488,7 +1505,8 @@ window.getCardGameStats = (card) => {
     }
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
   } else if (nameLower.includes('kobe') || nameLower.includes('bryant')) {
-    baseOff = 97; baseDef = 90; baseTpt = 85; baseAth = 95; htPos = 'SG';
+    baseOff = 97; baseDef = 95; baseTpt = 85; baseAth = 95; htPos = 'SG';
+    customPerDef = 95; customRimDef = 72;
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
   } else if (nameLower.includes('wilt') || nameLower.includes('chamberlain')) {
@@ -1532,7 +1550,8 @@ window.getCardGameStats = (card) => {
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Floor General', desc: 'Boosts all starting teammates\' Offense (OFF) by +3.' });
   } else if (nameLower.includes('anunoby')) {
-    baseOff = 82; baseDef = 90; baseTpt = 84; baseAth = 88; htPos = 'SF';
+    baseOff = 82; baseDef = 93; baseTpt = 84; baseAth = 88; htPos = 'SF';
+    customPerDef = 94; customRimDef = 82;
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
     perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
   } else if (nameLower.includes('wembanyama') || nameLower.includes('wemby')) {
@@ -1540,8 +1559,10 @@ window.getCardGameStats = (card) => {
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
     perks.push({ name: 'Eraser', desc: 'Gains +8 to DEF contest rolls when defending 2-point shots.' });
   } else if (nameLower.includes('flagg')) {
-    baseOff = 83; baseDef = 87; baseTpt = 78; baseAth = 92; htPos = 'PF';
+    baseOff = 85; baseDef = 92; baseTpt = 80; baseAth = 92; htPos = 'PF';
+    customPerDef = 90; customRimDef = 92;
     perks.push({ name: 'Eraser', desc: 'Gains +8 to DEF contest rolls when defending 2-point shots.' });
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
   } else if (nameLower.includes('iverson')) {
     baseOff = 95; baseDef = 64; baseTpt = 78; baseAth = 96; htPos = 'SG';
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
@@ -1579,7 +1600,8 @@ window.getCardGameStats = (card) => {
   } else if (nameLower.includes('cousy')) {
     baseOff = 84; baseDef = 74; baseTpt = 75; baseAth = 82; htPos = 'PG';
   } else if (nameLower.includes('frazier')) {
-    baseOff = 88; baseDef = 95; baseTpt = 78; baseAth = 88; htPos = 'PG';
+    baseOff = 88; baseDef = 96; baseTpt = 78; baseAth = 88; htPos = 'PG';
+    customPerDef = 96; customRimDef = 65;
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
     perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
   } else if (nameLower.includes('pettit')) {
@@ -1631,7 +1653,9 @@ window.getCardGameStats = (card) => {
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
     perks.push({ name: 'Eraser', desc: 'Gains +8 to DEF contest rolls when defending 2-point shots.' });
   } else if (nameLower.includes('bridges')) {
-    baseOff = 82; baseDef = 85; baseTpt = 82; baseAth = 83; htPos = 'SF';
+    baseOff = 82; baseDef = 89; baseTpt = 82; baseAth = 83; htPos = 'SF';
+    customPerDef = 90; customRimDef = 78;
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
   } else if (nameLower.includes('shai') || nameLower.includes('alexander')) {
     baseOff = 95; baseDef = 85; baseTpt = 86; baseAth = 92; htPos = 'PG';
     perks.push({ name: 'Glove Defense', desc: 'Reduces opponent\'s coin flip bonus by 2 when contesting.' });
@@ -1664,17 +1688,20 @@ window.getCardGameStats = (card) => {
     baseOff = 91; baseDef = 62; baseTpt = 85; baseAth = 91; htPos = 'PG';
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
   } else if (nameLower.includes('jaylen brown') || nameLower.includes('jalen brown')) {
-    baseOff = 92; baseDef = 85; baseTpt = 84; baseAth = 92; htPos = 'SF';
+    baseOff = 92; baseDef = 92; baseTpt = 84; baseAth = 92; htPos = 'SF';
+    customPerDef = 92; customRimDef = 80;
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
   } else if (nameLower.includes('lamelo ball')) {
     baseOff = 90; baseDef = 74; baseTpt = 88; baseAth = 84; htPos = 'PG';
     perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
     perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
     perks.push({ name: 'Ankle Breaker', desc: "Reduces defender's Defense (DEF) by -8 on contest rolls." });
   } else if (nameLower.includes('butler') || nameLower.includes('jimmy')) {
-    baseOff = 91; baseDef = 92; baseTpt = 78; baseAth = 90; htPos = 'SF';
+    baseOff = 91; baseDef = 93; baseTpt = 78; baseAth = 90; htPos = 'SF';
     baseMid = 88; baseRim = 85; baseClu = 95;
+    customPerDef = 92; customRimDef = 82;
     perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
     perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
   } else if (nameLower.includes('stoudemire')) {
@@ -1685,6 +1712,50 @@ window.getCardGameStats = (card) => {
     baseOff = 86; baseDef = 72; baseTpt = 78; baseAth = 80; htPos = 'C';
     baseMid = 82; baseRim = 80; baseClu = 80;
     perks.push({ name: 'Chairman of the Boards', desc: '50% chance to retain possession on a missed shot.' });
+  } else if (nameLower.includes('castle')) {
+    baseOff = 82; baseDef = 90; baseTpt = 75; baseAth = 88; htPos = 'SG';
+    customPerDef = 90; customRimDef = 70;
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+  } else if (nameLower.includes('white') && !nameLower.includes('magic')) {
+    baseOff = 86; baseDef = 92; baseTpt = 86; baseAth = 84; htPos = 'SG';
+    customPerDef = 92; customRimDef = 74;
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+  } else if (nameLower.includes('leonard') || nameLower.includes('kawhi')) {
+    baseOff = 94; baseDef = 97; baseTpt = 88; baseAth = 92; htPos = 'SF';
+    customPerDef = 98; customRimDef = 85;
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+    perks.push({ name: 'Defensive Anchor', desc: "Opponents cannot attempt 3-pointers." });
+  } else if (nameLower.includes('edwards')) {
+    baseOff = 94; baseDef = 86; baseTpt = 88; baseAth = 96; htPos = 'SG';
+    customPerDef = 88; customRimDef = 70;
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+    perks.push({ name: 'Offensive Superstar', desc: 'Wins coin-flip ties on offense.' });
+  } else if (nameLower.includes('paul')) {
+    baseOff = 92; baseDef = 92; baseTpt = 84; baseAth = 82; htPos = 'PG';
+    customPerDef = 95; customRimDef = 55;
+    perks.push({ name: 'Floor General', desc: "Boosts all starting teammates' Offense (OFF) by +3." });
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+  } else if (nameLower.includes('williamson')) {
+    baseOff = 92; baseDef = 78; baseTpt = 60; baseAth = 98; htPos = 'PF';
+    customPerDef = 70; customRimDef = 80;
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+  } else if (nameLower.includes('miller')) {
+    baseOff = 85; baseDef = 80; baseTpt = 86; baseAth = 85; htPos = 'SF';
+  } else if (nameLower.includes('queen')) {
+    baseOff = 78; baseDef = 78; baseTpt = 30; baseAth = 80; htPos = 'C';
+  } else if (nameLower.includes('harper')) {
+    baseOff = 82; baseDef = 80; baseTpt = 80; baseAth = 85; htPos = 'PG';
+  } else if (nameLower.includes('love')) {
+    baseOff = 86; baseDef = 76; baseTpt = 84; baseAth = 78; htPos = 'PF';
+    perks.push({ name: 'Chairman of the Boards', desc: '50% chance to retain possession on a missed shot.' });
+  } else if (nameLower.includes('knueppel')) {
+    baseOff = 80; baseDef = 74; baseTpt = 86; baseAth = 78; htPos = 'SG';
+  } else if (nameLower.includes('edgecomb')) {
+    baseOff = 82; baseDef = 80; baseTpt = 80; baseAth = 90; htPos = 'SG';
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+  } else if (nameLower.includes('bailey')) {
+    baseOff = 83; baseDef = 78; baseTpt = 82; baseAth = 92; htPos = 'SF';
+    perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
   } else {
     const hash = localHash(basePlayer);
     baseOff = 70 + (hash % 25);
@@ -1733,8 +1804,8 @@ window.getCardGameStats = (card) => {
     basePerDef = baseDef;
   }
 
-  let rimDef = baseRimDef;
-  let perDef = basePerDef;
+  let rimDef = customRimDef !== null ? customRimDef : baseRimDef;
+  let perDef = customPerDef !== null ? customPerDef : basePerDef;
 
   if (isPatch) {
     maxSta = 110;
@@ -1862,6 +1933,35 @@ window.getCardGameStats = (card) => {
     icon: 'solar:running-bold',
     desc: 'Can attempt 3-point plays (limit of 6 per game).'
   };
+
+  // Apply card-specific signature shifts to make every card unique
+  if (card.id) {
+    const cardHash = localHash(card.id);
+    
+    // Shift off and def by matching opposite values (sum is 0)
+    const offDefShift = (cardHash % 3) - 1; // -1, 0, or +1
+    off += offDefShift;
+    def -= offDefShift;
+    rimDef -= offDefShift;
+    perDef -= offDefShift;
+
+    // Shift sub-attributes using a zero-sum permutation of [-2, -1, 0, 1, 2]
+    const subOffsets = [-2, -1, 0, 1, 2];
+    const subIdxs = [0, 1, 2, 3, 4];
+    let tempHash = cardHash;
+    for (let i = 4; i > 0; i--) {
+      const j = tempHash % (i + 1);
+      const temp = subIdxs[i];
+      subIdxs[i] = subIdxs[j];
+      subIdxs[j] = temp;
+      tempHash = Math.floor(tempHash / 10);
+    }
+    tpt += subOffsets[subIdxs[0]];
+    ath += subOffsets[subIdxs[1]];
+    mid += subOffsets[subIdxs[2]];
+    rim += subOffsets[subIdxs[3]];
+    clu += subOffsets[subIdxs[4]];
+  }
 
   let baseAvg = (off + def + maxSta) / 3;
   let unscaledOvr = baseAvg;
