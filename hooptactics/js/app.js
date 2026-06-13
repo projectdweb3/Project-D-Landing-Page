@@ -4263,14 +4263,14 @@ const getBasketballStatsAndBio = (card) => {
 
       const getTutorialAlignmentClass = () => {
         switch (tutorialStep) {
-          case 1: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 2: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-[20%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 3: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 4: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-[30%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 5: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 6: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
-          case 7: return "fixed top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-sm sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
-          default: return "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-sm lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 z-50";
+          case 1: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 2: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-[20%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 3: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 4: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-[30%] lg:left-[24%] lg:bottom-auto lg:right-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 5: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 6: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          case 7: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-auto lg:bottom-[340px] lg:right-6 lg:left-auto lg:translate-x-0 lg:max-w-xs z-50";
+          default: return "relative w-full max-w-[92%] sm:max-w-md lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 z-50";
         }
       };
 
@@ -7651,77 +7651,79 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* Tutorial Overlay Modal/Popup */}
           {tutorialStep !== null && tutorialPopupOpen && (
-            <div className="fixed inset-0 bg-black/45 backdrop-blur-[2px] z-50 pointer-events-auto">
-              <div 
-                className={`glass-panel p-5 md:p-6 rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.85)] w-full text-left flex flex-col justify-between max-h-[85vh] overflow-y-auto animate-scale-up pointer-events-auto ${getTutorialAlignmentClass()}`}
-                style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
-              >
-                {/* Visual Top Accent Gradient Bar */}
-                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-teal-400 rounded-t-2xl"></div>
+            <div className="fixed inset-0 bg-black/45 backdrop-blur-[2px] z-50 pointer-events-auto flex items-center justify-center p-4 lg:block lg:p-0">
+              <div className={getTutorialAlignmentClass()}>
+                <div 
+                  className="glass-panel p-5 md:p-6 rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.85)] w-full text-left flex flex-col justify-between max-h-[85vh] overflow-y-auto animate-scale-up pointer-events-auto relative"
+                  style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
+                >
+                  {/* Visual Top Accent Gradient Bar */}
+                  <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-teal-400 rounded-t-2xl"></div>
 
-                <div className="flex items-center justify-between gap-2 mb-3.5 border-b border-white/10 pb-3 flex-shrink-0">
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 p-0.5 shadow-md shadow-orange-500/10">
-                        <div className="w-full h-full rounded-full bg-neutral-900 flex items-center justify-center">
-                          <iconify-icon icon="solar:user-speak-rounded-bold-duotone" width="22" className="text-amber-400"></iconify-icon>
+                  <div className="flex items-center justify-between gap-2 mb-3.5 border-b border-white/10 pb-3 flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex-shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 p-0.5 shadow-md shadow-orange-500/10">
+                          <div className="w-full h-full rounded-full bg-neutral-900 flex items-center justify-center">
+                            <iconify-icon icon="solar:user-speak-rounded-bold-duotone" width="22" className="text-amber-400"></iconify-icon>
+                          </div>
                         </div>
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-neutral-950 rounded-full"></span>
                       </div>
-                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-neutral-950 rounded-full"></span>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">Coach Rivers</span>
-                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/5 border border-white/10 font-mono text-neutral-400 font-bold">Step {tutorialStep}/7</span>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">Coach Rivers</span>
+                          <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/5 border border-white/10 font-mono text-neutral-400 font-bold">Step {tutorialStep}/7</span>
+                        </div>
+                        <div className="text-[9px] text-neutral-500 font-bold uppercase tracking-wide">HoopTactics Advisor</div>
                       </div>
-                      <div className="text-[9px] text-neutral-500 font-bold uppercase tracking-wide">HoopTactics Advisor</div>
                     </div>
+                    
+                    <button 
+                      onClick={() => setTutorialStep(null)}
+                      className="px-2.5 py-1 rounded-full border border-white/5 bg-white/2 hover:bg-red-500/10 hover:border-red-500/20 text-[9px] font-bold text-neutral-400 hover:text-red-400 uppercase tracking-wider transition-all flex items-center gap-1"
+                      title="End Tutorial"
+                    >
+                      <span>Skip</span>
+                      <iconify-icon icon="solar:close-square-bold-duotone" width="11"></iconify-icon>
+                    </button>
                   </div>
                   
-                  <button 
-                    onClick={() => setTutorialStep(null)}
-                    className="px-2.5 py-1 rounded-full border border-white/5 bg-white/2 hover:bg-red-500/10 hover:border-red-500/20 text-[9px] font-bold text-neutral-400 hover:text-red-400 uppercase tracking-wider transition-all flex items-center gap-1"
-                    title="End Tutorial"
-                  >
-                    <span>Skip</span>
-                    <iconify-icon icon="solar:close-square-bold-duotone" width="11"></iconify-icon>
-                  </button>
-                </div>
-                
-                <div className="space-y-2 mb-4 flex-1">
-                  <h4 className="text-[11px] font-extrabold text-white tracking-wide uppercase mt-1">
-                    {getTutorialTitle().replace(/^\d+\.\s*/, '')}
-                  </h4>
-                  <div className="text-[10.5px] text-neutral-300 leading-relaxed font-sans font-medium">
-                    {formatTutorialText(getTutorialText())}
+                  <div className="space-y-2 mb-4 flex-1">
+                    <h4 className="text-[11px] font-extrabold text-white tracking-wide uppercase mt-1">
+                      {getTutorialTitle().replace(/^\d+\.\s*/, '')}
+                    </h4>
+                    <div className="text-[10.5px] text-neutral-300 leading-relaxed font-sans font-medium">
+                      {formatTutorialText(getTutorialText())}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex justify-end items-center border-t border-white/5 pt-3.5 flex-shrink-0">
-                  {(() => {
-                    const isEndStep = tutorialStep === 7;
-                    const themeClass = isEndStep ? 'orange' : 'primary';
-                    const textClass = isEndStep ? 'text-amber-300' : 'text-teal-300';
-                    const arrowIcon = isEndStep ? 'solar:check-circle-bold-duotone' : 'solar:arrow-right-bold-duotone';
-                    return (
-                      <button
-                        onClick={() => {
-                          if (getTutorialBtnText()) {
-                            handleTutorialBtnAction();
-                          }
-                          setTutorialPopupOpen(false);
-                        }}
-                        className={`conic-btn ${themeClass} w-full dramatic-hover`}
-                      >
-                        <div className="conic-spin-bg opacity-100 animate-[spin_2s_linear_infinite]"></div>
-                        <div className="conic-btn-mask bg-neutral-900 hover:bg-neutral-950 transition-colors"></div>
-                        <span className={`relative z-10 text-[9.5px] font-black uppercase tracking-wider ${textClass} py-2.5 px-4 flex items-center justify-center gap-1.5`}>
-                          {getTutorialBtnText() ? getTutorialBtnText() : "Got it, Coach!"}
-                          <iconify-icon icon={arrowIcon} width="12" className={textClass}></iconify-icon>
-                        </span>
-                      </button>
-                    );
-                  })()}
+                  <div className="flex justify-end items-center border-t border-white/5 pt-3.5 flex-shrink-0">
+                    {(() => {
+                      const isEndStep = tutorialStep === 7;
+                      const themeClass = isEndStep ? 'orange' : 'primary';
+                      const textClass = isEndStep ? 'text-amber-300' : 'text-teal-300';
+                      const arrowIcon = isEndStep ? 'solar:check-circle-bold-duotone' : 'solar:arrow-right-bold-duotone';
+                      return (
+                        <button
+                          onClick={() => {
+                            if (getTutorialBtnText()) {
+                              handleTutorialBtnAction();
+                            }
+                            setTutorialPopupOpen(false);
+                          }}
+                          className={`conic-btn ${themeClass} w-full dramatic-hover`}
+                        >
+                          <div className="conic-spin-bg opacity-100 animate-[spin_2s_linear_infinite]"></div>
+                          <div className="conic-btn-mask bg-neutral-900 hover:bg-neutral-950 transition-colors"></div>
+                          <span className={`relative z-10 text-[9.5px] font-black uppercase tracking-wider ${textClass} py-2.5 px-4 flex items-center justify-center gap-1.5`}>
+                            {getTutorialBtnText() ? getTutorialBtnText() : "Got it, Coach!"}
+                            <iconify-icon icon={arrowIcon} width="12" className={textClass}></iconify-icon>
+                          </span>
+                        </button>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
             </div>
@@ -11126,9 +11128,22 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* PLAYER PROFILE OVERLAY MODAL */}
           {isProfileModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
+            <div 
+              className="fixed inset-0 flex items-center justify-center p-4 md:p-6 transition-opacity duration-300"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                zIndex: 9999
+              }}
+            >
               <div 
-                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
+                className="w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
               >
                 {/* Close Button */}
                 <button 
@@ -11467,9 +11482,22 @@ const getBasketballStatsAndBio = (card) => {
 
           {/* PLATFORM BRIEFING MODAL */}
           {isBriefingModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-xl bg-black/85 transition-opacity duration-300">
+            <div 
+              className="fixed inset-0 flex items-center justify-center p-4 md:p-6 transition-opacity duration-300"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                zIndex: 9999
+              }}
+            >
               <div 
-                className="glass-panel w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
+                className="w-full max-w-2xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl relative animate-modal-entry text-left"
               >
                 {/* Close Button */}
                 <button 
