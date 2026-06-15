@@ -618,6 +618,44 @@
       transition: transform 0.4s ease;
     }
 
+    /* Support for horizontal style cards (rotated 90 degrees counter-clockwise) */
+    .cq-card-container {
+      container-type: size !important;
+      container-name: card-container !important;
+    }
+
+    .card-face img.horizontal-card-img {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      width: 100cqh !important;
+      height: 100cqw !important;
+      object-fit: cover !important;
+      transform: translate(-50%, -50%) rotate(-90deg) translateZ(10px) scale(0.94) !important;
+      transform-origin: center !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+
+    .digital-toploader.is-game-card img.horizontal-card-img {
+      transform: translate(-50%, -50%) rotate(-90deg) !important;
+      border-radius: 6px !important;
+    }
+
+    /* General thumbnail style for horizontal images */
+    img.horizontal-card-img {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      width: 100cqh !important;
+      height: 100cqw !important;
+      object-fit: cover !important;
+      transform: translate(-50%, -50%) rotate(-90deg) !important;
+      transform-origin: center !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+
     /* Shimmer gloss effect overlay - floats in front of image */
     .holo-shimmer {
       position: absolute;

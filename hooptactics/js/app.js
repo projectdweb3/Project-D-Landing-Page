@@ -2944,12 +2944,36 @@ const getBasketballStatsAndBio = (card) => {
     // Global image cache to prevent image reload flicker during list scroll/re-renders
     const loadedImagesCache = new Set();
 
+    // Thumbnail component that handles horizontal card rotation dynamically
+    const CardThumbnail = ({ src, alt, className }) => {
+      const [isHorizontal, setIsHorizontal] = React.useState(false);
+      React.useEffect(() => {
+        setIsHorizontal(false);
+      }, [src]);
+
+      return (
+        <div className="w-full h-full relative cq-card-container">
+          <img 
+            src={src} 
+            alt={alt}
+            onLoad={(e) => {
+              if (e.target.naturalWidth > e.target.naturalHeight) {
+                setIsHorizontal(true);
+              }
+            }}
+            className={`${className} ${isHorizontal ? 'horizontal-card-img' : ''}`}
+          />
+        </div>
+      );
+    };
+
     // Card component rendering single-sided interactive 3D card
     const HoloCard = ({ card, size = 'md', interactive = true, hideAttributes = false, onClick }) => {
       const { theme } = React.useContext(ThemeContext) || { theme: 'dark' };
       const cardRef = useRef(null);
       const [frontImgErr, setFrontImgErr] = React.useState(false);
       const [frontImgSrc, setFrontImgSrc] = React.useState('');
+      const [isHorizontal, setIsHorizontal] = React.useState(false);
       const [imageLoaded, setImageLoaded] = React.useState(() => {
         const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
         const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
@@ -2985,6 +3009,7 @@ const getBasketballStatsAndBio = (card) => {
         setFrontImgSrc(prev => {
           if (prev !== nextSrc) {
             setImageLoaded(loadedImagesCache.has(nextSrc));
+            setIsHorizontal(false);
             return nextSrc;
           }
           return prev;
@@ -2998,6 +3023,7 @@ const getBasketballStatsAndBio = (card) => {
         if (frontImgSrc !== baseSrc) {
           setFrontImgSrc(baseSrc);
           setImageLoaded(loadedImagesCache.has(baseSrc));
+          setIsHorizontal(false);
         } else {
           setFrontImgErr(true);
         }
@@ -3320,7 +3346,7 @@ const getBasketballStatsAndBio = (card) => {
               style={finalRarityStyle}
             >
               {/* Inner card container simulating inset cavity of physical protector */}
-              <div className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between">
+              <div className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between cq-card-container">
                 {/* Render fallback CSS content in the background while loading or on error */}
                 {(!imageLoaded || frontImgErr) && (
                   <div className="absolute inset-0 flex flex-col justify-between z-0">
@@ -3332,11 +3358,15 @@ const getBasketballStatsAndBio = (card) => {
                   <img 
                     src={frontImgSrc} 
                     onError={handleFrontError}
-                    onLoad={() => {
+                    onLoad={(e) => {
+                      const { naturalWidth, naturalHeight } = e.target;
+                      if (naturalWidth > naturalHeight) {
+                        setIsHorizontal(true);
+                      }
                       loadedImagesCache.add(frontImgSrc);
                       setImageLoaded(true);
                     }}
-                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'} ${isHorizontal ? 'horizontal-card-img' : ''}`} 
                     loading="lazy"
                     decoding="async"
                     alt={card.player}
@@ -7350,7 +7380,7 @@ const getBasketballStatsAndBio = (card) => {
                                     }`}
                                   >
                                     <div className="w-full aspect-[3/4] rounded overflow-hidden relative">
-                                      <img src={c.frontImg} className="w-full h-full object-cover" />
+                                      <CardThumbnail src={c.frontImg} alt={c.player} className="w-full h-full object-cover" />
                                       {c.currentSta <= 20 && (
                                         <div className="absolute inset-0 bg-red-950/70 flex items-center justify-center">
                                           <span className="text-[5px] font-black text-red-500 font-mono tracking-tighter">GASSED</span>
@@ -8052,7 +8082,7 @@ const getBasketballStatsAndBio = (card) => {
                               return (
                                 <div key={c.id + '_timeout_opp_' + sIdx} className="timeout-player-card flex flex-col items-center gap-0.5 animate-scale-up flex-shrink-0" style={{ animationDelay: `${sIdx * 0.05}s` }}>
                                   <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden border border-white/10 bg-neutral-900 shadow-md">
-                                    <img src={c.frontImg} className="w-full h-full object-cover" />
+                                    <CardThumbnail src={c.frontImg} alt={c.player} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-emerald-950/20" />
                                     <span className="absolute top-0.5 right-0.5 text-[5px] sm:text-[5.5px] font-extrabold text-emerald-400 bg-black/85 px-1 py-0.5 rounded border border-emerald-500/30 flex items-center gap-0.5 leading-none z-10">
                                       ▲+20
