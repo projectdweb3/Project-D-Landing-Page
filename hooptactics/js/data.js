@@ -258,7 +258,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-finals-patch-auto-v2", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-most-40-5-5", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Most-40/5/5", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-nba-champion-auto", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#NBA-Champion-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
-  ["Basketball", "2025-topps-now", "josh-hart-2025-topps-now-nba-champion", "Josh Hart", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Star Card", "Base Card", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'4\"", "215 lbs", "2017"],
+  ["Basketball", "2025-topps-now", "josh-hart-2025-topps-now-nba-champion", "Josh Hart", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Star Card", "Limited Parallel", "iridescent", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'4\"", "215 lbs", "2017"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now-nba-champion", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Star Card", "Base Card", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now-nba-champion-auto", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#NBA-Champion-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
@@ -2121,6 +2121,14 @@ window.getCardGameStats = (card) => {
     clu = scaleAttribute(clu, 99, 89);
   }
 
+  let displayOvr = Math.min(99, Math.round(finalOvr));
+  if (nameLower.includes('brunson') && displayOvr === 98) {
+    displayOvr = 99;
+  }
+  if ((nameLower.includes('anunoby') || nameLower.includes('og anunoby')) && displayOvr === 99) {
+    displayOvr = 98;
+  }
+
   return {
     off: Math.min(99, Math.round(off)),
     def: Math.min(99, Math.round(def)),
@@ -2128,7 +2136,7 @@ window.getCardGameStats = (card) => {
     perDef: Math.min(99, Math.round(perDef)),
     sta: maxSta,
     pos: htPos,
-    ovr: Math.min(99, Math.round(finalOvr)),
+    ovr: displayOvr,
     perks: uniquePerks,
     primaryBadge: primaryBadge,
     tpt: Math.min(99, Math.round(tpt)),
