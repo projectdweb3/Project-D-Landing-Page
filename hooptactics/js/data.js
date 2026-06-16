@@ -1453,7 +1453,8 @@ window.getCardGameStats = (card) => {
     'love': { mid: 84, rim: 82, clu: 84 },
     'knueppel': { mid: 82, rim: 76, clu: 82 },
     'edgecomb': { mid: 78, rim: 84, clu: 80 },
-    'bailey': { mid: 80, rim: 85, clu: 82 }
+    'bailey': { mid: 80, rim: 85, clu: 82 },
+    'hart': { mid: 82, rim: 84, clu: 90 }
   };
 
   let baseMid = 70;
@@ -1762,6 +1763,11 @@ window.getCardGameStats = (card) => {
   } else if (nameLower.includes('bailey')) {
     baseOff = 83; baseDef = 78; baseTpt = 82; baseAth = 92; htPos = 'SF';
     perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
+  } else if (nameLower.includes('josh hart') || nameLower.includes('hart')) {
+    baseOff = 82; baseDef = 95; baseTpt = 80; baseAth = 90; htPos = 'PG';
+    customPerDef = 95; customRimDef = 72;
+    perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
+    perks.push({ name: 'Chairman of the Boards', desc: '50% chance to retain possession on a missed shot.' });
   } else {
     const hash = localHash(basePlayer);
     baseOff = 70 + (hash % 25);
@@ -2127,6 +2133,9 @@ window.getCardGameStats = (card) => {
   }
   if ((nameLower.includes('anunoby') || nameLower.includes('og anunoby')) && displayOvr === 99) {
     displayOvr = 98;
+  }
+  if (nameLower.includes('josh hart') || nameLower.includes('hart')) {
+    displayOvr = 91;
   }
 
   return {

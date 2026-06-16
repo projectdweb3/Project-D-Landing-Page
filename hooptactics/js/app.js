@@ -2944,9 +2944,18 @@ const getBasketballStatsAndBio = (card) => {
     // Global image cache to prevent image reload flicker during list scroll/re-renders
     const loadedImagesCache = new Set();
 
+    // Helper to identify horizontal card paths or IDs based on filename keywords
+    const checkIsHorizontalPath = (path) => {
+      if (!path) return false;
+      const lower = path.toLowerCase();
+      return lower.includes('finals-mvp-auto') || 
+             lower.includes('finals-patch-auto') || 
+             lower.includes('1980-topps');
+    };
+
     // Thumbnail component that handles horizontal card rotation dynamically
     const CardThumbnail = ({ src, alt, className }) => {
-      const [isHorizontal, setIsHorizontal] = React.useState(false);
+      const [isHorizontal, setIsHorizontal] = React.useState(() => checkIsHorizontalPath(src));
       const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
       const containerRef = React.useRef(null);
       const rawImgRef = React.useRef(null);
@@ -2967,7 +2976,7 @@ const getBasketballStatsAndBio = (card) => {
       }, [src]);
 
       React.useEffect(() => {
-        setIsHorizontal(false);
+        setIsHorizontal(checkIsHorizontalPath(src));
       }, [src]);
 
       React.useEffect(() => {
@@ -3018,7 +3027,7 @@ const getBasketballStatsAndBio = (card) => {
       const cardRef = useRef(null);
       const [frontImgErr, setFrontImgErr] = React.useState(false);
       const [frontImgSrc, setFrontImgSrc] = React.useState('');
-      const [isHorizontal, setIsHorizontal] = React.useState(false);
+      const [isHorizontal, setIsHorizontal] = React.useState(() => checkIsHorizontalPath(card.id));
       const [imageLoaded, setImageLoaded] = React.useState(() => {
         const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
         const parallelName = card.id.includes('::') ? card.id.split('::')[1] : (card.parallel || 'Base');
@@ -3054,7 +3063,7 @@ const getBasketballStatsAndBio = (card) => {
         setFrontImgSrc(prev => {
           if (prev !== nextSrc) {
             setImageLoaded(loadedImagesCache.has(nextSrc));
-            setIsHorizontal(false);
+            setIsHorizontal(checkIsHorizontalPath(card.id));
             return nextSrc;
           }
           return prev;
@@ -3068,7 +3077,7 @@ const getBasketballStatsAndBio = (card) => {
         if (frontImgSrc !== baseSrc) {
           setFrontImgSrc(baseSrc);
           setImageLoaded(loadedImagesCache.has(baseSrc));
-          setIsHorizontal(false);
+          setIsHorizontal(checkIsHorizontalPath(card.id));
         } else {
           setFrontImgErr(true);
         }
