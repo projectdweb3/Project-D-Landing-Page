@@ -4565,7 +4565,7 @@ const getBasketballStatsAndBio = (card) => {
         return { starters: startersSelection, bench: benchSelection };
       };
 
-      // Auto build deck maximizing chemistry with randomized options
+      // Auto build deck with balanced position setup
       const autoBuildDeck = () => {
         const isCpu = opponentType === 'cpu';
         const deck = getOptimizedDeck(isCpu, vaultOwnedOnly);
@@ -4577,23 +4577,12 @@ const getBasketballStatsAndBio = (card) => {
         setSelectedDeckIds([...deck.starters, ...deck.bench]);
         setStarters(deck.starters);
         setBench(deck.bench);
-        triggerToast('Auto-built randomized lineup with optimized chemistry!');
+        triggerToast('Auto-built balanced lineup from your collection!');
       };
 
-      // Chemistry Penalty Calculator
+      // Chemistry Penalty Calculator (Disabled for unrestricted rosters)
       const getChemistryPenalty = (startersList) => {
-        if (startersList.length === 0) return 0;
-        const requiredPositions = ['PG', 'SG', 'SF', 'PF', 'C'];
-        const currentPositions = new Set(startersList.map(id => {
-          const c = SPORTS_CARDS.find(x => x.id === id);
-          return getCardGameStats(c).pos;
-        }));
-        
-        let missing = 0;
-        requiredPositions.forEach(p => {
-          if (!currentPositions.has(p)) missing++;
-        });
-        return missing * -5;
+        return 0;
       };
 
       // Opponent Deck Generator (CPU or simulated online)
@@ -4651,11 +4640,29 @@ const getBasketballStatsAndBio = (card) => {
           }
         }
 
-        // Optimize chemistry for CPU starters (first 5 cards) by selecting PG, SG, SF, PF, C from the 10 cards
+        // Choose starter optimization strategy for CPU (unrestricted position rules)
+        const randStrategy = Math.random();
+        let positionsList = ['PG', 'SG', 'SF', 'PF', 'C']; // Balanced default (50% chance)
+        let strategyLabel = "Balanced";
+        
+        if (randStrategy < 0.20) {
+          // Small Ball: favor guards/wings
+          positionsList = ['PG', 'SG', 'SF', 'SG', 'SF'];
+          strategyLabel = "Small Ball";
+        } else if (randStrategy < 0.40) {
+          // Big Lineup: favor forwards/centers
+          positionsList = ['C', 'PF', 'C', 'SF', 'SG'];
+          strategyLabel = "Twin Towers / Big Ball";
+        } else if (randStrategy < 0.60) {
+          // Best Players (No position restriction, highest OVR)
+          positionsList = [];
+          strategyLabel = "Best OVR Ratings";
+        }
+
         const optimizedOppCards = [];
         const oppAssigned = new Set();
-        const positionsList = ['PG', 'SG', 'SF', 'PF', 'C'];
         
+        // 1. Assign matching position cards first based on strategy
         positionsList.forEach(pos => {
           const cand = selectedOppCards.find(c => getCardGameStats(c).pos === pos && !oppAssigned.has(c.id));
           if (cand) {
@@ -4664,13 +4671,18 @@ const getBasketballStatsAndBio = (card) => {
           }
         });
         
-        selectedOppCards.forEach(c => {
-          if (optimizedOppCards.length < 5 && !oppAssigned.has(c.id)) {
-            optimizedOppCards.push(c);
-            oppAssigned.add(c.id);
-          }
-        });
+        // 2. Fill remaining starter slots from selectedOppCards sorted by OVR (to get the best players)
+        const sortedRemaining = [...selectedOppCards]
+          .filter(c => !oppAssigned.has(c.id))
+          .sort((a, b) => getCardGameStats(b).ovr - getCardGameStats(a).ovr);
+          
+        while (optimizedOppCards.length < 5 && sortedRemaining.length > 0) {
+          const cand = sortedRemaining.shift();
+          optimizedOppCards.push(cand);
+          oppAssigned.add(cand.id);
+        }
         
+        // 3. Fill the bench with the rest of the 10 cards
         selectedOppCards.forEach(c => {
           if (!oppAssigned.has(c.id)) {
             optimizedOppCards.push(c);
@@ -4679,7 +4691,7 @@ const getBasketballStatsAndBio = (card) => {
         });
 
         // Map to dynamic state rosters
-        return optimizedOppCards.map(c => ({
+        const mappedRoster = optimizedOppCards.map(c => ({
           ...c,
           currentSta: getCardGameStats(c).sta,
           gassed: false,
@@ -4692,6 +4704,9 @@ const getBasketballStatsAndBio = (card) => {
           stl: 0,
           blk: 0
         }));
+
+        mappedRoster.strategy = strategyLabel;
+        return mappedRoster;
       };
 
       // Start Match logic
@@ -4741,13 +4756,17 @@ const getBasketballStatsAndBio = (card) => {
         setIsOvertime(false);
         setWasOvertime(false);
         
+        const playerLineupNames = pStarters.map(c => `${c.player.split(' ').pop()} (${getCardGameStats(c).pos})`).join(', ');
+        const oppLineupNames = oppRoster.slice(0, 5).map(c => `${c.player.split(' ').pop()} (${getCardGameStats(c).pos})`).join(', ');
+        const oppStrategy = oppRoster.strategy || 'Balanced';
+
         // Initial comment logs
         const initialLogs = [
           "----------------------------------------",
           "🏟️ WELCOME TO THE HOOPTACTICS ARENA 🏟️",
           `Teams take the court! Coach ${favorites?.username || 'Player'} vs Coach ${oppName}`,
-          `Player Team Chemistry Rating: ${getChemistryPenalty(activeStarters)} Bonus/Penalty`,
-          `Opponent Team Chemistry Rating: ${getChemistryPenalty(oppRoster.slice(0, 5).map(x => x.id))} Bonus/Penalty`,
+          `Player Court: ${playerLineupNames}`,
+          `Opponent Court [${oppStrategy}]: ${oppLineupNames}`,
           "----------------------------------------",
           `Tip-Off: ${pCenter.player} vs ${oCenter.player}`,
           pWinsTip 
@@ -4931,56 +4950,167 @@ const getBasketballStatsAndBio = (card) => {
           console.warn("makeCpuOffensiveMove: opponent starters are empty!");
           return;
         }
-        
-        // Select shooter: best OVR/OFF starter that is not gassed
-        const eligibleShooters = oppStarters.sort((a, b) => {
-          const statsA = getCardGameStats(a);
-          const statsB = getCardGameStats(b);
-          return statsB.off - statsA.off;
+
+        const isQ4 = possessionCount >= 25 && possessionCount <= 32;
+
+        // 1. Shooter Selection: Calculate a desirability score for each candidate
+        const candidates = oppStarters.map(c => {
+          const stats = getCardGameStats(c);
+          let score = stats.off;
+
+          // Stamina Penalties
+          const hasHeavyDuty = stats.perks.some(p => p.name === 'Heavy Duty');
+          if (c.currentSta <= 20 && !hasHeavyDuty) {
+            score -= 25;
+          } else if (c.currentSta <= 50 && !hasHeavyDuty) {
+            score -= 8;
+          }
+
+          // Mismatch exploitation against likely user defender on court
+          let matchingDef = playerCards.slice(0, 5).find(x => getCardGameStats(x).pos === stats.pos);
+          if (!matchingDef) {
+            // Find closest matching role if position is missing (flexible lineups)
+            const isPerimeter = stats.tpt > stats.rim || stats.mid > stats.rim;
+            const preferredDefPos = isPerimeter ? ['PG', 'SG', 'SF'] : ['C', 'PF', 'SF'];
+            matchingDef = playerCards.slice(0, 5).find(x => preferredDefPos.includes(getCardGameStats(x).pos)) || playerCards[0];
+          }
+          if (matchingDef) {
+            const defStats = getCardGameStats(matchingDef);
+            const isPerimeterThreat = stats.tpt > stats.rim || stats.mid > stats.rim;
+            const refDefVal = isPerimeterThreat ? defStats.perDef : defStats.rimDef;
+            const mismatchVal = stats.off - refDefVal;
+            if (mismatchVal > 5) {
+              score += Math.round(mismatchVal * 0.4);
+            }
+          }
+
+          // Hot Hand / Microwave Perk
+          const hasMicrowave = stats.perks.some(p => p.name === 'Microwave');
+          const cpuScoredLast = lastScorer === 'opponent';
+          if (hasMicrowave && cpuScoredLast) {
+            score += 8;
+          }
+
+          // Clutch Perks
+          if (isQ4) {
+            const hasClutchGene = stats.perks.some(p => p.name === 'Clutch Gene');
+            const hasSigClutch = stats.perks.some(p => p.name === 'Signature Clutch');
+            if (hasClutchGene) score += 10;
+            if (hasSigClutch) score += 15;
+          }
+
+          return { card: c, stats, score };
         });
 
-        // Pick the top shooter
-        const shooter = eligibleShooters[0];
+        // Convert desirability scores to positive weights
+        // Raise to a power to scale choice distribution based on difficulty
+        const power = cpuDifficulty === 'rookie' ? 1.0 : cpuDifficulty === 'veteran' ? 1.8 : 3.0;
+        let totalWeight = 0;
+        const candidatesWithWeights = candidates.map(cand => {
+          // Keep weight positive. Offset by 50.
+          const baseWeight = Math.max(1, cand.score - 50);
+          const weight = Math.pow(baseWeight, power);
+          totalWeight += weight;
+          return { ...cand, weight };
+        });
+
+        // Weighted random selection
+        let randVal = Math.random() * totalWeight;
+        let shooter = oppStarters[0];
+        for (const cand of candidatesWithWeights) {
+          randVal -= cand.weight;
+          if (randVal <= 0) {
+            shooter = cand.card;
+            break;
+          }
+        }
+
         if (!shooter) return;
         const shooterStats = getCardGameStats(shooter);
         setSelectedAttackerId(shooter.id);
 
-        const isGassed = shooter.currentSta <= 20 && !shooterStats.perks.some(p => p.name === 'Heavy Duty');
+        // 2. Shot Type Selection
+        // Calculate expected margin for each option
+        const userStarters = playerCards.slice(0, 5);
+        
+        // Find matching position defender's stats as primary matchup reference
+        let matchingDef = userStarters.find(x => getCardGameStats(x).pos === shooterStats.pos);
+        if (!matchingDef) {
+          // If no matching defender on court, look for closest role defender
+          const isPerimeter = shooterStats.tpt > shooterStats.rim || shooterStats.mid > shooterStats.rim;
+          const preferredDefPos = isPerimeter ? ['PG', 'SG', 'SF'] : ['C', 'PF', 'SF'];
+          matchingDef = userStarters.find(x => preferredDefPos.includes(getCardGameStats(x).pos)) || userStarters[0];
+        }
+        const matchingDefStats = matchingDef ? getCardGameStats(matchingDef) : null;
 
-        // Decide 2pt vs 3-point attempt
-        let select3pt = false;
-        if (!isGassed) {
-          const rate = cpuDifficulty === 'rookie' ? 0.2 : cpuDifficulty === 'veteran' ? 0.35 : 0.5;
-          select3pt = Math.random() < rate;
+        // Fallback averages if no matching defender
+        const avgPerDef = userStarters.reduce((acc, c) => acc + getCardGameStats(c).perDef, 0) / userStarters.length;
+        const avgRimDef = userStarters.reduce((acc, c) => acc + getCardGameStats(c).rimDef, 0) / userStarters.length;
+
+        const perRef = matchingDefStats ? matchingDefStats.perDef : avgPerDef;
+        const rimRef = matchingDefStats ? matchingDefStats.rimDef : avgRimDef;
+
+        const hasStepback = shooterStats.perks.some(p => p.name === 'Stepback Maestro');
+
+        // Net margin estimations
+        const tptDef = perRef * 0.7 + (matchingDefStats ? matchingDefStats.tpt * 0.3 : 24);
+        const tptMargin = (shooterStats.tpt + (hasStepback ? 6 : 0)) - tptDef;
+
+        const and1Def = rimRef * 0.7 + (matchingDefStats ? matchingDefStats.ath * 0.3 : 24);
+        const and1Margin = shooterStats.ath - and1Def;
+
+        const midDef = perRef * 0.7 + (matchingDefStats ? matchingDefStats.mid * 0.3 : 24);
+        const midMargin = shooterStats.mid - midDef;
+
+        const rimMargin = shooterStats.rim - and1Def;
+
+        // Check attempt limits
+        const hasSniper = shooterStats.perks.some(p => p.name === 'Sniper Zone');
+        const threesLimit = 6 + (hasSniper ? 1 : 0);
+        const can3pt = (shooter.threesAttempted || 0) < threesLimit && shooterStats.primaryBadge.type === 'three_pointer';
+        const canAnd1 = (shooter.and1sAttempted || 0) < 6;
+
+        // Compute weights for the 4 options
+        // Offset by 30 to make sure even negative margins can have small positive weights
+        let w3pt = can3pt ? Math.max(1, tptMargin + 30) : 0;
+        let wAnd1 = canAnd1 ? Math.max(1, and1Margin + 30) : 0;
+        let wMid = Math.max(1, midMargin + 30);
+        let wRim = Math.max(1, rimMargin + 30);
+
+        // Adjust based on position tendencies and badges
+        if (shooterStats.pos === 'PG' || shooterStats.pos === 'SG') {
+          w3pt *= 1.2;
+          wMid *= 1.1;
+        } else if (shooterStats.pos === 'PF' || shooterStats.pos === 'C') {
+          wRim *= 1.25;
+          wAnd1 *= 1.2;
+          w3pt *= 0.5; // Stretch bigs can shoot, but generally less favored
         }
 
+        // Clutch Logic overrides: Q4 and CPU is down by 3+ points
+        const scoreDiff = playerScore - opponentScore;
+        const isClutchTrailing = isQ4 && scoreDiff >= 3;
+        if (isClutchTrailing) {
+          if (can3pt) {
+            w3pt *= 3.0; // Heavily favor 3-pointers when trailing by 3+ late
+          } else if (canAnd1) {
+            wAnd1 *= 2.0; // Fallback to and-1 drives
+          }
+        }
+
+        // Select shot type
+        const totalShotTypeWeight = w3pt + wAnd1 + wMid + wRim;
+        let shotRand = Math.random() * totalShotTypeWeight;
         let chosenShotType = 'mid_range';
 
-        if (select3pt) {
-          if (shooterStats.primaryBadge.type === 'three_pointer') {
-            const limit = 6 + (shooterStats.perks.some(p => p.name === 'Sniper Zone') ? 1 : 0);
-            if ((shooter.threesAttempted || 0) < limit) {
-              chosenShotType = 'three_pointer';
-            } else {
-              select3pt = false;
-            }
-          } else {
-            if ((shooter.and1sAttempted || 0) < 6) {
-              chosenShotType = 'three_point_play';
-            } else {
-              select3pt = false;
-            }
-          }
-        }
-
-        // If 2pt (either chosen initially or fallback from 3pt limit)
-        if (!select3pt) {
-          // Choose between mid-range and rim attack based on higher rating
-          if (shooterStats.mid >= shooterStats.rim) {
-            chosenShotType = 'mid_range';
-          } else {
-            chosenShotType = 'attack_rim';
-          }
+        if (shotRand < w3pt) {
+          chosenShotType = 'three_pointer';
+        } else if (shotRand < w3pt + wAnd1) {
+          chosenShotType = 'three_point_play';
+        } else if (shotRand < w3pt + wAnd1 + wMid) {
+          chosenShotType = 'mid_range';
+        } else {
+          chosenShotType = 'attack_rim';
         }
 
         setShotType(chosenShotType);
@@ -5005,19 +5135,81 @@ const getBasketballStatsAndBio = (card) => {
           return;
         }
 
-        // Pick based on difficulty and shot type
+        const attackerHT = getCardGameStats(attackerCard);
+        const isRimPlay = shotType === 'attack_rim' || shotType === 'three_point_play';
+        const isQ4 = possessionCount >= 25 && possessionCount <= 32;
+
+        // Calculate expected defensive ratings for each starter
+        const defenderScoredList = oppStarters.map(defender => {
+          const defenderHT = getCardGameStats(defender);
+
+          const hasHeavyDutyDef = defenderHT.perks.some(p => p.name === 'Heavy Duty');
+          const defGassed = defender.currentSta <= 20 && !hasHeavyDutyDef;
+          
+          const defClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Clutch Gene');
+          const defSigClutch = isQ4 && defenderHT.perks.some(p => p.name === 'Signature Clutch');
+          const defClutchBoost = isQ4 ? Math.round((defenderHT.clu - 50) / 4) : 0;
+          
+          let tnDefBonus = 0;
+          if (isQ4 && defenderHT.perks.some(p => p.name === 'Topps Now: ECF MVP' || p.name === 'Topps Now: WCF MVP')) {
+            tnDefBonus += 10;
+          }
+
+          let defBaseVal = 0;
+          if (shotType === 'mid_range') {
+            defBaseVal = defenderHT.perDef * 0.7 + defenderHT.mid * 0.3;
+          } else if (shotType === 'attack_rim') {
+            defBaseVal = defenderHT.rimDef * 0.7 + defenderHT.ath * 0.3;
+          } else if (shotType === 'three_pointer') {
+            defBaseVal = defenderHT.perDef * 0.7 + defenderHT.tpt * 0.3;
+          } else if (shotType === 'three_point_play') {
+            defBaseVal = defenderHT.rimDef * 0.7 + defenderHT.ath * 0.3;
+          }
+
+          const positionMatch = defenderHT.pos === attackerHT.pos ? 2 : 0;
+          const hasShinyReflector = defenderHT.perks.some(p => p.name === 'Shiny Reflector');
+          const hasEraser = defenderHT.perks.some(p => p.name === 'Eraser');
+
+          const predictedDef = defBaseVal +
+            (defGassed ? -15 : 0) +
+            (defClutch ? 10 : 0) +
+            (defSigClutch ? 8 : 0) +
+            defClutchBoost +
+            positionMatch +
+            (hasShinyReflector ? 5 : 0) +
+            (hasEraser && isRimPlay ? 8 : 0) +
+            tnDefBonus;
+
+          return { card: defender, score: predictedDef };
+        });
+
+        // Sort by predicted defensive rating descending
+        const sortedDefenders = [...defenderScoredList].sort((a, b) => b.score - a.score);
+
         let defender;
         if (cpuDifficulty === 'rookie') {
-          // Pick a random defender from starters
-          defender = oppStarters[Math.floor(Math.random() * oppStarters.length)];
-        } else {
-          // Choose based on shot type: Rim plays check Rim Protection (rimDef), Perimeter plays check Perimeter Defense (perDef)
-          const isRimPlay = shotType === 'attack_rim' || shotType === 'three_point_play';
-          if (isRimPlay) {
-            defender = [...oppStarters].sort((a, b) => getCardGameStats(b).rimDef - getCardGameStats(a).rimDef)[0];
+          // Rookie: 50% chance to pick standard position match (if exists), 50% chance random
+          const positionMatched = oppStarters.find(x => getCardGameStats(x).pos === attackerHT.pos);
+          if (positionMatched && Math.random() < 0.5) {
+            defender = positionMatched;
           } else {
-            defender = [...oppStarters].sort((a, b) => getCardGameStats(b).perDef - getCardGameStats(a).perDef)[0];
+            defender = oppStarters[Math.floor(Math.random() * oppStarters.length)];
           }
+        } else if (cpuDifficulty === 'veteran') {
+          // Veteran: 80% chance pick optimal, 20% chance pick position match or 2nd best
+          if (Math.random() < 0.8) {
+            defender = sortedDefenders[0].card;
+          } else {
+            const positionMatched = oppStarters.find(x => getCardGameStats(x).pos === attackerHT.pos);
+            if (positionMatched && Math.random() < 0.5) {
+              defender = positionMatched;
+            } else {
+              defender = sortedDefenders[1] ? sortedDefenders[1].card : sortedDefenders[0].card;
+            }
+          }
+        } else {
+          // Hall of Famer: 100% optimal selection
+          defender = sortedDefenders[0].card;
         }
 
         if (!defender) {
@@ -5950,7 +6142,7 @@ const getBasketballStatsAndBio = (card) => {
                 <iconify-icon icon="solar:gamepad-linear" width="48" className="text-white animate-float"></iconify-icon>
                 <h3 className="text-xl font-bold tracking-widest uppercase text-white mt-4">HoopTactics Tabletop Arena</h3>
                 <p className="text-xs text-neutral-500 mt-1 max-w-sm">
-                  Turn-based digital card game. Explore physical mismatches, stamina fatigue, and tactical chemistry.
+                  Turn-based digital card game. Explore physical mismatches, stamina fatigue, and flexible lineup strategies.
                 </p>
               </div>
 
@@ -6062,8 +6254,9 @@ const getBasketballStatsAndBio = (card) => {
                   <span className="text-xs font-bold uppercase text-orange-500 flex items-center gap-1.5">
                     🔥 Starters ({starters.length} / 5)
                   </span>
-                  <span className="text-[10px] font-mono font-black text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 w-fit">
-                    Team Chemistry Penalty: {getChemistryPenalty(starters)} OVR
+                  <span className="text-[10px] font-mono font-black text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 w-fit flex items-center gap-1">
+                    <iconify-icon icon="solar:shield-check-bold" width="12"></iconify-icon>
+                    Lineup: Unrestricted Positions
                   </span>
                 </div>
                 <div className="flex overflow-x-auto sm:grid sm:grid-cols-5 gap-4 justify-start sm:justify-items-center pb-2 no-scrollbar snap-x snap-mandatory">
@@ -8424,8 +8617,9 @@ const getBasketballStatsAndBio = (card) => {
                                   <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase">
                                     {teamOvr} OVR
                                   </span>
-                                  <span className="text-[9px] font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">
-                                    Chem Penalty: {chemPenalty} OVR
+                                  <span className="text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20 uppercase flex items-center gap-0.5">
+                                    <iconify-icon icon="solar:shield-check-bold" width="10"></iconify-icon>
+                                    Flexible
                                   </span>
                                 </div>
                               )}
@@ -8635,7 +8829,7 @@ const getBasketballStatsAndBio = (card) => {
                   {
                     step: '1',
                     title: 'The Tip-Off Matchup',
-                    desc: 'The game begins with a Center matchup. Starting Centers compare their Offense (OFF) ratings, adjusted by their team\'s overall chemistry. The higher rating wins the jump ball and starts the match on offense.',
+                    desc: 'The game begins with a Center matchup. Starting Centers (or your first starter if you aren\'t running a Center) compare their Offense (OFF) ratings. The higher rating wins the jump ball and starts the match on offense.',
                     icon: 'solar:basketball-bold',
                     color: 'from-orange-500 to-red-500'
                   },
@@ -9085,21 +9279,41 @@ const getBasketballStatsAndBio = (card) => {
 
           {subTab === 'tactics' && (
             <div className="space-y-6">
-              {/* Lineup Chemistry & Penalties */}
+              {/* Lineup Building & Positional Tactics */}
               <div className="glass-panel border border-white/5 p-6 rounded-3xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-left">
                 <div className="flex items-center gap-2 mb-3">
-                  <iconify-icon icon="solar:atom-bold" width="18" className="text-orange-400"></iconify-icon>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Lineup Chemistry Rules</h3>
+                  <iconify-icon icon="solar:shield-check-bold" width="18" className="text-emerald-400"></iconify-icon>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Lineup Building & Positional Tactics</h3>
                 </div>
                 <p className="text-[10.5px] text-neutral-400 leading-relaxed mb-4">
-                  To achieve optimal squad chemistry, a coach should field a starter at every standard position. An ideal lineup consists of exactly **1 PG, 1 SG, 1 SF, 1 PF, and 1 C**. 
+                  HoopTactics features **completely unrestricted roster construction**. You can run any combination of positions in your starting lineup—there are no artificial chemistry penalties. However, you must consider the organic trade-offs of your tactical setup:
                 </p>
-                <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex gap-3">
-                  <iconify-icon icon="solar:shield-warning-bold" width="20" className="text-red-500 flex-shrink-0 mt-0.5"></iconify-icon>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-4 space-y-1">
+                    <span className="text-[10px] font-bold text-blue-400 uppercase block">🏀 Small Ball Lineup</span>
+                    <span className="text-[9.5px] text-neutral-400 block leading-normal">
+                      Fielding extra guards/wings (PG, SG, SF). Boosts speed, perimeter defense (MID/3PT contests), and shooting threats. However, it lacks rim protection (RIM contests), allowing big players to dominate the paint.
+                    </span>
+                  </div>
+                  <div className="bg-orange-500/5 border border-orange-500/10 rounded-2xl p-4 space-y-1">
+                    <span className="text-[10px] font-bold text-orange-400 uppercase block">🛡️ Twin Towers / Bigs</span>
+                    <span className="text-[9.5px] text-neutral-400 block leading-normal">
+                      Fielding extra forwards/centers (PF, C). Grants massive rim protection (blocks, paint contest) and high interior offense. However, bigs have poor perimeter defense and can be exploited by fast 3-point shooters.
+                    </span>
+                  </div>
+                  <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4 space-y-1">
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase block">⚖️ Balanced Squad</span>
+                    <span className="text-[9.5px] text-neutral-400 block leading-normal">
+                      Standard roster (1 PG, 1 SG, 1 SF, 1 PF, 1 C). Provides a balanced defensive coverage across all areas, preventing extreme defensive gaps and ensuring you always have a natural defender.
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3">
+                  <iconify-icon icon="solar:info-circle-bold" width="20" className="text-amber-500 flex-shrink-0 mt-0.5"></iconify-icon>
                   <div className="leading-tight text-left">
-                    <span className="text-[10px] font-bold text-white uppercase block">Missing Position Penalty: -5 OVR per position</span>
+                    <span className="text-[10px] font-bold text-white uppercase block">Tactical AI Warning: CPU exploits mismatches</span>
                     <span className="text-[9.5px] text-neutral-400 mt-1 block">
-                      For every missing standard position in your starting lineup, your team receives a **-5 stat penalty** applied to all combat rating checks during the match. For example, if you run two Centers and no Point Guard, your entire roster suffers -5 ratings throughout the game. Optimize your deck structure accordingly!
+                      The computer AI will analyze your lineup weaknesses. If you go all-small ball, CPU coaches will recognize the lack of rim defense and aggressively target inside drives. Keep balanced reserves on your bench to swap in if the opponent starts exploiting positional mismatches!
                     </span>
                   </div>
                 </div>
@@ -9151,10 +9365,10 @@ const getBasketballStatsAndBio = (card) => {
                 </p>
                 <div className="combat-math-box bg-neutral-950/60 p-4 rounded-2xl border border-white/5 font-mono text-[9px] text-neutral-300 space-y-2">
                   <div>
-                    <span className="text-orange-400 font-bold">Attacker Matchup Value</span> = Base Shot Attribute (MID, RIM, 3PT, or ATH) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Perks (Clutch Gene/Master) + Coin Flip (Heads: +4 / +6)
+                    <span className="text-orange-400 font-bold">Attacker Matchup Value</span> = Base Shot Attribute (MID, RIM, 3PT, or ATH) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Perks (Clutch Gene/Master) + Coin Flip (Heads: +4 / +6)
                   </div>
                   <div>
-                    <span className="text-blue-400 font-bold">Defender Contest Value</span> = Contest Rating (70% Base DEF + 30% Attacker's Shot Attribute) + Chemistry (Penalty) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Position Matchup Bonus (+2) + Perks (Clutch Gene/ECF/WCF MVP/Eraser/Reflector) + Coin Flip (Tails: +4) + CPU Difficulty Modifier
+                    <span className="text-blue-400 font-bold">Defender Contest Value</span> = Contest Rating (70% Base DEF + 30% Attacker's Shot Attribute) + Stamina Penalty (Gassed -15) + Q4 Clutch Boost (Math.round((clutch - 50) / 4)) + Position Matchup Bonus (+2) + Perks (Clutch Gene/ECF/WCF MVP/Eraser/Reflector) + Coin Flip (Tails: +4) + CPU Difficulty Modifier
                   </div>
                   <div className="border-t border-white/5 my-2 pt-2">
                     Result logic:

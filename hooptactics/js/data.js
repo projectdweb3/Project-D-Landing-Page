@@ -1653,8 +1653,16 @@ window.getCardGameStats = (card) => {
     baseOff = 93; baseDef = 83; baseTpt = 89; baseAth = 90; htPos = 'SF';
     perks.push({ name: 'Sniper Zone', desc: 'Gains +1 max 3pt attempt; reduces 3pt shot penalty by half.' });
   } else if (nameLower.includes('towns')) {
-    baseOff = 92; baseDef = 70; baseTpt = 90; baseAth = 82; htPos = 'C';
-    perks.push({ name: 'Sniper Zone', desc: 'Gains +1 max 3pt attempt; reduces 3pt shot penalty by half.' });
+    const isFinals = card.brand === 'Topps Now' || card.setId === '2025-topps-now' || idLower.includes('topps-now');
+    if (isFinals) {
+      baseOff = 92; baseDef = 88; baseTpt = 90; baseAth = 82; htPos = 'C';
+      customRimDef = 92;
+      perks.push({ name: 'Sniper Zone', desc: 'Gains +1 max 3pt attempt; reduces 3pt shot penalty by half.' });
+      perks.push({ name: 'Eraser', desc: 'Gains +8 to DEF contest rolls when defending 2-point shots.' });
+    } else {
+      baseOff = 92; baseDef = 70; baseTpt = 90; baseAth = 82; htPos = 'C';
+      perks.push({ name: 'Sniper Zone', desc: 'Gains +1 max 3pt attempt; reduces 3pt shot penalty by half.' });
+    }
   } else if (nameLower.includes('adebayo')) {
     baseOff = 82; baseDef = 93; baseTpt = 35; baseAth = 88; htPos = 'C';
     perks.push({ name: 'Defensive Anchor', desc: 'Opponents cannot attempt 3-pointers.' });
@@ -1764,7 +1772,7 @@ window.getCardGameStats = (card) => {
     baseOff = 83; baseDef = 78; baseTpt = 82; baseAth = 92; htPos = 'SF';
     perks.push({ name: 'Posterizer', desc: 'Wins offensive ties on 2-pointers; drains -5 extra stamina from defender.' });
   } else if (nameLower.includes('josh hart') || nameLower.includes('hart')) {
-    baseOff = 82; baseDef = 95; baseTpt = 80; baseAth = 90; htPos = 'PG';
+    baseOff = 82; baseDef = 95; baseTpt = 80; baseAth = 90; htPos = 'PF';
     customPerDef = 95; customRimDef = 72;
     perks.push({ name: 'Glove Defense', desc: "Reduces opponent's coin flip bonus by 2 when contesting." });
     perks.push({ name: 'Chairman of the Boards', desc: '50% chance to retain possession on a missed shot.' });
