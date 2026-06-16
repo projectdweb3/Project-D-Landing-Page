@@ -2947,13 +2947,52 @@ const getBasketballStatsAndBio = (card) => {
     // Thumbnail component that handles horizontal card rotation dynamically
     const CardThumbnail = ({ src, alt, className }) => {
       const [isHorizontal, setIsHorizontal] = React.useState(false);
+      const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+      const containerRef = React.useRef(null);
+      const imgRef = React.useRef(null);
+
       React.useEffect(() => {
         setIsHorizontal(false);
+        if (imgRef.current && imgRef.current.complete) {
+          if (imgRef.current.naturalWidth > imgRef.current.naturalHeight) {
+            setIsHorizontal(true);
+          }
+        }
       }, [src]);
 
+      React.useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new ResizeObserver((entries) => {
+          for (let entry of entries) {
+            setDimensions({
+              width: entry.contentRect.width,
+              height: entry.contentRect.height
+            });
+          }
+        });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+      }, []);
+
+      const style = isHorizontal && dimensions.width && dimensions.height ? {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        width: `${dimensions.height}px`,
+        height: `${dimensions.width}px`,
+        transform: 'translate(-50%, -50%) rotate(-90deg)',
+        transformOrigin: 'center',
+        objectFit: 'cover',
+        maxWidth: 'none',
+        maxHeight: 'none'
+      } : {};
+
       return (
-        <div className="w-full h-full relative cq-card-container">
+        <div ref={containerRef} className="w-full h-full relative overflow-hidden rounded bg-black/40">
           <img 
+            ref={imgRef}
             src={src} 
             alt={alt}
             onLoad={(e) => {
@@ -2961,7 +3000,8 @@ const getBasketballStatsAndBio = (card) => {
                 setIsHorizontal(true);
               }
             }}
-            className={`${className} ${isHorizontal ? 'horizontal-card-img' : ''}`}
+            className={isHorizontal ? '' : className}
+            style={style}
           />
         </div>
       );
@@ -3035,6 +3075,33 @@ const getBasketballStatsAndBio = (card) => {
       const glareRef = React.useRef(null);
       const rectRef = React.useRef(null);
       const frameIdRef = React.useRef(null);
+
+      // Refs and states for Horizontal Card orientation ResizeObserver handling
+      const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+      const containerRef = React.useRef(null);
+      const imgRef = React.useRef(null);
+
+      React.useEffect(() => {
+        if (imgRef.current && imgRef.current.complete) {
+          if (imgRef.current.naturalWidth > imgRef.current.naturalHeight) {
+            setIsHorizontal(true);
+          }
+        }
+      }, [frontImgSrc]);
+
+      React.useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new ResizeObserver((entries) => {
+          for (let entry of entries) {
+            setDimensions({
+              width: entry.contentRect.width,
+              height: entry.contentRect.height
+            });
+          }
+        });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+      }, []);
 
       React.useEffect(() => {
         return () => {
@@ -3346,7 +3413,7 @@ const getBasketballStatsAndBio = (card) => {
               style={finalRarityStyle}
             >
               {/* Inner card container simulating inset cavity of physical protector */}
-              <div className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between cq-card-container">
+              <div ref={containerRef} className="w-full h-full relative rounded-[8px] overflow-hidden bg-black/60 border border-white/5 flex flex-col justify-between cq-card-container">
                 {/* Render fallback CSS content in the background while loading or on error */}
                 {(!imageLoaded || frontImgErr) && (
                   <div className="absolute inset-0 flex flex-col justify-between z-0">
@@ -3356,6 +3423,7 @@ const getBasketballStatsAndBio = (card) => {
 
                 {!frontImgErr && (
                   <img 
+                    ref={imgRef}
                     src={frontImgSrc} 
                     onError={handleFrontError}
                     onLoad={(e) => {
@@ -3366,7 +3434,21 @@ const getBasketballStatsAndBio = (card) => {
                       loadedImagesCache.add(frontImgSrc);
                       setImageLoaded(true);
                     }}
-                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'} ${isHorizontal ? 'horizontal-card-img' : ''}`} 
+                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+                    style={isHorizontal && dimensions.width && dimensions.height ? {
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      right: 'auto',
+                      bottom: 'auto',
+                      width: `${dimensions.height}px`,
+                      height: `${dimensions.width}px`,
+                      transform: `translate(-50%, -50%) rotate(-90deg) translateZ(10px) scale(${isGameSize ? '1' : '0.94'})`,
+                      transformOrigin: 'center',
+                      objectFit: 'cover',
+                      maxWidth: 'none',
+                      maxHeight: 'none'
+                    } : {}}
                     loading="lazy"
                     decoding="async"
                     alt={card.player}
