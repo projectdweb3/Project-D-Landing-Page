@@ -2949,15 +2949,25 @@ const getBasketballStatsAndBio = (card) => {
       const [isHorizontal, setIsHorizontal] = React.useState(false);
       const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
       const containerRef = React.useRef(null);
-      const imgRef = React.useRef(null);
+      const rawImgRef = React.useRef(null);
+
+      // Callback ref to handle cached image loading and bind native onload immediately
+      const imgRefCallback = React.useCallback((node) => {
+        if (node !== null) {
+          rawImgRef.current = node;
+          const checkDimensions = () => {
+            if (node.naturalWidth && node.naturalHeight) {
+              setIsHorizontal(node.naturalWidth > node.naturalHeight);
+            }
+          };
+
+          checkDimensions();
+          node.onload = checkDimensions;
+        }
+      }, [src]);
 
       React.useEffect(() => {
         setIsHorizontal(false);
-        if (imgRef.current && imgRef.current.complete) {
-          if (imgRef.current.naturalWidth > imgRef.current.naturalHeight) {
-            setIsHorizontal(true);
-          }
-        }
       }, [src]);
 
       React.useEffect(() => {
@@ -2992,14 +3002,9 @@ const getBasketballStatsAndBio = (card) => {
       return (
         <div ref={containerRef} className="w-full h-full relative overflow-hidden rounded bg-black/40">
           <img 
-            ref={imgRef}
+            ref={imgRefCallback}
             src={src} 
             alt={alt}
-            onLoad={(e) => {
-              if (e.target.naturalWidth > e.target.naturalHeight) {
-                setIsHorizontal(true);
-              }
-            }}
             className={isHorizontal ? '' : className}
             style={style}
           />
@@ -3079,13 +3084,27 @@ const getBasketballStatsAndBio = (card) => {
       // Refs and states for Horizontal Card orientation ResizeObserver handling
       const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
       const containerRef = React.useRef(null);
-      const imgRef = React.useRef(null);
+      const rawImgRef = React.useRef(null);
 
-      React.useEffect(() => {
-        if (imgRef.current && imgRef.current.complete) {
-          if (imgRef.current.naturalWidth > imgRef.current.naturalHeight) {
-            setIsHorizontal(true);
+      // Callback ref to handle cached image loading and bind native onload immediately
+      const imgRefCallback = React.useCallback((node) => {
+        if (node !== null) {
+          rawImgRef.current = node;
+          const checkDimensions = () => {
+            if (node.naturalWidth && node.naturalHeight) {
+              setIsHorizontal(node.naturalWidth > node.naturalHeight);
+            }
+            loadedImagesCache.add(frontImgSrc);
+            setImageLoaded(true);
+          };
+
+          if (node.complete) {
+            checkDimensions();
           }
+          node.onload = checkDimensions;
+          node.onerror = () => {
+            handleFrontError();
+          };
         }
       }, [frontImgSrc]);
 
@@ -3423,17 +3442,8 @@ const getBasketballStatsAndBio = (card) => {
 
                 {!frontImgErr && (
                   <img 
-                    ref={imgRef}
+                    ref={imgRefCallback}
                     src={frontImgSrc} 
-                    onError={handleFrontError}
-                    onLoad={(e) => {
-                      const { naturalWidth, naturalHeight } = e.target;
-                      if (naturalWidth > naturalHeight) {
-                        setIsHorizontal(true);
-                      }
-                      loadedImagesCache.add(frontImgSrc);
-                      setImageLoaded(true);
-                    }}
                     className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
                     style={isHorizontal && dimensions.width && dimensions.height ? {
                       position: 'absolute',
