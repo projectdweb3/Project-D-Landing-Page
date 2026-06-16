@@ -247,6 +247,7 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "cooper-flagg-2025-topps-now-youngest-35-pt", "Cooper Flagg", "Dallas Mavericks", 2025, "Topps Now", "#Youngest-35pt", "Rookie Card", "Base Card", "base", 1200, 2.4, "5 sold / wk", "Forward", "6'9\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-now", "dylan-harper-2025-topps-now-2nd-pick-auto", "Dylan Harper", "San Antonio Spurs", 2025, "Topps Now", "#2nd-Pick-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'6\"", "215 lbs", "2025"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
+  ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-christmas-comeback", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Christmas-Comeback", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-comeback", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Comeback-Auto", "Star Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-cup", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Topps-Cup", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-cup-auto", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Topps-Cup-Auto", "Autograph Card", "Autograph Parallel", "prismatic", 1500, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
@@ -257,9 +258,9 @@ window.RAW_CARDS = [
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-finals-patch-auto-v2", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-most-40-5-5", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#Most-40/5/5", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
   ["Basketball", "2025-topps-now", "jalen-brunson-2025-topps-now-nba-champion-auto", "Jalen Brunson", "New York Knicks", 2025, "Topps Now", "#NBA-Champion-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard", "6'2", "190 lbs", "2018"],
-  ["Basketball", "2025-topps-now", "josh-hart-2025-topps-now-nba-champion", "Josh Hart", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Autograph Card", "Base Card", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'4\"", "215 lbs", "2017"],
+  ["Basketball", "2025-topps-now", "josh-hart-2025-topps-now-nba-champion", "Josh Hart", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Star Card", "Base Card", "gold", 2500, 2.4, "5 sold / wk", "Guard-Forward", "6'4\"", "215 lbs", "2017"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#Finals-Game-1", "Star Card", "Base Card", "base", 250, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
-  ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now-nba-champion", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Autograph Card", "Base Card", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
+  ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now-nba-champion", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#NBA-Champion", "Star Card", "Base Card", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
   ["Basketball", "2025-topps-now", "karl-anthony-towns-2025-topps-now-nba-champion-auto", "Karl-Anthony Towns", "New York Knicks", 2025, "Topps Now", "#NBA-Champion-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Forward-Center", "7'0", "248 lbs", "2015"],
   ["Basketball", "2025-topps-now", "kon-knueppel-2025-topps-now-lead-league-auto", "Kon Knueppel", "Charlotte Hornets", 2025, "Topps Now", "#3pm-Lead-Auto", "Autograph Card", "Autograph Parallel", "one-of-one", 15000, 2.4, "5 sold / wk", "Guard-Forward", "6'7\"", "205 lbs", "2025"],
   ["Basketball", "2025-topps-now", "lebron-james-2025-topps-now-2nd-most-wins", "LeBron James", "Los Angeles Lakers", 2025, "Topps Now", "#2nd-Most-Wins", "Star Card", "Base Card", "base", 750, 2.4, "5 sold / wk", "Forward", "6'9", "250 lbs", "2003"],
@@ -401,12 +402,12 @@ window.RAW_CARDS.forEach(r => {
     if (fileSuffix.includes('1/1') || fileSuffix.includes('one-of-one') || fileSuffix.includes('1-of-1')) {
       fileSuffix = 'one-of-one';
     }
-    let frontImg = `assets/cards/${id}_${fileSuffix}_front.png`;
+    let frontImg = `assets/cards/${id}_${fileSuffix}_front.png?v=5`;
     if (frontImgVal) {
       if (frontImgVal.startsWith('assets/') && !frontImgVal.startsWith('assets/cards/')) {
-        frontImg = 'assets/cards/' + frontImgVal.substring(7);
+        frontImg = 'assets/cards/' + frontImgVal.substring(7) + '?v=5';
       } else {
-        frontImg = frontImgVal;
+        frontImg = frontImgVal.includes('?') ? frontImgVal : frontImgVal + '?v=5';
       }
     }
 

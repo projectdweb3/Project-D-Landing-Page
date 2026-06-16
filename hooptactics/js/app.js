@@ -2985,7 +2985,7 @@ const getBasketballStatsAndBio = (card) => {
         if (fileSuffix.includes('1/1') || fileSuffix.includes('one-of-one') || fileSuffix.includes('1-of-1')) {
           fileSuffix = 'one-of-one';
         }
-        const initialSrc = `assets/cards/${baseId}_${fileSuffix}_front.png`;
+        const initialSrc = `assets/cards/${baseId}_${fileSuffix}_front.png?v=5`;
         return loadedImagesCache.has(initialSrc);
       });
 
@@ -3005,7 +3005,7 @@ const getBasketballStatsAndBio = (card) => {
           fileSuffix = 'one-of-one';
         }
         
-        const nextSrc = `assets/cards/${baseId}_${fileSuffix}_front.png`;
+        const nextSrc = `assets/cards/${baseId}_${fileSuffix}_front.png?v=5`;
         setFrontImgSrc(prev => {
           if (prev !== nextSrc) {
             setImageLoaded(loadedImagesCache.has(nextSrc));
@@ -3019,7 +3019,7 @@ const getBasketballStatsAndBio = (card) => {
 
       const handleFrontError = () => {
         const baseId = card.id.includes('::') ? card.id.split('::')[0] : card.id;
-        const baseSrc = `assets/cards/${baseId}_base_front.png`;
+        const baseSrc = `assets/cards/${baseId}_base_front.png?v=5`;
         if (frontImgSrc !== baseSrc) {
           setFrontImgSrc(baseSrc);
           setImageLoaded(loadedImagesCache.has(baseSrc));
