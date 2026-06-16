@@ -3000,12 +3000,12 @@ const getBasketballStatsAndBio = (card) => {
       } : {};
 
       return (
-        <div ref={containerRef} className="w-full h-full relative overflow-hidden rounded bg-black/40">
+        <div ref={containerRef} className="w-full h-full relative overflow-hidden rounded bg-black/40 cq-card-container">
           <img 
             ref={imgRefCallback}
             src={src} 
             alt={alt}
-            className={isHorizontal ? '' : className}
+            className={isHorizontal ? 'horizontal-card-img' : className}
             style={style}
           />
         </div>
@@ -3444,7 +3444,7 @@ const getBasketballStatsAndBio = (card) => {
                   <img 
                     ref={imgRefCallback}
                     src={frontImgSrc} 
-                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+                    className={`w-full h-full object-cover absolute inset-0 z-10 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'} ${isHorizontal ? 'horizontal-card-img' : ''}`} 
                     style={isHorizontal && dimensions.width && dimensions.height ? {
                       position: 'absolute',
                       left: '50%',
