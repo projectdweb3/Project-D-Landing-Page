@@ -4727,6 +4727,8 @@ const getBasketballStatsAndBio = (card) => {
         });
         
         setPlayerCards([...pStarters, ...pBench]);
+        setSelectedAttackerId(null);
+        setSelectedDefenderId(null);
         setSelectedGrailUsed(false);
         setOppGrailUsed(false);
 
@@ -5383,6 +5385,11 @@ const getBasketballStatsAndBio = (card) => {
           ? opponentCards.slice(0, 5).find(x => x.id === selectedDefenderId)
           : playerCards.find(x => x.id === selectedDefenderId);
 
+        if (!attacker || !defender) {
+          setCoinFlipping(false);
+          return;
+        }
+
         // Core stats
         const attackerHT = getCardGameStats(attacker);
         const defenderHT = getCardGameStats(defender);
@@ -5980,6 +5987,8 @@ const getBasketballStatsAndBio = (card) => {
 
           setPossessionCount(nextPos);
           setPlayerPossession(!playerPossession);
+          setSelectedAttackerId(null);
+          setSelectedDefenderId(null);
           setSubsActive(true);
           return;
         }
@@ -7176,6 +7185,7 @@ const getBasketballStatsAndBio = (card) => {
                         {selectedAttackerId ? (
                           (() => {
                             const attCard = playerCards.find(x => x.id === selectedAttackerId);
+                            if (!attCard) return null;
                             const stats = getCardGameStats(attCard);
                             
                             const limit3pt = stats.perks.some(p => p.name === 'Sniper Zone') ? 7 : 6;
@@ -7270,6 +7280,8 @@ const getBasketballStatsAndBio = (card) => {
                           const def = playerPossession
                             ? opponentCards.slice(0, 5).find(x => x.id === selectedDefenderId)
                             : playerCards.find(x => x.id === selectedDefenderId);
+
+                          if (!att || !def) return null;
 
                           const attStats = getCardGameStats(att);
                           const defStats = getCardGameStats(def);
